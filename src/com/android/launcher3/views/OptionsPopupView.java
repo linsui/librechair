@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.views;
 
-import static com.android.launcher3.BaseDraggingActivity.INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION;
-import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Toast;
+
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -41,8 +39,12 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.widget.WidgetsFullSheet;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.android.launcher3.BaseDraggingActivity.INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION;
+import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
 
 /**
  * Popup shown on long pressing an empty space in launcher
@@ -95,7 +97,7 @@ public class OptionsPopupView extends ArrowPopup
         if (ev.getAction() != MotionEvent.ACTION_DOWN) {
             return false;
         }
-        if (mLauncher.getDragLayer().isEventOverView(this, ev)) {
+        if (getPopupContainer().isEventOverView(this, ev)) {
             return false;
         }
         close(true);

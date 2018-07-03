@@ -18,8 +18,6 @@ package com.android.launcher3;
 
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -27,11 +25,12 @@ import android.os.Bundle;
 import android.os.Process;
 import android.os.StrictMode;
 import android.os.UserHandle;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.badge.BadgeInfo;
@@ -39,6 +38,7 @@ import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.uioverrides.DisplayRotationListener;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
+import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.BaseDragLayer;
 
 import ch.deletescape.lawnchair.theme.ThemeOverride;
@@ -48,7 +48,7 @@ import ch.deletescape.lawnchair.theme.ThemeOverride.ThemeSet;
  * Extension of BaseActivity allowing support for drag-n-drop
  */
 public abstract class BaseDraggingActivity extends BaseActivity
-        implements WallpaperColorInfo.OnChangeListener {
+        implements WallpaperColorInfo.OnChangeListener, ActivityContext {
 
     private static final String TAG = "BaseDraggingActivity";
 
@@ -134,6 +134,7 @@ public abstract class BaseDraggingActivity extends BaseActivity
         mCurrentActionMode = null;
     }
 
+    @Override
     public boolean finishAutoCancelActionMode() {
         if (mCurrentActionMode != null && AUTO_CANCEL_ACTION_MODE == mCurrentActionMode.getTag()) {
             mCurrentActionMode.finish();
@@ -151,13 +152,6 @@ public abstract class BaseDraggingActivity extends BaseActivity
     public abstract BadgeInfo getBadgeInfoForItem(ItemInfo info);
 
     public abstract void invalidateParent(ItemInfo info);
-
-    public static BaseDraggingActivity fromContext(Context context) {
-        if (context instanceof BaseDraggingActivity) {
-            return (BaseDraggingActivity) context;
-        }
-        return ((BaseDraggingActivity) ((ContextWrapper) context).getBaseContext());
-    }
 
     public Rect getViewBounds(View v) {
         int[] pos = new int[2];

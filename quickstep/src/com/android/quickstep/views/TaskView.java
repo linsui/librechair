@@ -36,7 +36,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.android.launcher3.BaseActivity;
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -54,6 +53,7 @@ import com.android.systemui.shared.system.ActivityManagerWrapper;
 import java.util.function.Consumer;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import static com.android.launcher3.BaseActivity.fromContext;
 import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
 import static com.android.quickstep.views.TaskThumbnailView.DIM_ALPHA_MULTIPLIER;
 
@@ -167,7 +167,7 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
                 return;
             }
             launchTask(true /* animate */);
-            BaseActivity.fromContext(context).getUserEventDispatcher().logTaskLaunchOrDismiss(
+            fromContext(context).getUserEventDispatcher().logTaskLaunchOrDismiss(
                     Touch.TAP, Direction.NONE, getRecentsView().indexOfChild(this),
                     TaskUtils.getLaunchComponentKeyForTask(getTask().key));
         });
@@ -219,7 +219,7 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
         if (mTask != null) {
             final ActivityOptions opts;
             if (animate) {
-                opts = BaseDraggingActivity.fromContext(getContext())
+                opts = ((BaseDraggingActivity) fromContext(getContext()))
                         .getActivityLaunchOptions(this);
             } else {
                 opts = ActivityOptions.makeCustomAnimation(getContext(), 0, 0);
@@ -377,7 +377,7 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
                         getContext().getText(R.string.accessibility_close_task)));
 
         final Context context = getContext();
-        final BaseDraggingActivity activity = BaseDraggingActivity.fromContext(context);
+        final BaseDraggingActivity activity = fromContext(context);
         for (TaskSystemShortcut menuOption : TaskMenuView.MENU_OPTIONS) {
             OnClickListener onClickListener = menuOption.getOnClickListener(activity, this);
             if (onClickListener != null) {
@@ -407,7 +407,7 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
                 OnClickListener onClickListener = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                     onClickListener = menuOption.getOnClickListener(
-                            BaseDraggingActivity.fromContext(getContext()), this);
+                            fromContext(getContext()), this);
                 }
                 if (onClickListener != null) {
                     onClickListener.onClick(this);

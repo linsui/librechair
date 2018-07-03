@@ -15,7 +15,6 @@
  */
 package com.android.launcher3.logging;
 
-import android.content.Context;
 import android.util.ArrayMap;
 import android.util.SparseArray;
 import android.view.View;
@@ -144,7 +143,7 @@ public class LoggerUtils {
     }
 
     public static Target newItemTarget(View v, InstantAppResolver instantAppResolver) {
-        return (v.getTag() instanceof ItemInfo)
+        return (v != null) && (v.getTag() instanceof ItemInfo)
                 ? newItemTarget((ItemInfo) v.getTag(), instantAppResolver)
                 : newTarget(Target.Type.ITEM);
     }
