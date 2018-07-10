@@ -13,6 +13,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
@@ -28,6 +29,7 @@ import com.android.launcher3.compat.PackageInstallerCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.GridOccupancy;
 import com.android.launcher3.util.LongArrayMap;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -138,10 +140,7 @@ public class GridSizeMigrationTask {
      */
     protected boolean migrateHotseat() throws Exception {
         ArrayList<DbEntry> items = loadHotseatEntries();
-
-        int requiredCount = FeatureFlags.NO_ALL_APPS_ICON ? mDestHotseatSize : mDestHotseatSize - 1;
-
-        while (items.size() > requiredCount) {
+        while (items.size() > mDestHotseatSize) {
             // Pick the center item by default.
             DbEntry toRemove = items.get(items.size() / 2);
 
@@ -171,9 +170,6 @@ public class GridSizeMigrationTask {
             }
 
             newScreenId++;
-            if (!FeatureFlags.NO_ALL_APPS_ICON && mIdp.isAllAppsButtonRank(newScreenId)) {
-                newScreenId++;
-            }
         }
 
         return applyOperations();

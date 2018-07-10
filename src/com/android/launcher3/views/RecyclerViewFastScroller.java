@@ -25,7 +25,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.view.MotionEvent;
@@ -33,14 +32,16 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairPreferences;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.launcher3.BaseRecyclerView;
 import com.android.launcher3.BaseRecyclerView.PositionThumbInfo;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.FastScrollThumbDrawable;
 import com.android.launcher3.util.Themes;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
 
 /**
  * The track and scrollbar that shows when you scroll the list.
@@ -233,8 +234,7 @@ public class RecyclerViewFastScroller extends View {
                 }
                 if (isNearThumb(x, y)) {
                     mTouchOffsetY = mDownY - mThumbOffsetY;
-                } else if (FeatureFlags.LAUNCHER3_DIRECT_SCROLL
-                        && mRv.supportsFastScrolling()
+                } else if (mRv.supportsFastScrolling()
                         && isNearScrollBar(mDownX)) {
                     calcTouchOffsetAndPrepToFastScroll(mDownY, mLastY);
                     updateFastScrollSectionNameAndThumbOffset(mLastY, y);
