@@ -19,6 +19,7 @@ package com.android.launcher3.tapl;
 import static com.android.systemui.shared.system.SettingsCompat.SWIPE_UP_SETTING_NAME;
 
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
@@ -30,8 +31,7 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
 import androidx.test.uiautomator.Until;
 import android.util.Log;
-
-import org.junit.Assert;
+import android.view.accessibility.AccessibilityEvent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -168,6 +168,30 @@ public final class Launcher {
                 fail("Invalid state: " + state);
                 return null;
         }
+    }
+
+    private Bundle executeAndWaitForEvent(Runnable command,
+            UiAutomation.AccessibilityEventFilter eventFilter, String message) {
+        try {
+            final AccessibilityEvent event =
+                    InstrumentationRegistry.getInstrumentation().getUiAutomation()
+                            .executeAndWaitForEvent(
+                                    command, eventFilter, WAIT_TIME_MS);
+            assertNotNull("executeAndWaitForEvent returned null (this can't happen)", event);
+            return (Bundle) event.getParcelableData();
+        } catch (TimeoutException e) {
+            fail(message);
+            return null;
+        }
+    }
+
+    Bundle getAnswerFromLauncher(UiObject2 view, String requestTag) {
+        // Send a fake set-text request to Launcher to initiate a response with requested data.
+        final String responseTag = requestTag + "_RESPONSE";
+        return executeAndWaitForEvent(
+                () -> view.setText(requestTag),
+                event -> responseTag.equals(event.getClassName()),
+                "Launcher didn't respond to request: " + requestTag);
     }
 
     /**
