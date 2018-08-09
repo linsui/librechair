@@ -1206,10 +1206,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
     }
 
     @Override
-    protected void overScroll(float amount) {
+    protected void overScroll(int amount) {
         Log.d(getClass().getCanonicalName(), "overScroll: " + amount);
         boolean inOptionsState = mLauncher.isInState(LauncherState.OPTIONS);
-
         boolean shouldScrollOverlay = mLauncherOverlay != null &&
                 ((amount <= 0 && !mIsRtl) || (amount >= 0 && mIsRtl)) && !inOptionsState;
 
@@ -1222,7 +1221,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
                 mLauncherOverlay.onScrollInteractionBegin();
             }
 
-            mLastOverlayScroll = Math.abs(amount / getMeasuredWidth());
+            mLastOverlayScroll = Math.abs(((float) amount) / getMeasuredWidth());
             mLauncherOverlay.onScrollChange(mLastOverlayScroll, mIsRtl);
         } else if (!inOptionsState) {
             dampedOverScroll(amount);
@@ -1421,7 +1420,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             super.announceForAccessibility(text);
         }
     }
-    
+
     public void showOutlinesTemporarily() {
         if (!mIsPageInTransition && !isTouchActive()) {
             snapToPage(mCurrentPage);
