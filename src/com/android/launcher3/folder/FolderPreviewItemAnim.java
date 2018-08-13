@@ -58,7 +58,7 @@ class FolderPreviewItemAnim {
         final float transX0 = sTmpParams.transX;
         final float transY0 = sTmpParams.transY;
 
-        mValueAnimator = LauncherAnimUtils.ofFloat(0f, 1.0f);
+        mValueAnimator = ValueAnimator.ofFloat(0f, 1.0f);
         mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener(){
             public void onAnimationUpdate(ValueAnimator animation) {
                 float progress = animation.getAnimatedFraction();

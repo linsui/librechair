@@ -379,7 +379,7 @@ public class PreviewBackground {
             mScaleAnimator.cancel();
         }
 
-        mScaleAnimator = LauncherAnimUtils.ofFloat(0f, 1.0f);
+        mScaleAnimator = ValueAnimator.ofFloat(0f, 1.0f);
 
         mScaleAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

@@ -26,6 +26,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -170,7 +171,7 @@ public class FolderAnimationManager {
         float finalRadius = Utilities.pxFromDp(8, mContext.getResources().getDisplayMetrics());
 
         // Create the animators.
-        AnimatorSet a = LauncherAnimUtils.createAnimatorSet();
+        AnimatorSet a = new AnimatorSet();
 
         // Initialize the Folder items' text.
         PropertyResetListener colorResetListener =

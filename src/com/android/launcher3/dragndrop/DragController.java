@@ -19,6 +19,7 @@ package com.android.launcher3.dragndrop;
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
 import static com.android.launcher3.LauncherState.NORMAL;
 
+import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Resources;
@@ -222,6 +223,12 @@ public class DragController implements DragDriver.EventListener, TouchController
         mIsInPreDrag = false;
         for (DragListener listener : new ArrayList<>(mListeners)) {
             listener.onDragStart(mDragObject, mOptions);
+        }
+    }
+
+    public void addFirstFrameAnimationHelper(ValueAnimator anim) {
+        if (mDragObject != null && mDragObject.dragView != null) {
+            mDragObject.dragView.mFirstFrameAnimatorHelper.addTo(anim);
         }
     }
 

@@ -202,7 +202,7 @@ public class TaskMenuView extends AbstractFloatingView {
         if (mOpenCloseAnimator != null && mOpenCloseAnimator.isRunning()) {
             return;
         }
-        mOpenCloseAnimator = LauncherAnimUtils.createAnimatorSet();
+        mOpenCloseAnimator = new AnimatorSet();
 
         final Animator revealAnimator = createOpenCloseOutlineProvider()
                 .createRevealAnimator(this, closing);
