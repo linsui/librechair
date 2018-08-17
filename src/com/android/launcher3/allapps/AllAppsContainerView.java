@@ -23,13 +23,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Process;
-import androidx.dynamicanimation.animation.DynamicAnimation;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.core.graphics.ColorUtils;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
@@ -38,14 +31,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.allapps.AllAppsTabs;
-import ch.deletescape.lawnchair.allapps.AllAppsTabsController;
-import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.colors.ColorEngine.OnColorChangeListener;
-import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
-import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.graphics.ColorUtils;
+import androidx.dynamicanimation.animation.DynamicAnimation;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
@@ -66,10 +60,21 @@ import com.android.launcher3.views.BottomUserEducationView;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 import com.android.launcher3.views.SpringRelativeLayout;
 import com.google.android.apps.nexuslauncher.qsb.AllAppsQsbLayout;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.allapps.AllAppsTabs;
+import ch.deletescape.lawnchair.allapps.AllAppsTabsController;
+import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.colors.ColorEngine.OnColorChangeListener;
+import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
+import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
 
 /**
  * The all apps view container.
@@ -522,8 +527,13 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     }
 
     public void onScrollUpEnd() {
+        highlightWorkTabIfNecessary();
+    }
+
+    void highlightWorkTabIfNecessary() {
         if (mUsingTabs) {
-            ((PersonalWorkSlidingTabStrip) findViewById(R.id.tabs)).highlightWorkTabIfNecessary();
+            ((PersonalWorkSlidingTabStrip) findViewById(R.id.tabs))
+                    .highlightWorkTabIfNecessary();
         }
     }
 
