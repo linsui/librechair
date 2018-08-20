@@ -21,7 +21,6 @@ public abstract class ServiceFactory implements ServiceConnection {
     protected abstract Intent getService();
 
     protected ServiceFactory(Context context) {
-
         this.context = context;
     }
 

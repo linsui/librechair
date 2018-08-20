@@ -218,10 +218,6 @@ public class PredictionUiStateManager implements OnSharedPreferenceChangeListene
                         if (var11 == null) {
                             break label36;
                         }
-
-                        if (var11.usingLowResIcon) {
-                            this.mIconCache.updateIconInBackground(this, var11);
-                        }
                     }
 
                     var8 = var6 + 1;

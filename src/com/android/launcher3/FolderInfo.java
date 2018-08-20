@@ -201,7 +201,7 @@ public class FolderInfo extends ItemInfo {
             return icn;
         }
         if (isCoverMode()) {
-            return DrawableFactory.get(context).newIcon(getCoverInfo());
+            return DrawableFactory.INSTANCE.get(context).newIcon(context, getCoverInfo());
         }
         return getFolderIcon(launcher);
     }

@@ -16,6 +16,8 @@
 
 package com.android.launcher3.graphics;
 
+import static com.android.launcher3.graphics.BitmapInfo.LOW_RES_ICON;
+
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -24,6 +26,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Process;
@@ -36,29 +39,24 @@ import com.android.launcher3.FastBitmapDrawable;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.allapps.AllAppsBackgroundDrawable;
+import com.android.launcher3.util.MainThreadInitializedObject;
 
 /**
  * Factory for creating new drawables.
  */
 public class DrawableFactory {
 
-    private static final String TAG = "DrawableFactory";
+    public static final MainThreadInitializedObject<DrawableFactory> INSTANCE =
+            new MainThreadInitializedObject<>(c -> {
+                DrawableFactory factory = Utilities.getOverrideObject(DrawableFactory.class,
+                        c.getApplicationContext(), R.string.drawable_factory_class);
+                factory.mContext = c;
+                return factory;
+            });
 
-    private static DrawableFactory sInstance;
-    private static final Object LOCK = new Object();
 
+    private Context mContext;
     private Path mPreloadProgressPath;
-
-    public static DrawableFactory get(Context context) {
-        synchronized (LOCK) {
-            if (sInstance == null) {
-                sInstance = Utilities.getOverrideObject(DrawableFactory.class,
-                        context.getApplicationContext(), R.string.drawable_factory_class);
-            }
-            return sInstance;
-        }
-    }
 
     protected final UserHandle mMyUser = Process.myUserHandle();
     protected final ArrayMap<UserHandle, Bitmap> mUserBadges = new ArrayMap<>();
@@ -66,48 +64,47 @@ public class DrawableFactory {
     /**
      * Returns a FastBitmapDrawable with the iconView.
      */
-    public FastBitmapDrawable newIcon(ItemInfoWithIcon info) {
-        FastBitmapDrawable drawable = new FastBitmapDrawable(info);
+    public FastBitmapDrawable newIcon(Context context, ItemInfoWithIcon info) {
+        FastBitmapDrawable drawable = info.iconBitmap == LOW_RES_ICON
+                ? new PlaceHolderIconDrawable(info, getPreloadProgressPath(), context)
+                : new FastBitmapDrawable(info);
         drawable.setIsDisabled(info.isDisabled());
         return drawable;
     }
 
-    public FastBitmapDrawable newIcon(BitmapInfo info, ActivityInfo target) {
-        return new FastBitmapDrawable(info);
+    public FastBitmapDrawable newIcon(Context context, BitmapInfo info, ActivityInfo target) {
+        return info.icon == LOW_RES_ICON
+                ? new PlaceHolderIconDrawable(info, getPreloadProgressPath(), context)
+                : new FastBitmapDrawable(info);
     }
 
     /**
      * Returns a FastBitmapDrawable with the iconView.
      */
-    public PreloadIconDrawable newPendingIcon(ItemInfoWithIcon info, Context context) {
-        if (mPreloadProgressPath == null) {
-            mPreloadProgressPath = getPreloadProgressPath(context);
-        }
-        return new PreloadIconDrawable(info, mPreloadProgressPath, context);
+    public PreloadIconDrawable newPendingIcon(Context context, ItemInfoWithIcon info) {
+        return new PreloadIconDrawable(info, getPreloadProgressPath(), context);
     }
 
-    protected Path getPreloadProgressPath(Context context) {
+    protected Path getPreloadProgressPath() {
+        if (mPreloadProgressPath != null) {
+            return mPreloadProgressPath;
+        }
         if (Utilities.ATLEAST_OREO) {
-            try {
-                // Try to load the path from Mask Icon
-                Drawable icon = LawnchairIconProvider.getAdaptiveIconDrawableWrapper(context);
-                icon.setBounds(0, 0,
-                        PreloadIconDrawable.PATH_SIZE, PreloadIconDrawable.PATH_SIZE);
-                return (Path) icon.getClass().getMethod("getIconMask").invoke(icon);
-            } catch (Exception e) {
-                Log.e(TAG, "Error loading mask iconView", e);
-            }
+            // Load the path from Mask Icon
+            AdaptiveIconDrawable icon = (AdaptiveIconDrawable)
+                    mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper);
+            icon.setBounds(0, 0,
+                    PreloadIconDrawable.PATH_SIZE, PreloadIconDrawable.PATH_SIZE);
+            mPreloadProgressPath = icon.getIconMask();
+        } else {
+
+            // Create a circle static from top center and going clockwise.
+            Path p = new Path();
+            p.moveTo(PreloadIconDrawable.PATH_SIZE / 2, 0);
+            p.addArc(0, 0, PreloadIconDrawable.PATH_SIZE, PreloadIconDrawable.PATH_SIZE, -90, 360);
+            mPreloadProgressPath = p;
         }
-
-        // Create a circle static from top center and going clockwise.
-        Path p = new Path();
-        p.moveTo(PreloadIconDrawable.PATH_SIZE / 2, 0);
-        p.addArc(0, 0, PreloadIconDrawable.PATH_SIZE, PreloadIconDrawable.PATH_SIZE, -90, 360);
-        return p;
-    }
-
-    public AllAppsBackgroundDrawable getAllAppsBackground(Context context) {
-        return new AllAppsBackgroundDrawable(context);
+        return mPreloadProgressPath;
     }
 
     /**
