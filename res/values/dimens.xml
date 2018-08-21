@@ -291,6 +291,13 @@
 <!-- Overview -->
     <dimen name="options_menu_icon_size">48dp</dimen>
     <dimen name="options_menu_thumb_size">32dp</dimen>
+
+<!-- Snackbar -->
+    <dimen name="snackbar_height">48dp</dimen>
+    <dimen name="snackbar_content_height">32dp</dimen>
+    <dimen name="snackbar_padding">8dp</dimen>
+    <dimen name="snackbar_margin">16dp</dimen>
+<!-- Goolag -->
     <dimen name="qsb_doodle_tap_target_logo_width">106dp</dimen>
     <dimen name="qsb_mic_width">56dp</dimen>
     <dimen name="qsb_text_spacing">20dp</dimen>

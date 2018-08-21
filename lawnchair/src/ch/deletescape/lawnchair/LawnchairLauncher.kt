@@ -70,7 +70,7 @@ import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
 
 open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferenceChangeListener,
-                               ColorEngine.OnColorChangeListener {
+        ColorEngine.OnColorChangeListener {
     val hideStatusBarKey = "pref_hideStatusBar"
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<LawnchairBackgroundView>(R.id.lawnchair_background)!! }
@@ -78,8 +78,12 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-    val feed by lazy { findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView }
-    val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout }
+    val feed by lazy {
+        findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView
+    }
+    val drawerLayout by lazy {
+        (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout
+    }
     val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
@@ -119,7 +123,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
         performSignatureVerification()
-        drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        drawerLayout.setDrawerLockMode(
+                androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         setLauncherOverlay(overlay)
 
@@ -183,8 +188,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    override fun finishBindingItems() {
-        super.finishBindingItems()
+    override fun finishBindingItems(page: Int) {
+        super.finishBindingItems(page)
         Utilities.onLauncherStart()
     }
 
@@ -378,11 +383,12 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?,
-                                            grantResults: IntArray?) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION_STORAGE_ACCESS) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 AlertDialog.Builder(this).setTitle(R.string.title_storage_permission_required)
                         .setMessage(R.string.content_storage_permission_required)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -430,8 +436,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
             findViewById<LauncherRootView>(R.id.launcher).setHideContent(true)
         }
 
-        override fun finishBindingItems() {
-            super.finishBindingItems()
+        override fun finishBindingItems(page: Int) {
+            super.finishBindingItems(page)
 
             findViewById<LauncherRootView>(R.id.launcher).post(::takeScreenshot)
         }
@@ -490,9 +496,9 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         @JvmStatic
         fun getLauncher(context: Context): LawnchairLauncher {
             return context as? LawnchairLauncher
-                   ?: (context as ContextWrapper).baseContext as? LawnchairLauncher
-                   ?: LauncherAppState.getInstance(context).launcher as? LawnchairLauncher
-                   ?: Launcher.getInstance() as LawnchairLauncher
+                    ?: (context as ContextWrapper).baseContext as? LawnchairLauncher
+                    ?: LauncherAppState.getInstance(context).launcher as? LawnchairLauncher
+                    ?: Launcher.getInstance() as LawnchairLauncher
         }
 
         fun takeScreenshotSync(context: Context): Uri? {
@@ -581,7 +587,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
             if (data == null) {
                 imageResuestCallbacks[requestCode]!!(null)
             } else if (data.hasExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)) {
-                imageResuestCallbacks[requestCode]!!(data.extras!![ImageStore.ImageStoreActivity.IMAGE_UUID] as String);
+                imageResuestCallbacks[requestCode]!!(
+                        data.extras!![ImageStore.ImageStoreActivity.IMAGE_UUID] as String);
             } else {
                 imageResuestCallbacks[requestCode]!!(null)
             }

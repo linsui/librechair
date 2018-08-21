@@ -19,7 +19,6 @@ package com.android.launcher3;
 import static android.view.accessibility.AccessibilityEvent.TYPE_VIEW_FOCUSED;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED;
 import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED;
-
 import static com.android.launcher3.compat.AccessibilityManagerCompat.isAccessibilityEnabled;
 import static com.android.launcher3.compat.AccessibilityManagerCompat.sendCustomAccessibilityEvent;
 
@@ -53,6 +52,7 @@ public abstract class AbstractFloatingView extends LinearLayout implements Touch
             TYPE_ON_BOARD_POPUP,
             TYPE_DISCOVERY_BOUNCE,
             TYPE_SNACKBAR,
+
             TYPE_QUICKSTEP_PREVIEW,
             TYPE_TASK_MENU,
             TYPE_OPTIONS_POPUP,
