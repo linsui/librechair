@@ -1456,8 +1456,8 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
         }
 
         if (FeatureFlags.IS_DOGFOOD_BUILD) {
-            duration *= Settings.System.getFloat(getContext().getContentResolver(),
-                    Settings.System.WINDOW_ANIMATION_SCALE, 1);
+            duration *= Settings.Global.getFloat(getContext().getContentResolver(),
+                    Settings.Global.WINDOW_ANIMATION_SCALE, 1);
         }
 
         whichPage = validateNewPage(whichPage);
