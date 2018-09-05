@@ -400,9 +400,7 @@ public class LoaderTask implements Runnable {
                                         // no special handling necessary for this item
                                         c.markRestored();
                                     } else {
-                                        if (c.hasRestoreFlag(ShortcutInfo.FLAG_AUTOINSTALL_ICON)) {
-                                            // We allow auto install apps to have their intent
-                                            // updated after an install.
+                                        // Gracefully try to find a fallback activity.
                                             intent = pmHelper.getAppLaunchIntent(targetPkg, c.user);
                                             if (intent != null) {
                                                 c.restoreFlag = 0;
@@ -412,12 +410,7 @@ public class LoaderTask implements Runnable {
                                                 cn = intent.getComponent();
                                             } else {
                                                 c.markDeleted("Unable to find a launch target");
-                                                continue;
-                                            }
-                                        } else {
-                                            // The app is installed but the component is no
-                                            // longer available.
-                                            c.markDeleted("Invalid component removed: " + cn);
+
                                             continue;
                                         }
                                     }
