@@ -15,11 +15,19 @@
  */
 package com.android.quickstep.views;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 import static com.android.launcher3.states.RotationHelper.REQUEST_LOCK;
 import static com.android.launcher3.states.RotationHelper.REQUEST_NONE;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.widget.FrameLayout;
 
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Insettable;
@@ -34,7 +42,9 @@ public class LauncherLayoutListener extends AbstractFloatingView
         implements Insettable, LayoutListener {
 
     private final Launcher mLauncher;
+    private final Paint mPaint = new Paint();
     private WindowTransformSwipeHandler mHandler;
+    private RectF mCurrentRect;
 
     public LauncherLayoutListener(Launcher launcher) {
         super(launcher, null);
@@ -44,6 +54,21 @@ public class LauncherLayoutListener extends AbstractFloatingView
         // For the duration of the gesture, lock the screen orientation to ensure that we do not
         // rotate mid-quickscrub
         launcher.getRotationHelper().setStateHandlerRequest(REQUEST_LOCK);
+        mPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        setLayoutParams(new FrameLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+    }
+
+    @Override
+    public void update(boolean shouldFinish, boolean isLongSwipe, RectF currentRect) {
+        if (shouldFinish) {
+            finish();
+            return;
+        }
+
+        mCurrentRect = currentRect;
+
+        setWillNotDraw(mCurrentRect == null || isLongSwipe);
+        invalidate();
     }
 
     @Override
@@ -85,11 +110,6 @@ public class LauncherLayoutListener extends AbstractFloatingView
     }
 
     @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        setMeasuredDimension(1, 1);
-    }
-
-    @Override
     public void logActionCommand(int command) {
         // We should probably log the weather
     }
@@ -101,8 +121,13 @@ public class LauncherLayoutListener extends AbstractFloatingView
 
     @Override
     public void finish() {
-        setHandler(null);
         close(false);
+        setHandler(null);
         mLauncher.getRotationHelper().setStateHandlerRequest(REQUEST_NONE);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.drawRect(mCurrentRect, mPaint);
     }
 }
