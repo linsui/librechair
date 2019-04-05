@@ -29,6 +29,17 @@ import ch.deletescape.lawnchair.colors.ColorEngine;
  */
 public class Themes {
 
+    public static float getDialogCornerRadius(Context context, float defaultValue) {
+        return getDimension(context, android.R.attr.dialogCornerRadius, defaultValue);
+    }
+
+    public static float getDimension(Context context, int attr, float defaultValue) {
+        TypedArray ta = context.obtainStyledAttributes(new int[]{attr});
+        float value = ta.getDimension(0, defaultValue);
+        ta.recycle();
+        return value;
+    }
+
     public static int getColorAccent(Context context) {
         return ColorEngine.getInstance(context).getAccent();
     }
