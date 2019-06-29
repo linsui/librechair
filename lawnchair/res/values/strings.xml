@@ -47,7 +47,7 @@
     <string name="msg_disable_suggestions_prompt">"Usage data will be removed"</string>
     
     <string name="label_turn_off_suggestions">Disable</string>
-    <string name="app_name_lawnchair">Lawnchair</string>
+    <string name="app_name_lawnchair">Librechair</string>
     <string name="pixel_style_pref_title">Pixel style</string>
     
     <string name="about_summary_title">Summary</string>
