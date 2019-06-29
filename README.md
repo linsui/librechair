@@ -52,6 +52,8 @@ Wanna help us by translating Lawnchair to your own language? Just take a look at
 
 ## Source releases
 
+ (this does not apply to Librechair, but only upstream Lawnchair. Librechair releases source per commit)
+
 To make our problems with rip-offs a bit easier we will work in private development cycles but release our newest sources with every production release (beta, stable).
 This also means that any contributions will be cherry-picked to our tree internally, we'll notify you whenever we do this. We're going to keep releasing public alpha builds in-between
 cycles in the future.
