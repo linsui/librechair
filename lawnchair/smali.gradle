@@ -1,3 +1,37 @@
+/*
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import smali.SmaliTask
 
 dependencies {
@@ -50,6 +84,7 @@ def copySmaliLibDex(dirName) {
     println "copy $libDex into $dirName"
     exec {
         workingDir '.'
+        println("\$ cp ${libDex} ${dirName}");
         commandLine 'cp', libDex, dirName
     }
 }
@@ -62,17 +97,29 @@ tasks.whenTaskAdded { task ->
     def name = task.name
     if (name.startsWith('pre') && name.contains('Lawnchair') && name.endsWith('Build')) {
         task.dependsOn 'buildLawnchairSmali'
-    } else if (name.startsWith('transformDexArchiveWithDexMergerFor') && !name.endsWith('Test')) {
-        def variantName = name.substring(35).uncapitalize()
+    } else if (name.startsWith('transformClassesWithDexBuilderFor') && !name.endsWith('Test')) {
+        def variantName = String.valueOf(name.substring('transformClassesWithDexBuilderFor'.length()).charAt(0)).uncapitalize() + name.substring('transformClassesWithDexBuilderFor'.length() + 1)
         def split = dashSeparated(variantName).split('-')
         def buildType = split[split.length - 1]
+        int classNo = 0;
+        File classOutFolder = new File("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/");
+        for (File file : classOutFolder.listFiles())
+        {
+            if (file.getName().startsWith("classes") && file.getName().endsWith(".dex"))
+            {
+                ++classNo;
+            }
+        }
         variantName = variantName.substring(0, variantName.length() - buildType.length())
-        def dirName = "./build/intermediates/transforms/dexMerger/${variantName}/${buildType}/0/"
+        def dirName = "./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/classes${classNo == 0 ? "" : String.valueOf(classNo)}.dex"
         task.doLast {
             copySmaliLibDex(dirName)
         }
     } else if (name.startsWith('transformClassesAndResourcesWithR8For') && !name.endsWith('Test')) {
-        def variantName = name.substring(37).uncapitalize()
+        /*
+         * TODO: Probably broken
+         */
+        def variantName = name.substring(37)
         def split = dashSeparated(variantName).split('-')
         def buildType = split[split.length - 1]
         variantName = variantName.substring(0, variantName.length() - buildType.length())

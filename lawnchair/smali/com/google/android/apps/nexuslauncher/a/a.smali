@@ -34,7 +34,7 @@
     .end annotation
 .end field
 
-.field public e:Lcom/google/android/apps/nexuslauncher/a;
+.field public e:Lcom/google/android/apps/nexuslauncher/UIUpdateHandler;
 
 .field private final mContext:Landroid/content/Context;
 
@@ -415,14 +415,14 @@
 
     .line 86
     :cond_4
-    iget-object p1, p0, Lcom/google/android/apps/nexuslauncher/a/a;->e:Lcom/google/android/apps/nexuslauncher/a;
+    iget-object p1, p0, Lcom/google/android/apps/nexuslauncher/a/a;->e:Lcom/google/android/apps/nexuslauncher/UIUpdateHandler;
 
     if-eqz p1, :cond_5
 
     .line 87
-    iget-object p1, p0, Lcom/google/android/apps/nexuslauncher/a/a;->e:Lcom/google/android/apps/nexuslauncher/a;
+    iget-object p1, p0, Lcom/google/android/apps/nexuslauncher/a/a;->e:Lcom/google/android/apps/nexuslauncher/UIUpdateHandler;
 
-    invoke-interface {p1}, Lcom/google/android/apps/nexuslauncher/a;->onUpdateUI()V
+    invoke-interface {p1}, Lcom/google/android/apps/nexuslauncher/UIUpdateHandler;->onUpdateUI()V
 
     :cond_5
     return v1
