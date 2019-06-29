@@ -1,3 +1,27 @@
+# Librechair-changed
+  The original project Lawnchair can be found [here](https://github.com/LawnchairLauncher/Lawnchair)^Warning: ^LibreJS ^Incompatible.
+  This project is a fork of Lawnchair that aims to remove non-free (proprietary) blobs from Lawnchair, and make it completely free (libre) software.
+  Apart from features that require non-free blobs (Sesame) and features that require interfacing with non-free software (Google Feed),
+  Librechair aims to track upstream Lawnchair. What this means is that new Lawnchair features will eventually show up in Lawnchair, sans those
+  that require non-free blobs.
+
+## Librechair is not yet complete
+ Obviously, Librechair is not yet complete. The project still contains a single (though free) blob that needs to be inlined, and also requires
+ several free blobs for compilation. The project will also aim to compile those inline or require installation as external tools.
+
+ Here's the complete roadmap: 
+
+    [x] Remove Sesame
+    [x] Remove Feed
+    [x] Remove all search providers that require non-free software
+    [ ] Remove all weather providers that require non-free software (under progress)
+    [x] Inline the SystemUI shared library
+    [ ] Remove all remanants of Google (under progress)
+    [ ] Inline the private platform API jar
+    [ ] Inline or eliminate build-tools blobs
+    [ ] De-smalify all Google smali blobs
+    [ ] Find a smart way to de-smalify all AOSP smali blobs
+
 # Lawnchair - [![Crowdin](https://d322cqt584bo4o.cloudfront.net/lawnchairandroid/localized.svg)](https://translate.lawnchair.app)
 
 ![Lawnchair](banner.png)
