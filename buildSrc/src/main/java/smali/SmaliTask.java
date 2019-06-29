@@ -58,6 +58,7 @@ public class SmaliTask extends DefaultTask {
                     .collect(Collectors.toList());
             SmaliOptions options = new SmaliOptions();
             options.outputDexFile = mDestination.getCanonicalPath();
+            System.out.println("assembling smali to: " + mDestination.getAbsolutePath());
             Smali.assemble(options, fileNames);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
