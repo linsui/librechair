@@ -18,18 +18,14 @@
 package ch.deletescape.lawnchair.sesame
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.dpToPx
-import ch.deletescape.lawnchair.folder.FolderShape
-import ch.deletescape.lawnchair.globalsearch.providers.SesameSearchProvider
+import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.diff.diff
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
-import com.android.launcher3.R
 import com.android.launcher3.graphics.IconShapeOverride
 import com.google.android.apps.nexuslauncher.qsb.AbstractQsbLayout
 import ninja.sesame.lib.bridge.v1.SesameFrontend
@@ -43,7 +39,7 @@ object Sesame : ColorEngine.OnColorChangeListener, LawnchairPreferences.OnPrefer
     const val ACTION_OPEN_SETTINGS = "ninja.sesame.app.action.OPEN_SETTINGS"
 
     @JvmStatic
-    val SEARCH_PROVIDER_CLASS: String = SesameSearchProvider::class.java.name
+    val SEARCH_PROVIDER_CLASS: String = AppSearchSearchProvider::class.java.name
 
     @JvmStatic
     fun isAvailable(context: Context) = BuildConfig.FEATURE_QUINOA &&
@@ -65,7 +61,7 @@ object Sesame : ColorEngine.OnColorChangeListener, LawnchairPreferences.OnPrefer
 
     private lateinit var context: Context
 
-    private val isSesameSearch get() = context.lawnchairPrefs.searchProvider == SesameSearchProvider::class.java.name
+    private val isSesameSearch get() = false
 
     @JvmStatic
     fun setupSync(context: Context) {

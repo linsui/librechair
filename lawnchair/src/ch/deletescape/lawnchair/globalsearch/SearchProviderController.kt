@@ -23,7 +23,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
 
     private val listeners = HashSet<OnProviderChangeListener>()
 
-    val isGoogle get() = searchProvider is GoogleSearchProvider
+    val isGoogle get() = false
 
     init {
         ThemeManager.getInstance(context).addOverride(themeOverride)
@@ -60,7 +60,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                         cache = prov
                     }
                 } catch (ignored: Exception) { }
-                if (cache == null) cache = GoogleSearchProvider(context)
+                if (cache == null) cache = AppSearchSearchProvider(context)
                 cached = cache!!::class.java.name
                 notifyProviderChanged()
             }
@@ -96,24 +96,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
 
     companion object : SingletonHolder<SearchProviderController, Context>(ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
         fun getSearchProviders(context: Context) = listOf(
-                AppSearchSearchProvider(context),
-                GoogleSearchProvider(context),
-                SFinderSearchProvider(context),
-                if (BuildConfig.FEATURE_QUINOA) {
-                    SesameSearchProvider(context)
-                } else {
-                    DisabledDummySearchProvider(context)
-                },
-                GoogleGoSearchProvider(context),
-                FirefoxSearchProvider(context),
-                DuckDuckGoSearchProvider(context),
-                BingSearchProvider(context),
-                BaiduSearchProvider(context),
-                YandexSearchProvider(context),
-                QwantSearchProvider(context),
-                SearchLiteSearchProvider(context),
-                CoolSearchSearchProvider(context),
-                EdgeSearchProvider(context)
+                AppSearchSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }

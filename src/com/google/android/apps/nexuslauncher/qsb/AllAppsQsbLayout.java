@@ -20,7 +20,6 @@ import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider;
-import ch.deletescape.lawnchair.globalsearch.providers.GoogleSearchProvider;
 import com.android.launcher3.BaseRecyclerView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -241,7 +240,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         return !Utilities
                 .getLawnchairPrefs(getContext()).getAllAppsGlobalSearch()
                 || provider instanceof AppSearchSearchProvider
-                || (!Utilities.ATLEAST_NOUGAT && provider instanceof GoogleSearchProvider);
+                || (!Utilities.ATLEAST_NOUGAT && provider instanceof AppSearchSearchProvider);
     }
 
     public void searchFallback(String query) {
