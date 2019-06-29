@@ -314,7 +314,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
 
     quickstepImplementation fileTree(dir: "quickstep/libs", include: 'sysui_shared.jar')
-    lawnchairImplementation files('lawnchair/libs/sesame-lib.aar')
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "org.mockito:mockito-core:1.9.5"
