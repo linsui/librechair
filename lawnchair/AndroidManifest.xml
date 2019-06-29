@@ -249,6 +249,11 @@
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsIntegrationActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
             android:theme="@style/SettingsTheme.V2">
+            <intent-filter>
+                <action android:name="ninja.sesame.app.action.CONFIG_INTEGRATION"/>
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <activity
