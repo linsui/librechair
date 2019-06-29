@@ -366,7 +366,7 @@
     <string name="pref_sesame_show_shortcuts_summary">Afficher les raccourcis Sesame dans les icônes</string>
     <string name="allow">Autoriser</string>
     <string name="sesame_enable_integration_title">Activer l\'intégration</string>
-    <string name="sesame_enable_integration_description"><![CDATA[Autoriser le partage de données entre Lawnchair et Sesame. Vous pouvez modifier cela dans les paramètres Lawnchair ou Sesame.]]></string>
+    <string name="sesame_enable_integration_description">Autoriser le partage de données entre Lawnchair et Sesame. Vous pouvez modifier cela dans les paramètres Lawnchair ou Sesame.</string>
     <string name="sesame_version">Version d\'intégration</string>
     <string name="sesame_shortcut_disabled">Raccourcis Sesame indisponibles</string>
     <string name="font_variant_italic">Italique</string>
