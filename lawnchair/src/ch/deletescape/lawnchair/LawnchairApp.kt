@@ -27,21 +27,14 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.Keep
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
-import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
-import ch.deletescape.lawnchair.iconpack.IconPackManager
-import ch.deletescape.lawnchair.sesame.Sesame
+import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.BuildConfig
-import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
-import ninja.sesame.lib.bridge.v1.SesameFrontend
-import ninja.sesame.lib.bridge.v1.SesameInitOnComplete
-import ninja.sesame.lib.bridge.v1_1.LookFeelKeys
 
 class LawnchairApp : Application() {
 
@@ -82,8 +75,10 @@ class LawnchairApp : Application() {
         return if (accessibilityService != null) {
             accessibilityService!!.performGlobalAction(action)
         } else {
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            startActivity(
+                    Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                         )
             false
         }
     }
@@ -99,7 +94,8 @@ class LawnchairApp : Application() {
         var foregroundActivity: Activity? = null
 
         fun finishAll(recreateLauncher: Boolean = true) {
-            HashSet(activities).forEach { if (recreateLauncher && it is LawnchairLauncher) it.recreate() else it.finish() }
+            HashSet(activities)
+                    .forEach { if (recreateLauncher && it is LawnchairLauncher) it.recreate() else it.finish() }
         }
 
         override fun onActivityPaused(activity: Activity) {
@@ -155,7 +151,7 @@ class LawnchairApp : Application() {
             return false
         }
         val isRecentsComponent = recentsComponent.packageName == packageName
-                && recentsComponent.className == RecentsActivity::class.java.name
+                                 && recentsComponent.className == RecentsActivity::class.java.name
         if (!isRecentsComponent) {
             d("config_recentsComponentName ($recentsComponent) is not Lawnchair, disabling recents")
             return false
