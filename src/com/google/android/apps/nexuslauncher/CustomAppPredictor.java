@@ -1,3 +1,37 @@
+/*
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.google.android.apps.nexuslauncher;
 
 import android.content.ComponentName;
@@ -40,36 +74,15 @@ public class CustomAppPredictor extends UserEventDispatcher implements SharedPre
     private final PackageManager mPackageManager;
 
     protected final static String[] PLACE_HOLDERS = new String[] {
-            "com.google.android.apps.photos",
-            "com.google.android.apps.maps",
-            "com.google.android.gm",
-            "com.google.android.deskclock",
+            "org.fdroid.fdroid",
+            "org.chromium.chromium",
             "com.android.settings",
-            "com.whatsapp",
-            "com.facebook.katana",
-            "com.facebook.orca",
-            "com.google.android.youtube",
-            "com.yodo1.crossyroad",
-            "com.spotify.music",
-            "com.android.chrome",
-            "com.instagram.android",
-            "com.skype.raider",
-            "com.snapchat.android",
-            "com.viber.voip",
-            "com.twitter.android",
-            "com.android.phone",
-            "com.google.android.music",
-            "com.google.android.calendar",
-            "com.google.android.apps.genie.geniewidget",
-            "com.netflix.mediaclient",
-            "bbc.iplayer.android",
-            "com.google.android.videos",
-            "com.amazon.mShop.android.shopping",
-            "com.microsoft.office.word",
-            "com.google.android.apps.docs",
-            "com.google.android.keep",
-            "com.google.android.apps.plus",
-            "com.google.android.talk"
+            "com.android.gallery3d",
+            "org.lineageos.snap",
+            "com.android.camera2",
+            "org.lineageos.jelly",
+            "com.android.browser",
+            "com.android.calculator2" /* LIBRE-CHANGED: remove Google app placeholders */
     };
 
     private final UiManager mUiManager;
@@ -163,7 +176,7 @@ public class CustomAppPredictor extends UserEventDispatcher implements SharedPre
     }
 
     /**
-     * Zero-based launch count of a shortcut
+     * Zero-based launch count of UIUpdateHandler shortcut
      * @param component serialized component
      * @return the number of launches, at least zero
      */
