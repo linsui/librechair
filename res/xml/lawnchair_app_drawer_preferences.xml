@@ -113,7 +113,6 @@
             android:key="pref_search_hidden_apps"
             android:title="@string/title_search_hidden_apps"
             android:summary="@string/summary_search_hidden_apps"
-            android:dependency="pref_allAppsGoogleSearch"
             android:defaultValue="false" />
 
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
