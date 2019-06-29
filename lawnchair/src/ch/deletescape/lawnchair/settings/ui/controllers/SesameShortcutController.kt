@@ -19,11 +19,10 @@ package ch.deletescape.lawnchair.settings.ui.controllers
 
 import android.content.Context
 import android.support.annotation.Keep
-import ch.deletescape.lawnchair.sesame.Sesame
 import ch.deletescape.lawnchair.settings.ui.PreferenceController
 
 @Keep
 class SesameShortcutController(context: Context) : PreferenceController(context) {
 
-    override val isVisible = Sesame.isAvailable(context)
+    override val isVisible = false;
 }

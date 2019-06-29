@@ -22,13 +22,9 @@ import android.content.pm.LauncherApps;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.popup.LawnchairShortcut;
-import ch.deletescape.lawnchair.sesame.Sesame;
-import ch.deletescape.lawnchair.sesame.SesameShortcutInfo;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
-import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.badge.BadgeInfo;
 import com.android.launcher3.model.WidgetItem;
@@ -41,15 +37,12 @@ import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.WidgetListRowEntry;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import ninja.sesame.lib.bridge.v1.SesameFrontend;
-import ninja.sesame.lib.bridge.v1.SesameShortcut;
 
 /**
  * Provides data for the popup menu that appears after long-clicking on apps.
@@ -59,21 +52,29 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
     private static final boolean LOGD = false;
     private static final String TAG = "PopupDataProvider";
 
-    /** Note that these are in order of priority. */
+    /**
+     * Note that these are in order of priority.
+     */
     private final SystemShortcut[] mSystemShortcuts;
 
     private final Launcher mLauncher;
 
-    /** Maps launcher activity components to their list of shortcut ids. */
+    /**
+     * Maps launcher activity components to their list of shortcut ids.
+     */
     private MultiHashMap<ComponentKey, String> mDeepShortcutMap = new MultiHashMap<>();
-    /** Maps packages to their BadgeInfo's . */
+    /**
+     * Maps packages to their BadgeInfo's .
+     */
     private Map<PackageUserKey, BadgeInfo> mPackageUserToBadgeInfos = new HashMap<>();
-    /** Maps packages to their Widgets */
+    /**
+     * Maps packages to their Widgets
+     */
     private ArrayList<WidgetListRowEntry> mAllWidgets = new ArrayList<>();
 
     public PopupDataProvider(Launcher launcher) {
         mLauncher = launcher;
-        mSystemShortcuts = new SystemShortcut[] {
+        mSystemShortcuts = new SystemShortcut[]{
                 new SystemShortcut.AppInfo(),
                 new SystemShortcut.Widgets(),
                 new SystemShortcut.Install()
@@ -122,7 +123,9 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     @Override
     public void onNotificationFullRefresh(List<StatusBarNotification> activeNotifications) {
-        if (activeNotifications == null) return;
+        if (activeNotifications == null) {
+            return;
+        }
         // This will contain the PackageUserKeys which have updated badges.
         HashMap<PackageUserKey, BadgeInfo> updatedBadges = new HashMap<>(mPackageUserToBadgeInfos);
         mPackageUserToBadgeInfos.clear();
@@ -165,7 +168,9 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
 
     public void setDeepShortcutMap(MultiHashMap<ComponentKey, String> deepShortcutMapCopy) {
         mDeepShortcutMap = deepShortcutMapCopy;
-        if (LOGD) Log.d(TAG, "bindDeepShortcutMap: " + mDeepShortcutMap);
+        if (LOGD) {
+            Log.d(TAG, "bindDeepShortcutMap: " + mDeepShortcutMap);
+        }
     }
 
     public List<String> getShortcutIdsForItem(ItemInfo info) {
@@ -177,13 +182,7 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
             return Collections.EMPTY_LIST;
         }
         List<String> ids = new ArrayList<>();
-        if (Sesame.isAvailable(mLauncher) && Sesame.getShowShortcuts()) {
-            List<SesameShortcut> shortcuts = SesameFrontend
-                    .getRecentAppShortcuts(component.getPackageName(), false, PopupPopulator.MAX_SHORTCUTS);
-            for (SesameShortcut shortcut : shortcuts) {
-                ids.add(new SesameShortcutInfo(mLauncher, shortcut).getId());
-            }
-        } else if (!Utilities.ATLEAST_NOUGAT_MR1) {
+        if (!Utilities.ATLEAST_NOUGAT_MR1) {
             for (ShortcutInfoCompat compat : DeepShortcutManagerBackport.getForPackage(mLauncher,
                     (LauncherApps) mLauncher.getSystemService(Context.LAUNCHER_APPS_SERVICE),
                     info.getTargetComponent(),
@@ -192,7 +191,9 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
             }
         } else {
             List<String> tmp = mDeepShortcutMap.get(new ComponentKey(component, info.user));
-            if(tmp != null) ids.addAll(tmp);
+            if (tmp != null) {
+                ids.addAll(tmp);
+            }
         }
         return ids;
     }
@@ -205,20 +206,25 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
         return mPackageUserToBadgeInfos.get(PackageUserKey.fromItemInfo(info));
     }
 
-    public @NonNull List<NotificationKeyData> getNotificationKeysForItem(ItemInfo info) {
+    public @NonNull
+    List<NotificationKeyData> getNotificationKeysForItem(ItemInfo info) {
         BadgeInfo badgeInfo = getBadgeInfoForItem(info);
         return badgeInfo == null ? Collections.EMPTY_LIST : badgeInfo.getNotificationKeys();
     }
 
-    /** This makes a potentially expensive binder call and should be run on a background thread. */
-    public @NonNull List<StatusBarNotification> getStatusBarNotificationsForKeys(
+    /**
+     * This makes a potentially expensive binder call and should be run on a background thread.
+     */
+    public @NonNull
+    List<StatusBarNotification> getStatusBarNotificationsForKeys(
             List<NotificationKeyData> notificationKeys) {
         NotificationListener notificationListener = NotificationListener.getInstanceIfConnected();
         return notificationListener == null ? Collections.EMPTY_LIST
                 : notificationListener.getNotificationsForKeys(notificationKeys);
     }
 
-    public @NonNull List<SystemShortcut> getEnabledSystemShortcutsForItem(ItemInfo info) {
+    public @NonNull
+    List<SystemShortcut> getEnabledSystemShortcutsForItem(ItemInfo info) {
         List<SystemShortcut> systemShortcuts = new ArrayList<>();
         for (SystemShortcut systemShortcut :
                 LawnchairShortcut.Companion.getInstance(mLauncher).getEnabledShortcuts()) {

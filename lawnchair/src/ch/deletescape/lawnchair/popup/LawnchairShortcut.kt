@@ -128,7 +128,6 @@ class LawnchairShortcut(private val context: Context) {
             if (itemInfo.itemType != ITEM_TYPE_APPLICATION) return null
             val packageName = itemInfo.targetComponent?.packageName ?: itemInfo.intent.`package`
             ?: itemInfo.intent.component?.packageName ?: return null
-            if (!Sesame.isAvailable(launcher)) return null
             val intent = SesameFrontend.createAppConfigIntent(packageName) ?: return null
 
             return View.OnClickListener {
