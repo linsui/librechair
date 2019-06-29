@@ -25,16 +25,12 @@ import android.os.Build;
 import android.os.UserHandle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-
-import android.util.DisplayMetrics;
 import ch.deletescape.lawnchair.iconpack.IconPackManager;
-import ch.deletescape.lawnchair.sesame.SesameShortcutInfo;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.model.ModelWriter;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.util.ContentWriter;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,9 +48,8 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     public static final int FLAG_RESTORED_ICON = 1;
 
     /**
-     * The icon was added as an auto-install app, and is not ready to be used. This flag can't
-     * be present along with {@link #FLAG_RESTORED_ICON}, and is set during default layout
-     * parsing.
+     * The icon was added as an auto-install app, and is not ready to be used. This flag can't be
+     * present along with {@link #FLAG_RESTORED_ICON}, and is set during default layout parsing.
      */
     public static final int FLAG_AUTOINSTALL_ICON = 2; //0B10;
 
@@ -80,14 +75,14 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     public Intent intent;
 
     /**
-     * If isShortcut=true and customIcon=false, this contains a reference to the
-     * shortcut icon as an application's resource.
+     * If isShortcut=true and customIcon=false, this contains a reference to the shortcut icon as an
+     * application's resource.
      */
     public Intent.ShortcutIconResource iconResource;
 
     /**
-     * A message to display when the user tries to start a disabled shortcut.
-     * This is currently only used for deep shortcuts.
+     * A message to display when the user tries to start a disabled shortcut. This is currently only
+     * used for deep shortcuts.
      */
     public CharSequence disabledMessage;
 
@@ -121,7 +116,9 @@ public class ShortcutInfo extends ItemInfoWithIcon {
         mInstallProgress = info.mInstallProgress;
     }
 
-    /** TODO: Remove this.  It's only called by ApplicationInfo.makeShortcut. */
+    /**
+     * TODO: Remove this.  It's only called by ApplicationInfo.makeShortcut.
+     */
     public ShortcutInfo(AppInfo info) {
         super(info);
         title = Utilities.trim(info.title);
@@ -207,14 +204,11 @@ public class ShortcutInfo extends ItemInfoWithIcon {
             runtimeStatusFlags |= FLAG_DISABLED_BY_PUBLISHER;
         }
         disabledMessage = shortcutInfo.getDisabledMessage();
-
-        // Treat sesame shortcuts like normal shortcuts and not like deep shortcuts
-        if (shortcutInfo instanceof SesameShortcutInfo) {
-            itemType = LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
-        }
     }
 
-    /** Returns the ShortcutInfo id associated with the deep shortcut. */
+    /**
+     * Returns the ShortcutInfo id associated with the deep shortcut.
+     */
     public String getDeepShortcutId() {
         return itemType == Favorites.ITEM_TYPE_DEEP_SHORTCUT ?
                 getIntent().getStringExtra(ShortcutInfoCompat.EXTRA_SHORTCUT_ID) : null;
@@ -235,12 +229,13 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     }
 
     private void updateDatabase(Context context, boolean updateIcon, boolean reload) {
-        if (updateIcon)
+        if (updateIcon) {
             ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
                     , customIconEntry, customIcon, true, reload);
-        else
+        } else {
             ModelWriter.modifyItemInDatabase(context, this, (String) customTitle, swipeUpAction
                     , null, null, false, reload);
+        }
     }
 
     public void onLoadCustomizations(String titleAlias, String swipeUpAction,
@@ -256,7 +251,8 @@ public class ShortcutInfo extends ItemInfoWithIcon {
         updateDatabase(context, false, true);
     }
 
-    public void setIconEntry(@NotNull Context context, @Nullable IconPackManager.CustomIconEntry iconEntry) {
+    public void setIconEntry(@NotNull Context context,
+            @Nullable IconPackManager.CustomIconEntry iconEntry) {
         customIconEntry = iconEntry;
         updateDatabase(context, true, false);
     }
