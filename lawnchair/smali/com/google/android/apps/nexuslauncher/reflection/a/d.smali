@@ -4,9 +4,9 @@
 
 
 # static fields
-.field private static final aX:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+.field private static final aX:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
-.field private static final aY:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+.field private static final aY:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
 
 # instance fields
@@ -24,22 +24,22 @@
     .locals 2
 
     .line 17
-    new-instance v0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    new-instance v0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     const-string v1, "OVERVIEW_GEL"
 
-    invoke-direct {v0, v1}, Lcom/google/android/apps/nexuslauncher/reflection/a/d;-><init>(Ljava/lang/String;)V
+    invoke-direct {v0, v1}, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;-><init>(Ljava/lang/String;)V
 
-    sput-object v0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aX:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    sput-object v0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aX:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     .line 20
-    new-instance v0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    new-instance v0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     const-string v1, "GEL"
 
-    invoke-direct {v0, v1}, Lcom/google/android/apps/nexuslauncher/reflection/a/d;-><init>(Ljava/lang/String;)V
+    invoke-direct {v0, v1}, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;-><init>(Ljava/lang/String;)V
 
-    sput-object v0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aY:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    sput-object v0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aY:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     return-void
 .end method
@@ -65,7 +65,7 @@
 
     move-result-object v0
 
-    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aZ:Ljava/lang/String;
+    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aZ:Ljava/lang/String;
 
     .line 30
     new-instance v0, Ljava/lang/StringBuilder;
@@ -82,7 +82,7 @@
 
     move-result-object v0
 
-    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->ba:Ljava/lang/String;
+    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->ba:Ljava/lang/String;
 
     .line 31
     new-instance v0, Ljava/lang/StringBuilder;
@@ -99,7 +99,7 @@
 
     move-result-object v0
 
-    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bb:Ljava/lang/String;
+    iput-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bb:Ljava/lang/String;
 
     .line 32
     new-instance v0, Ljava/lang/StringBuilder;
@@ -116,12 +116,12 @@
 
     move-result-object p1
 
-    iput-object p1, p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bc:Ljava/lang/String;
+    iput-object p1, p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bc:Ljava/lang/String;
 
     return-void
 .end method
 
-.method public static d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+.method public static d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
     .locals 1
 
     const-string v0, "OVERVIEW_GEL"
@@ -134,13 +134,13 @@
     if-eqz p0, :cond_0
 
     .line 38
-    sget-object p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aX:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    sget-object p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aX:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     return-object p0
 
     .line 40
     :cond_0
-    sget-object p0, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aY:Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    sget-object p0, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aY:Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     return-object p0
 .end method

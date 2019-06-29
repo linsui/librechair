@@ -764,7 +764,7 @@
 
     if-eqz v8, :cond_2
 
-    sget-object v8, Lcom/google/android/apps/nexuslauncher/reflection/f;->ai:Ljava/util/regex/Pattern;
+    sget-object v8, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->ai:Ljava/util/regex/Pattern;
 
     iget-object v9, v6, Lcom/google/android/apps/nexuslauncher/reflection/c/a/a$a;->id:Ljava/lang/String;
 

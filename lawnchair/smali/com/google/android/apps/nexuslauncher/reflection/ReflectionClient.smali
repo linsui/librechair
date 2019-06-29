@@ -606,7 +606,7 @@
 
     :cond_a
     :goto_3
-    invoke-static {v1}, Lcom/google/android/apps/nexuslauncher/reflection/f;->d(Landroid/content/Context;)Landroid/content/SharedPreferences;
+    invoke-static {v1}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->d(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object v12
 
@@ -855,7 +855,7 @@
 
     invoke-direct {v8}, Ljava/util/ArrayList;-><init>()V
 
-    sget-object v9, Lcom/google/android/apps/nexuslauncher/reflection/f;->ALL_FILES:Ljava/util/List;
+    sget-object v9, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->ALL_FILES:Ljava/util/List;
 
     invoke-interface {v9}, Ljava/util/List;->iterator()Ljava/util/Iterator;
 
@@ -1018,7 +1018,7 @@
     const-string p1, "OVERVIEW_GEL"
 
     .line 231
-    sget-wide v0, Lcom/google/android/apps/nexuslauncher/reflection/f;->ak:J
+    sget-wide v0, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->ak:J
 
     iget-object p2, p0, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionClient;->mMessageHandler:Landroid/os/Handler;
 
@@ -1089,7 +1089,7 @@
     .line 298
     iget-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionClient;->mMessageHandler:Landroid/os/Handler;
 
-    sget-wide v2, Lcom/google/android/apps/nexuslauncher/reflection/f;->aj:J
+    sget-wide v2, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->aj:J
 
     invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->sendEmptyMessageDelayed(IJ)Z
 

@@ -306,7 +306,7 @@
     .end annotation
 
     .line 111
-    sget-object v0, Lcom/google/android/apps/nexuslauncher/reflection/f;->ai:Ljava/util/regex/Pattern;
+    sget-object v0, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->ai:Ljava/util/regex/Pattern;
 
     invoke-virtual {v0, p1}, Ljava/util/regex/Pattern;->matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
 

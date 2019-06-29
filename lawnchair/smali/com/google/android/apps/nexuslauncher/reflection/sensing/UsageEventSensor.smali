@@ -202,7 +202,7 @@
     .line 90
     iget-object p1, p0, Lcom/google/android/apps/nexuslauncher/reflection/sensing/UsageEventSensor;->mContext:Landroid/content/Context;
 
-    invoke-static {p1}, Lcom/google/android/apps/nexuslauncher/reflection/f;->d(Landroid/content/Context;)Landroid/content/SharedPreferences;
+    invoke-static {p1}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->d(Landroid/content/Context;)Landroid/content/SharedPreferences;
 
     move-result-object p1
 
@@ -835,7 +835,7 @@
 
     invoke-direct {v2, v3, v0}, Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V
 
-    invoke-static {v2}, Lcom/google/android/apps/nexuslauncher/reflection/f;->a(Landroid/content/ComponentName;)Ljava/lang/String;
+    invoke-static {v2}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->a(Landroid/content/ComponentName;)Ljava/lang/String;
 
     move-result-object v0
 
@@ -876,7 +876,7 @@
 
     move-result-object v0
 
-    invoke-static {v2, v0}, Lcom/google/android/apps/nexuslauncher/reflection/f;->a(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+    invoke-static {v2, v0}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->a(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 
     move-result-object v0
 
@@ -903,7 +903,7 @@
 
     invoke-direct {v2, v0, v3}, Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V
 
-    invoke-static {v2}, Lcom/google/android/apps/nexuslauncher/reflection/f;->a(Landroid/content/ComponentName;)Ljava/lang/String;
+    invoke-static {v2}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->a(Landroid/content/ComponentName;)Ljava/lang/String;
 
     move-result-object v0
 

@@ -120,7 +120,7 @@
     iget-object v1, v1, Lcom/google/research/reflection/predictor/k$a;->id:Ljava/lang/String;
 
     .line 113
-    sget-object v2, Lcom/google/android/apps/nexuslauncher/reflection/f;->ai:Ljava/util/regex/Pattern;
+    sget-object v2, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->ai:Ljava/util/regex/Pattern;
 
     invoke-virtual {v2, v1}, Ljava/util/regex/Pattern;->matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
 
@@ -218,11 +218,11 @@
     .line 78
     iget-object v0, p0, Lcom/google/android/apps/nexuslauncher/reflection/e;->o:Landroid/content/SharedPreferences;
 
-    invoke-static/range {p1 .. p1}, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    invoke-static/range {p1 .. p1}, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     move-result-object p1
 
-    iget-object p1, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bb:Ljava/lang/String;
+    iget-object p1, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bb:Ljava/lang/String;
 
     const-string v1, ""
 

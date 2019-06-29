@@ -1,3 +1,20 @@
+/*
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.google.android.apps.nexuslauncher.allapps;
 
 import android.annotation.SuppressLint;
@@ -133,7 +150,7 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
         mPaint.setStrokeWidth((float) getResources().getDimensionPixelSize(R.dimen.all_apps_divider_height));
         mStrokeColor = mPaint.getColor();
         mFocusHelper = new SimpleFocusIndicatorHelper(this);
-        mNumPredictedAppsPerRow = LauncherAppState.getIDP(context).numColsDrawer; // TODO: make a separated pref
+        mNumPredictedAppsPerRow = LauncherAppState.getIDP(context).numColsDrawer; // TODO: make UIUpdateHandler separated pref
         mLauncher = Launcher.getLauncher(context);
         mLauncher.addOnDeviceProfileChangeListener(this);
 

@@ -236,7 +236,7 @@
 
     invoke-direct {p3, p4, p2}, Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V
 
-    invoke-static {p3}, Lcom/google/android/apps/nexuslauncher/reflection/f;->a(Landroid/content/ComponentName;)Ljava/lang/String;
+    invoke-static {p3}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->a(Landroid/content/ComponentName;)Ljava/lang/String;
 
     move-result-object v3
 

@@ -1011,13 +1011,13 @@
 
     move-result-object p3
 
-    invoke-static/range {p1 .. p1}, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/a/d;
+    invoke-static/range {p1 .. p1}, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->d(Ljava/lang/String;)Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;
 
     move-result-object p1
 
     iget-object v5, v1, Lcom/google/android/apps/nexuslauncher/reflection/e;->o:Landroid/content/SharedPreferences;
 
-    iget-object v6, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bc:Ljava/lang/String;
+    iget-object v6, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bc:Ljava/lang/String;
 
     const-string v7, ""
 
@@ -1037,25 +1037,25 @@
 
     move-result-object v1
 
-    iget-object v5, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->aZ:Ljava/lang/String;
+    iget-object v5, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->aZ:Ljava/lang/String;
 
     invoke-interface {v1, v5, p2}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     move-result-object p2
 
-    iget-object v1, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->ba:Ljava/lang/String;
+    iget-object v1, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->ba:Ljava/lang/String;
 
     invoke-interface {p2, v1, v3, v4}, Landroid/content/SharedPreferences$Editor;->putLong(Ljava/lang/String;J)Landroid/content/SharedPreferences$Editor;
 
     move-result-object p2
 
-    iget-object v1, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bb:Ljava/lang/String;
+    iget-object v1, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bb:Ljava/lang/String;
 
     invoke-interface {p2, v1, v2}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 
     move-result-object p2
 
-    iget-object p1, p1, Lcom/google/android/apps/nexuslauncher/reflection/a/d;->bc:Ljava/lang/String;
+    iget-object p1, p1, Lcom/google/android/apps/nexuslauncher/reflection/alpha/PredictionUsageHelper;->bc:Ljava/lang/String;
 
     invoke-interface {p2, p1, p3}, Landroid/content/SharedPreferences$Editor;->putString(Ljava/lang/String;Ljava/lang/String;)Landroid/content/SharedPreferences$Editor;
 

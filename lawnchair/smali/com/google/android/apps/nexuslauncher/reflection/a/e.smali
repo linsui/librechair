@@ -127,7 +127,7 @@
     .locals 2
 
     .line 157
-    invoke-static/range {p0 .. p0}, Lcom/google/android/apps/nexuslauncher/reflection/f;->a(Landroid/content/ComponentName;)Ljava/lang/String;
+    invoke-static/range {p0 .. p0}, Lcom/google/android/apps/nexuslauncher/reflection/ReflectionTimeHelper;->a(Landroid/content/ComponentName;)Ljava/lang/String;
 
     move-result-object p0
 
