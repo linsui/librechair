@@ -351,7 +351,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Ярлыки</string>
     <string name="pref_integrations">Интеграция</string>
-    <string name="pref_integrations_summary">Поиск, Sesame, Google</string>
+    <string name="pref_integrations_summary">Поиск</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Интеграция данных</string>
     <string name="sesame_upsell">Нажмите для установки Sesame </string>

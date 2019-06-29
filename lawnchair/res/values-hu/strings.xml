@@ -355,7 +355,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Parancsikonok</string>
     <string name="pref_integrations">Egységesítések</string>
-    <string name="pref_integrations_summary">Keresés, Sesame, Google</string>
+    <string name="pref_integrations_summary">Keresés</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Adategységesítés</string>
     <string name="sesame_upsell">Érintse meg a Sesame telepítéséhez</string>

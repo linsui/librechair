@@ -355,7 +355,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Scurtături</string>
     <string name="pref_integrations">Integrări</string>
-    <string name="pref_integrations_summary">Căutare, Sesame, Google</string>
+    <string name="pref_integrations_summary">Căutare</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Integrarea datelor</string>
     <string name="sesame_upsell">Apasă pentru a instala Sesame</string>

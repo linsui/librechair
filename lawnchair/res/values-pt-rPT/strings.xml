@@ -347,7 +347,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Atalhos</string>
     <string name="pref_integrations">Integrações</string>
-    <string name="pref_integrations_summary">Pesquisa, Sesame, Google</string>
+    <string name="pref_integrations_summary">Pesquisa</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Integração de dados</string>
     <string name="sesame_upsell">Clique para instalar Sesame</string>

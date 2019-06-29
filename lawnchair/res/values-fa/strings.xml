@@ -339,7 +339,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">میان‌برها</string>
     <string name="pref_integrations">ضمائم</string>
-    <string name="pref_integrations_summary">جستجو، Sesame، گوگل</string>
+    <string name="pref_integrations_summary">گوگل</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">همکاری داده ها</string>
     <string name="sesame_upsell">برای نصب Sesame ضربه بزنید</string>

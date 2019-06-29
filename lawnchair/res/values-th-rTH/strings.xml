@@ -352,7 +352,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">ทางลัด</string>
     <string name="pref_integrations">การผสาน</string>
-    <string name="pref_integrations_summary">การค้นหา, Sesame, Google</string>
+    <string name="pref_integrations_summary">การค้นหา</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">การผสานข้อมูล</string>
     <string name="sesame_upsell">แตะเพื่อติดตั้ง Sesame</string>

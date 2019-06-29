@@ -343,7 +343,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Snarveier</string>
     <string name="pref_integrations">Integrasjoner</string>
-    <string name="pref_integrations_summary">Søk, Sesame, Google</string>
+    <string name="pref_integrations_summary">Søk</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Dataintegrering</string>
     <string name="sesame_upsell">Trykk for å installere Sesame</string>

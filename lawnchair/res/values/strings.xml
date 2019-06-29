@@ -485,7 +485,7 @@
     
     <string name="shortcut_sesame">Shortcuts</string>
     <string name="pref_integrations">Integrations</string>
-    <string name="pref_integrations_summary">Search, Sesame, Google</string>
+    <string name="pref_integrations_summary">Search</string>
     <string name="sesame">Sesame</string>
     
     <string name="sesame_data_integration">Data integration</string>

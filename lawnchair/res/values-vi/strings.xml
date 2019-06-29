@@ -344,7 +344,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Lối tắt</string>
     <string name="pref_integrations">Tích hợp</string>
-    <string name="pref_integrations_summary">Tìm kiếm, Sesame, Google</string>
+    <string name="pref_integrations_summary">Tìm kiếm</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Tích hợp dữ liệu</string>
     <string name="sesame_upsell">Nhấn để cài đặt Sesame</string>

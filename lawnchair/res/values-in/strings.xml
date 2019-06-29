@@ -344,7 +344,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Pintasan</string>
     <string name="pref_integrations">Integrasi</string>
-    <string name="pref_integrations_summary">Pencarian, Sesame, Google</string>
+    <string name="pref_integrations_summary">Pencarian</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Integrasi Data</string>
     <string name="sesame_upsell">Tekan untuk memasang Sesame</string>

@@ -261,7 +261,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Prečaci</string>
     <string name="pref_integrations">Integracije</string>
-    <string name="pref_integrations_summary">Pretraživanje, Sesame, Google</string>
+    <string name="pref_integrations_summary">Pretraživanje</string>
     <string name="sesame">Sesame</string>
     <string name="pref_sesame_show_shortcuts">Prečaci aplikacija</string>
     <string name="allow">Dopusti</string>

@@ -342,7 +342,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Преки пътища</string>
     <string name="pref_integrations">Интеграции</string>
-    <string name="pref_integrations_summary">Търсене, Sesame, Google</string>
+    <string name="pref_integrations_summary">Търсене</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Интеграция на данни</string>
     <string name="sesame_upsell">Натиснете за да инсталирате Sesame</string>
