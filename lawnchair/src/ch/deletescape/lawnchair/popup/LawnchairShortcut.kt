@@ -33,7 +33,6 @@ import com.android.launcher3.LauncherSettings.BaseLauncherColumns.ITEM_TYPE_APPL
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.popup.SystemShortcut
 import com.google.android.apps.nexuslauncher.CustomBottomSheet
-import ninja.sesame.lib.bridge.v1.SesameFrontend
 import java.net.URISyntaxException
 
 class LawnchairShortcut(private val context: Context) {
@@ -147,7 +146,6 @@ class LawnchairShortcut(private val context: Context) {
             if (itemInfo.itemType != ITEM_TYPE_APPLICATION) return null
             val packageName = itemInfo.targetComponent?.packageName ?: itemInfo.intent.`package`
                               ?: itemInfo.intent.component?.packageName ?: return null
-            val intent = SesameFrontend.createAppConfigIntent(packageName) ?: return null
 
             return View.OnClickListener {
                 launcher.startActivity(intent)
