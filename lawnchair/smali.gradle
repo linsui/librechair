@@ -79,15 +79,21 @@ task 'buildLawnchairSmali' {
     }
 }
 
-def copySmaliLibDex(dirName) {
-    def libDex = 'build/lawnchairsmali/lawnchair.dex'
+def copySmaliLibDex(dirName, fileName) {
+    def libDex = 'build/quickstepsmali/quickstep.dex'
     println "copy $libDex into $dirName"
     exec {
         workingDir '.'
-        println("\$ cp ${libDex} ${dirName}");
-        commandLine 'cp', libDex, dirName
+        println("\$ mkdir -p ${dirName}");
+        commandLine 'mkdir', '-p', dirName
+    }
+    exec {
+        workingDir '.'
+        println("\$ cp ${libDex} ${dirName}/${fileName}");
+        commandLine 'cp', libDex, dirName + "/" + fileName
     }
 }
+
 
 static String dashSeparated(String s) {
     return s.replaceAll(/\B[A-Z]/) { '-' + it }.toLowerCase()
@@ -103,6 +109,10 @@ tasks.whenTaskAdded { task ->
         def buildType = split[split.length - 1]
         int classNo = 0;
         File classOutFolder = new File("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/");
+        if (!classOutFolder.exists())
+        {
+            classOutFolder.mkdirs();
+        }
         for (File file : classOutFolder.listFiles())
         {
             if (file.getName().startsWith("classes") && file.getName().endsWith(".dex"))
@@ -113,7 +123,7 @@ tasks.whenTaskAdded { task ->
         variantName = variantName.substring(0, variantName.length() - buildType.length())
         def dirName = "./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/classes${classNo == 0 ? "" : String.valueOf(classNo)}.dex"
         task.doLast {
-            copySmaliLibDex(dirName)
+            copySmaliLibDex("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/", "classes${classNo == 0 ? "" : String.valueOf(classNo)}.dex")
         }
     } else if (name.startsWith('transformClassesAndResourcesWithR8For') && !name.endsWith('Test')) {
         /*
