@@ -4,10 +4,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
-import ch.deletescape.lawnchair.FeedBridge;
 
 public class BaseClientService implements ServiceConnection {
+
     private boolean mConnected;
     private final Context mContext;
     private final int mFlags;
@@ -16,21 +15,12 @@ public class BaseClientService implements ServiceConnection {
     BaseClientService(Context context, int flags) {
         mContext = context;
         mFlags = flags;
-        mBridge = FeedBridge.getUseBridge()
-                ? new LauncherClientBridge(this, flags)
-                : this;
+        mBridge = null;
+        mConnected = false;
     }
 
     public final boolean connect() {
-        if (!mConnected) {
-            try {
-                mConnected = mContext.bindService(LauncherClient.getIntent(mContext,
-                        FeedBridge.getUseBridge()), mBridge, mFlags);
-            } catch (Throwable e) {
-                Log.e("LauncherClient", "Unable to connect to overlay service", e);
-            }
-        }
-        return mConnected;
+        return false;
     }
 
     public final void disconnect() {

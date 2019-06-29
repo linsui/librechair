@@ -5,28 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Process;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import ch.deletescape.lawnchair.FeedBridge;
-import ch.deletescape.lawnchair.FeedBridge.BridgeInfo;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 import java.lang.ref.WeakReference;
 
 public class LauncherClient {
+
     private static int apiVersion = -1;
 
     private ILauncherOverlay mOverlay;
@@ -59,6 +54,7 @@ public class LauncherClient {
     private Bundle mLayoutBundle;
 
     public class OverlayCallback extends ILauncherOverlayCallback.Stub implements Callback {
+
         public LauncherClient mClient;
         private final Handler mUIHandler = new Handler(Looper.getMainLooper(), this);
         public Window mWindow;
@@ -107,7 +103,8 @@ public class LauncherClient {
                 case 4:
                     mClient.setServiceState(message.arg1);
                     if (mClient.mScrollCallback instanceof ISerializableScrollCallback) {
-                        ((ISerializableScrollCallback) mClient.mScrollCallback).setPersistentFlags(message.arg1);
+                        ((ISerializableScrollCallback) mClient.mScrollCallback)
+                                .setPersistentFlags(message.arg1);
                     }
                     return true;
                 default:
@@ -119,7 +116,8 @@ public class LauncherClient {
     public LauncherClient(Activity activity, IScrollCallback scrollCallback, StaticInteger flags) {
         mActivity = activity;
         mScrollCallback = scrollCallback;
-        mBaseService = new BaseClientService(activity, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        mBaseService = new BaseClientService(activity,
+                Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
         mFlags = flags.mData;
 
         mLauncherService = LauncherClientService.getInstance(activity);
@@ -259,7 +257,8 @@ public class LauncherClient {
                 } else {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("layout_params", mLayoutParams);
-                    bundle.putParcelable("configuration", mActivity.getResources().getConfiguration());
+                    bundle.putParcelable("configuration",
+                            mActivity.getResources().getConfiguration());
                     bundle.putInt("client_options", mFlags);
                     if (mLayoutBundle != null) {
                         bundle.putAll(mLayoutBundle);
@@ -385,26 +384,10 @@ public class LauncherClient {
     }
 
     static Intent getIntent(Context context, boolean proxy) {
-        BridgeInfo bridgeInfo = proxy ? FeedBridge.Companion.getInstance(context).resolveBridge() : null;
-        String pkg = context.getPackageName();
-        return new Intent("com.android.launcher3.WINDOW_OVERLAY")
-                .setPackage(bridgeInfo != null ? bridgeInfo.getPackageName() : "com.google.android.googlequicksearchbox")
-                .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
-                            .append("app://")
-                            .append(pkg)
-                            .append(":")
-                            .append(Process.myUid())
-                            .toString())
-                        .buildUpon()
-                        .appendQueryParameter("v", Integer.toString(7))
-                        .appendQueryParameter("cv", Integer.toString(9))
-                        .build());
+        return null;
     }
 
     private static void loadApiVersion(Context context) {
-        ResolveInfo resolveService = context.getPackageManager().resolveService(getIntent(context, false), PackageManager.GET_META_DATA);
-        apiVersion = resolveService == null || resolveService.serviceInfo.metaData == null ?
-                1 :
-                resolveService.serviceInfo.metaData.getInt("service.api.version", 1);
+        apiVersion = 0;
     }
 }

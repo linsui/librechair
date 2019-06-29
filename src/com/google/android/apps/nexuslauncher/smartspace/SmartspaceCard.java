@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -13,22 +12,16 @@ import android.graphics.PorterDuffColorFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-
-import ch.deletescape.lawnchair.FeedBridge;
-import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.graphics.ShadowGenerator;
 import com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.b;
 import com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.c;
 import com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.e;
 import com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.i;
 import com.google.android.apps.nexuslauncher.utils.ColorManipulation;
-import com.google.android.libraries.gsa.launcherclient.LauncherClient;
-
-import java.net.URISyntaxException;
 
 public class SmartspaceCard {
+
     private final b dI;
     private final long dJ;
     private final int dK;
@@ -39,7 +32,8 @@ public class SmartspaceCard {
     private Bitmap mIcon;
     private final Intent mIntent;
 
-    public SmartspaceCard(final Context context, final b di, final Intent mIntent, final boolean dm, final Bitmap mIcon, final boolean dl, final long dn, final long dj, final int dk) {
+    public SmartspaceCard(final Context context, final b di, final Intent mIntent, final boolean dm,
+            final Bitmap mIcon, final boolean dl, final long dn, final long dj, final int dk) {
         this.mContext = context.getApplicationContext();
         this.dI = di;
         this.dM = dm;
@@ -74,7 +68,8 @@ public class SmartspaceCard {
 //                            55);
                 }
 
-                return new SmartspaceCard(context, iVar.de, parseUri, z, bitmap, iVar.dc, iVar.df, iVar.dh, iVar.dg);
+                return new SmartspaceCard(context, iVar.de, parseUri, z, bitmap, iVar.dc, iVar.df,
+                        iVar.dh, iVar.dg);
             } catch (Throwable e) {
                 Log.e("SmartspaceCard", "from proto", e);
             }
@@ -93,13 +88,15 @@ public class SmartspaceCard {
             if (minutes <= 0) {
                 return hoursString;
             }
-            String minutesString = res.getQuantityString(R.plurals.smartspace_minutes, minutes, minutes);
+            String minutesString = res
+                    .getQuantityString(R.plurals.smartspace_minutes, minutes, minutes);
             return res.getString(R.string.smartspace_hours_mins, hoursString, minutesString);
         }
         return res.getQuantityString(R.plurals.smartspace_minutes, minutesToEvent, minutesToEvent);
     }
 
-    private com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cG(final boolean b) {
+    private com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cG(
+            final boolean b) {
         final c ch = this.cH();
         if (ch != null) {
             com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d d;
@@ -166,7 +163,8 @@ public class SmartspaceCard {
         return array2;
     }
 
-    private boolean cL(final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d d) {
+    private boolean cL(
+            final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d d) {
         boolean b = false;
         if (d != null && d.cN != null && d.cO != null && d.cO.length > 0) {
             b = true;
@@ -179,7 +177,8 @@ public class SmartspaceCard {
     }
 
     private String cO(final boolean b, final String s) {
-        final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cg = this.cG(b);
+        final com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.d cg = this
+                .cG(b);
         if (cg == null || cg.cN == null) {
             return "";
         }
@@ -196,7 +195,8 @@ public class SmartspaceCard {
     private static Bitmap cP(final Bitmap bitmap, final int n) {
         final Paint paint = new Paint();
         paint.setColorFilter(new PorterDuffColorFilter(n, PorterDuff.Mode.SRC_IN));
-        final Bitmap bitmap2 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        final Bitmap bitmap2 = Bitmap
+                .createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         new Canvas(bitmap2).drawBitmap(bitmap, 0.0f, 0.0f, paint);
         return bitmap2;
     }
@@ -275,39 +275,7 @@ public class SmartspaceCard {
     }
 
     void click(View view) {
-        if (this.dI.cG == null) {
-            Log.e("SmartspaceCard", "no tap action available: " + this);
-            return;
-        }
-        Intent intent = new Intent(this.getIntent());
-        Launcher launcher = Launcher.getLauncher(view.getContext());
-        switch (this.dI.cG.cY) {
-            default: {
-                Log.w("SmartspaceCard", "unrecognized tap action: " + this);
-                break;
-            }
-            case 1: {
-                if (!Utilities.ATLEAST_NOUGAT) {
-                    try {
-                        Intent internal = Intent.parseUri(intent.getExtras()
-                                .getString("com.google.android.apps.gsa.smartspace.extra.SMARTSPACE_INTENT"), Intent.URI_INTENT_SCHEME);
-                        launcher.startActivity(internal);
-                        return;
-                    } catch (URISyntaxException | NullPointerException | SecurityException e) {
-                        e.printStackTrace();
-                    }
-                }
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setSourceBounds(launcher.getViewBounds(view));
-                intent.setPackage(FeedBridge.Companion.getInstance(mContext).resolveSmartspace());
-                view.getContext().sendBroadcast(intent);
-                break;
-            }
-            case 2: {
-                launcher.startActivitySafely(view, intent, null);
-                break;
-            }
-        }
+        Log.e("SmartspaceCard", "Smartspace has been liberated!" + this);
     }
 
     public boolean cv() {
@@ -371,6 +339,7 @@ public class SmartspaceCard {
     }
 
     public String toString() {
-        return "title:" + this.getTitle() + " expires:" + this.cF() + " published:" + this.dN + " gsaVersion:" + this.dK + " gsaUpdateTime: " + this.dJ;
+        return "title:" + this.getTitle() + " expires:" + this.cF() + " published:" + this.dN
+                + " gsaVersion:" + this.dK + " gsaUpdateTime: " + this.dJ;
     }
 }

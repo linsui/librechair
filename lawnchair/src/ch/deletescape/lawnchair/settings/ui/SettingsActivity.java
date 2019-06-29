@@ -17,6 +17,7 @@
 
 package ch.deletescape.lawnchair.settings.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -34,7 +35,6 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.XmlRes;
-import android.support.v14.preference.SwitchPreference;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -63,7 +63,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import ch.deletescape.lawnchair.FakeLauncherKt;
-import ch.deletescape.lawnchair.FeedBridge;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairPreferencesChangeCallback;
@@ -327,7 +326,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
         if (fragment instanceof DialogFragment) {
             ((DialogFragment) fragment).show(getSupportFragmentManager(), preference.getKey());
         } else {
-            startFragment(this, preference.getFragment(), preference.getExtras(), preference.getTitle());
+            startFragment(this, preference.getFragment(), preference.getExtras(),
+                    preference.getTitle());
         }
         return true;
     }
@@ -429,6 +429,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
             }
         }
 
+        @SuppressLint("RestrictedApi")
         public RecyclerView onCreateRecyclerView(LayoutInflater inflater, ViewGroup parent,
                 Bundle savedInstanceState) {
             RecyclerView recyclerView = (RecyclerView) inflater
@@ -572,7 +573,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mShowDevOptions = Utilities.getLawnchairPrefs(getActivity()).getDeveloperOptionsEnabled();
+            mShowDevOptions = Utilities.getLawnchairPrefs(getActivity())
+                    .getDeveloperOptionsEnabled();
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
         }
 
@@ -680,15 +682,6 @@ public class SettingsActivity extends SettingsBaseActivity implements
         public void onResume() {
             super.onResume();
             setActivityTitle();
-
-            if (getContent() == R.xml.lawnchair_integration_preferences) {
-                SwitchPreference minusOne = (SwitchPreference) findPreference(
-                        ENABLE_MINUS_ONE_PREF);
-                if (minusOne != null && !FeedBridge.Companion.getInstance(getActivity())
-                        .isInstalled()) {
-                    minusOne.setChecked(false);
-                }
-            }
         }
 
         protected void setActivityTitle() {
@@ -767,27 +760,6 @@ public class SettingsActivity extends SettingsBaseActivity implements
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            switch (preference.getKey()) {
-                case SHOW_PREDICTIONS_PREF:
-                    if ((boolean) newValue) {
-                        ReflectionClient.getInstance(getContext()).setEnabled(true);
-                        return true;
-                    }
-                    SuggestionConfirmationFragment confirmationFragment = new SuggestionConfirmationFragment();
-                    confirmationFragment.setTargetFragment(this, 0);
-                    confirmationFragment.show(getFragmentManager(), preference.getKey());
-                    break;
-                case ENABLE_MINUS_ONE_PREF:
-                    if (FeedBridge.Companion.getInstance(getActivity()).isInstalled()) {
-                        return true;
-                    }
-                    FragmentManager fm = getFragmentManager();
-                    if (fm.findFragmentByTag(BRIDGE_TAG) == null) {
-                        InstallFragment fragment = new InstallFragment();
-                        fragment.show(fm, BRIDGE_TAG);
-                    }
-                    break;
-            }
             return false;
         }
 
