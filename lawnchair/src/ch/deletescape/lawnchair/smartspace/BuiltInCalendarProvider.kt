@@ -155,7 +155,6 @@ import java.util.concurrent.TimeUnit
                                                           TextUtils.TruncateAt.END)
             updateData(weather, card)
         } catch (e: CursorIndexOutOfBoundsException) {
-            updateData(weather, card)
             val currentTime = GregorianCalendar();
             Log.v(javaClass.name,
                   "updateInformation: searching for events that are active at ${currentTime}")
@@ -199,7 +198,6 @@ import java.util.concurrent.TimeUnit
                 eventCursor.close();
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
-                updateData(weather, card = null)
                 val alarmManager =
                         controller.context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
                 if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
