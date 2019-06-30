@@ -349,4 +349,6 @@
     <string name="subtitle_smartspace_in_minutes">In %d minutes</string>
     <string name="provider_built_in_calendar_title">System calendar</string>
     <string name="reusable_str_now">Now</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="resuable_text_alarm">Alarm</string>
 </resources>
