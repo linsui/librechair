@@ -30,6 +30,7 @@
     tools:context="ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity">
 
     <EditText
+        android:singleLine="true"
         android:backgroundTint="@android:color/transparent"
         android:id="@+id/search_query"
         android:layout_width="0dp"

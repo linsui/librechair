@@ -19,15 +19,22 @@
 
 package ch.deletescape.lawnchair.globalsearch.activity;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
+import android.widget.EditText;
 import com.android.launcher3.R;
 
-public class WebSearchProviderActivity extends AppCompatActivity {
+public class WebSearchProviderActivity extends Activity {
+    private EditText searchQuery;
+    private RecyclerView suggestions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(getResources().getColor(R.color.qsb_background));
         setContentView(R.layout.activity_web_search_provider);
+        searchQuery = findViewById(R.id.search_query);
+        suggestions = findViewById(R.id.search_query_suggestions);
     }
 }
