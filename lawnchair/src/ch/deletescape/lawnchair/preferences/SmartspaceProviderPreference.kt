@@ -57,6 +57,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
     private fun getEventProviders(): List<String> {
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
+        list.add(BuiltInCalendarProvider::class.java.name)
         if (prefs.showDebugInfo)
             list.add(FakeDataProvider::class.java.name)
         return list
@@ -100,12 +101,10 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
 
         val displayNames = mapOf(
                 Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-                Pair(SmartspaceDataWidget::class.java.name, R.string.google_app),
-                Pair(SmartspacePixelBridge::class.java.name, R.string.smartspace_provider_bridge),
+                Pair(BuiltInCalendarProvider::class.java.name, R.string.search_provider_built_in),
                 Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
                 Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
                 Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-                Pair(OnePlusWeatherDataProvider::class.java.name, R.string.weather_provider_oneplus_weather),
                 Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
     }
 }
