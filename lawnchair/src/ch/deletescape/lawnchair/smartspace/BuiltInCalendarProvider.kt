@@ -75,7 +75,11 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                 run {
                     while (true)
                     {
-                        Thread.sleep(10000)
+                        try {
+                            Thread.sleep(10000)
+                        } catch (e: InterruptedException) {
+                            break
+                        }
                         if (refreshThread!!.isInterrupted)
                         {
                             break;
