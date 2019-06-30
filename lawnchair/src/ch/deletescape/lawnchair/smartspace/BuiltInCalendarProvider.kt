@@ -49,6 +49,7 @@ import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
 
+
 @Keep
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
@@ -70,19 +71,16 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
     }
 
     private fun updateInformation() {
-        if (refreshThread == null)
-        {
+        if (refreshThread == null) {
             refreshThread = Thread {
                 run {
-                    while (true)
-                    {
+                    while (true) {
                         try {
                             Thread.sleep(10000)
                         } catch (e: InterruptedException) {
                             break
                         }
-                        if (refreshThread!!.isInterrupted)
-                        {
+                        if (refreshThread!!.isInterrupted) {
                             break;
                         }
                         handler.post {
@@ -94,7 +92,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             refreshThread!!.start();
         }
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        if (controller.context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        if (controller.context.checkSelfPermission(
+                        android.Manifest.permission.READ_CALENDAR
+                                                  ) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
             silentlyFail = true;
         }
@@ -102,68 +102,83 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
          * Right now this is the only place at which silentlyFail can change, but there
          * will be more, which is why this is in a separate block
          */
-        if (silentlyFail)
-        {
+        if (silentlyFail) {
             Log.e(javaClass.name, "updateInformation: silent fail")
             updateData(weather, null);
             return;
         }
 
-        val currentTime = GregorianCalendar();
-        val endTime = GregorianCalendar();
-        endTime.add(Calendar.MINUTE, 240);
-        Log.v(javaClass.name, "updateInformation: searching for events between " + currentTime +" and " + endTime.toString())
-        val query =
-                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
-        val eventCursorNullable: Cursor? = contentResolver.query(
-                CalendarContract.Events.CONTENT_URI, arrayOf(
-                CalendarContract.Instances.TITLE,
-                CalendarContract.Instances.DTSTART, CalendarContract.Instances.DTEND,
-                CalendarContract.Instances.DESCRIPTION),
-                query, null, CalendarContract.Instances.DTSTART + " ASC")
-        if (eventCursorNullable == null) {
-            Log.v(javaClass.name, "updateInformation: query is null, probably since there are no events that meet the specified criteria")
-            card = null
-            updateData(weather, card);
-            return;
+        run {
+            // TODO: Add current events
         }
-        try {
-            val eventCursor = eventCursorNullable
-            eventCursor.moveToFirst();
-            val title = eventCursor.getString(0);
-            Log.v(javaClass.name, "updateInformation: query found event")
-            Log.v(javaClass.name, "updateInformation:     title: " + title)
-            val startTime = GregorianCalendar()
-            startTime.timeInMillis = eventCursor.getLong(1);
-            Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
-            val eventEndTime = GregorianCalendar()
-            eventEndTime.timeInMillis = eventCursor.getLong(2)
-            Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
-            val description = eventCursor.getString(3);
-            eventCursor.close();
-            val diff = startTime.timeInMillis - currentTime.timeInMillis
-            Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
-            val diffSeconds = diff / 1000 % 60
-            val diffMinutes = diff / (60 * 1000) % 60
-            val diffHours = diff / (60 * 60 * 1000)
-            card = LawnchairSmartspaceController.CardData(
-                    drawableToBitmap(
-                            controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)
-                                    ), title, TextUtils.TruncateAt.MARQUEE,
-                    controller.context.getString(
-                            R.string.subtitle_smartspace_in_minutes,
-                            diffMinutes
-                                                ), TextUtils.TruncateAt.END
-                                                         )
-            updateData(weather, card)
-        } catch (e: CursorIndexOutOfBoundsException) {
-            updateData(weather, card)
+
+        run {
+            val currentTime = GregorianCalendar();
+            val endTime = GregorianCalendar();
+            endTime.add(Calendar.MINUTE, 240);
+            Log.v(
+                    javaClass.name,
+                    "updateInformation: searching for events between " + currentTime + " and " + endTime.toString()
+                 )
+            val query =
+                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
+            val eventCursorNullable: Cursor? = contentResolver.query(
+                    CalendarContract.Events.CONTENT_URI, arrayOf(
+                    CalendarContract.Instances.TITLE,
+                    CalendarContract.Instances.DTSTART, CalendarContract.Instances.DTEND,
+                    CalendarContract.Instances.DESCRIPTION
+                                                                ),
+                    query, null, CalendarContract.Instances.DTSTART + " ASC"
+                                                                    )
+            if (eventCursorNullable == null) {
+                Log.v(
+                        javaClass.name,
+                        "updateInformation: query is null, probably since there are no events that meet the specified criteria"
+                     )
+                card = null
+                updateData(weather, card);
+                return;
+            }
+            try {
+                val eventCursor = eventCursorNullable
+                eventCursor.moveToFirst();
+                val title = eventCursor.getString(0);
+                Log.v(javaClass.name, "updateInformation: query found event")
+                Log.v(javaClass.name, "updateInformation:     title: " + title)
+                val startTime = GregorianCalendar()
+                startTime.timeInMillis = eventCursor.getLong(1);
+                Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
+                val eventEndTime = GregorianCalendar()
+                eventEndTime.timeInMillis = eventCursor.getLong(2)
+                Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
+                val description = eventCursor.getString(3);
+                eventCursor.close();
+                val diff = startTime.timeInMillis - currentTime.timeInMillis
+                Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
+                val diffSeconds = diff / 1000 % 60
+                val diffMinutes = diff / (60 * 1000) % 60
+                val diffHours = diff / (60 * 60 * 1000)
+                val text = if (diffMinutes <= 0) controller.context.getString(
+                                        R.string.reusable_str_now) else controller.context.getString(
+                        R.string.subtitle_smartspace_in_minutes, diffMinutes
+                                                                                    )
+                card = LawnchairSmartspaceController.CardData(
+                        drawableToBitmap(
+                                controller.context.resources.getDrawable(
+                                        R.drawable.ic_event_black_24dp
+                                                                        )
+                                        ), title, TextUtils.TruncateAt.MARQUEE,
+                        text, TextUtils.TruncateAt.END
+                                                             )
+                updateData(weather, card)
+            } catch (e: CursorIndexOutOfBoundsException) {
+                updateData(weather, card)
+            }
         }
     }
 
     override fun onDestroy() {
-        if (refreshThread != null)
-        {
+        if (refreshThread != null) {
             refreshThread!!.interrupt()
         }
     }
