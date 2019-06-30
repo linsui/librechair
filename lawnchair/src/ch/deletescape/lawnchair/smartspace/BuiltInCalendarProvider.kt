@@ -166,7 +166,8 @@ import java.util.concurrent.TimeUnit
                            arrayOf(CalendarContract.Instances.TITLE,
                                    CalendarContract.Instances.DTSTART,
                                    CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION), query, null,
+                                   CalendarContract.Instances.DESCRIPTION,
+                                   CalendarContract.Instances.ALL_DAY), query, null,
                            CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
@@ -193,21 +194,26 @@ import java.util.concurrent.TimeUnit
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)), title,
                                                               TextUtils.TruncateAt.MARQUEE,
                                                               controller.context.getString(
-                                                                  R.string.ongoing),
+                                                                  if (eventCursor.getInt(
+                                                                              4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
                                                               TextUtils.TruncateAt.END)
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
                 updateData(weather, card = null)
                 val alarmManager =
                         controller.context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
-                if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(30)) {
+                if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
+                            30)) {
                     val alarmClock = alarmManager.nextAlarmClock!!
                     updateData(weather, card = LawnchairSmartspaceController.CardData(
                         drawableToBitmap(
                             controller.context.getDrawable(R.drawable.ic_alarm_on_black_24dp)),
-                        controller.context.getString(R.string.resuable_text_alarm), TextUtils.TruncateAt.MARQUEE,
+                        controller.context.getString(R.string.resuable_text_alarm),
+                        TextUtils.TruncateAt.MARQUEE,
                         "" + Date(alarmClock.triggerTime).hours + ":" + Date(
                             alarmClock.triggerTime).minutes, TextUtils.TruncateAt.END))
+                } else {
+                    updateData(weather, card = null)
                 }
             }
         }
