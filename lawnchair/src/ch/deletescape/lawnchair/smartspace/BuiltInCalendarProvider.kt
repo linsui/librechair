@@ -97,6 +97,10 @@ import java.util.concurrent.TimeUnit
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
             silentlyFail = true;
         }
+        else
+        {
+            silentlyFail = false;
+        }
         /*
          * Right now this is the only place at which silentlyFail can change, but there
          * will be more, which is why this is in a separate block
