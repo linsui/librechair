@@ -96,7 +96,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
 
     companion object : SingletonHolder<SearchProviderController, Context>(ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
         fun getSearchProviders(context: Context) = listOf(
-                AppSearchSearchProvider(context)
+                AppSearchSearchProvider(context),
+                JustSearchSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }
