@@ -25,7 +25,10 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.RectF
 import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Handler
@@ -281,6 +284,22 @@ fun runOnUiWorkerThread(r: () -> Unit) {
 
 fun runOnMainThread(r: () -> Unit) {
     runOnThread(mainHandler, r)
+}
+
+fun drawableToBitmap(drawable: Drawable): Bitmap {
+    var bitmap: Bitmap;
+
+
+    if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+        bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+    } else {
+        bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888)
+    }
+
+    var canvas = Canvas(bitmap);
+    drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+    drawable.draw(canvas);
+    return bitmap;
 }
 
 fun runOnThread(handler: Handler, r: () -> Unit) {

@@ -43,6 +43,7 @@ import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
+import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
@@ -63,8 +64,8 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
     private val handler: Handler = Handler()
 
     init {
+        Log.d(javaClass.name, "class initializer: init")
         forceUpdate()
-        val handler = Handler()
     }
 
     private fun updateInformation() {
@@ -85,7 +86,7 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                     }
                 }
             }
-            refreshThread!!.run();
+            refreshThread!!.start();
         }
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
         if (controller.context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
@@ -140,7 +141,7 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         val diffMinutes = diff / (60 * 1000) % 60
         val diffHours = diff / (60 * 60 * 1000)
         card = LawnchairSmartspaceController.CardData(
-                iconProvider.getIcon("-1"), title, TextUtils.TruncateAt.MARQUEE,
+                drawableToBitmap(controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)), title, TextUtils.TruncateAt.MARQUEE,
                 controller.context.getString(
                         R.string.subtitle_smartspace_in_minutes,
                         diffMinutes), TextUtils.TruncateAt.END)
