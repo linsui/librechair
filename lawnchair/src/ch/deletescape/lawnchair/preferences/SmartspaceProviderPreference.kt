@@ -47,14 +47,8 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
     private fun getWeatherProviders(): List<String> {
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
-        if (Utilities.ATLEAST_NOUGAT)
-            list.add(SmartspaceDataWidget::class.java.name)
         list.add(AccuWeatherDataProvider::class.java.name)
         list.add(OWMWeatherDataProvider::class.java.name)
-        if (PEWeatherDataProvider.isAvailable(context))
-            list.add(PEWeatherDataProvider::class.java.name)
-        if (OnePlusWeatherDataProvider.isAvailable(context))
-            list.add(OnePlusWeatherDataProvider::class.java.name)
         if (prefs.showDebugInfo)
             list.add(FakeDataProvider::class.java.name)
         return list
@@ -63,8 +57,6 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
     private fun getEventProviders(): List<String> {
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
-        if (Utilities.ATLEAST_NOUGAT)
-            list.add(SmartspaceDataWidget::class.java.name)
         if (prefs.showDebugInfo)
             list.add(FakeDataProvider::class.java.name)
         return list
