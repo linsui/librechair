@@ -14,11 +14,11 @@
 .method static synthetic constructor <clinit>()V
     .registers 1
 
-    new-instance v0, Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
+    new-instance v0, Lcom/android/systemui/shared/recents/model/_$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
 
     invoke-direct {v0}, Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;-><init>()V
 
-    sput-object v0, Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;->INSTANCE:Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
+    sput-object v0, Lcom/android/systemui/shared/recents/model/_$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;->INSTANCE:Lcom/android/systemui/shared/recents/model/_$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
 
     return-void
 .end method
