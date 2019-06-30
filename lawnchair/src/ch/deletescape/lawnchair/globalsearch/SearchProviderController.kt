@@ -7,6 +7,7 @@ import ch.deletescape.lawnchair.ensureOnMainThread
 import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider
 import ch.deletescape.lawnchair.globalsearch.providers.BuiltInSearchProvider
 import ch.deletescape.lawnchair.globalsearch.providers.JustSearchSearchProvider
+import ch.deletescape.lawnchair.globalsearch.providers.KISSLauncherSearchProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.useApplicationContext
@@ -99,7 +100,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
         fun getSearchProviders(context: Context) = listOf(
                 AppSearchSearchProvider(context),
                 JustSearchSearchProvider(context),
-                BuiltInSearchProvider(context)
+                BuiltInSearchProvider(context),
+                KISSLauncherSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }
