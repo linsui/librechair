@@ -1,4 +1,4 @@
-.class public final synthetic Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
+.class public final synthetic Lcom/android/systemui/shared/recents/model/_$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
 .super Ljava/lang/Object;
 .source "lambda"
 
