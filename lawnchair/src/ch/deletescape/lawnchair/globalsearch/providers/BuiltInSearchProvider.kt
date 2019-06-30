@@ -25,7 +25,6 @@ import android.graphics.drawable.Drawable
 import ch.deletescape.lawnchair.globalsearch.SearchProvider
 import ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity
 import com.android.launcher3.R
-import kotlinx.android.synthetic.lawnchair.activity_web_search_provider.view.*
 
 class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
     override val name: String
@@ -37,12 +36,23 @@ class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
     override val supportsFeed: Boolean
         get() = false
 
+
     override fun startSearch(callback: (intent: Intent) -> Unit) {
         val i = Intent(context, WebSearchProviderActivity::class.java);
         callback.invoke(i);
     }
 
+    override fun startVoiceSearch(callback: (intent: Intent) -> Unit) {
+        val i = Intent(context, WebSearchProviderActivity::class.java);
+        i.putExtra("voice_search", true);
+        callback.invoke(i);
+    }
+
     override fun getIcon(): Drawable {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return context.resources.getDrawable(R.drawable.ic_search);
+    }
+
+    override fun getVoiceIcon(): Drawable? {
+        return context.resources.getDrawable(R.drawable.ic_mic_color);
     }
 }

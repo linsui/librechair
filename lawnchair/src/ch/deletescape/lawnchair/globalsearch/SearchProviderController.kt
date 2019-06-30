@@ -4,12 +4,13 @@ import android.content.Context
 import android.support.v7.view.ContextThemeWrapper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.ensureOnMainThread
-import ch.deletescape.lawnchair.globalsearch.providers.*
+import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider
+import ch.deletescape.lawnchair.globalsearch.providers.BuiltInSearchProvider
+import ch.deletescape.lawnchair.globalsearch.providers.JustSearchSearchProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
-import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 
 class SearchProviderController(private val context: Context) : ColorEngine.OnColorChangeListener {
@@ -97,7 +98,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
     companion object : SingletonHolder<SearchProviderController, Context>(ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
         fun getSearchProviders(context: Context) = listOf(
                 AppSearchSearchProvider(context),
-                JustSearchSearchProvider(context)
+                JustSearchSearchProvider(context),
+                BuiltInSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }
