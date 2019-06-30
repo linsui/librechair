@@ -38,11 +38,12 @@ package ch.deletescape.lawnchair.smartspace
 
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.os.Handler
 import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
+import android.util.Log
 import ch.deletescape.lawnchair.util.Temperature
-import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import java.util.*
 
@@ -50,48 +51,91 @@ import java.util.*
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
 
+    private var silentlyFail: Boolean = false
     private val iconProvider = WeatherIconProvider(controller.context)
     private val weather = LawnchairSmartspaceController.WeatherData(
             iconProvider.getIcon("-1"),
             Temperature(0, Temperature.Unit.Celsius), ""
                                                                    )
     private var card: LawnchairSmartspaceController.CardData? = null
-    private val contentResolver = Launcher.fromContext(controller.context).contentResolver;
+    private val contentResolver = controller.context.contentResolver
+    private var refreshThread: Thread? = null;
+    private val handler: Handler = Handler()
 
     init {
         forceUpdate()
+        val handler = Handler()
     }
 
-    override fun forceUpdate() {
+    private fun updateInformation() {
+        if (refreshThread == null)
+        {
+            refreshThread = Thread {
+                run {
+                    while (true)
+                    {
+                        Thread.sleep(10000)
+                        if (refreshThread!!.isInterrupted)
+                        {
+                            break;
+                        }
+                        handler.post {
+                            updateInformation()
+                        }
+                    }
+                }
+            }
+            refreshThread!!.run();
+        }
+        Log.d(javaClass.name, "updateInformation: refreshing calendar")
+        if (controller.context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
+            silentlyFail = true;
+        }
+        /*
+         * Right now this is the only place at which silentlyFail can change, but there
+         * will be more, which is why this is in a separate block
+         */
+        if (silentlyFail)
+        {
+            Log.e(javaClass.name, "updateInformation: silent fail")
+            updateData(weather, null);
+            return;
+        }
+
         val currentTime = GregorianCalendar();
         val endTime = GregorianCalendar();
-        endTime.add(Calendar.MINUTE, 120);
-        updateData(weather, card)
+        endTime.add(Calendar.MINUTE, 240);
+        Log.v(javaClass.name, "updateInformation: searching for events between " + currentTime +" and " + endTime.toString())
         val query =
                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
         val eventCursorNullable: Cursor? = contentResolver.query(
                 CalendarContract.Events.CONTENT_URI, arrayOf(
                 CalendarContract.Instances.TITLE,
                 CalendarContract.Instances.DTSTART, CalendarContract.Instances.DTEND,
-                CalendarContract.Instances.DESCRIPTION
-                                                            ),
-                query, null, "ASC"
-                                                                )
+                CalendarContract.Instances.DESCRIPTION),
+                query, null, CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
+            Log.v(javaClass.name, "updateInformation: query is null, probably since there are no events that meet the specified criteria")
             card = null
             updateData(weather, card);
             return;
         }
         val eventCursor = eventCursorNullable
         eventCursor.moveToFirst();
-        val title = eventCursor.getString(1);
+        val title = eventCursor.getString(0);
+        Log.v(javaClass.name, "updateInformation: query found event")
+        Log.v(javaClass.name, "updateInformation:     title: " + title)
         val startTime = GregorianCalendar()
-        startTime.timeInMillis = eventCursor.getLong(2);
+        startTime.timeInMillis = eventCursor.getLong(1);
+        Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
         val eventEndTime = GregorianCalendar()
-        eventEndTime.timeInMillis = eventCursor.getLong(3)
-        val description = eventCursor.getString(4);
+        eventEndTime.timeInMillis = eventCursor.getLong(2)
+        Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
+        val description = eventCursor.getString(3);
         eventCursor.close();
-        val diff = currentTime.compareTo(startTime);
+        val diff = startTime.timeInMillis - currentTime.timeInMillis
+        Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
         val diffHours = diff / (60 * 60 * 1000)
@@ -100,17 +144,17 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                 controller.context.getString(
                         R.string.subtitle_smartspace_in_minutes,
                         diffMinutes), TextUtils.TruncateAt.END)
-        super.forceUpdate()
+        updateData(weather, card);
     }
 
-    override fun performSetup() {
-        if (Launcher.getLauncher(controller.context).checkSelfPermission(
-                        android.Manifest.permission.READ_CALENDAR
-                                                                        ) != PackageManager.PERMISSION_GRANTED) {
-            throw RuntimeException(
-                    "The permission android.permission.READ_CALENDAR was not granted!"
-                                  )
+    override fun onDestroy() {
+        if (refreshThread != null)
+        {
+            refreshThread!!.interrupt()
         }
-        super.performSetup()
+    }
+
+    override fun forceUpdate() {
+        updateInformation()
     }
 }

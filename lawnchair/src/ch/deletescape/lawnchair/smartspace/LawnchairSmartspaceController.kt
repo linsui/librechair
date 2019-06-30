@@ -20,6 +20,7 @@ package ch.deletescape.lawnchair.smartspace
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Handler
@@ -28,6 +29,8 @@ import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import ch.deletescape.lawnchair.BlankActivity
+import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.util.Temperature
@@ -106,9 +109,35 @@ class LawnchairSmartspaceController(val context: Context) {
                     eventProviderPref.set(eventDataProvider::class.java.name)
                 }
                 runOnMainThread {
-                    weatherDataProvider.forceUpdate()
-                    if (weatherClass != eventClass) {
-                        eventDataProvider.forceUpdate()
+                    if (eventClass.equals(BuiltInCalendarProvider::class.java.name))
+                    {
+                        if (context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                            BlankActivity.requestPermission(context, android.Manifest.permission.READ_CALENDAR, LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
+                                if (!it) {
+                                    weatherDataProvider.forceUpdate()
+                                    if (weatherClass != eventClass) {
+                                        eventDataProvider.forceUpdate()
+                                    }
+                                } else {
+                                    /*
+                                     * Silently fail, since the permission was not granted
+                                     */
+                                }
+                            };
+                        }
+                        else
+                        {
+                            weatherDataProvider.forceUpdate()
+                            if (weatherClass != eventClass) {
+                                eventDataProvider.forceUpdate()
+                            }
+                        }
+                    }
+                    else {
+                        weatherDataProvider.forceUpdate()
+                        if (weatherClass != eventClass) {
+                            eventDataProvider.forceUpdate()
+                        }
                     }
                 }
             } else {

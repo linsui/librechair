@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.preferences.DockStyle
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
+import ch.deletescape.lawnchair.smartspace.FakeDataProvider
 import ch.deletescape.lawnchair.smartspace.SmartspaceDataWidget
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature

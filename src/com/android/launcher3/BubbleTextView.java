@@ -570,7 +570,6 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     @Override
     public void cancelLongPress() {
         super.cancelLongPress();
-
         mLongPressHelper.cancelLongPress();
     }
 

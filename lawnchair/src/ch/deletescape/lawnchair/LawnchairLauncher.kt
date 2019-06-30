@@ -397,6 +397,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         const val REQUEST_PERMISSION_STORAGE_ACCESS = 666
         const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
+        const val REQUEST_PERMISSION_CALENDAR_READ_ACCESS = 668
         const val CODE_EDIT_ICON = 100
 
         var sRestart = false
