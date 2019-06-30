@@ -344,4 +344,6 @@
     <string name="bottom_work_tab_user_education_close_button">Close</string>
     <string name="bottom_work_tab_user_education_closed">Closed</string>
     <string name="search_provider_just_search" translatable="false">Just Search</string>
+    <string name="title_activity_web_search_provider">Search apps, web and more</string>
+    <string name="search_provider_built_in">Built-in search</string>
 </resources>

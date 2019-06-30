@@ -1,228 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~     This file is part of Lawnchair Launcher.
-  ~
-  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
-  ~     it under the terms of the GNU General Public License as published by
-  ~     the Free Software Foundation, either version 3 of the License, or
-  ~     (at your option) any later version.
-  ~
-  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
-  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~     GNU General Public License for more details.
-  ~
-  ~     You should have received a copy of the GNU General Public License
-  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
-  -->
-
-<!--
-  ~     This file is part of Lawnchair Launcher.
-  ~
-  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
-  ~     it under the terms of the GNU General Public License as published by
-  ~     the Free Software Foundation, either version 3 of the License, or
-  ~     (at your option) any later version.
-  ~
-  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
-  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~     GNU General Public License for more details.
-  ~
-  ~     You should have received a copy of the GNU General Public License
-  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
-  -->
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
-
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.READ_SETTINGS"/>
-    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="${applicationId}.permission.READ_SETTINGS"/>
-    <uses-permission android:name="${applicationId}.permission.WRITE_SETTINGS"/>
-
-    <!-- Pixel -->
-    <permission
-        android:name="${applicationId}.permission.QSB"
-        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signatureOrSystem"/>
-
-    <uses-permission android:name="${applicationId}.permission.QSB"/>
-
-    <!-- Custom -->
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
-    <uses-permission android:name="android.permission.INSTALL_SHORTCUT"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_WALLPAPER_INTERNAL"/>
-    <uses-permission android:name="android.permission.DEVICE_POWER"/>
-    <!-- For weather / sunset/-rise -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
-    <!-- EMUI specific permissions -->
-    <uses-permission android:name="com.android.permission.RECEIVE_LAUNCH_BROADCASTS"/>
-    <!-- The following is NOT UIUpdateHandler typo, it is actually called wallpaperservcie ¯\_(ツ)_/¯ -->
-    <uses-permission android:name="com.huawei.wallpaperservcie.permission.SET_WALLPAPER_OFFSET"/>
-    <uses-permission android:name="com.huawei.android.thememanager.permission.ACCESS_CHANGE_WALLPAPER"/>
-    <uses-permission android:name="com.android.launcher.permission.LAUNCHER_ANIMATION"/>
-    <uses-permission android:name="com.inveno.hwread.permission.LAUNCHER_RECEIVE"/>
-    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"/>
-
-    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
-
-    <uses-permission android:name="android.permission.BIND_APPWIDGET"/>
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
-    <uses-permission android:name="android.permission.GET_TASKS"/>
-    <uses-permission android:name="android.permission.REMOVE_TASKS"/>
-    <uses-permission android:name="android.permission.REAL_GET_TASKS"/>
-    <uses-permission android:name="android.permission.READ_FRAME_BUFFER"/>
-    <uses-permission android:name="android.permission.GET DETAILED TASKS"/>
-    <uses-permission android:name="android.permission.ACCESS_INSTANT_APPS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS"/>
-    <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS"/>
-    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS"/>
-    <uses-permission android:name="android.permission.CREATE_USERS"/>
-    <uses-permission android:name="android.permission.MANAGE_USERS"/>
-    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES"/>
-    <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS"/>
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"/>
-
-    <!-- Used for Google/Lawnchair predictions, solely used to read bt connection state -->
-    <uses-permission android:name="android.permission.BLUETOOTH"/>
-
-    <uses-permission android:name="org.pixelexperience.weather.client.READ_WEATHER"/>
-
-    <permission
-        android:name="${applicationId}.permission.BROADCAST_BUGREPORT"
-        android:protectionLevel="signature"/>
-
-    <uses-permission android:name="${applicationId}.permission.BROADCAST_BUGREPORT"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-
     <application
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:name="ch.deletescape.lawnchair.LawnchairApp">
-
+        android:name="ch.deletescape.lawnchair.LawnchairApp"
+        android:networkSecurityConfig="@xml/network_security_config">
+        <activity android:name="ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity"
+            android:exported="true"/>
         <activity
             android:excludeFromRecents="true"
             android:name="ch.deletescape.lawnchair.LawnchairLauncher$Screenshot"
             android:screenOrientation="portrait"
-            android:theme="@style/ScreenshotTheme"/>
-
+            android:theme="@style/ScreenshotTheme" />
         <activity
             android:autoRemoveFromRecents="true"
             android:label="@string/derived_app_name"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
             android:theme="@style/SettingsTheme.V2">
             <intent-filter>
-                <action android:name="android.intent.action.APPLICATION_PREFERENCES"/>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:autoRemoveFromRecents="true"
             android:label="@string/derived_app_name"
             android:name="ch.deletescape.lawnchair.settings.ui.search.SettingsSearchActivity"
-            android:theme="@style/SettingsTheme.V2"
-            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity" />
-
+            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:autoRemoveFromRecents="true"
             android:label="@string/about"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsAboutActivity"
-            android:theme="@style/SettingsTheme.V2"
-            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity" />
-
+            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:autoRemoveFromRecents="true"
             android:name="ch.deletescape.lawnchair.preferences.SelectableAppsActivity"
             android:theme="@style/SettingsTheme.V2" />
-
         <activity
             android:autoRemoveFromRecents="true"
             android:label="@string/derived_app_name"
             android:name="ch.deletescape.lawnchair.font.settingsui.FontSelectionActivity"
-            android:theme="@style/SettingsTheme.V2"
-            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity" />
-
+            android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:name="com.android.launcher3.SettingsActivity"
             tools:node="remove" />
 
-        <service
-            android:name="com.android.launcher3.uioverrides.WallpaperManagerCompat$ColorExtractionService"
-            android:exported="false"
-            android:process=":wallpaper_chooser"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts"/>
-
-        <!-- Pixel -->
         <activity
             android:name="com.google.android.apps.nexuslauncher.search.AppLaunchActivity"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter android:priority="1">
-                <action android:name="com.google.android.apps.nexuslauncher.search.APP_LAUNCH"/>
+                <action android:name="com.google.android.apps.nexuslauncher.search.APP_LAUNCH" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
 
                 <data
                     android:mimeType="vnd.android.cursor.dir/vnd.android.search.suggest"
-                    android:scheme="content"/>
+                    android:scheme="content" />
             </intent-filter>
         </activity>
-
-        <provider
-            android:authorities="${applicationId}.appssearch"
-            android:exported="true"
-            android:name="com.google.android.apps.nexuslauncher.search.AppSearchProvider"/>
-
-        <!--         Custom -->
-        <meta-data
-            android:name="android.max_aspect"
-            android:value="2.1"/>
-        <meta-data
-            android:name="com.samsung.android.non_immersive"
-            android:value="true"/>
 
         <activity
             android:label="@string/backups"
             android:name="ch.deletescape.lawnchair.backup.BackupListActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
-            android:theme="@style/SettingsTheme.V2"/>
+            android:theme="@style/SettingsTheme.V2" /> <!-- Pixel -->
         <activity
             android:label="@string/new_backup"
             android:name="ch.deletescape.lawnchair.backup.NewBackupActivity"
             android:parentActivityName="ch.deletescape.lawnchair.backup.BackupListActivity"
-            android:theme="@style/SettingsTheme.V2"/>
+            android:theme="@style/SettingsTheme.V2" />
+
         <activity
             android:label="@string/restore_backup"
             android:name="ch.deletescape.lawnchair.backup.RestoreBackupActivity"
             android:parentActivityName="ch.deletescape.lawnchair.backup.BackupListActivity"
             android:theme="@style/SettingsTheme.V2">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:mimeType="application/vnd.lawnchair.backup"/>
-                <data android:mimeType="application/octet-stream"/>
-                <data android:mimeType="application/x-zip-compressed"/>
-                <data android:mimeType="application/zip"/>
-
+                <data android:mimeType="application/vnd.lawnchair.backup" />
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/x-zip-compressed" />
+                <data android:mimeType="application/zip" />
                 <data android:scheme="file" />
                 <data android:scheme="content" />
                 <data android:mimeType="*/*" />
@@ -242,87 +108,64 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.shed" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.shed" />
             </intent-filter>
-        </activity>
-
+        </activity> <!-- Custom -->
         <activity
             android:label="@string/pref_integrations"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsIntegrationActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
-            android:theme="@style/SettingsTheme.V2">
-        </activity>
-
+            android:theme="@style/SettingsTheme.V2"></activity>
         <activity
             android:label="@string/search"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsSearchActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
             android:theme="@style/SettingsTheme.V2" />
 
-        <!-- Mimetype for .shed backup files -->
-        <provider
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true"
-            android:name="android.support.v4.content.FileProvider">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
-        </provider>
-
-        <!-- Apply directly from iconpack -->
         <activity
             android:name="ch.deletescape.lawnchair.iconpack.ApplyIconPackActivity"
             android:theme="@style/SettingsTheme.V2.Transparent">
             <intent-filter>
-                <action android:name="ch.deletescape.lawnchair.APPLY_ICONS"/>
+                <action android:name="ch.deletescape.lawnchair.APPLY_ICONS" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- Icon picker -->
         <activity
             android:name="ch.deletescape.lawnchair.iconpack.EditIconActivity"
-            android:theme="@style/SettingsTheme.V2"/>
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:name="ch.deletescape.lawnchair.iconpack.IconPickerActivity"
-            android:theme="@style/SettingsTheme.V2"/>
-
-        <!-- Actions -->
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:icon="@mipmap/ic_launcher"
             android:label="@string/lawnchair_actions"
             android:name="ch.deletescape.lawnchair.gestures.LawnchairShortcutActivity"
             android:theme="@style/SettingsTheme.V2">
             <intent-filter>
-                <action android:name="android.intent.action.CREATE_SHORTCUT"/>
+                <action android:name="android.intent.action.CREATE_SHORTCUT" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name="ch.deletescape.lawnchair.gestures.ui.RunHandlerActivity"
-            android:theme="@style/SettingsTheme.V2.Transparent"
-            android:taskAffinity="${applicationId}.tasks.RUN_HANDLER">
+            android:taskAffinity="${applicationId}.tasks.RUN_HANDLER"
+            android:theme="@style/SettingsTheme.V2.Transparent">
             <intent-filter>
-                <action android:name="ch.deletescape.lawnchair.START_ACTION"/>
+                <action android:name="ch.deletescape.lawnchair.START_ACTION" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-        </activity>
-
-        <!-- Gesture app selection -->
+        </activity> <!-- Mimetype for .shed backup files -->
         <activity
             android:label="@string/action_open_app_select_app"
             android:name="ch.deletescape.lawnchair.gestures.ui.SelectAppActivity"
-            android:theme="@style/SettingsTheme.V2"/>
+            android:theme="@style/SettingsTheme.V2" /> <!-- Apply directly from iconpack -->
         <activity
             android:name="ch.deletescape.lawnchair.BlankActivity"
-            android:theme="@style/Theme.Transparent"/>
-
+            android:theme="@style/Theme.Transparent" /> <!-- Icon picker -->
         <activity
-            android:name="ch.deletescape.lawnchair.FakeLauncher"
-            android:enabled="false">
-
+            android:enabled="false"
+            android:name="ch.deletescape.lawnchair.FakeLauncher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -330,54 +173,134 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- DT2S using screen timeout -->
         <activity
             android:name="ch.deletescape.lawnchair.gestures.handlers.SleepTimeoutActivity"
             android:screenOrientation="locked"
-            android:theme="@style/SleepTimeoutTheme"/>
-
-        <!-- DT2S using device admin -->
+            android:theme="@style/SleepTimeoutTheme" /> <!-- Actions -->
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" /> <!-- Gesture app selection -->
+        <meta-data
+            android:name="com.samsung.android.non_immersive"
+            android:value="true" />
+        <provider
+            android:authorities="${applicationId}.appssearch"
+            android:exported="true"
+            android:name="com.google.android.apps.nexuslauncher.search.AppSearchProvider" />
+        <provider
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="android.support.v4.content.FileProvider">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider> <!-- DT2S using screen timeout -->
+        <provider
+            android:authorities="${applicationId}.fivesecsprovider"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:name="ch.deletescape.lawnchair.FiveSecsProvider" /> <!-- DT2S using device admin -->
         <receiver
             android:description="@string/dt2s_admin_hint"
             android:name="ch.deletescape.lawnchair.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+
             <meta-data
                 android:name="android.app.device_admin"
-                android:resource="@xml/sleep_admin_policy"/>
-
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
-            </intent-filter>
+                android:resource="@xml/sleep_admin_policy" />
         </receiver>
 
         <service
-            android:name="ch.deletescape.lawnchair.LawnchairAccessibilityService"
+            android:exported="false"
+            android:name="com.android.launcher3.uioverrides.WallpaperManagerCompat$ColorExtractionService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":wallpaper_chooser" /> <!-- Kustom 5s support -->
+        <service
             android:label="@string/derived_app_name"
+            android:name="ch.deletescape.lawnchair.LawnchairAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
         </service>
 
-        <!-- Kustom 5s support -->
-        <provider
-            android:name="ch.deletescape.lawnchair.FiveSecsProvider"
-            android:authorities="${applicationId}.fivesecsprovider"
-            android:exported="true"
-            android:grantUriPermissions="true"/>
-
         <service
             android:enabled="true"
             android:exported="false"
             android:name="ch.deletescape.lawnchair.bugreport.BugReportService"
             android:process=":bugReport" />
-
         <service
             android:enabled="true"
             android:exported="false"
             android:name="ch.deletescape.lawnchair.bugreport.DogbinUploadService"
             android:process=":bugReport" />
     </application>
+
+    <permission
+        android:name="${applicationId}.permission.QSB"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="signatureOrSystem" />
+    <permission
+        android:name="${applicationId}.permission.BROADCAST_BUGREPORT"
+        android:protectionLevel="signature" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.READ_SETTINGS" /> <!-- Pixel -->
+    <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.WRITE_SETTINGS" />
+
+    <uses-permission android:name="${applicationId}.permission.READ_SETTINGS" /> <!-- Custom -->
+    <uses-permission android:name="${applicationId}.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="${applicationId}.permission.QSB" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" /> <!-- For weather / sunset/-rise -->
+    <uses-permission android:name="android.permission.READ_WALLPAPER_INTERNAL" /> <!-- EMUI specific permissions -->
+    <uses-permission android:name="android.permission.DEVICE_POWER" /> <!-- The following is NOT UIUpdateHandler typo, it is actually called wallpaperservcie ¯\_(ツ)_/¯ -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="com.android.permission.RECEIVE_LAUNCH_BROADCASTS" />
+    <uses-permission android:name="com.huawei.wallpaperservcie.permission.SET_WALLPAPER_OFFSET" />
+    <uses-permission android:name="com.huawei.android.thememanager.permission.ACCESS_CHANGE_WALLPAPER" />
+    <uses-permission android:name="com.android.launcher.permission.LAUNCHER_ANIMATION" />
+    <uses-permission android:name="com.inveno.hwread.permission.LAUNCHER_RECEIVE" />
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
+    <uses-permission android:name="android.permission.BIND_APPWIDGET" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.REMOVE_TASKS" />
+    <uses-permission android:name="android.permission.REAL_GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_FRAME_BUFFER" />
+    <uses-permission android:name="android.permission.GET DETAILED TASKS" />
+    <uses-permission android:name="android.permission.ACCESS_INSTANT_APPS" />
+    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS" />
+    <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS" />
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
+    <uses-permission android:name="android.permission.CREATE_USERS" />
+    <uses-permission android:name="android.permission.MANAGE_USERS" />
+    <uses-permission android:name="android.permission.FORCE_STOP_PACKAGES" />
+    <uses-permission android:name="android.permission.MANAGE_DEVICE_ADMINS" /> <!-- Used for Google/Lawnchair predictions, solely used to read bt connection state -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <uses-permission android:name="org.pixelexperience.weather.client.READ_WEATHER" />
+    <uses-permission android:name="${applicationId}.permission.BROADCAST_BUGREPORT" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>
