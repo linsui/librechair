@@ -347,4 +347,5 @@
     <string name="title_activity_web_search_provider">Search apps, web and more</string>
     <string name="search_provider_built_in">Built-in search</string>
     <string name="subtitle_smartspace_in_minutes">In %d minutes</string>
+    <string name="provider_built_in_calendar_title">System calendar</string>
 </resources>

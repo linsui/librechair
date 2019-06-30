@@ -101,7 +101,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
 
         val displayNames = mapOf(
                 Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-                Pair(BuiltInCalendarProvider::class.java.name, R.string.search_provider_built_in),
+                Pair(BuiltInCalendarProvider::class.java.name, R.string.provider_built_in_calendar_title),
                 Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
                 Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
                 Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
