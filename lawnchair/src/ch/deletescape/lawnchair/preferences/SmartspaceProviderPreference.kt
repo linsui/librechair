@@ -90,7 +90,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
         return getPersistedValue()
     }
 
-    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, SmartspaceDataWidget::class.java.name)
+    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, if (forWeather) OWMWeatherDataProvider::class.java.name else BuiltInCalendarProvider::class.java.name)
 
     override fun persistString(value: String?): Boolean {
         prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
