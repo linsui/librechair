@@ -189,7 +189,6 @@ import java.util.concurrent.TimeUnit
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
                 val description = eventCursor.getString(3);
-                eventCursor.close();
                 card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)), title,
                                                               TextUtils.TruncateAt.MARQUEE,
@@ -197,6 +196,7 @@ import java.util.concurrent.TimeUnit
                                                                   if (eventCursor.getInt(
                                                                               4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
                                                               TextUtils.TruncateAt.END)
+                eventCursor.close();
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
                 updateData(weather, card = null)
