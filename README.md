@@ -14,10 +14,13 @@
     [x] Remove Sesame
     [x] Remove Feed
     [x] Remove all search providers that require non-free software
-        [ ] Add replacement search providers using purely free software (ongoing work)
+        [-] Add replacement search providers using purely free software (ongoing work)
+            [x] Just Search from F-Droid
+            [ ] Searx
+            [ ] KISS Launcher from F-Droid
     [x] Remove all weather providers that require non-free software
     [x] Remove all calendar providers that require non-free software
-        [ ] Add replacement weather providers using purely free software
+        [x] Add replacement calendar providers using purely free software
     [x] Inline the SystemUI shared library
     [ ] Remove all remanants of Google (ongoing work)
     [ ] Inline the private platform API jar
