@@ -38,6 +38,7 @@ package ch.deletescape.lawnchair.smartspace
 
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.database.CursorIndexOutOfBoundsException
 import android.os.Handler
 import android.provider.CalendarContract
 import android.support.annotation.Keep
@@ -126,30 +127,38 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             updateData(weather, card);
             return;
         }
-        val eventCursor = eventCursorNullable
-        eventCursor.moveToFirst();
-        val title = eventCursor.getString(0);
-        Log.v(javaClass.name, "updateInformation: query found event")
-        Log.v(javaClass.name, "updateInformation:     title: " + title)
-        val startTime = GregorianCalendar()
-        startTime.timeInMillis = eventCursor.getLong(1);
-        Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
-        val eventEndTime = GregorianCalendar()
-        eventEndTime.timeInMillis = eventCursor.getLong(2)
-        Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
-        val description = eventCursor.getString(3);
-        eventCursor.close();
-        val diff = startTime.timeInMillis - currentTime.timeInMillis
-        Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
-        val diffSeconds = diff / 1000 % 60
-        val diffMinutes = diff / (60 * 1000) % 60
-        val diffHours = diff / (60 * 60 * 1000)
-        card = LawnchairSmartspaceController.CardData(
-                drawableToBitmap(controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)), title, TextUtils.TruncateAt.MARQUEE,
-                controller.context.getString(
-                        R.string.subtitle_smartspace_in_minutes,
-                        diffMinutes), TextUtils.TruncateAt.END)
-        updateData(weather, card);
+        try {
+            val eventCursor = eventCursorNullable
+            eventCursor.moveToFirst();
+            val title = eventCursor.getString(0);
+            Log.v(javaClass.name, "updateInformation: query found event")
+            Log.v(javaClass.name, "updateInformation:     title: " + title)
+            val startTime = GregorianCalendar()
+            startTime.timeInMillis = eventCursor.getLong(1);
+            Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
+            val eventEndTime = GregorianCalendar()
+            eventEndTime.timeInMillis = eventCursor.getLong(2)
+            Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
+            val description = eventCursor.getString(3);
+            eventCursor.close();
+            val diff = startTime.timeInMillis - currentTime.timeInMillis
+            Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
+            val diffSeconds = diff / 1000 % 60
+            val diffMinutes = diff / (60 * 1000) % 60
+            val diffHours = diff / (60 * 60 * 1000)
+            card = LawnchairSmartspaceController.CardData(
+                    drawableToBitmap(
+                            controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)
+                                    ), title, TextUtils.TruncateAt.MARQUEE,
+                    controller.context.getString(
+                            R.string.subtitle_smartspace_in_minutes,
+                            diffMinutes
+                                                ), TextUtils.TruncateAt.END
+                                                         )
+            updateData(weather, card)
+        } catch (e: CursorIndexOutOfBoundsException) {
+            updateData(weather, card)
+        }
     }
 
     override fun onDestroy() {
