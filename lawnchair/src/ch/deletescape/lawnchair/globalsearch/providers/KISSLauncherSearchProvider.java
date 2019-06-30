@@ -50,7 +50,7 @@ public class KISSLauncherSearchProvider extends SearchProvider {
     @NotNull
     @Override
     public String getName() {
-        return getContext().getString(R.string.search_provider_just_search);
+        return getContext().getString(R.string.search_provider_kiss_launcher);
     }
 
     @Override

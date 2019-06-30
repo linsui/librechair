@@ -351,4 +351,5 @@
     <string name="reusable_str_now">Now</string>
     <string name="ongoing">Ongoing</string>
     <string name="resuable_text_alarm">Alarm</string>
+    <string name="search_provider_kiss_launcher">KISS Launcher</string>
 </resources>
