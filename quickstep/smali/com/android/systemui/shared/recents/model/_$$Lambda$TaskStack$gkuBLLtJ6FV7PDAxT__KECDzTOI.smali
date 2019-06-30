@@ -7,7 +7,7 @@
 
 
 # static fields
-.field public static final synthetic INSTANCE:Lcom/android/systemui/shared/recents/model/-$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
+.field public static final synthetic INSTANCE:Lcom/android/systemui/shared/recents/model/_$$Lambda$TaskStack$gkuBLLtJ6FV7PDAxT__KECDzTOI;
 
 
 # direct methods
