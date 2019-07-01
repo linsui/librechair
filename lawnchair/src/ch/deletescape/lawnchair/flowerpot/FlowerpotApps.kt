@@ -19,7 +19,6 @@ package ch.deletescape.lawnchair.flowerpot
 
 import android.content.Context
 import android.content.Intent
-import android.os.Process
 import android.os.UserHandle
 import ch.deletescape.lawnchair.flowerpot.rules.CodeRule
 import ch.deletescape.lawnchair.flowerpot.rules.Rule
@@ -27,12 +26,14 @@ import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
 import com.android.launcher3.shortcuts.ShortcutInfoCompat
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.PackageUserKey
 
 class FlowerpotApps(private val context: Context, private val pot: Flowerpot) : LauncherAppsCompat.OnAppsChangedCallbackCompat {
 
     private val launcherApps = LauncherAppsCompat.getInstance(context)
     private val intentMatches = mutableSetOf<String>()
     val matches = mutableSetOf<ComponentKey>()
+    val packageMatches = mutableSetOf<PackageUserKey>()
 
     init {
         filterApps()
@@ -42,6 +43,7 @@ class FlowerpotApps(private val context: Context, private val pot: Flowerpot) : 
     private fun filterApps() {
         queryIntentMatches()
         matches.clear()
+        packageMatches.clear()
         UserManagerCompat.getInstance(context).userProfiles.forEach {
             addFromPackage(null, it)
         }
@@ -52,10 +54,12 @@ class FlowerpotApps(private val context: Context, private val pot: Flowerpot) : 
             if (intentMatches.contains(it.componentName.packageName)
                     || pot.rules.contains(Rule.Package(it.componentName.packageName))) {
                 matches.add(ComponentKey(it.componentName, it.user))
+                packageMatches.add(PackageUserKey(it.componentName.packageName, it.user))
             } else {
                 for (rule in pot.rules.filterIsInstance<Rule.CodeRule>()) {
                     if (CodeRule.get(rule.rule, *rule.args).matches(it.applicationInfo)) {
                         matches.add(ComponentKey(it.componentName, it.user))
+                        packageMatches.add(PackageUserKey(it.componentName.packageName, it.user))
                         break
                     }
                 }
@@ -89,6 +93,9 @@ class FlowerpotApps(private val context: Context, private val pot: Flowerpot) : 
     override fun onPackageRemoved(packageName: String, user: UserHandle) {
         matches.removeAll {
             it.componentName.packageName == packageName && it.user == user
+        }
+        packageMatches.removeAll {
+            it.mPackageName == packageName && it.mUser == user
         }
     }
 

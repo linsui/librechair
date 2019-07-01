@@ -27,28 +27,32 @@ import com.android.launcher3.R
 
 @Keep
 class NowPlayingProvider(controller: LawnchairSmartspaceController) :
-        LawnchairSmartspaceController.DataProvider(controller) {
+        LawnchairSmartspaceController.NotificationBasedDataProvider(controller) {
 
     private val context = controller.context
     private val media = MediaListener(context, this::reload)
     private val defaultIcon = context.getDrawable(R.drawable.ic_music_note)!!.toBitmap()!!
 
-    init {
+    override fun waitForSetup() {
+        super.waitForSetup()
+
         media.onResume()
     }
 
     private fun getEventCard(): CardData? {
         if (!media.isTracking ) return null
 
-        val notification = media.playingNotification?.notification ?: return null
-        val icon = notification.loadSmallIcon(context)?.toBitmap() ?: defaultIcon
+        val sbn = media.playingNotification ?: return null
+        val notification = sbn.notification
+        val icon = sbn.loadSmallIcon(context)?.toBitmap() ?: defaultIcon
 
+        val mediaInfo = media.info
         val lines = mutableListOf<Line>()
-        lines.add(Line(media.title.toString()))
-        if (!TextUtils.isEmpty(media.artist)) {
-            lines.add(Line(media.artist.toString()))
+        lines.add(Line(mediaInfo.title.toString()))
+        if (!TextUtils.isEmpty(mediaInfo.artist)) {
+            lines.add(Line(mediaInfo.artist.toString()))
         } else {
-            lines.add(Line(getApp(media.`package`).toString()))
+            lines.add(Line(getApp(sbn).toString()))
         }
         return CardData(icon, lines, notification.contentIntent, true)
     }

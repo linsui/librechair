@@ -24,7 +24,6 @@ import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.util.buildEntries
-import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
@@ -36,7 +35,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
     init {
         buildEntries {
             getProviders().forEach {
-                addEntry(displayNames[it] ?: error("No display name for provider $it"), it)
+                addEntry(LawnchairSmartspaceController.getDisplayName(it), it)
             }
         }
     }
@@ -92,26 +91,5 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
     override fun persistString(value: String?): Boolean {
         prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
         return true
-    }
-
-    companion object {
-
-        val displayNames =
-                mapOf(Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-                      Pair(BuiltInCalendarProvider::class.java.name,
-                           R.string.provider_built_in_calendar_title),
-                      Pair(AlarmEventProvider::class.java.name,
-                           R.string.name_provider_alarm_events),
-                      Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
-                      Pair(AccuWeatherDataProvider::class.java.name,
-                           R.string.weather_provider_accu),
-                      Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-                      Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing),
-                      Pair(NowPlayingProvider::class.java.name,
-                           R.string.event_provider_now_playing),
-                      Pair(NotificationUnreadProvider::class.java.name,
-                           R.string.event_provider_unread_notifications),
-                      Pair(BatteryStatusProvider::class.java.name, R.string.battery_status))
-
     }
 }

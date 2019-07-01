@@ -368,6 +368,7 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
                 : this(sharedPrefs, prefKey, onChange, default)
 
         private val valueList = ArrayList<T>()
+        private val listeners: MutableSet<MutableListPrefChangeListener> = Collections.newSetFromMap(WeakHashMap())
 
         init {
             val arr = JSONArray(prefs.getString(prefKey, getJsonString(default)))
@@ -432,12 +433,21 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
 
         fun getList() = valueList
 
+        fun addListener(listener: MutableListPrefChangeListener) {
+            listeners.add(listener)
+        }
+
+        fun removeListener(listener: MutableListPrefChangeListener) {
+            listeners.remove(listener)
+        }
+
         private fun saveChanges() {
             @SuppressLint("CommitPrefEdits")
             val editor = prefs.edit()
             editor.putString(prefKey, getJsonString(valueList))
             if (!bulkEditing)
                 commitOrApply(editor, blockingEditing)
+            listeners.forEach { it.onListPrefChanged(prefKey) }
         }
 
         private fun getJsonString(list: List<T>): String {
@@ -445,6 +455,11 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
             list.forEach { arr.put(flattenValue(it)) }
             return arr.toString()
         }
+    }
+
+    interface MutableListPrefChangeListener {
+
+        fun onListPrefChanged(key: String)
     }
 
     abstract inner class MutableMapPref<K, V>(private val prefKey: String, onChange: () -> Unit = doNothing) {
