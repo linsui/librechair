@@ -18,7 +18,6 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
-import android.content.Intent
 import android.os.Handler
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -26,46 +25,46 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.getColorEngineAccent
-import ch.deletescape.lawnchair.iconpack.IconPackList
-import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.isVisible
+import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.smartspace.*
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 
-class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.Holder>() {
+class SmartspaceEventProvidersAdapter(private val context: Context)
+    : RecyclerView.Adapter<SmartspaceEventProvidersAdapter.Holder>() {
 
-    private val manager = IconPackManager.getInstance(context)
-    private val allPacks = ArrayList<IconPackItem>()
+    private val prefs = context.lawnchairPrefs
+    private val allProviders = ArrayList<ProviderItem>()
     private val handler = Handler()
 
     private var dividerIndex = 0
 
     private val adapterItems = ArrayList<Item>()
     private val currentSpecs = ArrayList<String>()
-    private val otherItems = ArrayList<IconPackItem>()
-    private val divider = DividerItem(IconPackList.DefaultPackInfo(context))
+    private val otherItems = ArrayList<ProviderItem>()
+    private val divider = DividerItem()
     private var isDragging = false
 
     var itemTouchHelper: ItemTouchHelper? = null
 
     init {
-        allPacks.addAll(manager.packList.getAvailablePacks().map { IconPackItem(it) })
-        currentSpecs.addAll(manager.packList.appliedPacks.map { it.packPackageName })
+        allProviders.addAll(getEventProviders(context).map { ProviderItem(ProviderInfo(it)) })
+        currentSpecs.addAll(prefs.eventProviders.getAll())
 
         fillItems()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return when (viewType) {
-            TYPE_HEADER -> createHolder(parent, R.layout.icon_pack_text_item, ::HeaderHolder)
-            TYPE_PACK -> createHolder(parent, R.layout.icon_pack_dialog_item, ::IconPackHolder)
-            TYPE_DIVIDER -> createHolder(parent, R.layout.icon_pack_divider_item, ::DividerHolder)
-            TYPE_DOWNLOAD -> createHolder(parent, R.layout.icon_pack_dialog_item, ::DownloadHolder)
+            TYPE_HEADER -> createHolder(parent, R.layout.event_provider_text_item, ::HeaderHolder)
+            TYPE_ITEM -> createHolder(parent, R.layout.event_provider_dialog_item, ::ProviderHolder)
+            TYPE_DIVIDER -> createHolder(parent, R.layout.event_providers_divider_item, ::DividerHolder)
             else -> throw IllegalArgumentException("type must be either TYPE_TEXT, " +
-                    "TYPE_PACK, TYPE_DIVIDER or TYPE_DOWNLOAD")
+                                                   "TYPE_PROVIDER or TYPE_DIVIDER")
         }
     }
 
@@ -85,7 +84,10 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
 
         while (iterator.hasNext()) {
             val item = iterator.next()
-            if (item is IconPackItem) newSpecs.add(item.info.packageName)
+            if (item is ProviderItem) {
+                newSpecs.add(item.info.name)
+                d("adding item ${item.info.name}")
+            }
             if (item is DividerItem) break
         }
         return newSpecs
@@ -93,7 +95,7 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
 
     private fun fillItems(){
         otherItems.clear()
-        otherItems.addAll(allPacks)
+        otherItems.addAll(allProviders)
 
         adapterItems.clear()
         adapterItems.add(HeaderItem())
@@ -106,14 +108,13 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         dividerIndex = adapterItems.count()
         adapterItems.add(divider)
         adapterItems.addAll(otherItems)
-        adapterItems.add(DownloadItem())
     }
 
-    private fun getAndRemoveOther(s: String): IconPackItem? {
+    private fun getAndRemoveOther(s: String): ProviderItem? {
         val iterator = otherItems.iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
-            if (item.info.packageName == s) {
+            if (item.info.name == s) {
                 iterator.remove()
                 return item
             }
@@ -149,22 +150,16 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         override val type = TYPE_HEADER
     }
 
-    open class IconPackItem(val info: IconPackList.PackInfo) : Item() {
+    open class ProviderItem(val info: ProviderInfo) : Item() {
 
         override val isStatic = false
-        override val type = TYPE_PACK
+        override val type = TYPE_ITEM
     }
 
-    class DividerItem(info: IconPackList.PackInfo): IconPackItem(info) {
+    class DividerItem : Item() {
 
         override val isStatic = true
         override val type = TYPE_DIVIDER
-    }
-
-    class DownloadItem : Item() {
-
-        override val isStatic = true
-        override val type = TYPE_DOWNLOAD
     }
 
     abstract class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -172,6 +167,12 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         open fun bind(item: Item) {
 
         }
+    }
+
+    inner class ProviderInfo(val name: String) {
+
+        val displayName = context.getString(SmartspaceProviderPreference.displayNames[name]
+                                            ?: error("No display name for provider $name"))
     }
 
     class HeaderHolder(itemView: View) : Holder(itemView) {
@@ -184,14 +185,13 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         }
     }
 
-    open inner class IconPackHolder(itemView: View) : Holder(itemView), View.OnClickListener, View.OnTouchListener {
+    open inner class ProviderHolder(itemView: View) : Holder(itemView), View.OnClickListener, View.OnTouchListener {
 
-        val icon: ImageView = itemView.findViewById(android.R.id.icon)
         val title: TextView = itemView.findViewById(android.R.id.title)
         val summary: TextView = itemView.findViewById(android.R.id.summary)
         private val dragHandle: View = itemView.findViewById(R.id.drag_handle)
-        private val packItem get() = adapterItems[adapterPosition] as? IconPackItem
-                ?: throw IllegalArgumentException("item must be IconPackItem")
+        private val packItem get() = adapterItems[adapterPosition] as? ProviderItem
+                                     ?: throw IllegalArgumentException("item must be ProviderItem")
 
         init {
             itemView.setOnClickListener(this)
@@ -199,9 +199,8 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         }
 
         override fun bind(item: Item) {
-            val packItem = item as? IconPackItem
-                    ?: throw IllegalArgumentException("item must be IconPackItem")
-            icon.setImageDrawable(packItem.info.displayIcon)
+            val packItem = item as? ProviderItem
+                           ?: throw IllegalArgumentException("item must be ProviderItem")
             title.text = packItem.info.displayName
             itemView.isClickable = !packItem.isStatic
             dragHandle.isVisible = !packItem.isStatic
@@ -231,7 +230,7 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         }
     }
 
-    inner class DividerHolder(itemView: View) : IconPackHolder(itemView) {
+    inner class DividerHolder(itemView: View) : Holder(itemView) {
 
         val text: TextView = itemView.findViewById(android.R.id.text1)
 
@@ -241,34 +240,11 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
 
         override fun bind(item: Item) {
             super.bind(item)
-            if (isDragging) {
+            if (isDragging || dividerIndex == adapterItems.size - 1) {
                 text.setText(R.string.drag_to_disable_packs)
             } else {
                 text.setText(R.string.drag_to_enable_packs)
             }
-            text.isVisible = isDragging || dividerIndex != adapterItems.size - 2
-        }
-    }
-
-    inner class DownloadHolder(itemView: View) : IconPackHolder(itemView) {
-
-        init {
-            val context = itemView.context
-            icon.setImageDrawable(context.getDrawable(R.drawable.ic_add)?.apply {
-                setTint(ColorEngine.getInstance(context).accent)
-            })
-            title.setText(R.string.get_more_icon_packs)
-        }
-
-        override fun bind(item: Item) {
-
-        }
-
-        override fun onClick(v: View) {
-            val intent = Intent.parseUri(v.context.getString(R.string.market_search_intent), 0)
-            intent.data = intent.data!!.buildUpon().appendQueryParameter("q", v.context.getString(R.string.icon_pack)).build()
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            v.context.startActivity(intent)
         }
     }
 
@@ -287,7 +263,7 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
             val item = adapterItems[viewHolder.adapterPosition]
             val dragFlags = if (item.isStatic) 0 else ItemTouchHelper.UP or ItemTouchHelper.DOWN
-            return ItemTouchHelper.Callback.makeMovementFlags(dragFlags, 0)
+            return makeMovementFlags(dragFlags, 0)
         }
 
         override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
@@ -302,8 +278,21 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
     companion object {
 
         const val TYPE_HEADER = 0
-        const val TYPE_PACK = 1
+        const val TYPE_ITEM = 1
         const val TYPE_DIVIDER = 2
-        const val TYPE_DOWNLOAD = 3
+
+        fun getEventProviders(context: Context): List<String> {
+            val list = ArrayList<String>()
+            if (Utilities.ATLEAST_NOUGAT)
+                list.add(SmartspaceDataWidget::class.java.name)
+            if (FeedBridge.getInstance(context).resolveBridge()?.supportsSmartspace == true)
+                list.add(SmartspacePixelBridge::class.java.name)
+            list.add(NowPlayingProvider::class.java.name)
+            list.add(NotificationUnreadProvider::class.java.name)
+            list.add(BatteryStatusProvider::class.java.name)
+            if (context.lawnchairPrefs.showDebugInfo)
+                list.add(FakeDataProvider::class.java.name)
+            return list
+        }
     }
 }

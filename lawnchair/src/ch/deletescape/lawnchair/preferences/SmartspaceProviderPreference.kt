@@ -23,18 +23,22 @@ import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
+import ch.deletescape.lawnchair.util.buildEntries
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
-class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
-    : ListPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
+class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
+        ListPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
 
     private val prefs = Utilities.getLawnchairPrefs(context)
     private val forWeather by lazy { key == "pref_smartspace_widget_provider" }
 
     init {
-        entryValues = getProviders().toTypedArray()
-        entries = entryValues.map { context.getString(displayNames[it]!!) }.toTypedArray()
+        buildEntries {
+            getProviders().forEach {
+                addEntry(displayNames[it] ?: error("No display name for provider $it"), it)
+            }
+        }
     }
 
     override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
@@ -42,26 +46,16 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
     }
 
     private fun getProviders(): List<String> {
-        return if (forWeather) getWeatherProviders() else getEventProviders()
+        return if (forWeather) getWeatherProviders() else SmartspaceEventProvidersAdapter.getEventProviders(
+            context)
     }
 
     private fun getWeatherProviders(): List<String> {
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
         list.add(AccuWeatherDataProvider::class.java.name)
-        list.add(
-            OWMWeatherDataProvider::class.java.name)
-        if (prefs.showDebugInfo)
-            list.add(FakeDataProvider::class.java.name)
-        return list
-    }
-
-    private fun getEventProviders(): List<String> {
-        val list = ArrayList<String>()
-        list.add(BlankDataProvider::class.java.name)
-        list.add(BuiltInCalendarProvider::class.java.name)
-        if (prefs.showDebugInfo)
-            list.add(FakeDataProvider::class.java.name)
+        list.add(OWMWeatherDataProvider::class.java.name)
+        if (prefs.showDebugInfo) list.add(FakeDataProvider::class.java.name)
         return list
     }
 
@@ -101,13 +95,20 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
 
     companion object {
 
-        val displayNames = mapOf(
-            Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-            Pair(BuiltInCalendarProvider::class.java.name, R.string.provider_built_in_calendar_title),
-            Pair(
-                OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
-            Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
-            Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-            Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
+        val displayNames =
+                mapOf(Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
+                      Pair(BuiltInCalendarProvider::class.java.name,
+                           R.string.provider_built_in_calendar_title),
+                      Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
+                      Pair(AccuWeatherDataProvider::class.java.name,
+                           R.string.weather_provider_accu),
+                      Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
+                      Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing),
+                      Pair(NowPlayingProvider::class.java.name,
+                           R.string.event_provider_now_playing),
+                      Pair(NotificationUnreadProvider::class.java.name,
+                           R.string.event_provider_unread_notifications),
+                      Pair(BatteryStatusProvider::class.java.name, R.string.battery_status))
+
     }
 }

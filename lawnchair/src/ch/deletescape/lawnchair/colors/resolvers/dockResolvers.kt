@@ -20,7 +20,6 @@ package ch.deletescape.lawnchair.colors.resolvers
 import android.graphics.Color
 import android.support.annotation.Keep
 import android.support.v4.graphics.ColorUtils
-import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.WallpaperColorResolver
@@ -83,7 +82,7 @@ class DockQsbLightResolver(config: Config) : WallpaperColorResolver(config), Law
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
-        notifyChanged()
+        if (!force) notifyChanged()
     }
 
     override fun stopListening() {

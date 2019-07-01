@@ -32,7 +32,10 @@ import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.preferences.DockStyle
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
+import ch.deletescape.lawnchair.smartspace.BatteryStatusProvider
 import ch.deletescape.lawnchair.smartspace.BuiltInCalendarProvider
+import ch.deletescape.lawnchair.smartspace.NotificationUnreadProvider
+import ch.deletescape.lawnchair.smartspace.NowPlayingProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
@@ -114,7 +117,7 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
 
     // Desktop
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)
-    private var gridSizeDelegate = ResettableLazy { GridSize2D(this, "numRows", "numColumns", LauncherAppState.getIDP(context), refreshGrid) }
+    private var gridSizeDelegate = ResettableLazy { GridSize2D(this, "numRows", "numColumns", LauncherAppState.getIDP(context), restart) }
     val gridSize by gridSizeDelegate
     val hideAppLabels by BooleanPref("pref_hideAppLabels", false, recreate)
     val showTopShadow by BooleanPref("pref_showTopShadow", true, recreate) // TODO: update the scrim instead of doing this
@@ -137,7 +140,12 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
     var weatherProvider by StringPref("pref_smartspace_widget_provider",
                                       OWMWeatherDataProvider::class.java.name, ::updateSmartspaceProvider)
     var eventProvider by StringPref("pref_smartspace_event_provider",
-            BuiltInCalendarProvider::class.java.name, ::updateSmartspaceProvider)
+                                    BuiltInCalendarProvider::class.java.name, ::updateSmartspaceProvider)
+    var eventProviders = StringListPref("pref_smartspace_event_providers",
+            ::updateSmartspaceProvider, listOf(eventProvider,
+                                               NotificationUnreadProvider::class.java.name,
+                                               NowPlayingProvider::class.java.name,
+                                               BatteryStatusProvider::class.java.name))
     var weatherApiKey by StringPref("pref_weatherApiKey", context.getString(R.string.default_owm_key))
     var weatherCity by StringPref("pref_weather_city", context.getString(R.string.default_city))
     val weatherUnit by StringBasedPref("pref_weather_units", Temperature.Unit.Celsius, ::updateSmartspaceProvider,
@@ -156,9 +164,9 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
     val dockShowPageIndicator by BooleanPref("pref_hotseatShowPageIndicator", true, { onChangeCallback?.updatePageIndicator() })
     val dockGradientStyle get() = dockStyles.currentStyle.enableGradient
     val dockHide get() = dockStyles.currentStyle.hide
-    private val dockGridSizeDelegate = ResettableLazy { GridSize(this, "numHotseatIcons", LauncherAppState.getIDP(context), recreate) }
+    private val dockGridSizeDelegate = ResettableLazy { GridSize(this, "numHotseatIcons", LauncherAppState.getIDP(context), restart) }
     val dockGridSize by dockGridSizeDelegate
-    val twoRowDock by BooleanPref("pref_twoRowDock", false, recreate)
+    val twoRowDock by BooleanPref("pref_twoRowDock", false, restart)
     val dockRowsCount get() = if (twoRowDock) 2 else 1
     val dockScale by FloatPref("pref_dockScale", 1f, recreate)
 
@@ -342,6 +350,15 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
         onChangeListeners[key]?.remove(listener)
     }
 
+    inner class StringListPref(prefKey: String,
+                               onChange: () -> Unit = doNothing,
+                               default: List<String> = emptyList())
+        : MutableListPref<String>(prefKey, onChange, default) {
+
+        override fun unflattenValue(value: String) = value
+        override fun flattenValue(value: String) = value
+    }
+
     abstract inner class MutableListPref<T>(private val prefs: SharedPreferences,
                                             private val prefKey: String,
                                             onChange: () -> Unit = doNothing,
@@ -373,6 +390,8 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
             valueList[position] = value
             saveChanges()
         }
+
+        fun getAll(): List<T> = valueList
 
         fun setAll(value: List<T>) {
             if (value == valueList) return

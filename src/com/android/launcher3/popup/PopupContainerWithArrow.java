@@ -58,6 +58,7 @@ import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.dragndrop.DragView;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.logging.LoggerUtils;
 import com.android.launcher3.notification.NotificationInfo;
 import com.android.launcher3.notification.NotificationItemView;
@@ -155,7 +156,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
                         LoggerUtils.newContainerTarget(ContainerType.DEEPSHORTCUTS));
                 close(true);
 
-                // We let touches on the original iconView go through so that users can launch
+                // We let touches on the original icon go through so that users can launch
                 // the app with one tap if they don't find a shortcut they want.
                 return mOriginalIcon == null || !dl.isEventOverView(mOriginalIcon, ev);
             }
@@ -164,7 +165,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
     }
 
     /**
-     * Shows the notifications and deep shortcuts associated with {@param iconView}.
+     * Shows the notifications and deep shortcuts associated with {@param icon}.
      * @return the container if shown or null.
      */
     public static PopupContainerWithArrow showForIcon(BubbleTextView icon) {
@@ -365,7 +366,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
                 initializeSystemShortcut(
                         R.layout.system_shortcut_icon_only, mSystemShortcutContainer, widgetInfo);
             } else {
-                // If using the expanded system shortcut (as opposed to just the iconView), we need to
+                // If using the expanded system shortcut (as opposed to just the icon), we need to
                 // reopen the container to ensure measurements etc. all work out. While this could
                 // be quite janky, in practice the user would typically see a small flicker as the
                 // animation restarts partway through, and this is a very rare edge case anyway.
@@ -386,12 +387,12 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
     private void initializeSystemShortcut(int resId, ViewGroup container, SystemShortcut info) {
         View view = inflateAndAdd(resId, container);
         if (view instanceof DeepShortcutView) {
-            // Expanded system shortcut, with both iconView and text shown on white background.
+            // Expanded system shortcut, with both icon and text shown on white background.
             final DeepShortcutView shortcutView = (DeepShortcutView) view;
             shortcutView.getIconView().setBackgroundResource(info.iconResId);
             shortcutView.getBubbleText().setText(info.labelResId);
         } else if (view instanceof ImageView) {
-            // Only the system shortcut iconView shows on a gray background header.
+            // Only the system shortcut icon shows on a gray background header.
             final ImageView shortcutIcon = (ImageView) view;
             shortcutIcon.setImageResource(info.iconResId);
             shortcutIcon.setContentDescription(getContext().getText(info.labelResId));
@@ -418,12 +419,12 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
             @Override
             public void onPreDragStart(DropTarget.DragObject dragObject) {
                 if (mIsAboveIcon) {
-                    // Hide only the iconView, keep the text visible.
+                    // Hide only the icon, keep the text visible.
                     mOriginalIcon.setIconVisible(false);
-                    mOriginalIcon.setVisibility(VISIBLE);
+                    setOriginalIconVisibility(VISIBLE);
                 } else {
-                    // Hide both the iconView and text.
-                    mOriginalIcon.setVisibility(INVISIBLE);
+                    // Hide both the icon and text.
+                    setOriginalIconVisibility(INVISIBLE);
                 }
             }
 
@@ -431,22 +432,32 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
             public void onPreDragEnd(DropTarget.DragObject dragObject, boolean dragStarted) {
                 mOriginalIcon.setIconVisible(true);
                 if (dragStarted) {
-                    // Make sure we keep the original iconView hidden while it is being dragged.
-                    mOriginalIcon.setVisibility(INVISIBLE);
+                    // Make sure we keep the original icon hidden while it is being dragged.
+                    setOriginalIconVisibility(INVISIBLE);
                 } else {
                     mLauncher.getUserEventDispatcher().logDeepShortcutsOpen(mOriginalIcon);
                     if (!mIsAboveIcon) {
-                        // Show the iconView but keep the text hidden.
-                        mOriginalIcon.setVisibility(VISIBLE);
+                        // Show the icon but keep the text hidden.
+                        setOriginalIconVisibility(VISIBLE);
                         mOriginalIcon.setTextVisibility(false);
                     }
                 }
+            }
+
+            private void setOriginalIconVisibility(int visibility) {
+                View target;
+                if (mOriginalIcon.getParent() instanceof FolderIcon) {
+                    target = (View) mOriginalIcon.getParent();
+                } else {
+                    target = mOriginalIcon;
+                }
+                target.setVisibility(visibility);
             }
         };
     }
 
     /**
-     * Updates the notification header if the original iconView's badge updated.
+     * Updates the notification header if the original icon's badge updated.
      */
     public void updateNotificationHeader(Set<PackageUserKey> updatedBadges) {
         ItemInfo itemInfo = (ItemInfo) mOriginalIcon.getTag();
@@ -488,7 +499,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
 
     @Override
     public void onDragStart(DropTarget.DragObject dragObject, DragOptions options) {
-        // Either the original iconView or one of the shortcuts was dragged.
+        // Either the original icon or one of the shortcuts was dragged.
         // Hide the container, but don't remove it yet because that interferes with touch events.
         mDeferContainerRemoval = true;
         animateClose();
@@ -522,7 +533,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
 
     @Override
     protected void onCreateCloseAnimation(AnimatorSet anim) {
-        // Animate original iconView's text back in.
+        // Animate original icon's text back in.
         anim.play(mOriginalIcon.createTextAlphaAnimator(true /* fadeIn */));
         mOriginalIcon.forceHideBadge(false);
     }
@@ -557,7 +568,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
         DeepShortcutView sv = (DeepShortcutView) v.getParent();
         sv.setWillDrawIcon(false);
 
-        // Move the iconView to align with the center-top of the touch point
+        // Move the icon to align with the center-top of the touch point
         Point iconShift = new Point();
         iconShift.x = mIconLastTouchPos.x - sv.getIconCenter().x;
         iconShift.y = mIconLastTouchPos.y - mLauncher.getDeviceProfile().iconSizePx;

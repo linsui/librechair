@@ -1,7 +1,11 @@
 package com.google.android.apps.nexuslauncher.smartspace;
 
 import android.animation.ValueAnimator;
-import android.content.*;
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,7 +34,11 @@ import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
-import com.android.launcher3.*;
+import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.ItemInfo;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.graphics.ShadowGenerator;
 import com.android.launcher3.util.Themes;
@@ -61,6 +69,8 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     private final OnClickListener mCalendarClickListener;
     private final OnClickListener mClockClickListener;
     private final OnClickListener mWeatherClickListener;
+    private final OnClickListener mEventClickListener;
+    private View mSubtitleLine;
     private ImageView mSubtitleIcon;
     private TextView mSubtitleText;
     private ViewGroup mSubtitleWeatherContent;
@@ -116,6 +126,11 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
         mWeatherClickListener = v -> {
             if (mController != null)
                 mController.openWeather(v);
+        };
+
+        mEventClickListener = v -> {
+            if (mController != null)
+                mController.openEvent(v);
         };
 
         dp = SmartspaceController.get(context);
@@ -193,6 +208,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     @SuppressWarnings("ConstantConditions")
     private void loadDoubleLine(final LawnchairSmartspaceController.DataContainer data) {
+        setOnClickListener(mEventClickListener);
         setBackgroundResource(mSmartspaceBackgroundRes);
         mTitleText.setText(data.getCard().getTitle());
         mTitleText.setEllipsize(data.getCard().getTitleEllipsize());
@@ -206,9 +222,21 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     @SuppressWarnings("ConstantConditions")
     private void loadSingleLine(final LawnchairSmartspaceController.DataContainer data) {
+        setOnClickListener(null);
         setBackgroundResource(0);
         bindWeather(data, mTitleWeatherContent, mTitleWeatherText, mTitleWeatherIcon);
         bindClockAndSeparator(false);
+        if (data.isCardAvailable()) {
+            mSubtitleLine.setVisibility(View.VISIBLE);
+            mSubtitleText.setText(data.getCard().getTitle());
+            mSubtitleText.setEllipsize(data.getCard().getTitleEllipsize());
+            mSubtitleText.setOnClickListener(mEventClickListener);
+            mSubtitleIcon.setImageTintList(dH);
+            mSubtitleIcon.setImageBitmap(data.getCard().getIcon());
+            mSubtitleIcon.setOnClickListener(mEventClickListener);
+        } else {
+            mSubtitleLine.setVisibility(View.GONE);
+        }
     }
 
     private void bindClockAndSeparator(boolean forced) {
@@ -277,6 +305,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     private void loadViews() {
         mTitleText = findViewById(R.id.title_text);
+        mSubtitleLine = findViewById(R.id.subtitle_line);
         mSubtitleText = findViewById(R.id.subtitle_text);
         mSubtitleIcon = findViewById(R.id.subtitle_icon);
         mTitleWeatherIcon = findViewById(R.id.title_weather_icon);

@@ -29,13 +29,13 @@ import android.view.ViewGroup
 import android.widget.CheckedTextView
 import ch.deletescape.lawnchair.addOrRemove
 import ch.deletescape.lawnchair.applyAccent
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.groups.DrawerTabs
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import com.android.launcher3.R
 import com.android.launcher3.util.ComponentKey
 
-class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : RecyclerViewPreference(context, attrs) {
+class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : LauncherRecyclerViewPreference(context, attrs) {
 
     lateinit var componentKey: ComponentKey
     private val selections = mutableMapOf<DrawerTabs.CustomTab, Boolean>()

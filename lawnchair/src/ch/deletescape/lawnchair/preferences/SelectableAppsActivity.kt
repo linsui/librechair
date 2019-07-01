@@ -21,15 +21,10 @@ import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import android.os.Handler
-import android.os.Process
-import android.os.ResultReceiver
-import android.os.UserHandle
+import android.os.*
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import ch.deletescape.lawnchair.LawnchairAppFilter
 import ch.deletescape.lawnchair.groups.DrawerTabs
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
@@ -101,7 +96,7 @@ class SelectableAppsActivity : SettingsActivity() {
         }
 
         private fun updateTitle(size: Int) {
-            activity!!.title = getString(R.string.selected_count, size)
+            activity?.title = getString(R.string.selected_count, size)
         }
     }
 

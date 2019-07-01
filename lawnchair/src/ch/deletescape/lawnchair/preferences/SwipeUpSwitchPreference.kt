@@ -23,14 +23,15 @@ class SwipeUpSwitchPreference(context: Context, attrs: AttributeSet? = null) : S
         if (secureOverrideMode && !hasWriteSecurePermission) {
             isEnabled = false
         }
+        isChecked = OverviewInteractionState.getInstance(context).isSwipeUpGestureEnabled
+    }
+
+    override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
+
     }
 
     override fun shouldDisableDependents(): Boolean {
         return disableDependentsState == isChecked
-    }
-
-    override fun getPersistedBoolean(defaultReturnValue: Boolean): Boolean {
-        return OverviewInteractionState.getInstance(context).isSwipeUpGestureEnabled
     }
 
     override fun persistBoolean(value: Boolean): Boolean {

@@ -35,7 +35,6 @@ import android.widget.TextView;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.BubbleTextView;
-import com.android.launcher3.FolderInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.allapps.AlphabeticalAppsList.AdapterItem;
@@ -284,9 +283,11 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                 return new ViewHolder(footer);
             case VIEW_TYPE_FOLDER:
                 FrameLayout layout = new FrameLayout(mLauncher);
+
                 ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        mLauncher.getDeviceProfile().allAppsCellHeightPx);
+                layout.setLayoutParams(lp);
                 return new ViewHolder(layout);
             default:
                 throw new RuntimeException("Unexpected view type");
@@ -332,12 +333,14 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                         ? R.string.work_mode_off_label : R.string.work_mode_on_label);
                 break;
             case VIEW_TYPE_FOLDER:
-                // TODO: clean up this mess
-                FolderInfo folderInfo = mApps.getAdapterItems().get(position).folderInfo;
                 ViewGroup container = (ViewGroup) holder.itemView;
+                FolderIcon folderIcon = mApps.getAdapterItems().get(position)
+                        .folderItem.getFolderIcon(mLauncher, container);
+
                 container.removeAllViews();
-                container.addView(FolderIcon.fromXml(R.layout.all_apps_folder_icon, mLauncher,
-                        container, folderInfo));
+                container.addView(folderIcon);
+
+                folderIcon.verifyHighRes();
                 break;
         }
         if (mBindViewCallback != null) {

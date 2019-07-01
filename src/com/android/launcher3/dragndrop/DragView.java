@@ -105,7 +105,7 @@ public class DragView extends View {
     private boolean mAnimationCancelled = false;
 
     ValueAnimator mAnim;
-    // The intrinsic iconView scale factor is the scale factor for a drag iconView over the workspace
+    // The intrinsic icon scale factor is the scale factor for a drag icon over the workspace
     // size.  This is ignored for non-icons.
     private float mIntrinsicIconScale = 1f;
 
@@ -216,7 +216,10 @@ public class DragView extends View {
                 info.itemType != LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             return;
         }
-        // Load the adaptive iconView on a background thread and add the view in ui thread.
+        if (info instanceof FolderInfo && ((FolderInfo) info).usingCustomIcon(mLauncher)) {
+            return;
+        }
+        // Load the adaptive icon on a background thread and add the view in ui thread.
         final Looper workerLooper = LauncherModel.getWorkerLooper();
         new Handler(workerLooper).postAtFrontOfQueue(new Runnable() {
             @Override
@@ -226,7 +229,7 @@ public class DragView extends View {
                 // TODO: Actually support wiggling for custom folder icons, but with proper sizing
                 final Drawable dr = getFullDrawable(info, appState, outObj);
 
-                if (dr instanceof AdaptiveIconDrawable && !(info instanceof FolderInfo && ((FolderInfo) info).hasCustomIcon(mLauncher))) {
+                if (dr instanceof AdaptiveIconDrawable) {
                     int w = mBitmap.getWidth();
                     int h = mBitmap.getHeight();
                     int blurMargin = (int) mLauncher.getResources()
@@ -234,8 +237,8 @@ public class DragView extends View {
 
                     Rect bounds = new Rect(0, 0, w, h);
                     bounds.inset(blurMargin, blurMargin);
-                    // Badge is applied after iconView normalization so the bounds for badge should not
-                    // be scaled down due to iconView normalization.
+                    // Badge is applied after icon normalization so the bounds for badge should not
+                    // be scaled down due to icon normalization.
                     Rect badgeBounds = new Rect(bounds);
                     mBadge = getBadge(info, appState, outObj[0]);
                     mBadge.setBounds(badgeBounds);
@@ -369,6 +372,11 @@ public class DragView extends View {
                 return sm.getShortcutIconDrawable(si.get(0), iconDpi);
             }
         } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderInfo folderInfo = (FolderInfo) info;
+            if (folderInfo.isCoverMode()) {
+                return getFullDrawable(folderInfo.getCoverInfo(), appState, outObj);
+            }
+
             FolderAdaptiveIcon icon =  FolderAdaptiveIcon.createFolderAdaptiveIcon(
                     mLauncher, info.id, new Point(mBitmap.getWidth(), mBitmap.getHeight()));
             if (icon == null) {
@@ -420,7 +428,7 @@ public class DragView extends View {
         setMeasuredDimension(mBitmap.getWidth(), mBitmap.getHeight());
     }
 
-    /** Sets the scale of the view over the normal workspace iconView size. */
+    /** Sets the scale of the view over the normal workspace icon size. */
     public void setIntrinsicIconScaleFactor(float scale) {
         mIntrinsicIconScale = scale;
     }

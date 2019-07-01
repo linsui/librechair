@@ -37,7 +37,9 @@ import ch.deletescape.lawnchair.util.InvertedMultiValueAlpha
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import com.android.launcher3.*
 import com.android.launcher3.BaseActivity.INVISIBLE_BY_APP_TRANSITIONS
-import com.android.launcher3.LauncherState.*
+import com.android.launcher3.LauncherState.ALL_APPS
+import com.android.launcher3.LauncherState.NORMAL
+import com.android.launcher3.folder.FolderIcon
 import com.android.launcher3.shortcuts.DeepShortcutView
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.MultiValueAlpha
@@ -119,7 +121,10 @@ class LawnchairAppTransitionManagerImpl(context: Context) : LauncherAppTransitio
                 if (it.mode == MODE_CLOSING) {
                     loadTask(it.taskId)?.let { task ->
                         val component = TaskUtils.getLaunchComponentKeyForTask(task.key)
-                        findIconForComponent(component, useScaleAnim)?.let { v ->
+                        findIconForComponent(component, useScaleAnim)?.let { icon ->
+                            val v = if (icon is FolderIcon && icon.isCoverMode)
+                                icon.folderName else icon
+
                             iconBounds = getViewBounds(v)
                             val anim = AnimatorSet()
 
@@ -447,8 +452,12 @@ class LawnchairAppTransitionManagerImpl(context: Context) : LauncherAppTransitio
             return false
         }
 
-        if (info is FolderInfo && allowFolder) {
-            return info.contents.any { matchesComponent(it, component, allowFolder) }
+        if (info is FolderInfo) {
+            if (info.isCoverMode) {
+                return matchesComponent(info.coverInfo, component, false)
+            } else if (allowFolder) {
+                return info.contents.any { matchesComponent(it, component, allowFolder) }
+            }
         }
 
         return info.targetComponent?.packageName == component.componentName.packageName && info.user == component.user

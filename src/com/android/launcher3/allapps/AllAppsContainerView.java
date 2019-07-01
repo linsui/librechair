@@ -38,7 +38,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.allapps.AllAppsTabs;
@@ -48,7 +47,6 @@ import ch.deletescape.lawnchair.colors.ColorEngine.OnColorChangeListener;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
 import com.android.launcher3.AppInfo;
-import com.android.launcher3.BaseRecyclerView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.DragSource;
@@ -68,6 +66,9 @@ import com.android.launcher3.views.BottomUserEducationView;
 import com.android.launcher3.views.RecyclerViewFastScroller;
 import com.android.launcher3.views.SpringRelativeLayout;
 import com.google.android.apps.nexuslauncher.qsb.AllAppsQsbLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -421,6 +422,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     }
 
     public void onTabChanged(int pos) {
+        pos = Utilities.boundToRange(pos, 0, mTabsController.getTabsCount() - 1);
         mHeader.setCurrentActive(pos);
         reset(true /* animate */, true);
         if (mAH[pos].recyclerView != null) {
@@ -429,7 +431,6 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
                     .getDrawerTab().getColorResolver().value());
 
             mTabsController.bindButtons(findViewById(R.id.tabs), mViewPager);
-
         }
         if (mAH[pos].isWork) {
             BottomUserEducationView.showIfNeeded(mLauncher);
@@ -438,6 +439,14 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
     public AlphabeticalAppsList getApps() {
         return mAH[AdapterHolder.MAIN].appsList;
+    }
+
+    public Collection<AlphabeticalAppsList> getAppsLists() {
+        List<AlphabeticalAppsList> results = new ArrayList<>();
+        for (AdapterHolder holder : mAH) {
+            results.add(holder.appsList);
+        }
+        return results;
     }
 
     public FloatingHeaderView getFloatingHeaderView() {

@@ -26,16 +26,12 @@ import static com.android.launcher3.LauncherState.OVERVIEW;
 import static com.android.launcher3.allapps.DiscoveryBounce.HOME_BOUNCE_SEEN;
 import static com.android.launcher3.allapps.DiscoveryBounce.SHELF_BOUNCE_SEEN;
 
-import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.CancellationSignal;
-import android.support.v4.content.ContextCompat;
 import android.util.Base64;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.gestures.VerticalSwipeGestureController;
 import ch.deletescape.lawnchair.touch.PinchStateChangeTouchController;
@@ -56,7 +52,6 @@ import com.android.quickstep.util.RemoteFadeOutAnimationListener;
 import com.android.quickstep.views.RecentsView;
 import com.android.systemui.shared.system.ActivityCompat;
 import com.android.systemui.shared.system.WindowManagerWrapper;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.zip.Deflater;
@@ -107,7 +102,8 @@ public class UiFactory {
     public static void onLauncherStateOrFocusChanged(Launcher launcher) {
         boolean shouldBackButtonBeHidden = launcher != null
                 && launcher.getStateManager().getState().hideBackButton
-                && launcher.hasWindowFocus();
+                && launcher.hasWindowFocus()
+                && !hasBackGesture(launcher);
         if (shouldBackButtonBeHidden) {
             // Show the back button if there is a floating view visible.
             shouldBackButtonBeHidden = AbstractFloatingView.getTopOpenViewWithType(launcher,
@@ -115,6 +111,14 @@ public class UiFactory {
         }
         OverviewInteractionState.getInstance(launcher)
                 .setBackButtonAlpha(shouldBackButtonBeHidden ? 0 : 1, true /* animate */);
+    }
+
+    public static boolean hasBackGesture(Launcher launcher) {
+        if (launcher instanceof LawnchairLauncher) {
+            return ((LawnchairLauncher) launcher).getGestureController().getHasBackGesture();
+        } else {
+            return false;
+        }
     }
 
     public static void resetOverview(Launcher launcher) {

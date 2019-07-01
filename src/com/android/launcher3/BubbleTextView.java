@@ -56,6 +56,7 @@ import com.android.launcher3.Launcher.OnResumeCallback;
 import com.android.launcher3.badge.BadgeInfo;
 import com.android.launcher3.badge.BadgeRenderer;
 import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.PreloadIconDrawable;
@@ -319,6 +320,20 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         }
     }
 
+    public void applyIcon(ItemInfoWithIcon info) {
+        FastBitmapDrawable iconDrawable = DrawableFactory.get(getContext()).newIcon(info);
+        mBadgeColor = IconPalette.getMutedColor(getContext(), info.iconColor, 0.54f);
+
+        setIcon(iconDrawable);
+    }
+
+    public void applyIcon(BitmapInfo info) {
+        FastBitmapDrawable iconDrawable = new FastBitmapDrawable(info);
+        mBadgeColor = IconPalette.getMutedColor(getContext(), info.color, 0.54f);
+
+        setIcon(iconDrawable);
+    }
+
     private void applySwipeUpAction(ShortcutInfo info) {
         GestureHandler handler = GestureController.Companion.createGestureHandler(
                 getContext(), info.swipeUpAction, new BlankGestureHandler(getContext(), null));
@@ -369,7 +384,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         return drawableState;
     }
 
-    /** Returns the iconView for this view. */
+    /** Returns the icon for this view. */
     public Drawable getIcon() {
         return mIcon;
     }
@@ -413,14 +428,14 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         return result;
     }
 
-    void setStayPressed(boolean stayPressed) {
+    public void setStayPressed(boolean stayPressed) {
         mStayPressed = stayPressed;
         refreshDrawableState();
     }
 
     @Override
     public void onLauncherResume() {
-        // Reset the pressed state of iconView that was locked in the press state while activity
+        // Reset the pressed state of icon that was locked in the press state while activity
         // was launching
         setStayPressed(false);
     }
@@ -454,7 +469,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Draws the iconView badge in the top right corner of the iconView bounds.
+     * Draws the icon badge in the top right corner of the icon bounds.
      * @param canvas The canvas to draw to.
      */
     protected void drawBadgeIfNecessary(Canvas canvas) {
@@ -567,6 +582,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     @Override
     public void cancelLongPress() {
         super.cancelLongPress();
+
         mLongPressHelper.cancelLongPress();
     }
 
@@ -645,13 +661,18 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Sets the iconView for this view based on the layout direction.
+     * Sets the icon for this view based on the layout direction.
      */
     private void setIcon(Drawable icon) {
         if (mIsIconVisible) {
             applyCompoundDrawables(icon);
         }
         mIcon = icon;
+    }
+
+    public void clearIcon() {
+        mIcon = null;
+        setCompoundDrawables(null, null, null, null);
     }
 
     public void setIconVisible(boolean visible) {
@@ -661,7 +682,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     protected void applyCompoundDrawables(Drawable icon) {
-        // If we had already set an iconView before, disable relayout as the iconView size is the
+        if (icon == null) return;
+
+        // If we had already set an icon before, disable relayout as the icon size is the
         // same as before.
         mDisableRelayout = mIcon != null;
 
@@ -707,7 +730,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Verifies that the current iconView is high-res otherwise posts a request to load the iconView.
+     * Verifies that the current icon is high-res otherwise posts a request to load the icon.
      */
     public void verifyHighRes() {
         verifyHighRes(BubbleTextView.this);
@@ -733,5 +756,9 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
 
     protected boolean isTextHidden() {
         return mHideText;
+    }
+
+    public int getBadgeColor() {
+        return mBadgeColor;
     }
 }

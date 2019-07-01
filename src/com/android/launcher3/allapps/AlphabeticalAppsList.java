@@ -17,20 +17,18 @@ package com.android.launcher3.allapps;
 
 import android.content.Context;
 import android.content.pm.LauncherActivityInfo;
-
 import android.graphics.Color;
 import android.os.UserHandle;
 import android.support.v4.graphics.ColorUtils;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.allapps.AppColorComparator;
-import ch.deletescape.lawnchair.groups.DrawerFolders;
+import ch.deletescape.lawnchair.groups.DrawerFolderInfo;
+import ch.deletescape.lawnchair.groups.DrawerFolderItem;
 import com.android.launcher3.AppInfo;
-import com.android.launcher3.FolderInfo;
 import com.android.launcher3.IconCache;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.badge.FolderBadgeInfo;
 import com.android.launcher3.compat.AlphabeticIndexCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.UserManagerCompat;
@@ -38,13 +36,13 @@ import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LabelComparator;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -105,10 +103,8 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         /**
          * Folder-only properties
          */
-        // The associated FolderInfo for the folder
-        public FolderInfo folderInfo = null;
-        // The index of this folder not including sections
-        public int folderIndex = -1;
+        // The associated folder for the folder
+        public DrawerFolderItem folderItem = null;
 
         public static AdapterItem asApp(int pos, String sectionName, AppInfo appInfo,
                                         int appIndex) {
@@ -149,14 +145,13 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
             return item;
         }
 
-        public static AdapterItem asFolder(int pos, String sectionName, FolderInfo folderInfo,
-                int folderIndex) {
+        public static AdapterItem asFolder(int pos, String sectionName,
+                DrawerFolderInfo folderInfo, int folderIndex) {
             AdapterItem item = new AdapterItem();
             item.viewType = AllAppsGridAdapter.VIEW_TYPE_FOLDER;
             item.position = pos;
             item.sectionName = sectionName;
-            item.folderInfo = folderInfo;
-            item.folderIndex = folderIndex;
+            item.folderItem = new DrawerFolderItem(folderInfo, folderIndex);
             return item;
         }
     }
@@ -367,7 +362,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
 
         // Drawer folders are arranged before all the apps
         if (!hasFilter()) {
-            for (FolderInfo info : getFolderInfos()) {
+            for (DrawerFolderInfo info : getFolderInfos()) {
                 String sectionName = "#";
 
                 // Create a new section if the section names do not match
@@ -378,6 +373,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
                     mFastScrollerSections.add(lastFastScrollerSectionInfo);
                 }
 
+                info.setAppsStore(mAllAppsStore);
                 // Create an folder item
                 AdapterItem appItem = AdapterItem
                         .asFolder(position++, sectionName, info, folderIndex++);
@@ -388,7 +384,7 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
             }
         }
 
-        List<ComponentKey> folderFilters = getFolderFilteredApps();
+        Set<ComponentKey> folderFilters = getFolderFilteredApps();
 
         // Recreate the filtered and sectioned apps (for convenience for the grid layout) from the
         // ordered set of sections
@@ -547,14 +543,14 @@ public class AlphabeticalAppsList implements AllAppsStore.OnUpdateListener {
         mIsWork = isWork;
     }
 
-    private List<FolderInfo> getFolderInfos() {
+    private List<DrawerFolderInfo> getFolderInfos() {
         return Utilities.getLawnchairPrefs(mLauncher)
                 .getAppGroupsManager()
                 .getDrawerFolders()
                 .getFolderInfos(this);
     }
 
-    private List<ComponentKey> getFolderFilteredApps() {
+    private Set<ComponentKey> getFolderFilteredApps() {
         return Utilities.getLawnchairPrefs(mLauncher)
                 .getAppGroupsManager()
                 .getDrawerFolders()

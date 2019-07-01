@@ -298,6 +298,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         setupViews();
         mPopupDataProvider = new PopupDataProvider(this);
+        LauncherNotifications.getInstance().addListener(mPopupDataProvider);
 
         mRotationHelper = new RotationHelper(this);
         mAppTransitionManager = LauncherAppTransitionManager.newInstance(this);
@@ -773,7 +774,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             mLauncherCallbacks.onStart();
         }
         mAppWidgetHost.setListenIfResumed(true);
-        NotificationListener.setNotificationsChangedListener(mPopupDataProvider);
+        NotificationListener.setNotificationsChangedListener(LauncherNotifications.getInstance());
         UiFactory.onStart(this);
     }
 
@@ -1743,6 +1744,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             BubbleTextView btv = (BubbleTextView) v;
             btv.setStayPressed(true);
             setOnResumeCallback(btv);
+        } else if (success && v instanceof FolderIcon) {
+            FolderIcon folderIcon = (FolderIcon) v;
+            folderIcon.setStayPressed(true);
+            setOnResumeCallback(folderIcon);
         }
         return success;
     }
