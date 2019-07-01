@@ -30,6 +30,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
@@ -69,8 +70,10 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     private fun forceUpdate() {
-        updateData(weatherData,
-                   eventDataProviders.asSequence().mapNotNull { eventDataMap[it] }.firstOrNull())
+        updateData(weatherData, eventDataProviders
+                .asSequence()
+                .mapNotNull { eventDataMap[it] }
+                .firstOrNull())
     }
 
     private fun notifyListeners() {
@@ -163,8 +166,8 @@ class LawnchairSmartspaceController(val context: Context) {
         if (weatherData!!.forecastIntent != null) {
             launcher.startActivitySafely(v, weatherData!!.forecastIntent, null)
         } else {
-            Utilities.openURLinBrowser(launcher, data.forecastUrl, launcher.getViewBounds(v),
-                                       launcher.getActivityLaunchOptions(v).toBundle())
+            Utilities.openURLinBrowser(launcher, weatherData!!.forecastUrl,
+                    launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v).toBundle())
         }
     }
 
@@ -173,20 +176,20 @@ class LawnchairSmartspaceController(val context: Context) {
         val launcher = Launcher.getLauncher(v.context)
         if (data.pendingIntent != null) {
             val opts = launcher.getActivityLaunchOptionsAsBundle(v)
-            launcher.startIntentSender(data.pendingIntent.intentSender, null,
-                                       Intent.FLAG_ACTIVITY_NEW_TASK, Intent.FLAG_ACTIVITY_NEW_TASK,
-                                       0, opts)
+            launcher.startIntentSender(
+                    data.pendingIntent.intentSender, null,
+                    Intent.FLAG_ACTIVITY_NEW_TASK,
+                    Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts)
         }
     }
 
     private fun createDataProvider(className: String): DataProvider {
         return try {
-            (Class.forName(className).getConstructor(
-                LawnchairSmartspaceController::class.java).newInstance(this) as DataProvider)
-                    .apply {
-                        runOnMainThread(::performSetup)
-                        waitForSetup()
-                    }
+            (Class.forName(className).getConstructor(LawnchairSmartspaceController::class.java)
+                    .newInstance(this) as DataProvider).apply {
+                runOnMainThread(::performSetup)
+                waitForSetup()
+            }
         } catch (t: Throwable) {
             Log.d("LSC", "couldn't create provider", t)
             BlankDataProvider(this)
