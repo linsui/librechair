@@ -95,7 +95,6 @@ import kotlin.collections.ArrayList
             val string = ArrayList<LawnchairSmartspaceController.Line>();
             string.add(LawnchairSmartspaceController.Line(
                 controller.context.getString(R.string.resuable_text_alarm)));
-            string.add(LawnchairSmartspaceController.Line("––"))
             string.add(LawnchairSmartspaceController.Line(
                 "" + Date(alarmClock.triggerTime).hours + ":" + Date(
                     alarmClock.triggerTime).minutes))

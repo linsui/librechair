@@ -57,6 +57,12 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         }
         val notif = NotificationInfo(context, sbn)
         val app = getApp(sbn).toString()
+        if (sbn.packageName.contains("clock")) {
+            /*
+             * The alarm provider should display upcoming alarms
+             */
+            return null;
+        }
         val title = notif.title?.toString() ?: ""
         val splitted = splitTitle(title)
         val body = notif.text?.toString()?.trim()?.split("\n")?.firstOrNull() ?: ""
