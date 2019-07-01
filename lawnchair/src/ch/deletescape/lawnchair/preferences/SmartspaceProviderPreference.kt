@@ -22,6 +22,7 @@ import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.smartspace.*
+import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
@@ -48,7 +49,8 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
         val list = ArrayList<String>()
         list.add(BlankDataProvider::class.java.name)
         list.add(AccuWeatherDataProvider::class.java.name)
-        list.add(OWMWeatherDataProvider::class.java.name)
+        list.add(
+            OWMWeatherDataProvider::class.java.name)
         if (prefs.showDebugInfo)
             list.add(FakeDataProvider::class.java.name)
         return list
@@ -100,11 +102,12 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?)
     companion object {
 
         val displayNames = mapOf(
-                Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-                Pair(BuiltInCalendarProvider::class.java.name, R.string.provider_built_in_calendar_title),
-                Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
-                Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
-                Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-                Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
+            Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
+            Pair(BuiltInCalendarProvider::class.java.name, R.string.provider_built_in_calendar_title),
+            Pair(
+                OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
+            Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
+            Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
+            Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
     }
 }

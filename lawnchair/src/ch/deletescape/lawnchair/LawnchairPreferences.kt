@@ -33,7 +33,7 @@ import ch.deletescape.lawnchair.preferences.DockStyle
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.smartspace.BuiltInCalendarProvider
-import ch.deletescape.lawnchair.smartspace.OWMWeatherDataProvider
+import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.*
@@ -135,7 +135,7 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
     val smartspaceDate by BooleanPref("pref_smartspace_date", true, refreshGrid)
     var smartspaceWidgetId by IntPref("smartspace_widget_id", -1, doNothing)
     var weatherProvider by StringPref("pref_smartspace_widget_provider",
-            OWMWeatherDataProvider::class.java.name, ::updateSmartspaceProvider)
+                                      OWMWeatherDataProvider::class.java.name, ::updateSmartspaceProvider)
     var eventProvider by StringPref("pref_smartspace_event_provider",
             BuiltInCalendarProvider::class.java.name, ::updateSmartspaceProvider)
     var weatherApiKey by StringPref("pref_weatherApiKey", context.getString(R.string.default_owm_key))
