@@ -86,7 +86,8 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
         return getPersistedValue()
     }
 
-    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, if (forWeather) OWMWeatherDataProvider::class.java.name else BuiltInCalendarProvider::class.java.name)
+    private fun getPersistedValue() = prefs.sharedPrefs.getString(key,
+                                                                  if (forWeather) OWMWeatherDataProvider::class.java.name else BuiltInCalendarProvider::class.java.name)
 
     override fun persistString(value: String?): Boolean {
         prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
@@ -95,10 +96,12 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
 
     companion object {
 
-        val  displayNames =
+        val displayNames =
                 mapOf(Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
                       Pair(BuiltInCalendarProvider::class.java.name,
                            R.string.provider_built_in_calendar_title),
+                      Pair(AlarmEventProvider::class.java.name,
+                           R.string.name_provider_alarm_events),
                       Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
                       Pair(AccuWeatherDataProvider::class.java.name,
                            R.string.weather_provider_accu),

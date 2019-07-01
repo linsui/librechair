@@ -36,8 +36,6 @@
 
 package ch.deletescape.lawnchair.smartspace
 
-import android.app.AlarmManager
-import android.content.Context
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
@@ -50,7 +48,6 @@ import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 @Keep class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
@@ -96,9 +93,7 @@ import java.util.concurrent.TimeUnit
                     android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
             silentlyFail = true;
-        }
-        else
-        {
+        } else {
             silentlyFail = false;
         }
         /*
@@ -202,21 +197,7 @@ import java.util.concurrent.TimeUnit
                 eventCursor.close();
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
-                val alarmManager =
-                        controller.context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
-                if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
-                            30)) {
-                    val alarmClock = alarmManager.nextAlarmClock!!
-                    updateData(weather, card = LawnchairSmartspaceController.CardData(
-                        drawableToBitmap(
-                            controller.context.getDrawable(R.drawable.ic_alarm_on_black_24dp)),
-                        controller.context.getString(R.string.resuable_text_alarm),
-                        TextUtils.TruncateAt.MARQUEE,
-                        "" + Date(alarmClock.triggerTime).hours + ":" + Date(
-                            alarmClock.triggerTime).minutes, TextUtils.TruncateAt.END))
-                } else {
-                    updateData(weather, card = null)
-                }
+                updateData(weather, card = null)
             }
         }
 
