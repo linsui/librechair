@@ -19,16 +19,13 @@ package com.android.launcher3;
 import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageInfo;
@@ -36,10 +33,15 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.graphics.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.hardware.input.InputManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -70,23 +72,22 @@ import android.util.Pair;
 import android.util.Property;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.animation.Interpolator;
-
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
+import android.view.animation.Interpolator;
 import ch.deletescape.lawnchair.HiddenApiCompat;
-import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.LawnchairAppKt;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
+import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+import ch.deletescape.lawnchair.smartspace.BrowserBoxActivity;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.config.FeatureFlags;
-
 import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.LauncherIcons;
 import com.android.launcher3.uioverrides.OverviewState;
-import com.android.systemui.shared.recents.model.Task;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -103,11 +104,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ch.deletescape.lawnchair.LawnchairLauncher;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
-import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -868,17 +864,13 @@ public final class Utilities {
     }
 
     public static void openURLinBrowser(Context context, String url, Rect sourceBounds, Bundle options) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            intent.setSourceBounds(sourceBounds);
-            if(options == null){
-                context.startActivity(intent);
-            } else {
-                context.startActivity(intent, options);
-            }
-        } catch (ActivityNotFoundException exc) {
-            // Believe me, this actually happens.
-            Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(context, BrowserBoxActivity.class);
+        intent.setData(Uri.parse(url));
+        intent.setSourceBounds(sourceBounds);
+        if(options == null){
+            context.startActivity(intent);
+        } else {
+            context.startActivity(intent, options);
         }
     }
 
