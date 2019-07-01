@@ -32,7 +32,6 @@ import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 
 class SmartspaceEventProvidersAdapter(private val context: Context)
     : RecyclerView.Adapter<SmartspaceEventProvidersAdapter.Holder>() {
@@ -283,8 +282,6 @@ class SmartspaceEventProvidersAdapter(private val context: Context)
 
         fun getEventProviders(context: Context): List<String> {
             val list = ArrayList<String>()
-            if (Utilities.ATLEAST_NOUGAT)
-                list.add(SmartspaceDataWidget::class.java.name)
             list.add(NowPlayingProvider::class.java.name)
             list.add(NotificationUnreadProvider::class.java.name)
             list.add(BatteryStatusProvider::class.java.name)

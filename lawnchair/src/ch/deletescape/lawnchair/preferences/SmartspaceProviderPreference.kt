@@ -95,7 +95,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
 
     companion object {
 
-        val displayNames =
+        val  displayNames =
                 mapOf(Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
                       Pair(BuiltInCalendarProvider::class.java.name,
                            R.string.provider_built_in_calendar_title),
