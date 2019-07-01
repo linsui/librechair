@@ -74,6 +74,8 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
         iconView = findViewById(R.id.current_weather_icon)
         weatherTitleText = findViewById(R.id.current_weather_text)
         weatherHelpfulTip = findViewById(R.id.weather_helpful_tip)
+        threeHourForecastRecyclerView = findViewById(R.id.next_three_hours_forecast);
+        twentyFourHourForecastRecyclerView = findViewById(R.id.next_twenty_four_forecast);
 
         icon = WeatherIconProvider(this).getIcon(intent!!.extras!!.getString("weather_icon"))
         weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
