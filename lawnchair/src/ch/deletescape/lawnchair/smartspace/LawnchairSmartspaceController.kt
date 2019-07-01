@@ -29,10 +29,7 @@ import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
-import ch.deletescape.lawnchair.checkPackagePermission
-import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.runOnMainThread
-import ch.deletescape.lawnchair.runOnUiWorkerThread
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.Launcher
 import com.android.launcher3.Utilities
@@ -131,8 +128,25 @@ class LawnchairSmartspaceController(val context: Context) {
             eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
 
             runOnMainThread {
-                needsUpdate.forEach { it.forceUpdate() }
-                forceUpdate()
+                if (eventProvidersPref.contains(BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    BlankActivity.requestPermission(context, android.Manifest.permission.READ_CALENDAR, LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
+                        if (it)
+                        {
+                            needsUpdate.forEach { it.forceUpdate() }
+                            forceUpdate()
+                        }
+                        else
+                        {
+                            /*
+                             * Fail silently
+                             */
+                        }
+                    }
+                }
+                else {
+                    needsUpdate.forEach { it.forceUpdate() }
+                    forceUpdate()
+                }
             }
         }
     }
