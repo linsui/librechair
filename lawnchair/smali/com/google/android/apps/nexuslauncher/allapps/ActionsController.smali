@@ -19,7 +19,7 @@
 
 
 # static fields
-.field public static final AIAI_PACKAGE:Ljava/lang/String; = "com.google.android.as"
+.field public static final AIAI_PACKAGE:Ljava/lang/String; = "org.microg.android.apps.dummy"
 
 .field public static final MAX_ITEMS:I = 0x2
 
@@ -102,7 +102,7 @@
 
     move-result-object v0
 
-    const-string v1, "com.google.android.as.allapps.actionsuggestprovider"
+    const-string v1, "org.microg.android.apps.dummy.allapps.actionsuggestprovider"
 
     .line 81
     invoke-virtual {v0, v1}, Landroid/net/Uri$Builder;->authority(Ljava/lang/String;)Landroid/net/Uri$Builder;
@@ -128,7 +128,7 @@
 
     move-result-object v0
 
-    const-string v1, "com.google.android.as.allapps.actionloggingprovider"
+    const-string v1, "org.microg.android.apps.dummy.allapps.actionloggingprovider"
 
     .line 86
     invoke-virtual {v0, v1}, Landroid/net/Uri$Builder;->authority(Ljava/lang/String;)Landroid/net/Uri$Builder;
@@ -154,7 +154,7 @@
 
     move-result-object v0
 
-    const-string v1, "com.google.android.as.allapps.actionsettingprovider"
+    const-string v1, "org.microg.android.apps.dummy.allapps.actionsettingprovider"
 
     .line 91
     invoke-virtual {v0, v1}, Landroid/net/Uri$Builder;->authority(Ljava/lang/String;)Landroid/net/Uri$Builder;
@@ -311,7 +311,7 @@
 
     invoke-direct {v0, p0}, Lcom/google/android/apps/nexuslauncher/allapps/ActionsController$2;-><init>(Lcom/google/android/apps/nexuslauncher/allapps/ActionsController;)V
 
-    const-string v1, "com.google.android.as"
+    const-string v1, "org.microg.android.apps.dummy"
 
     const-string v2, "android.intent.action.PACKAGE_ADDED"
 
@@ -823,7 +823,7 @@
 
     invoke-static {v0, v1}, Landroid/os/Message;->obtain(Landroid/os/Handler;I)Landroid/os/Message;
 
-    move-result-object v0
+    move-result-object v
 
     invoke-virtual {v0}, Landroid/os/Message;->sendToTarget()V
 
