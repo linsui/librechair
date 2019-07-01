@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.launcher3.accessibility.DragViewStateAnnouncer;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.util.FocusLogic;
@@ -305,8 +304,12 @@ public class AppWidgetResizeFrame extends AbstractFloatingView implements View.O
     static void updateWidgetSizeRanges(AppWidgetHostView widgetView, Launcher launcher,
             int spanX, int spanY) {
         getWidgetSizeRanges(launcher, spanX, spanY, sTmpRect);
-        widgetView.updateAppWidgetSize(null, sTmpRect.left, sTmpRect.top,
-                sTmpRect.right, sTmpRect.bottom);
+        try {
+            widgetView.updateAppWidgetSize(null, sTmpRect.left, sTmpRect.top,
+                    sTmpRect.right, sTmpRect.bottom);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Rect getWidgetSizeRanges(Context context, int spanX, int spanY, Rect rect) {
