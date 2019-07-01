@@ -353,4 +353,5 @@
     <string name="resuable_text_alarm">Alarm</string>
     <string name="search_provider_kiss_launcher">KISS Launcher</string>
     <string name="reusable_string_all_day_event">All-day event</string>
+    <string name="activity_weather_title_placeholder">419 Kelvin</string>
 </resources>

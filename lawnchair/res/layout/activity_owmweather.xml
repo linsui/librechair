@@ -18,10 +18,33 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity">
-
-</android.support.constraint.ConstraintLayout>
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_margin="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/current_weather_icon"
+                android:layout_width="@dimen/activity_weather_icon_size"
+                android:layout_height="@dimen/activity_weather_icon_size"
+                android:src="@drawable/weather_01" />
+            <TextView
+                android:layout_margin="8dp"
+                android:layout_gravity="bottom"
+                android:id="@+id/current_weather_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/activity_weather_title_placeholder"
+                android:textSize="@dimen/activity_weather_title_text_size"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

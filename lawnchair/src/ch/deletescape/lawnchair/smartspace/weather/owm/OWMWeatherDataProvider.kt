@@ -104,7 +104,7 @@ import kotlin.math.roundToInt
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
         val intent = Intent(controller.context, OWMWeatherActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         updateData(LawnchairSmartspaceController.WeatherData(iconProvider.getIcon(icon),
                                                              Temperature(temp.roundToInt(),
                                                                          if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius else Temperature.Unit.Fahrenheit),
