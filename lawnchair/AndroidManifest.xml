@@ -151,6 +151,11 @@
             android:process=":wallpaper_chooser"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
+        <provider
+            android:authorities="${applicationId}.appssearch"
+            android:exported="true"
+            android:name="com.google.android.apps.nexuslauncher.search.AppSearchProvider" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts"/>
