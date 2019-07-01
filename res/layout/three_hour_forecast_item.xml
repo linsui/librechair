@@ -25,7 +25,7 @@
     <ImageView
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:id="@+id/forcast_weather_icon"
+        android:id="@+id/forecast_weather_icon"
         android:layout_width="@dimen/activity_weather_icon_size"
         android:layout_height="@dimen/activity_weather_icon_size"
         android:layout_gravity="center"
@@ -37,11 +37,13 @@
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/forcast_current_time"
+            android:textStyle="bold"
+            android:id="@+id/forecast_current_time"
             android:text="@string/placeholder_forcast_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
+            android:textStyle="bold"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
@@ -49,7 +51,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
-            android:id="@+id/forcast_current_time"
+            android:textStyle="bold"
+            android:id="@+id/forecast_current_temperature"
             android:text="@string/activity_weather_title_placeholder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

@@ -53,6 +53,38 @@
                 android:textStyle="bold"
                 android:text="@string/activity_weather_title_placeholder"
                 android:textSize="@dimen/activity_weather_title_text_size"/>
+
+            <TextView
+                android:layout_margin="8dp"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/activity_weather_next_three_hours" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/next_three_hours_forecast"
+                android:orientation="horizontal"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/three_hour_forecast_item"/>
+
+            <TextView
+                android:layout_margin="8dp"
+                android:layout_gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/activity_weather_next_twenty_four_hours" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/next_twenty_four_forecast"
+                android:orientation="horizontal"
+                android:layout_margin="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/three_hour_forecast_item"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
