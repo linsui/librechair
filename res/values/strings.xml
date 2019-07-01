@@ -372,6 +372,6 @@
     <string name="helpful_tip_50">Put on a mask, watch out for low visibility, and frail family members should stay inside.</string>
     <string name="helpful_tip_13">Snow and ice can make your day a very miserable one. Watch out for slippery roads when walking and driving, and make sure to keep warm</string>
     <string name="helpful_tip_non_available">No helpful tip available</string>
-    <string name="activity_weather_next_three_hours">In the next three hours</string>
-    <string name="activity_weather_next_twenty_four_hours">In the next 24 hours</string>
+    <string name="activity_weather_next_three_hours">Today</string>
+    <string name="activity_weather_next_twenty_four_hours">This week</string>
 </resources>

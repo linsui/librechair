@@ -26,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -99,6 +100,7 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
                          Temperature.Unit.Fahrenheit -> Units.IMPERIAL
                          else -> Units.METRIC
                      })
+
         owm.getThreeHourForecastByGeoCoordinates(intent!!.extras!!.getDouble("city_lat"), intent!!.extras!!.getDouble("city_lon"), this)
     }
 
@@ -112,15 +114,16 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
         }
 
         override fun getItemCount(): Int {
-            return 3;
+            return threeHourForecast.list.get(0).weatherArray.size
         }
 
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
-            val threeHourWeather = threeHourForecast.list.get(position)
+            val threeHourWeather = threeHourForecast.list.get(0)
+            Log.d(javaClass.name, "onBindViewHolder: processing weather item: " + position + " with dt: " + threeHourWeather.dt)
             val time = GregorianCalendar()
             time.timeInMillis = threeHourWeather.dt
-            val weather = threeHourWeather.weatherArray.get(0)
+            val weather = threeHourWeather.weatherArray.get(position)
             holder.icon.setImageBitmap(iconProvider.getIcon(weather.icon))
             holder.time.text = "${time.get(Calendar.HOUR_OF_DAY)}:${time.get(Calendar.MINUTE)}"
             holder.temperature.text =
