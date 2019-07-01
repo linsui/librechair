@@ -51,7 +51,6 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
     private var twentyFourHourForecastRecyclerView: RecyclerView? = null;
     private var icon: Bitmap? = null;
     private var threeHourAdapter: ThreeHourForecastAdapter? = null
-    private var cityId: String? = null
     private val prefs = Utilities.getLawnchairPrefs(this)
     private val owm = OpenWeatherMapHelper(prefs.weatherApiKey)
 
@@ -76,7 +75,6 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
         weatherTitleText = findViewById(R.id.current_weather_text)
         weatherHelpfulTip = findViewById(R.id.weather_helpful_tip)
 
-        cityId = intent!!.extras!!.getString("city_id")
         icon = WeatherIconProvider(this).getIcon(intent!!.extras!!.getString("weather_icon"))
         weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
         iconView!!.setImageDrawable(BitmapDrawable(resources, icon!!))
@@ -99,7 +97,7 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
                          Temperature.Unit.Fahrenheit -> Units.IMPERIAL
                          else -> Units.METRIC
                      })
-        owm.getThreeHourForecastByCityID(cityId!!, this)
+        owm.getThreeHourForecastByGeoCoordinates(intent!!.extras!!.getDouble("city_lat"), intent!!.extras!!.getDouble("city_lon"), this)
     }
 
     class ThreeHourForecastAdapter(val threeHourForecast: ThreeHourForecast, val context: Context,

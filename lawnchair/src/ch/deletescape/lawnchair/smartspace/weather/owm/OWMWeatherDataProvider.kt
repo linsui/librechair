@@ -109,6 +109,8 @@ import kotlin.math.roundToInt
         val fancy = "" + fancyInt + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
         intent.putExtra("weather_text", fancy)
         intent.putExtra("weather_icon", icon);
+        intent.putExtra("city_lon", currentWeather.coord.lon)
+        intent.putExtra("city_lat", currentWeather.coord.lat)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         updateData(LawnchairSmartspaceController.WeatherData(iconProvider.getIcon(icon),
                                                              Temperature(temp.roundToInt(),
