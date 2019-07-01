@@ -272,7 +272,6 @@ afterEvaluate {
 }
 
 apply from: 'lawnchair/smali.gradle'
-apply from: 'quickstep/smali.gradle'
 
 repositories {
     google()
