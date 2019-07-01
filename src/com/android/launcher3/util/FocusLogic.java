@@ -20,18 +20,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ShortcutAndWidgetContainer;
 import com.android.launcher3.config.FeatureFlags;
-
 import java.util.Arrays;
 
 /**
  * Calculates the next item that a {@link KeyEvent} should change the focus to.
  *<p>
- * Note, this utility class calculates everything regards to icon index and its (x,y) coordinates.
+ * Note, this utility class calculates everything regards to iconView index and its (x,y) coordinates.
  * Currently supports:
  * <ul>
  *  <li> full matrix of cells that are 1x1
@@ -189,9 +187,9 @@ public class FocusLogic {
     }
 
     /**
-     * Creates a sparse matrix that merges the icon and hotseat view group using the cell layout.
-     * The size of the returning matrix is [icon column count x (icon + hotseat row count)]
-     * in portrait orientation. In landscape, [(icon + hotseat) column count x (icon row count)]
+     * Creates a sparse matrix that merges the iconView and hotseat view group using the cell layout.
+     * The size of the returning matrix is [iconView column count x (iconView + hotseat row count)]
+     * in portrait orientation. In landscape, [(iconView + hotseat) column count x (iconView row count)]
      */
     // TODO: get rid of the dynamic matrix creation
     public static int[][] createSparseMatrixWithHotseat(
@@ -268,7 +266,7 @@ public class FocusLogic {
     }
 
     /**
-     * Creates a sparse matrix that merges the icon of previous/next page and last column of
+     * Creates a sparse matrix that merges the iconView of previous/next page and last column of
      * current page. When left key is triggered on the leftmost column, sparse matrix is created
      * that combines previous page matrix and an extra column on the right. Likewise, when right
      * key is triggered on the rightmost column, sparse matrix is created that combines this column
@@ -316,7 +314,7 @@ public class FocusLogic {
     //
 
     /**
-     * Calculates icon that has is closest to the horizontal axis in reference to the cur icon.
+     * Calculates iconView that has is closest to the horizontal axis in reference to the cur iconView.
      *
      * Example of the check order for KEYCODE_DPAD_RIGHT:
      * [  ][  ][13][14][15]
@@ -334,7 +332,7 @@ public class FocusLogic {
 
         int xPos = -1;
         int yPos = -1;
-        // Figure out the location of the icon.
+        // Figure out the location of the iconView.
         for (int i = 0; i < cntX; i++) {
             for (int j = 0; j < cntY; j++) {
                 if (matrix[i][j] == iconIdx) {
@@ -388,7 +386,7 @@ public class FocusLogic {
         }
 
         // Rule3: if switching between pages, do a brute-force search to find an item that was
-        //        missed by rules 1 and 2 (such as when going from a bottom right icon to top left)
+        //        missed by rules 1 and 2 (such as when going from a bottom right iconView to top left)
         if (iconIdx == PIVOT) {
             if (isRtl) {
                 return increment < 0 ? NEXT_PAGE_FIRST_ITEM : PREVIOUS_PAGE_LAST_ITEM;
@@ -399,7 +397,7 @@ public class FocusLogic {
     }
 
     /**
-     * Calculates icon that is closest to the vertical axis in reference to the current icon.
+     * Calculates iconView that is closest to the vertical axis in reference to the current iconView.
      *
      * Example of the check order for KEYCODE_DPAD_DOWN:
      * [  ][  ][  ][ X][  ][  ][  ]
@@ -417,7 +415,7 @@ public class FocusLogic {
 
         int xPos = -1;
         int yPos = -1;
-        // Figure out the location of the icon.
+        // Figure out the location of the iconView.
         for (int i = 0; i< cntX; i++) {
             for (int j = 0; j < cntY; j++) {
                 if (matrix[i][j] == iconIndex) {
@@ -556,7 +554,7 @@ public class FocusLogic {
     }
 
     /**
-     * @param edgeColumn the column of the new icon. either {@link #NEXT_PAGE_LEFT_COLUMN} or
+     * @param edgeColumn the column of the new iconView. either {@link #NEXT_PAGE_LEFT_COLUMN} or
      * {@link #NEXT_PAGE_RIGHT_COLUMN}
      * @return the view adjacent to {@param oldView} in the {@param nextPage} of the folder.
      */

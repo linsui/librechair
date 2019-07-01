@@ -30,7 +30,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
-
 import com.android.launcher3.Launcher;
 import com.android.launcher3.MainThreadExecutor;
 import com.android.launcher3.R;
@@ -82,7 +81,7 @@ public class FolderAdaptiveIcon extends AdaptiveIconDrawable {
                 return icon == null ? null : createDrawableOnUiThread(icon, badge, dragViewSize);
             }).get();
         } catch (Exception e) {
-            Log.e(TAG, "Unable to create folder icon", e);
+            Log.e(TAG, "Unable to create folder iconView", e);
             return null;
         }
     }

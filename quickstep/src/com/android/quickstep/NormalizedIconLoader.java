@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.UserHandle;
 import android.util.LruCache;
 import android.util.SparseArray;
-
 import com.android.launcher3.FastBitmapDrawable;
 import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.DrawableFactory;
@@ -35,7 +34,7 @@ import com.android.systemui.shared.recents.model.IconLoader;
 import com.android.systemui.shared.recents.model.TaskKeyLruCache;
 
 /**
- * Extension of {@link IconLoader} with icon normalization support
+ * Extension of {@link IconLoader} with iconView normalization support
  */
 @TargetApi(Build.VERSION_CODES.O)
 public class NormalizedIconLoader extends IconLoader {
@@ -77,7 +76,7 @@ public class NormalizedIconLoader extends IconLoader {
         }
 
         mLauncherIcons.setWrapperBackgroundColor(primaryColor);
-        // User version code O, so that the icon is always wrapped in an adaptive icon container.
+        // User version code O, so that the iconView is always wrapped in an adaptive iconView container.
         return mLauncherIcons.createBadgedIconBitmap(drawable, UserHandle.of(userId),
                 Build.VERSION_CODES.O, isInstantApp);
     }

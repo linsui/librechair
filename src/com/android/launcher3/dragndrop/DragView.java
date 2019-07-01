@@ -16,6 +16,8 @@
 
 package com.android.launcher3.dragndrop;
 
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.FloatArrayEvaluator;
@@ -43,17 +45,26 @@ import android.support.animation.FloatPropertyCompat;
 import android.support.animation.SpringAnimation;
 import android.support.animation.SpringForce;
 import android.view.View;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.iconpack.IconPackManager;
 import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
-import com.android.launcher3.*;
-import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.FastBitmapDrawable;
+import com.android.launcher3.FolderInfo;
+import com.android.launcher3.IconProvider;
+import com.android.launcher3.ItemInfo;
+import com.android.launcher3.ItemInfoWithIcon;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherAnimUtils;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherModel;
+import com.android.launcher3.LauncherSettings;
+import com.android.launcher3.R;
+import com.android.launcher3.ShortcutInfo;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
 import com.android.launcher3.config.FeatureFlags;
-import com.android.launcher3.graphics.IconNormalizer;
 import com.android.launcher3.graphics.LauncherIcons;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
@@ -61,11 +72,8 @@ import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-
 import java.util.Arrays;
 import java.util.List;
-
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
 
 public class DragView extends View {
     private static final ColorMatrix sTempMatrix1 = new ColorMatrix();
@@ -97,7 +105,7 @@ public class DragView extends View {
     private boolean mAnimationCancelled = false;
 
     ValueAnimator mAnim;
-    // The intrinsic icon scale factor is the scale factor for a drag icon over the workspace
+    // The intrinsic iconView scale factor is the scale factor for a drag iconView over the workspace
     // size.  This is ignored for non-icons.
     private float mIntrinsicIconScale = 1f;
 
@@ -208,7 +216,7 @@ public class DragView extends View {
                 info.itemType != LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
             return;
         }
-        // Load the adaptive icon on a background thread and add the view in ui thread.
+        // Load the adaptive iconView on a background thread and add the view in ui thread.
         final Looper workerLooper = LauncherModel.getWorkerLooper();
         new Handler(workerLooper).postAtFrontOfQueue(new Runnable() {
             @Override
@@ -226,8 +234,8 @@ public class DragView extends View {
 
                     Rect bounds = new Rect(0, 0, w, h);
                     bounds.inset(blurMargin, blurMargin);
-                    // Badge is applied after icon normalization so the bounds for badge should not
-                    // be scaled down due to icon normalization.
+                    // Badge is applied after iconView normalization so the bounds for badge should not
+                    // be scaled down due to iconView normalization.
                     Rect badgeBounds = new Rect(bounds);
                     mBadge = getBadge(info, appState, outObj[0]);
                     mBadge.setBounds(badgeBounds);
@@ -412,7 +420,7 @@ public class DragView extends View {
         setMeasuredDimension(mBitmap.getWidth(), mBitmap.getHeight());
     }
 
-    /** Sets the scale of the view over the normal workspace icon size. */
+    /** Sets the scale of the view over the normal workspace iconView size. */
     public void setIntrinsicIconScaleFactor(float scale) {
         mIntrinsicIconScale = scale;
     }

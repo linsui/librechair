@@ -28,7 +28,6 @@ import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.LongSparseArray;
-
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
 import com.android.launcher3.compat.UserManagerCompat;
@@ -41,7 +40,6 @@ import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.SQLiteCacheHelper;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.WidgetCell;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -409,7 +407,7 @@ public class WidgetPreviewLoader {
                 c.drawLine(0, t, previewWidth, t, p);
             }
 
-            // Draw icon in the center.
+            // Draw iconView in the center.
             try {
                 Drawable icon =
                         mIconCache.getFullResIcon(info.provider.getPackageName(), info.icon);

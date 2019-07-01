@@ -51,9 +51,9 @@
     <string name="widget_dims_format">%1$d \u00d7 %2$d</string>
     <!-- Accessibility spoken message format for the dimensions of a widget in the drawer -->
     <string name="widget_accessible_dims_format">%1$d wide by %2$d high</string>
-    <!-- Message to tell the user to press and hold a widget/icon to add it  -->
+    <!-- Message to tell the user to press and hold a widget/iconView to add it  -->
     <string name="add_item_request_drag_hint">Touch &amp; hold to place manually</string>
-    <!-- Button label to automatically add icon on home screen [CHAR_LIMIT=50] -->
+    <!-- Button label to automatically add iconView on home screen [CHAR_LIMIT=50] -->
     <string name="place_automatically">Add automatically</string>
 
     <!-- All Apps -->
@@ -182,9 +182,9 @@
     <string name="allow_rotation_desc">When phone is rotated</string>
     <!-- Title for Notification dots setting. Tapping this will link to the system Notifications settings screen where the user can turn off notification dots globally. [CHAR LIMIT=50] -->
     <string name="icon_badging_title">Notification dots</string>
-    <!-- Text to indicate that the system icon badging setting is on [CHAR LIMIT=100] -->
+    <!-- Text to indicate that the system iconView badging setting is on [CHAR LIMIT=100] -->
     <string name="icon_badging_desc_on">On</string>
-    <!-- Text to indicate that the system icon badging setting is off [CHAR LIMIT=100] -->
+    <!-- Text to indicate that the system iconView badging setting is off [CHAR LIMIT=100] -->
     <string name="icon_badging_desc_off">Off</string>
     <!-- Title for the dialog shown when the app does not has notification access, explaining the requirement for notification access [CHAR LIMIT=50] -->
     <string name="title_missing_notification_access">Notification access needed</string>
@@ -202,9 +202,9 @@
 
     <!-- Developer setting to change the shape of icons on home screen. [CHAR LIMIT=50] -->
     <string name="icon_shape_override_label">Change icon shape</string>
-    <!-- Subtext explaining that the icons will only be affected on the home screen. This text follows the actual icon action: Change icon shape, on Home screen [CHAR LIMIT=100] -->
+    <!-- Subtext explaining that the icons will only be affected on the home screen. This text follows the actual iconView action: Change iconView shape, on Home screen [CHAR LIMIT=100] -->
     <string name="icon_shape_override_label_location">on Home screen</string>
-    <!-- Option to not change the icon shape on home screen and use the system default setting instead. [CHAR LIMIT=50] -->
+    <!-- Option to not change the iconView shape on home screen and use the system default setting instead. [CHAR LIMIT=50] -->
     <string name="icon_shape_system_default">System default</string>
     <!-- Option to change the shape of the home screen icons to a square. [CHAR LIMIT=50] -->
     <string name="icon_shape_square">Square</string>
@@ -217,19 +217,19 @@
     <!-- Option to change the shape of the home screen icons to a cylinder. [CHAR LIMIT=50] -->
     <string name="icon_shape_cylinder">Cylinder</string>
 
-    <!-- Message shown in the progress dialog when the icon shape override is being applied [CHAR LIMIT=100]-->
+    <!-- Message shown in the progress dialog when the iconView shape override is being applied [CHAR LIMIT=100]-->
     <string name="icon_shape_override_progress">Applying icon shape changes</string>
 
-    <!-- Label on an icon that references an uninstalled package, for which we have no information about when it might be installed. [CHAR_LIMIT=15] -->
+    <!-- Label on an iconView that references an uninstalled package, for which we have no information about when it might be installed. [CHAR_LIMIT=15] -->
     <string name="package_state_unknown">Unknown</string>
 
-    <!-- Button for abandoned promises dialog, to removes this abandoned promise icon. -->
+    <!-- Button for abandoned promises dialog, to removes this abandoned promise iconView. -->
     <string name="abandoned_clean_this">Remove</string>
     <!-- Button for abandoned promise dialog, to search in the market for the missing package. -->
     <string name="abandoned_search">Search</string>
     <!-- Title for abandoned promise dialog. -->
     <string name="abandoned_promises_title">This app is not installed</string>
-    <!-- Explanation for abandoned promise dialog. "The first 'it' refers to the shortcut icon.
+    <!-- Explanation for abandoned promise dialog. "The first 'it' refers to the shortcut iconView.
     The second "it" refers to the app. -->
     <string name="abandoned_promise_explanation">The app for this icon isn\'t installed.
         You can remove the shortcut, or search for the app and install it manually.
@@ -312,13 +312,13 @@
     <!-- Accessibility confirmation for widget resize. -->
     <string name="widget_resized">Widget resized to width <xliff:g example="2" id="number">%1$s</xliff:g> height <xliff:g example="1" id="number">%2$s</xliff:g></string>
 
-    <!-- Accessibility action to show quick actions menu for an icon. [CHAR_LIMIT=30] -->
+    <!-- Accessibility action to show quick actions menu for an iconView. [CHAR_LIMIT=30] -->
     <string name="action_deep_shortcut">Shortcuts</string>
-    <!-- Accessibility description when the context menu of a launcher icon that has notifications as well as shortcuts (providing quick access to app's actions). The "shortcuts" translation should be consistent with the one for action_deep_shortcut. [CHAR_LIMIT=50] -->
+    <!-- Accessibility description when the context menu of a launcher iconView that has notifications as well as shortcuts (providing quick access to app's actions). The "shortcuts" translation should be consistent with the one for action_deep_shortcut. [CHAR_LIMIT=50] -->
     <string name="shortcuts_menu_with_notifications_description">Shortcuts and notifications
     </string>
 
-    <!-- Accessibility action to dismiss a notification in the shortcuts menu for an icon. [CHAR_LIMIT=30] -->
+    <!-- Accessibility action to dismiss a notification in the shortcuts menu for an iconView. [CHAR_LIMIT=30] -->
     <string name="action_dismiss_notification">Dismiss</string>
 
     <!-- Accessibility confirmation for notification being dismissed. -->

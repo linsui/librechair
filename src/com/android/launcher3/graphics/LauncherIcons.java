@@ -16,31 +16,47 @@
 
 package com.android.launcher3.graphics;
 
+import static android.graphics.Paint.DITHER_FLAG;
+import static android.graphics.Paint.FILTER_BITMAP_FLAG;
+import static com.android.launcher3.graphics.ShadowGenerator.BLUR_FACTOR;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.*;
-import android.graphics.drawable.*;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PaintFlagsDrawFilter;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.AdaptiveIconDrawable;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.PaintDrawable;
 import android.os.Process;
 import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import ch.deletescape.lawnchair.NonAdaptiveIconDrawable;
 import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
-import com.android.launcher3.*;
+import com.android.launcher3.AppInfo;
+import com.android.launcher3.FastBitmapDrawable;
+import com.android.launcher3.IconCache;
+import com.android.launcher3.IconProvider;
+import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.ItemInfoWithIcon;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.model.PackageItemInfo;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.Themes;
-
-import static android.graphics.Paint.DITHER_FLAG;
-import static android.graphics.Paint.FILTER_BITMAP_FLAG;
-import static com.android.launcher3.graphics.ShadowGenerator.BLUR_FACTOR;
 
 /**
  * Helper methods for generating various launcher icons
@@ -155,7 +171,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap which is of the appropriate size to be displayed as an icon
+     * Returns a bitmap which is of the appropriate size to be displayed as an iconView
      */
     public BitmapInfo createIconBitmap(Bitmap icon) {
         if (mIconBitmapSize == icon.getWidth() && mIconBitmapSize == icon.getHeight()) {
@@ -166,8 +182,8 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap suitable for displaying as an icon at various launcher UIs like all apps
-     * view or workspace. The icon is badged for {@param user}.
+     * Returns a bitmap suitable for displaying as an iconView at various launcher UIs like all apps
+     * view or workspace. The iconView is badged for {@param user}.
      * The bitmap is also visually normalized with other icons.
      */
     public BitmapInfo createBadgedIconBitmap(Drawable icon, UserHandle user, int iconAppTargetSdk) {
@@ -180,8 +196,8 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap suitable for displaying as an icon at various launcher UIs like all apps
-     * view or workspace. The icon is badged for {@param user}.
+     * Returns a bitmap suitable for displaying as an iconView at various launcher UIs like all apps
+     * view or workspace. The iconView is badged for {@param user}.
      * The bitmap is also visually normalized with other icons.
      */
     public BitmapInfo createBadgedIconBitmap(Drawable icon, UserHandle user, int iconAppTargetSdk,
@@ -228,7 +244,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Sets the background color used for wrapped adaptive icon
+     * Sets the background color used for wrapped adaptive iconView
      */
     public void setWrapperBackgroundColor(int color) {
         mWrapperBackgroundColor = (Color.alpha(color) < 255) ? DEFAULT_WRAPPER_BACKGROUND : color;
@@ -283,7 +299,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * @param scale the scale to apply before drawing {@param icon} on the canvas
+     * @param scale the scale to apply before drawing {@param iconView} on the canvas
      */
     public Bitmap createIconBitmap(Drawable icon, float scale) {
         int width = mIconBitmapSize;
@@ -305,7 +321,7 @@ public class LauncherIcons implements AutoCloseable {
         int sourceWidth = icon.getIntrinsicWidth();
         int sourceHeight = icon.getIntrinsicHeight();
         if (sourceWidth > 0 && sourceHeight > 0) {
-            // Scale the icon proportionally to the icon dimensions
+            // Scale the iconView proportionally to the iconView dimensions
             final float ratio = (float) sourceWidth / sourceHeight;
             if (sourceWidth > sourceHeight) {
                 height = (int) (width / ratio);

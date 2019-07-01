@@ -188,7 +188,7 @@ public class LoaderTask implements Runnable {
             mResults.bindAllApps();
 
             verifyNotStopped();
-            TraceHelper.partitionSection(TAG, "step 2.3: Update icon cache");
+            TraceHelper.partitionSection(TAG, "step 2.3: Update iconView cache");
             updateIconCache();
 
             // Take a break
@@ -418,7 +418,7 @@ public class LoaderTask implements Runnable {
                                     }
                                 }
                                 // else if cn == null => can't infer much, leave it
-                                // else if !validPkg => could be restored icon or missing sd-card
+                                // else if !validPkg => could be restored iconView or missing sd-card
 
                                 if (!TextUtils.isEmpty(targetPkg) && !validTarget) {
                                     // Points to a valid app (superset of cn != null) but the apk
@@ -442,14 +442,14 @@ public class LoaderTask implements Runnable {
                                     } else if (pmHelper.isAppOnSdcard(targetPkg, c.user)) {
                                         // Package is present but not available.
                                         disabledState |= ShortcutInfo.FLAG_DISABLED_NOT_AVAILABLE;
-                                        // Add the icon on the workspace anyway.
+                                        // Add the iconView on the workspace anyway.
                                         allowMissingTarget = true;
                                     } else if (!isSdCardReady) {
                                         // SdCard is not ready yet. Package might get available,
                                         // once it is ready.
                                         Log.d(TAG, "Missing pkg, will check later: " + targetPkg);
                                         pendingPackages.addToList(c.user, targetPkg);
-                                        // Add the icon on the workspace anyway.
+                                        // Add the iconView on the workspace anyway.
                                         allowMissingTarget = true;
                                     } else {
                                         // Do not wait for external media load anymore.
@@ -496,7 +496,7 @@ public class LoaderTask implements Runnable {
                                             @Override
                                             public Bitmap get() {
                                                 // If the pinned deep shortcut is no longer published,
-                                                // use the last saved icon instead of the default.
+                                                // use the last saved iconView instead of the default.
                                                 return c.loadIcon(finalInfo)
                                                         ? finalInfo.iconBitmap : null;
                                             }
@@ -813,7 +813,7 @@ public class LoaderTask implements Runnable {
     }
 
     private void updateIconCache() {
-        // Ignore packages which have a promise icon.
+        // Ignore packages which have a promise iconView.
         HashSet<String> packagesToIgnore = new HashSet<>();
         synchronized (mBgDataModel) {
             for (ItemInfo info : mBgDataModel.itemsIdMap) {
@@ -849,7 +849,7 @@ public class LoaderTask implements Runnable {
             // Create the ApplicationInfos
             for (int i = 0; i < apps.size(); i++) {
                 LauncherActivityInfo app = apps.get(i);
-                // This builds the icon bitmaps.
+                // This builds the iconView bitmaps.
                 mBgAllAppsList.add(new AppInfo(app, user, quietMode), app);
             }
         }

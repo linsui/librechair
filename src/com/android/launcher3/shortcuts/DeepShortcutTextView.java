@@ -23,13 +23,12 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Toast;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 /**
- * A {@link BubbleTextView} that has the shortcut icon on the left and drag handle on the right.
+ * A {@link BubbleTextView} that has the shortcut iconView on the left and drag handle on the right.
  */
 public class DeepShortcutTextView extends BubbleTextView {
     private final Rect mDragHandleBounds = new Rect();
@@ -78,7 +77,7 @@ public class DeepShortcutTextView extends BubbleTextView {
 
     @Override
     protected void applyCompoundDrawables(Drawable icon) {
-        // The icon is drawn in a separate view.
+        // The iconView is drawn in a separate view.
     }
 
     @Override

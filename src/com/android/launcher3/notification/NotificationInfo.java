@@ -69,12 +69,12 @@ public class NotificationInfo implements View.OnClickListener {
 
         if (Utilities.ATLEAST_OREO) mBadgeIcon = notification.getBadgeIconType();
         else mBadgeIcon = Utilities.ATLEAST_MARSHMALLOW ? 2 : 1;
-        // Load the icon. Since it is backed by ashmem, we won't copy the entire bitmap
+        // Load the iconView. Since it is backed by ashmem, we won't copy the entire bitmap
         // into our process as long as we don't touch it and it exists in systemui.
         Icon icon = mBadgeIcon == Notification.BADGE_ICON_SMALL ? null : notification.getLargeIcon();
         Resources res = LawnchairUtilsKt.resourcesForApplication(context, statusBarNotification.getPackageName());
         if (icon == null) {
-            // Use the small icon.
+            // Use the small iconView.
             if (Utilities.ATLEAST_MARSHMALLOW) {
                 icon = notification.getSmallIcon();
                 mIconDrawable = icon == null ? null : icon.loadDrawable(context);
@@ -84,7 +84,7 @@ public class NotificationInfo implements View.OnClickListener {
             mIconColor = statusBarNotification.getNotification().color;
             mIsIconLarge = false;
         } else {
-            // Use the large icon.
+            // Use the large iconView.
             if (Utilities.ATLEAST_MARSHMALLOW) {
                 mIconDrawable = icon.loadDrawable(context);
             } else {
@@ -147,7 +147,7 @@ public class NotificationInfo implements View.OnClickListener {
     }
 
     public boolean shouldShowIconInBadge() {
-        // If the icon we're using for this notification matches what the Notification
+        // If the iconView we're using for this notification matches what the Notification
         // specified should show in the badge, then return true.
         return mIsIconLarge && mBadgeIcon == Notification.BADGE_ICON_LARGE
                 || !mIsIconLarge && mBadgeIcon == Notification.BADGE_ICON_SMALL;

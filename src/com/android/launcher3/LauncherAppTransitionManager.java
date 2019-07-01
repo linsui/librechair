@@ -38,7 +38,7 @@ public class LauncherAppTransitionManager {
             int left = 0, top = 0;
             int width = v.getMeasuredWidth(), height = v.getMeasuredHeight();
             if (v instanceof BubbleTextView) {
-                // Launch from center of icon, not entire view
+                // Launch from center of iconView, not entire view
                 Drawable icon = ((BubbleTextView) v).getIcon();
                 if (icon != null) {
                     Rect bounds = icon.getBounds();

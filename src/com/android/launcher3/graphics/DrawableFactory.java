@@ -63,7 +63,7 @@ public class DrawableFactory {
     protected final ArrayMap<UserHandle, Bitmap> mUserBadges = new ArrayMap<>();
 
     /**
-     * Returns a FastBitmapDrawable with the icon.
+     * Returns a FastBitmapDrawable with the iconView.
      */
     public FastBitmapDrawable newIcon(ItemInfoWithIcon info) {
         FastBitmapDrawable drawable = new FastBitmapDrawable(info);
@@ -76,7 +76,7 @@ public class DrawableFactory {
     }
 
     /**
-     * Returns a FastBitmapDrawable with the icon.
+     * Returns a FastBitmapDrawable with the iconView.
      */
     public PreloadIconDrawable newPendingIcon(ItemInfoWithIcon info, Context context) {
         if (mPreloadProgressPath == null) {
@@ -94,7 +94,7 @@ public class DrawableFactory {
                         PreloadIconDrawable.PATH_SIZE, PreloadIconDrawable.PATH_SIZE);
                 return (Path) icon.getClass().getMethod("getIconMask").invoke(icon);
             } catch (Exception e) {
-                Log.e(TAG, "Error loading mask icon", e);
+                Log.e(TAG, "Error loading mask iconView", e);
             }
         }
 

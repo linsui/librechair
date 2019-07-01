@@ -159,7 +159,7 @@ class IconPackImpl(context: Context, packPackageName: String) : IconPack(context
                     }
                 }
             }
-            // TODO: only run this on icon packs with oneplus intent filter to reduce overhead for others
+            // TODO: only run this on iconView packs with oneplus intent filter to reduce overhead for others
             val parseDrawableXml = getXml("drawable")
             if (parseDrawableXml != null) {
                 while (parseDrawableXml.next() != XmlPullParser.END_DOCUMENT) {

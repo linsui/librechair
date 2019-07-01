@@ -38,14 +38,12 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewDebug;
 import android.widget.TextView;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
-import ch.deletescape.lawnchair.colors.resolvers.DrawerLabelAutoResolver;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler;
 import ch.deletescape.lawnchair.gestures.GestureController;
@@ -62,7 +60,6 @@ import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.graphics.PreloadIconDrawable;
 import com.android.launcher3.model.PackageItemInfo;
-
 import java.text.NumberFormat;
 import org.jetbrains.annotations.NotNull;
 
@@ -372,7 +369,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         return drawableState;
     }
 
-    /** Returns the icon for this view. */
+    /** Returns the iconView for this view. */
     public Drawable getIcon() {
         return mIcon;
     }
@@ -423,7 +420,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
 
     @Override
     public void onLauncherResume() {
-        // Reset the pressed state of icon that was locked in the press state while activity
+        // Reset the pressed state of iconView that was locked in the press state while activity
         // was launching
         setStayPressed(false);
     }
@@ -457,7 +454,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Draws the icon badge in the top right corner of the icon bounds.
+     * Draws the iconView badge in the top right corner of the iconView bounds.
      * @param canvas The canvas to draw to.
      */
     protected void drawBadgeIfNecessary(Canvas canvas) {
@@ -648,7 +645,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Sets the icon for this view based on the layout direction.
+     * Sets the iconView for this view based on the layout direction.
      */
     private void setIcon(Drawable icon) {
         if (mIsIconVisible) {
@@ -664,7 +661,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     protected void applyCompoundDrawables(Drawable icon) {
-        // If we had already set an icon before, disable relayout as the icon size is the
+        // If we had already set an iconView before, disable relayout as the iconView size is the
         // same as before.
         mDisableRelayout = mIcon != null;
 
@@ -710,7 +707,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     /**
-     * Verifies that the current icon is high-res otherwise posts a request to load the icon.
+     * Verifies that the current iconView is high-res otherwise posts a request to load the iconView.
      */
     public void verifyHighRes() {
         verifyHighRes(BubbleTextView.this);

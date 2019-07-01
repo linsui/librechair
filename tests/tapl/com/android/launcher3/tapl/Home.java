@@ -109,10 +109,10 @@ public final class Home {
     }
 
     /**
-     * Returns an icon for the app, if currently visible.
+     * Returns an iconView for the app, if currently visible.
      *
      * @param appName name of the app
-     * @return app icon, if found, null otherwise.
+     * @return app iconView, if found, null otherwise.
      */
     @Nullable
     public AppIcon tryGetWorkspaceAppIcon(String appName) {
@@ -122,7 +122,7 @@ public final class Home {
     }
 
     /**
-     * Ensures that workspace is scrollable. If it's not, drags an icon icons from hotseat to the
+     * Ensures that workspace is scrollable. If it's not, drags an iconView icons from hotseat to the
      * second screen.
      */
     public void ensureWorkspaceIsScrollable() {

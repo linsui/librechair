@@ -141,7 +141,7 @@
     <dimen name="drop_target_text_size">14sp</dimen>
     <dimen name="drop_target_shadow_elevation">2dp</dimen>
 
-    <!-- the distance an icon must be dragged before button drop targets accept it -->
+    <!-- the distance an iconView must be dragged before button drop targets accept it -->
     <dimen name="drag_distanceThreshold">30dp</dimen>
 
     <!-- Elevation for the drag view. It should be larger than elevation of all other drag sources
@@ -183,7 +183,7 @@
     <dimen name="bg_popup_item_height">56dp</dimen>
     <dimen name="bg_popup_item_condensed_height">48dp</dimen>
     <dimen name="pre_drag_view_scale">6dp</dimen>
-    <!-- an icon with shortcuts must be dragged this far before the container is removed. -->
+    <!-- an iconView with shortcuts must be dragged this far before the container is removed. -->
     <dimen name="deep_shortcuts_start_drag_threshold">16dp</dimen>
     <dimen name="deep_shortcut_icon_size">36dp</dimen>
     <dimen name="deep_shortcut_drawable_padding">8dp</dimen>
@@ -228,7 +228,7 @@
     <dimen name="notification_main_text_size">14sp</dimen>
     <dimen name="notification_icon_size">24dp</dimen>
     <dimen name="notification_footer_icon_size">18dp</dimen>
-    <!-- notification_icon_size + notification_padding_end + 16dp padding between icon and text -->
+    <!-- notification_icon_size + notification_padding_end + 16dp padding between iconView and text -->
     <dimen name="notification_main_text_padding_end">52dp</dimen>
     <dimen name="horizontal_ellipsis_size">18dp</dimen>
     <!-- arrow_horizontal_offset_start - (ellipsis_size - arrow_width) / 2 -->

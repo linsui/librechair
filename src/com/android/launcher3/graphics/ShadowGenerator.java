@@ -28,7 +28,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.support.v4.graphics.ColorUtils;
-
 import com.android.launcher3.LauncherAppState;
 
 /**
@@ -36,11 +35,11 @@ import com.android.launcher3.LauncherAppState;
  */
 public class ShadowGenerator {
 
-    // Percent of actual icon size
+    // Percent of actual iconView size
     private static final float HALF_DISTANCE = 0.5f;
     public static final float BLUR_FACTOR = 0.5f/48;
 
-    // Percent of actual icon size
+    // Percent of actual iconView size
     public static final float KEY_SHADOW_DISTANCE = 1f/48;
     private static final int KEY_SHADOW_ALPHA = 61;
 
@@ -77,13 +76,13 @@ public class ShadowGenerator {
         mDrawPaint.setAlpha(keyAlpha);
         out.drawBitmap(shadow, offset[0], offset[1] + KEY_SHADOW_DISTANCE * mIconSize, mDrawPaint);
 
-        // Draw the icon
+        // Draw the iconView
         mDrawPaint.setAlpha(255);
         out.drawBitmap(icon, 0, 0, mDrawPaint);
     }
 
     /**
-     * Returns the minimum amount by which an icon with {@param bounds} should be scaled
+     * Returns the minimum amount by which an iconView with {@param bounds} should be scaled
      * so that the shadows do not get clipped.
      */
     public static float getScaleForBounds(RectF bounds) {

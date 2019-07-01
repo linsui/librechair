@@ -22,13 +22,11 @@ import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
-
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Themes;
 
 /**
- * Contains colors based on the dominant color of an icon.
+ * Contains colors based on the dominant color of an iconView.
  */
 public class IconPalette {
 
@@ -39,7 +37,7 @@ public class IconPalette {
     private static final float MIN_PRELOAD_COLOR_LIGHTNESS = 0.6f;
 
     /**
-     * Returns a color suitable for the progress bar color of preload icon.
+     * Returns a color suitable for the progress bar color of preload iconView.
      */
     public static int getPreloadProgressColor(Context context, int dominantColor) {
         int result = dominantColor;
@@ -58,7 +56,7 @@ public class IconPalette {
 
     /**
      * Resolves a color such that it has enough contrast to be used as the
-     * color of an icon or text on the given background color.
+     * color of an iconView or text on the given background color.
      *
      * @return a color of the same hue with enough contrast against the background.
      *

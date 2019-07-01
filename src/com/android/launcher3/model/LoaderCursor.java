@@ -31,7 +31,6 @@ import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LongSparseArray;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.IconCache;
@@ -51,7 +50,6 @@ import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.GridOccupancy;
 import com.android.launcher3.util.LongArrayMap;
-
 import java.net.URISyntaxException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -159,7 +157,7 @@ public class LoaderCursor extends CursorWrapper {
         info.user = user;
         info.itemType = itemType;
         info.title = getTitle();
-        // the fallback icon
+        // the fallback iconView
         if (!loadIcon(info)) {
             mIconCache.getDefaultIcon(info.user).applyTo(info);
         }
@@ -170,7 +168,7 @@ public class LoaderCursor extends CursorWrapper {
     }
 
     /**
-     * Loads the icon from the cursor and updates the {@param info} if the icon is an app resource.
+     * Loads the iconView from the cursor and updates the {@param info} if the iconView is an app resource.
      */
     protected boolean loadIcon(ShortcutInfo info) {
         if (itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
@@ -196,7 +194,7 @@ public class LoaderCursor extends CursorWrapper {
             li.createIconBitmap(BitmapFactory.decodeByteArray(data, 0, data.length)).applyTo(info);
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to load icon for info " + info, e);
+            Log.e(TAG, "Failed to load iconView for info " + info, e);
             return false;
         }
     }
@@ -211,7 +209,7 @@ public class LoaderCursor extends CursorWrapper {
                 return null;
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to load custom icon for info " + info, e);
+            Log.e(TAG, "Failed to load custom iconView for info " + info, e);
             return null;
         }
     }
@@ -233,7 +231,7 @@ public class LoaderCursor extends CursorWrapper {
         info.user = user;
         info.intent = intent;
 
-        // the fallback icon
+        // the fallback iconView
         if (!loadIcon(info)) {
             mIconCache.getTitleAndIcon(info, false /* useLowResIcon */);
         }

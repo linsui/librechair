@@ -21,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.folder.Folder;
 import com.android.launcher3.folder.FolderPagedView;
@@ -56,8 +55,8 @@ class FullscreenKeyEventListener implements View.OnKeyListener {
     public boolean onKey(View v, int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT
                 || keyCode == KeyEvent.KEYCODE_PAGE_DOWN || keyCode == KeyEvent.KEYCODE_PAGE_UP) {
-            // Handle the key event just like a workspace icon would in these cases. In this case,
-            // it will basically act as if there is a single icon in the top left (so you could
+            // Handle the key event just like a workspace iconView would in these cases. In this case,
+            // it will basically act as if there is a single iconView in the top left (so you could
             // think of the fullscreen page as a focusable fullscreen widget).
             return FocusHelper.handleIconKeyEvent(v, keyCode, event);
         }
@@ -269,32 +268,32 @@ public class FocusHelper {
             case FocusLogic.NEXT_PAGE_FIRST_ITEM:
                 parent = getCellLayoutChildrenForIndex(workspace, pageIndex + 1);
                 newIcon = parent.getChildAt(0);
-                // TODO(hyunyoungs): handle cases where the child is not an icon but
+                // TODO(hyunyoungs): handle cases where the child is not an iconView but
                 // a folder or a widget.
                 workspace.snapToPage(pageIndex + 1);
                 break;
             case FocusLogic.PREVIOUS_PAGE_FIRST_ITEM:
                 parent = getCellLayoutChildrenForIndex(workspace, pageIndex - 1);
                 newIcon = parent.getChildAt(0);
-                // TODO(hyunyoungs): handle cases where the child is not an icon but
+                // TODO(hyunyoungs): handle cases where the child is not an iconView but
                 // a folder or a widget.
                 workspace.snapToPage(pageIndex - 1);
                 break;
             case FocusLogic.PREVIOUS_PAGE_LAST_ITEM:
                 parent = getCellLayoutChildrenForIndex(workspace, pageIndex - 1);
                 newIcon = parent.getChildAt(parent.getChildCount() - 1);
-                // TODO(hyunyoungs): handle cases where the child is not an icon but
+                // TODO(hyunyoungs): handle cases where the child is not an iconView but
                 // a folder or a widget.
                 workspace.snapToPage(pageIndex - 1);
                 break;
             case FocusLogic.PREVIOUS_PAGE_LEFT_COLUMN:
             case FocusLogic.PREVIOUS_PAGE_RIGHT_COLUMN:
-                // Go to the previous page but keep the focus on the same hotseat icon.
+                // Go to the previous page but keep the focus on the same hotseat iconView.
                 workspace.snapToPage(pageIndex - 1);
                 break;
             case FocusLogic.NEXT_PAGE_LEFT_COLUMN:
             case FocusLogic.NEXT_PAGE_RIGHT_COLUMN:
-                // Go to the next page but keep the focus on the same hotseat icon.
+                // Go to the next page but keep the focus on the same hotseat iconView.
                 workspace.snapToPage(pageIndex + 1);
                 break;
         }

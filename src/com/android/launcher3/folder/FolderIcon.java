@@ -23,7 +23,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -37,7 +36,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler;
@@ -74,12 +72,11 @@ import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An icon that can appear on in the workspace representing an {@link Folder}.
+ * An iconView that can appear on in the workspace representing an {@link Folder}.
  */
 public class FolderIcon extends FrameLayout implements FolderListener {
     @Thunk Launcher mLauncher;
@@ -281,7 +278,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
             float scaleRelativeToDragLayer) {
         prepareCreateAnimation(destView);
         addItem(destInfo);
-        // This will animate the first item from it's position as an icon into its
+        // This will animate the first item from it's position as an iconView into its
         // position as the first item in the preview
         mPreviewItemManager.createFirstItemAnimation(false /* reverse */, null)
                 .start();
@@ -551,7 +548,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
     }
 
     /**
-     * Returns the list of preview items displayed in the icon.
+     * Returns the list of preview items displayed in the iconView.
      */
     public List<BubbleTextView> getPreviewItems() {
         return getPreviewItemsOnPage(0);
@@ -704,7 +701,7 @@ public class FolderIcon extends FrameLayout implements FolderListener {
             return;
         }
         CellLayout.LayoutParams lp = (CellLayout.LayoutParams) getLayoutParams();
-        // While the folder is open, the position of the icon cannot change.
+        // While the folder is open, the position of the iconView cannot change.
         lp.canReorder = false;
         if (mInfo.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
             CellLayout cl = (CellLayout) getParent().getParent();

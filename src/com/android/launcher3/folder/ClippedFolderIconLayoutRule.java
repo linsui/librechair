@@ -120,7 +120,7 @@ public class ClippedFolderIconLayoutRule {
         float halfIconSize = (mIconSize * scaleForItem(curNumItems)) / 2;
 
         // Map the location along the circle, and offset the coordinates to represent the center
-        // of the icon, and to be based from the top / left of the preview area. The y component
+        // of the iconView, and to be based from the top / left of the preview area. The y component
         // is inverted to match the coordinate system.
         result[0] = mAvailableSpace / 2 + (float) (radius * Math.cos(theta) / 2) - halfIconSize;
         result[1] = mAvailableSpace / 2 + (float) (- radius * Math.sin(theta) / 2) - halfIconSize;

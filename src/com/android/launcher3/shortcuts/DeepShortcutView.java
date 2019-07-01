@@ -23,7 +23,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -34,7 +33,7 @@ import com.android.launcher3.touch.ItemClickHandler;
 
 /**
  * A {@link android.widget.FrameLayout} that contains a {@link DeepShortcutView}.
- * This lets us animate the DeepShortcutView (icon and text) separately from the background.
+ * This lets us animate the DeepShortcutView (iconView and text) separately from the background.
  */
 public class DeepShortcutView extends FrameLayout {
 
@@ -88,7 +87,7 @@ public class DeepShortcutView extends FrameLayout {
     }
 
     /**
-     * Returns the position of the center of the icon relative to the container.
+     * Returns the position of the center of the iconView relative to the container.
      */
     public Point getIconCenter() {
         sTempPoint.y = sTempPoint.x = getMeasuredHeight() / 2;
@@ -132,7 +131,7 @@ public class DeepShortcutView extends FrameLayout {
     public ShortcutInfo getFinalInfo() {
         final ShortcutInfo badged = new ShortcutInfo(mInfo);
         // Queue an update task on the worker thread. This ensures that the badged
-        // shortcut eventually gets its icon updated.
+        // shortcut eventually gets its iconView updated.
         Launcher.getLauncher(getContext()).getModel()
                 .updateAndBindShortcutInfo(badged, mDetail);
         return badged;

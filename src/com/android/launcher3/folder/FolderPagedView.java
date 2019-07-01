@@ -27,7 +27,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewDebug;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
@@ -46,7 +45,6 @@ import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Thunk;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -545,7 +543,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> {
             for (int i = parent.getChildCount() - 1; i >= 0; i--) {
                 BubbleTextView icon = ((BubbleTextView) parent.getChildAt(i));
                 icon.verifyHighRes();
-                // Set the callback back to the actual icon, in case
+                // Set the callback back to the actual iconView, in case
                 // it was captured by the FolderIcon
                 Drawable d = icon.getCompoundDrawables()[1];
                 if (d != null) {

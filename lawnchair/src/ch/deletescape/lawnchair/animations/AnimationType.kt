@@ -29,8 +29,11 @@ import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.w
-import com.android.launcher3.*
 import com.android.launcher3.BaseActivity.INVISIBLE_BY_APP_TRANSITIONS
+import com.android.launcher3.BubbleTextView
+import com.android.launcher3.Launcher
+import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.anim.Interpolators.AGGRESSIVE_EASE
 import com.android.launcher3.anim.Interpolators.LINEAR
 import com.android.launcher3.shortcuts.DeepShortcutView
@@ -61,7 +64,7 @@ abstract class AnimationType {
         var width = v.measuredWidth
         var height = v.measuredHeight
         if (v is BubbleTextView) {
-            // Launch from center of icon, not entire view
+            // Launch from center of iconView, not entire view
             val icon = v.icon
             if (icon != null) {
                 val bounds = icon.bounds
@@ -206,7 +209,7 @@ abstract class AnimationType {
             val bounds = Rect()
             when {
                 v.parent is DeepShortcutView -> {
-                    // Deep shortcut views have their icon drawn in a separate view.
+                    // Deep shortcut views have their iconView drawn in a separate view.
                     val view = v.parent as DeepShortcutView
                     launcher.dragLayer.getDescendantRectRelativeToSelf(view.iconView, bounds)
                 }
@@ -227,16 +230,16 @@ abstract class AnimationType {
                     val easePercent = (AGGRESSIVE_EASE)
                             .getInterpolation(percent)
 
-                    // Calculate app icon size.
+                    // Calculate app iconView size.
                     val iconWidth = bounds.width() * floatingView.scaleX
                     val iconHeight = bounds.height() * floatingView.scaleY
 
-                    // Scale the app window to match the icon size.
+                    // Scale the app window to match the iconView size.
                     val scaleX = iconWidth / windowTargetBounds.width()
                     val scaleY = iconHeight / windowTargetBounds.height()
                     val scale = Math.min(1f, Math.min(scaleX, scaleY))
 
-                    // Position the scaled window on top of the icon
+                    // Position the scaled window on top of the iconView
                     val windowWidth = windowTargetBounds.width()
                     val windowHeight = windowTargetBounds.height()
                     val scaledWindowWidth = windowWidth * scale

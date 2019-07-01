@@ -28,7 +28,6 @@ import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Process;
@@ -134,7 +133,7 @@ public class AutoInstallsLayout {
 
     private static final String ATTR_SPAN_X = "spanX";
     private static final String ATTR_SPAN_Y = "spanY";
-    private static final String ATTR_ICON = "icon";
+    private static final String ATTR_ICON = "iconView";
     private static final String ATTR_URL = "url";
 
     // Attrs for "Include"
@@ -405,7 +404,7 @@ public class AutoInstallsLayout {
     }
 
     /**
-     * Parses a web shortcut. Required attributes url, icon, title
+     * Parses a web shortcut. Required attributes url, iconView, title
      */
     protected class ShortcutParser implements TagParser {
 
@@ -432,7 +431,7 @@ public class AutoInstallsLayout {
 
             Drawable icon = mIconRes.getDrawable(iconId);
             if (icon == null) {
-                if (LOGD) Log.d(TAG, "Ignoring shortcut, can't load icon");
+                if (LOGD) Log.d(TAG, "Ignoring shortcut, can't load iconView");
                 return -1;
             }
 

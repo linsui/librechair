@@ -94,7 +94,7 @@ public class CustomBottomSheet extends WidgetsBottomSheet {
                 icon.setImageBitmap(((ItemInfoWithIcon) itemInfo).iconBitmap);
             } else if (itemInfo instanceof FolderInfo) {
                 FolderInfo folderInfo = (FolderInfo) itemInfo;
-                //icon.setImageDrawable(mLauncher.getDrawable(R.drawable.ic_lawnstep));
+                //iconView.setImageDrawable(mLauncher.getDrawable(R.drawable.ic_lawnstep));
                 icon.setImageDrawable(folderInfo.getIcon(mLauncher));
                 // Drawer folder
                 if (folderInfo.container == ItemInfo.NO_ID) {

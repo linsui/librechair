@@ -30,15 +30,13 @@ import android.graphics.PathMeasure;
 import android.graphics.Rect;
 import android.util.Property;
 import android.util.SparseArray;
-
 import com.android.launcher3.FastBitmapDrawable;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.anim.Interpolators;
-
 import java.lang.ref.WeakReference;
 
 /**
- * Extension of {@link FastBitmapDrawable} which shows a progress bar around the icon.
+ * Extension of {@link FastBitmapDrawable} which shows a progress bar around the iconView.
  */
 public class PreloadIconDrawable extends FastBitmapDrawable {
 
@@ -242,11 +240,11 @@ public class PreloadIconDrawable extends FastBitmapDrawable {
     /**
      * Sets the internal progress and updates the UI accordingly
      *   for progress <= 0:
-     *     - icon in the small scale and disabled state
+     *     - iconView in the small scale and disabled state
      *     - progress track is visible
      *     - progress bar is not visible
      *   for 0 < progress < 1
-     *     - icon in the small scale and disabled state
+     *     - iconView in the small scale and disabled state
      *     - progress track is visible
      *     - progress bar is visible with dominant color. Progress bar is drawn as a fraction of
      *       {@link #mScaledTrackPath}.
@@ -255,9 +253,9 @@ public class PreloadIconDrawable extends FastBitmapDrawable {
      *     - we calculate fraction of progress in the above range
      *     - progress track is drawn with alpha based on fraction
      *     - progress bar is drawn at 100% with alpha based on fraction
-     *     - icon is scaled up based on fraction and is drawn in enabled state
+     *     - iconView is scaled up based on fraction and is drawn in enabled state
      *   for progress >= (1 + COMPLETE_ANIM_FRACTION)
-     *     - only icon is drawn in normal state
+     *     - only iconView is drawn in normal state
      */
     private void setInternalProgress(float progress) {
         mInternalStateProgress = progress;

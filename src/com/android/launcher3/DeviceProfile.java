@@ -365,7 +365,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
                 hotseatBarBottomPaddingPx = bottomPaddingNew;
             }
 
-            // TODO: Fix icon cut off on smaller devices with lower values
+            // TODO: Fix iconView cut off on smaller devices with lower values
             int minHeight = hotseatCellHeightPx * dockRows + hotseatBarBottomPaddingPx + hotseatBarTopPaddingPx;
             hotseatBarSizePx = Math.max(minHeight, (int) (hotseatBarSizePx * dockScale));
         }
@@ -429,7 +429,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         int cellYPadding = (getCellSize().y - cellHeightPx) / 2;
         if (iconDrawablePaddingPx > cellYPadding && !isVerticalLayout
                 && !isMultiWindowMode) {
-            // Ensures that the label is closer to its corresponding icon. This is not an issue
+            // Ensures that the label is closer to its corresponding iconView. This is not an issue
             // with vertical bar layout or multi-window mode since the issue is handled separately
             // with their calls to {@link #adjustToHideWorkspaceLabels}.
             cellHeightPx -= (iconDrawablePaddingPx - cellYPadding);
@@ -483,7 +483,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         workspaceOptionsShrinkFactor =
                 res.getInteger(R.integer.config_workspaceOptionsShrinkPercentage) / 100.0f;
 
-        // Folder icon
+        // Folder iconView
         folderIconSizePx = IconNormalizer.getNormalizedCircleSize(iconSizePx);
         folderIconOffsetYPx = (iconSizePx - folderIconSizePx) / 2;
         allAppsFolderIconSizePx = IconNormalizer.getNormalizedCircleSize(allAppsIconSizePx);

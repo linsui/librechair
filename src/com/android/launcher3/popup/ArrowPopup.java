@@ -36,7 +36,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.animation.AccelerateDecelerateInterpolator;
-
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAnimUtils;
@@ -47,7 +46,6 @@ import com.android.launcher3.anim.RoundedRectRevealOutlineProvider;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.graphics.TriangleShape;
 import com.android.launcher3.util.Themes;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -172,7 +170,7 @@ public abstract class ArrowPopup extends AbstractFloatingView {
         }
 
         if (Gravity.isVertical(mGravity)) {
-            // This is only true if there wasn't room for the container next to the icon,
+            // This is only true if there wasn't room for the container next to the iconView,
             // so we centered it instead. In that case we don't want to showDefaultOptions the arrow.
             mArrow.setVisibility(INVISIBLE);
         } else {
@@ -203,7 +201,7 @@ public abstract class ArrowPopup extends AbstractFloatingView {
     protected abstract void getTargetObjectLocation(Rect outPos);
 
     /**
-     * Orients this container above or below the given icon, aligning with the left or right.
+     * Orients this container above or below the given iconView, aligning with the left or right.
      *
      * These are the preferred orientations, in order (RTL prefers right-aligned over left):
      * - Above and left-aligned
@@ -237,12 +235,12 @@ public abstract class ArrowPopup extends AbstractFloatingView {
         }
         mIsLeftAligned = x == leftAlignedX;
 
-        // Offset x so that the arrow and shortcut icons are center-aligned with the original icon.
+        // Offset x so that the arrow and shortcut icons are center-aligned with the original iconView.
         int iconWidth = mTempRect.width();
         Resources resources = getResources();
         int xOffset;
         if (isAlignedWithStart()) {
-            // Aligning with the shortcut icon.
+            // Aligning with the shortcut iconView.
             int shortcutIconWidth = resources.getDimensionPixelSize(R.dimen.deep_shortcut_icon_size);
             int shortcutPaddingStart = resources.getDimensionPixelSize(
                     R.dimen.popup_padding_start);
@@ -257,7 +255,7 @@ public abstract class ArrowPopup extends AbstractFloatingView {
         }
         x += mIsLeftAligned ? xOffset : -xOffset;
 
-        // Open above icon if there is room.
+        // Open above iconView if there is room.
         int iconHeight = mTempRect.height();
         int y = mTempRect.top - height;
         mIsAboveIcon = y > dragLayer.getTop() + insets.top;
@@ -273,7 +271,7 @@ public abstract class ArrowPopup extends AbstractFloatingView {
         if (y + height > dragLayer.getBottom() - insets.bottom) {
             // The container is opening off the screen, so just center it in the drag layer instead.
             mGravity = Gravity.CENTER_VERTICAL;
-            // Put the container next to the icon, preferring the right side in ltr (left in rtl).
+            // Put the container next to the iconView, preferring the right side in ltr (left in rtl).
             int rightSide = leftAlignedX + iconWidth - insets.left;
             int leftSide = rightAlignedX - iconWidth - insets.left;
             if (!mIsRtl) {

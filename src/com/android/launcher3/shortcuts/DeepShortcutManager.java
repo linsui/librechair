@@ -187,7 +187,7 @@ public class DeepShortcutManager {
                 mWasLastCallSuccess = true;
                 return icon;
             } catch (SecurityException | IllegalStateException e) {
-                Log.e(TAG, "Failed to get shortcut icon", e);
+                Log.e(TAG, "Failed to get shortcut iconView", e);
                 mWasLastCallSuccess = false;
             }
         } else {

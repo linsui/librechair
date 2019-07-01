@@ -16,6 +16,11 @@
 
 package com.android.launcher3.folder;
 
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ENTER_INDEX;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.EXIT_INDEX;
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
+import static com.android.launcher3.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -25,19 +30,12 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.ENTER_INDEX;
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.EXIT_INDEX;
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
-import static com.android.launcher3.folder.FolderIcon.DROP_IN_ANIMATION_DURATION;
 
 /**
  * Manages the drawing and animations of {@link PreviewItemDrawingParams} for a {@link FolderIcon}.
@@ -117,7 +115,7 @@ public class PreviewItemManager {
 
     PreviewItemDrawingParams computePreviewItemDrawingParams(int index, int curNumItems,
             PreviewItemDrawingParams params) {
-        // We use an index of -1 to represent an icon on the workspace for the destroy and
+        // We use an index of -1 to represent an iconView on the workspace for the destroy and
         // create animations
         if (index == -1) {
             return getFinalIconParams(params);
@@ -217,7 +215,7 @@ public class PreviewItemManager {
             p.drawable = items.get(i).getCompoundDrawables()[1];
 
             if (p.drawable != null && !mIcon.mFolder.isOpen()) {
-                // Set the callback to FolderIcon as it is responsible to drawing the icon. The
+                // Set the callback to FolderIcon as it is responsible to drawing the iconView. The
                 // callback will be released when the folder is opened.
                 p.drawable.setCallback(mIcon);
             }
@@ -352,7 +350,7 @@ public class PreviewItemManager {
             int prevIndex, int newIndex, int numItems) {
         p.drawable = btv.getCompoundDrawables()[1];
         if (!mIcon.mFolder.isOpen()) {
-            // Set the callback to FolderIcon as it is responsible to drawing the icon. The
+            // Set the callback to FolderIcon as it is responsible to drawing the iconView. The
             // callback will be released when the folder is opened.
             p.drawable.setCallback(mIcon);
         }

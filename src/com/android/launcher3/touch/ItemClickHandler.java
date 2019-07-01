@@ -16,10 +16,10 @@
 package com.android.launcher3.touch;
 
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_BY_PUBLISHER;
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_BY_SESAME;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_LOCKED_USER;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_QUIET_USER;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SAFEMODE;
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_BY_SESAME;
 import static com.android.launcher3.ItemInfoWithIcon.FLAG_DISABLED_SUSPENDED;
 import static com.android.launcher3.Launcher.REQUEST_BIND_PENDING_APPWIDGET;
 import static com.android.launcher3.Launcher.REQUEST_RECONFIGURE_APPWIDGET;
@@ -31,7 +31,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
-
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.BubbleTextView;
@@ -89,7 +88,7 @@ public class ItemClickHandler {
     }
 
     /**
-     * Event handler for a folder icon click.
+     * Event handler for a folder iconView click.
      *
      * @param v The view that was clicked. Must be an instance of {@link FolderIcon}.
      */

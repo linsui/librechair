@@ -28,14 +28,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-
 import com.android.launcher3.LauncherAnimUtils;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.PropertyListBuilder;
 import com.android.launcher3.anim.PropertyResetListener;
 import com.android.launcher3.util.Themes;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,7 +79,7 @@ public class NotificationFooterLayout extends FrameLayout {
         int iconSize = res.getDimensionPixelSize(R.dimen.notification_footer_icon_size);
         mIconLayoutParams = new LayoutParams(iconSize, iconSize);
         mIconLayoutParams.gravity = Gravity.CENTER_VERTICAL;
-        // Compute margin start for each icon such that the icons between the first one
+        // Compute margin start for each iconView such that the icons between the first one
         // and the ellipsis are evenly spaced out.
         int paddingEnd = res.getDimensionPixelSize(R.dimen.notification_footer_icon_row_padding);
         int ellipsisSpace = res.getDimensionPixelSize(R.dimen.horizontal_ellipsis_offset)
@@ -136,8 +134,8 @@ public class NotificationFooterLayout extends FrameLayout {
     }
 
     /**
-     * Creates an icon for the given NotificationInfo, and adds it to the icon row.
-     * @return the icon view that was added
+     * Creates an iconView for the given NotificationInfo, and adds it to the iconView row.
+     * @return the iconView view that was added
      */
     private View addNotificationIconForInfo(NotificationInfo info) {
         View icon = new View(getContext());

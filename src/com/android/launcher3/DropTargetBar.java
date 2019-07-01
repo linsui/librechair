@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
-
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragController.DragListener;
@@ -97,7 +96,7 @@ public class DropTargetBar extends FrameLayout
         } else {
             int gap;
             if (grid.isTablet) {
-                // XXX: If the icon size changes across orientations, we will have to take
+                // XXX: If the iconView size changes across orientations, we will have to take
                 //      that into account here too.
                 gap = ((grid.widthPx - 2 * grid.edgeMarginPx
                         - (grid.inv.numColumns * grid.cellWidthPx))

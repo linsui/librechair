@@ -57,7 +57,7 @@ class IconMask {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        // Draw the app icon
+        // Draw the app iconView
         var bb = baseIcon.toBitmap()!!
         if (!bb.isMutable) bb = bb.copy(bb.config, true)
         matrix.setScale((size * scale) / bb.width, (size * scale) / bb.height)
@@ -65,7 +65,7 @@ class IconMask {
         canvas.drawBitmap(bb, matrix, paint)
         matrix.reset()
 
-        // Mask the app icon
+        // Mask the app iconView
         if (iconMask != null && iconMask.drawableId != 0) {
             iconMask.drawable.toBitmap()?.let {
                 paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)

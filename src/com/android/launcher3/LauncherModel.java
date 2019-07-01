@@ -35,9 +35,6 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
-
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.blur.BlurWallpaperProvider;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.PackageInstallerCompat.PackageInstallInfo;
 import com.android.launcher3.compat.UserManagerCompat;
@@ -65,7 +62,6 @@ import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.ViewOnDrawExecutor;
 import com.android.launcher3.widget.WidgetListRowEntry;
-
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.ref.WeakReference;
@@ -96,8 +92,8 @@ public class LauncherModel extends BroadcastReceiver
 
     @Thunk static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
     @Thunk static final HandlerThread sUiWorkerThread = new HandlerThread("launcher-ui-loader");
-    @Thunk static final HandlerThread sIconPackThread = new HandlerThread("launcher-icon-pack");
-    @Thunk static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
+    @Thunk static final HandlerThread sIconPackThread = new HandlerThread("launcher-iconView-pack");
+    @Thunk static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-iconView-pack-ui");
     static {
         sWorkerThread.start();
         sUiWorkerThread.start();
@@ -603,10 +599,10 @@ public class LauncherModel extends BroadcastReceiver
     }
 
     /**
-     * Called when the icons for packages have been updated in the icon cache.
+     * Called when the icons for packages have been updated in the iconView cache.
      */
     public void onPackageIconsUpdated(HashSet<String> updatedPackages, UserHandle user) {
-        // If any package icon has changed (app was updated while launcher was dead),
+        // If any package iconView has changed (app was updated while launcher was dead),
         // update the corresponding shortcuts.
         enqueueModelUpdateTask(new CacheDataUpdatedTask(
                 CacheDataUpdatedTask.OP_CACHE_UPDATE, user, updatedPackages));
@@ -708,14 +704,14 @@ public class LauncherModel extends BroadcastReceiver
     }
 
     /**
-     * @return the looper for the icon pack thread which can be used to load icon packs.
+     * @return the looper for the iconView pack thread which can be used to load iconView packs.
      */
     public static Looper getIconPackLooper() {
         return sIconPackThread.getLooper();
     }
 
     /**
-     * @return the looper for the icon pack ui thread which can be used to load icon pickers.
+     * @return the looper for the iconView pack ui thread which can be used to load iconView pickers.
      */
     public static Looper getIconPackUiLooper() {
         return sIconPackUiThread.getLooper();

@@ -18,7 +18,7 @@
     <!-- String representing the intent to delete a package.-->
     <string name="delete_package_intent" translatable="false">#Intent;action=android.intent.action.DELETE;launchFlags=0x10800000;end</string>
 
-    <!-- Values for icon shape overrides. These should correspond to entries defined
+    <!-- Values for iconView shape overrides. These should correspond to entries defined
      in icon_shape_override_paths_names -->
     <string-array translatable="false" name="icon_shape_override_paths_values">
         <item></item>
@@ -31,7 +31,7 @@
     </string-array>
 
     <string-array translatable="false" name="icon_shape_override_paths_names">
-        <!-- Option to not change the icon shape on home screen. [CHAR LIMIT=50] -->
+        <!-- Option to not change the iconView shape on home screen. [CHAR LIMIT=50] -->
         <item>@string/icon_shape_system_default</item>
         <item>@string/icon_shape_square</item>
         <item>@string/icon_shape_rounded_square</item>
@@ -104,7 +104,7 @@
          filter the activities shown in the launcher. Can be empty. -->
     <string name="app_filter_class" translatable="false">com.google.android.apps.nexuslauncher.CustomAppFilter</string>
 
-    <!-- Name of an icon provider class. -->
+    <!-- Name of an iconView provider class. -->
     <string name="icon_provider_class" translatable="false">ch.deletescape.lawnchair.iconpack.LawnchairIconProvider</string>
 
     <!-- Name of a drawable factory class. -->

@@ -1,5 +1,8 @@
 package com.android.launcher3.ui;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.content.pm.LauncherActivityInfo;
 import android.graphics.Point;
 import android.support.test.filters.LargeTest;
@@ -8,19 +11,14 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 import android.view.MotionEvent;
-
 import com.android.launcher3.R;
 import com.android.launcher3.util.Condition;
 import com.android.launcher3.util.Wait;
 import com.android.launcher3.util.rule.LauncherActivityRule;
 import com.android.launcher3.util.rule.ShellCommandRule;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Test for dragging a deep shortcut to the home screen.
@@ -57,7 +55,7 @@ public class ShortcutsToHomeTest extends AbstractLauncherUiTest {
 
         // Find the app and long press it to show shortcuts.
         UiObject2 icon = scrollAndFind(appsContainer, By.text(testApp.getLabel().toString()));
-        // Press icon center until shortcuts appear
+        // Press iconView center until shortcuts appear
         Point iconCenter = icon.getVisibleCenter();
         sendPointer(MotionEvent.ACTION_DOWN, iconCenter);
         UiObject2 deepShortcutsContainer = findViewById(R.id.deep_shortcuts_container);

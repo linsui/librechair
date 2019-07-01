@@ -459,7 +459,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         final boolean isBubbleTextView = v instanceof BubbleTextView;
         mFloatingView = new View(mLauncher);
         if (isBubbleTextView && v.getTag() instanceof ItemInfoWithIcon ) {
-            // Create a copy of the app icon
+            // Create a copy of the app iconView
             mFloatingView.setBackground(
                     DrawableFactory.get(mLauncher).newIcon((ItemInfoWithIcon) v.getTag()));
         }
@@ -468,7 +468,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         Rect rect = new Rect();
         final boolean fromDeepShortcutView = v.getParent() instanceof DeepShortcutView;
         if (fromDeepShortcutView) {
-            // Deep shortcut views have their icon drawn in a separate view.
+            // Deep shortcut views have their iconView drawn in a separate view.
             DeepShortcutView view = (DeepShortcutView) v.getParent();
             mDragLayer.getDescendantRectRelativeToSelf(view.getIconView(), rect);
         } else {
@@ -518,7 +518,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         int[] dragLayerBounds = new int[2];
         mDragLayer.getLocationOnScreen(dragLayerBounds);
 
-        // Animate the app icon to the center of the window bounds in screen coordinates.
+        // Animate the app iconView to the center of the window bounds in screen coordinates.
         float centerX = windowTargetBounds.centerX() - dragLayerBounds[0];
         float centerY = windowTargetBounds.centerY() - dragLayerBounds[1];
 
@@ -551,7 +551,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         appOpenAnimator.play(x);
         appOpenAnimator.play(y);
 
-        // Scale the app icon to take up the entire screen. This simplifies the math when
+        // Scale the app iconView to take up the entire screen. This simplifies the math when
         // animating the app window position / scale.
         float maxScaleX = windowTargetBounds.width() / (float) rect.width();
         float maxScaleY = windowTargetBounds.height() / (float) rect.height();
@@ -562,7 +562,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
                 .setInterpolator(reversed ? Interpolators.EXAGGERATED_EASE_REVERSED : Interpolators.EXAGGERATED_EASE);
         appOpenAnimator.play(scaleAnim);
 
-        // Fade out the app icon.
+        // Fade out the app iconView.
         ObjectAnimator alpha = ObjectAnimator.ofFloat(mFloatingView, View.ALPHA, reversed ? 0f : 1f,
                 reversed ? 1f : 0f);
         long alphaStartDelay;
@@ -630,7 +630,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         int targetMode = reversed ? MODE_CLOSING : MODE_OPENING;
         Rect bounds = new Rect();
         if (v.getParent() instanceof DeepShortcutView) {
-            // Deep shortcut views have their icon drawn in a separate view.
+            // Deep shortcut views have their iconView drawn in a separate view.
             DeepShortcutView view = (DeepShortcutView) v.getParent();
             mDragLayer.getDescendantRectRelativeToSelf(view.getIconView(), bounds);
         } else if (v instanceof BubbleTextView) {
@@ -661,16 +661,16 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
                 final float easePercent = (reversed ? AGGRESSIVE_EASE_REVERSED2 : AGGRESSIVE_EASE)
                         .getInterpolation(percent);
 
-                // Calculate app icon size.
+                // Calculate app iconView size.
                 float iconWidth = bounds.width() * mFloatingView.getScaleX();
                 float iconHeight = bounds.height() * mFloatingView.getScaleY();
 
-                // Scale the app window to match the icon size.
+                // Scale the app window to match the iconView size.
                 float scaleX = iconWidth / windowTargetBounds.width();
                 float scaleY = iconHeight / windowTargetBounds.height();
                 float scale = Math.min(1f, Math.min(scaleX, scaleY));
 
-                // Position the scaled window on top of the icon
+                // Position the scaled window on top of the iconView
                 int windowWidth = windowTargetBounds.width();
                 int windowHeight = windowTargetBounds.height();
                 float scaledWindowWidth = windowWidth * scale;

@@ -16,10 +16,10 @@
 
 package com.android.launcher3.folder;
 
+import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
+
 import com.android.launcher3.FolderInfo;
 import com.android.launcher3.InvariantDeviceProfile;
-
-import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 
 /**
  * Verifies whether an item in a Folder is displayed in the FolderIcon preview.
@@ -50,7 +50,7 @@ public class FolderIconPreviewVerifier {
     }
 
     /**
-     * Returns whether the item with {@param rank} is in the default Folder icon preview.
+     * Returns whether the item with {@param rank} is in the default Folder iconView preview.
      */
     public boolean isItemInPreview(int rank) {
         return isItemInPreview(0, rank);
@@ -59,7 +59,7 @@ public class FolderIconPreviewVerifier {
     /**
      * @param page The page the item is on.
      * @param rank The rank of the item.
-     * @return True iff the icon is in the 2x2 upper left quadrant of the Folder.
+     * @return True iff the iconView is in the 2x2 upper left quadrant of the Folder.
      */
     public boolean isItemInPreview(int page, int rank) {
         // First page items are laid out such that the first 4 items are always in the upper

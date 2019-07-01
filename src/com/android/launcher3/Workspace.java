@@ -24,7 +24,12 @@ import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.LauncherState.SPRING_LOADED;
 import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_OVERLAY;
 
-import android.animation.*;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.LayoutTransition;
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
@@ -51,7 +56,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView;
 import com.android.launcher3.Launcher.LauncherOverlay;
@@ -67,7 +71,6 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
-import com.android.launcher3.dragndrop.DragOptions.PreDragCondition;
 import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.dragndrop.SpringLoadedDragController;
 import com.android.launcher3.folder.Folder;
@@ -78,7 +81,6 @@ import com.android.launcher3.graphics.PreloadIconDrawable;
 import com.android.launcher3.pageindicators.WorkspacePageIndicator;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.shortcuts.ShortcutDragPreviewProvider;
-import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.touch.ItemLongClickListener;
 import com.android.launcher3.touch.WorkspaceTouchListener;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
@@ -86,7 +88,6 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LongArrayMap;
-import com.android.launcher3.util.MultiStateAlphaController;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.WallpaperOffsetInterpolator;
@@ -94,7 +95,6 @@ import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -1871,7 +1871,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             boolean animate = dragView != null;
             if (animate) {
                 // In order to keep everything continuous, we hand off the currently rendered
-                // folder background to the newly created icon. This preserves animation state.
+                // folder background to the newly created iconView. This preserves animation state.
                 fi.setFolderBackground(mFolderCreateBg);
                 mFolderCreateBg = new PreviewBackground();
                 fi.performCreateAnimation(destInfo, v, sourceInfo, dragView, folderLocation, scale
@@ -1982,7 +1982,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
                 droppedOnOriginalCellDuringTransition = droppedOnOriginalCell && mIsSwitchingState;
 
                 // When quickly moving an item, a user may accidentally rearrange their
-                // workspace. So instead we move the icon back safely to its original position.
+                // workspace. So instead we move the iconView back safely to its original position.
                 boolean returnToOriginalCellToPreventShuffling = !isFinishedSwitchingState()
                         && !droppedOnOriginalCellDuringTransition && !dropTargetLayout
                         .isRegionVacant(mTargetCell[0], mTargetCell[1], spanX, spanY);
@@ -2073,7 +2073,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             if (d.dragView.hasDrawn()) {
                 if (droppedOnOriginalCellDuringTransition) {
                     // Animate the item to its original position, while simultaneously exiting
-                    // spring-loaded mode so the page meets the icon where it was picked up.
+                    // spring-loaded mode so the page meets the iconView where it was picked up.
                     mLauncher.getDragController().animateDragViewToOriginalPosition(
                             onCompleteRunnable, cell, SPRING_LOADED_TRANSITION_MS);
                     mLauncher.getStateManager().goToState(NORMAL);
@@ -2546,7 +2546,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             BubbleTextView cell = (BubbleTextView) layout.getChildAt(cellX, cellY);
             bg.setup(mLauncher, null, cell.getMeasuredWidth(), cell.getPaddingTop());
 
-            // The full preview background should appear behind the icon
+            // The full preview background should appear behind the iconView
             bg.isClipping = false;
         }
 
@@ -2985,7 +2985,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             parentCell.removeView(v);
         } else if (FeatureFlags.IS_DOGFOOD_BUILD) {
             // When an app is uninstalled using the drop target, we wait until resume to remove
-            // the icon. We also remove all the corresponding items from the workspace at
+            // the iconView. We also remove all the corresponding items from the workspace at
             // {@link Launcher#bindComponentsRemoved}. That call can come before or after
             // {@link Launcher#mOnResumeCallbacks} depending on how busy the worker thread is.
             Log.e(TAG, "mDragInfo.cell has null parent");

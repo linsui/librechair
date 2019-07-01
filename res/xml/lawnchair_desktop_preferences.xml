@@ -102,7 +102,7 @@
             android:title="@string/icon_badging_title"
             android:widgetLayout="@layout/notification_pref_warning">
             <intent android:action="android.settings.NOTIFICATION_SETTINGS">
-                <!-- This extra highlights the "Allow icon badges" field in Notification settings -->
+                <!-- This extra highlights the "Allow iconView badges" field in Notification settings -->
                 <extra
                     android:name=":settings:fragment_args_key"
                     android:value="notification_badging" />

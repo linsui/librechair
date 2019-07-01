@@ -19,12 +19,12 @@ package com.android.launcher3;
 import android.graphics.Bitmap;
 
 /**
- * Represents an ItemInfo which also holds an icon.
+ * Represents an ItemInfo which also holds an iconView.
  */
 public abstract class ItemInfoWithIcon extends ItemInfo {
 
     /**
-     * A bitmap version of the application icon.
+     * A bitmap version of the application iconView.
      */
     public Bitmap iconBitmap;
 
@@ -34,42 +34,42 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
     public int iconColor;
 
     /**
-     * Indicates whether we're using a low res icon
+     * Indicates whether we're using a low res iconView
      */
     public boolean usingLowResIcon;
 
     /**
-     * Indicates that the icon is disabled due to safe mode restrictions.
+     * Indicates that the iconView is disabled due to safe mode restrictions.
      */
     public static final int FLAG_DISABLED_SAFEMODE = 1 << 0;
 
     /**
-     * Indicates that the icon is disabled as the app is not available.
+     * Indicates that the iconView is disabled as the app is not available.
      */
     public static final int FLAG_DISABLED_NOT_AVAILABLE = 1 << 1;
 
     /**
-     * Indicates that the icon is disabled as the app is suspended
+     * Indicates that the iconView is disabled as the app is suspended
      */
     public static final int FLAG_DISABLED_SUSPENDED = 1 << 2;
 
     /**
-     * Indicates that the icon is disabled as the user is in quiet mode.
+     * Indicates that the iconView is disabled as the user is in quiet mode.
      */
     public static final int FLAG_DISABLED_QUIET_USER = 1 << 3;
 
     /**
-     * Indicates that the icon is disabled as the publisher has disabled the actual shortcut.
+     * Indicates that the iconView is disabled as the publisher has disabled the actual shortcut.
      */
     public static final int FLAG_DISABLED_BY_PUBLISHER = 1 << 4;
 
     /**
-     * Indicates that the icon is disabled as the user partition is currently locked.
+     * Indicates that the iconView is disabled as the user partition is currently locked.
      */
     public static final int FLAG_DISABLED_LOCKED_USER = 1 << 5;
 
     /**
-     * Indicates that the icon is disabled as the sesame integration is currently disabled.
+     * Indicates that the iconView is disabled as the sesame integration is currently disabled.
      */
     public static final int FLAG_DISABLED_BY_SESAME = 1 << 10;
 
@@ -91,13 +91,13 @@ public abstract class ItemInfoWithIcon extends ItemInfo {
     public static final int FLAG_SYSTEM_MASK = FLAG_SYSTEM_YES | FLAG_SYSTEM_NO;
 
     /**
-     * Flag indicating that the icon is an {@link android.graphics.drawable.AdaptiveIconDrawable}
+     * Flag indicating that the iconView is an {@link android.graphics.drawable.AdaptiveIconDrawable}
      * that can be optimized in various way.
      */
     public static final int FLAG_ADAPTIVE_ICON = 1 << 8;
 
     /**
-     * Flag indicating that the icon is badged.
+     * Flag indicating that the iconView is badged.
      */
     public static final int FLAG_ICON_BADGED = 1 << 9;
 

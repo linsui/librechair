@@ -22,7 +22,6 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.ViewConfiguration;
-
 import com.android.launcher3.ButtonDropTarget;
 import com.android.launcher3.DropTarget;
 import com.android.launcher3.Launcher;
@@ -119,7 +118,7 @@ public class FlingToDeleteHelper {
             theta = getAngleBetweenVectors(vel, upVec);
         } else if (mLauncher.getDeviceProfile().isVerticalBarLayout() &&
                 mVelocityTracker.getXVelocity() < mFlingToDeleteThresholdVelocity) {
-            // Remove icon is on left side instead of top, so check if we are flinging to the left.
+            // Remove iconView is on left side instead of top, so check if we are flinging to the left.
             PointF leftVec = new PointF(-1f, 0f);
             theta = getAngleBetweenVectors(vel, leftVec);
         }

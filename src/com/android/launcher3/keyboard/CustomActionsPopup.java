@@ -23,18 +23,16 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
-
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
 import com.android.launcher3.popup.PopupContainerWithArrow;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Handles showing a popup menu with available custom actions for a launcher icon.
+ * Handles showing a popup menu with available custom actions for a launcher iconView.
  * This allows exposing various custom actions using keyboard shortcuts.
  */
 public class CustomActionsPopup implements OnMenuItemClickListener {

@@ -35,7 +35,7 @@ abstract class BaseFlags {
 
     // When enabled allows to use any point on the fast scrollbar to start dragging.
     public static final boolean LAUNCHER3_DIRECT_SCROLL = true;
-    // When enabled the promise icon is visible in all apps while installation an app.
+    // When enabled the promise iconView is visible in all apps while installation an app.
     public static final boolean LAUNCHER3_PROMISE_APPS_IN_ALL_APPS = false;
     // When enabled allows use of spring motions on the icons.
     public static final boolean LAUNCHER3_SPRING_ICONS = true;
@@ -44,7 +44,7 @@ abstract class BaseFlags {
 
     // Feature flag to enable moving the QSB on the 0th screen of the workspace.
     public static boolean QSB_ON_FIRST_SCREEN = true;
-    // When enabled the all-apps icon is not added to the hotseat.
+    // When enabled the all-apps iconView is not added to the hotseat.
     public static final boolean NO_ALL_APPS_ICON = true;
 
     // When true, custom widgets are loaded using CustomWidgetParser.

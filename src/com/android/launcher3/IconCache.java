@@ -20,7 +20,11 @@ import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.*;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.LauncherActivityInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -52,7 +56,6 @@ import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.Provider;
 import com.android.launcher3.util.SQLiteCacheHelper;
 import com.android.launcher3.util.Thunk;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -126,7 +129,7 @@ public class IconCache {
         // automatically be loaded as ALPHA_8888.
         mLowResOptions.inPreferredConfig = Bitmap.Config.RGB_565;
         if (Utilities.getLawnchairPrefs(context).getAlwaysClearIconCache()) {
-            Log.d(TAG, "IconCache: Clearing icon cache in constructor");
+            Log.d(TAG, "IconCache: Clearing iconView cache in constructor");
             clear();
         }
 
@@ -260,7 +263,7 @@ public class IconCache {
     }
 
     public void updateDbIcons(Set<String> ignorePackagesForMainUser) {
-        // Remove all active icon update tasks.
+        // Remove all active iconView update tasks.
         mWorkerHandler.removeCallbacksAndMessages(ICON_UPDATE_TOKEN);
 
         mIconProvider.updateSystemStateString(mContext);
@@ -273,8 +276,8 @@ public class IconCache {
                 return;
             }
 
-            // Update icon cache. This happens in segments and {@link #onPackageIconsUpdated}
-            // is called by the icon cache when the job is complete.
+            // Update iconView cache. This happens in segments and {@link #onPackageIconsUpdated}
+            // is called by the iconView cache when the job is complete.
             updateDBIcons(user, apps, Process.myUserHandle().equals(user)
                     ? ignorePackagesForMainUser : Collections.<String>emptySet());
         }
@@ -349,7 +352,7 @@ public class IconCache {
                 }
             }
         } catch (SQLiteException e) {
-            Log.d(TAG, "Error reading icon cache", e);
+            Log.d(TAG, "Error reading iconView cache", e);
             // Continue updating whatever we have read so far
         } finally {
             if (c != null) {
@@ -382,7 +385,7 @@ public class IconCache {
         CacheEntry entry = null;
         if (!replaceExisting) {
             entry = mCache.get(key);
-            // We can't reuse the entry if the high-res icon is not present.
+            // We can't reuse the entry if the high-res iconView is not present.
             if (entry == null || entry.isLowResIcon || entry.icon == null) {
                 entry = null;
             }
@@ -406,7 +409,7 @@ public class IconCache {
 
     /**
      * Updates {@param values} to contain versioning information and adds it to the DB.
-     * @param values {@link ContentValues} containing icon & title
+     * @param values {@link ContentValues} containing iconView & title
      */
     private void addIconToDB(ContentValues values, ComponentName key,
             PackageInfo info, long userSerial) {
@@ -418,7 +421,7 @@ public class IconCache {
     }
 
     /**
-     * Fetches high-res icon for the provided ItemInfo and updates the caller when done.
+     * Fetches high-res iconView for the provided ItemInfo and updates the caller when done.
      * @return a request ID that can be used to cancel the request.
      */
     public IconLoadRequest updateIconInBackground(final ItemInfoUpdateReceiver caller,
@@ -467,17 +470,17 @@ public class IconCache {
     }
 
     /**
-     * Fill in {@param info} with the icon and label for {@param activityInfo}
+     * Fill in {@param info} with the iconView and label for {@param activityInfo}
      */
     public synchronized void getTitleAndIcon(ItemInfoWithIcon info,
             LauncherActivityInfo activityInfo, boolean useLowResIcon) {
-        // If we already have activity info, no need to use package icon
+        // If we already have activity info, no need to use package iconView
         getTitleAndIcon(info, Provider.of(activityInfo), false, useLowResIcon);
     }
 
     /**
-     * Fill in {@param info} with the icon and label. If the
-     * corresponding activity is not found, it reverts to the package icon.
+     * Fill in {@param info} with the iconView and label. If the
+     * corresponding activity is not found, it reverts to the package iconView.
      */
     public synchronized void getTitleAndIcon(ItemInfoWithIcon info, boolean useLowResIcon) {
         // null info means not installed, but if we have a component from the intent then
@@ -494,7 +497,7 @@ public class IconCache {
     }
 
     /**
-     * Fill in {@param shortcutInfo} with the icon and label for {@param info}
+     * Fill in {@param shortcutInfo} with the iconView and label for {@param info}
      */
     private synchronized void getTitleAndIcon(
             @NonNull ItemInfoWithIcon infoInOut,
@@ -506,7 +509,7 @@ public class IconCache {
     }
 
     /**
-     * Fill in {@param infoInOut} with the corresponding icon and label.
+     * Fill in {@param infoInOut} with the corresponding iconView and label.
      */
     public synchronized void getTitleAndIconForApp(
             PackageItemInfo infoInOut, boolean useLowResIcon) {
@@ -566,7 +569,7 @@ public class IconCache {
                         CacheEntry packageEntry = getEntryForPackageLocked(
                                 componentName.getPackageName(), user, false);
                         if (packageEntry != null) {
-                            if (DEBUG) Log.d(TAG, "using package default icon for " +
+                            if (DEBUG) Log.d(TAG, "using package default iconView for " +
                                     componentName.toShortString());
                             packageEntry.applyTo(entry);
                             entry.title = packageEntry.title;
@@ -574,7 +577,7 @@ public class IconCache {
                         }
                     }
                     if (entry.icon == null) {
-                        if (DEBUG) Log.d(TAG, "using default icon for " +
+                        if (DEBUG) Log.d(TAG, "using default iconView for " +
                                 componentName.toShortString());
                         getDefaultIcon(user).applyTo(entry);
                     }
@@ -614,7 +617,7 @@ public class IconCache {
         ComponentKey cacheKey = getPackageKey(packageName, user);
         CacheEntry entry = mCache.get(cacheKey);
 
-        // For icon caching, do not go through DB. Just update the in-memory entry.
+        // For iconView caching, do not go through DB. Just update the in-memory entry.
         if (entry == null) {
             entry = new CacheEntry();
         }
@@ -662,8 +665,8 @@ public class IconCache {
                     }
 
                     LauncherIcons li = LauncherIcons.obtain(mContext);
-                    // Load the full res icon for the application, but if useLowResIcon is set, then
-                    // only keep the low resolution icon instead of the larger full-sized icon
+                    // Load the full res iconView for the application, but if useLowResIcon is set, then
+                    // only keep the low resolution iconView instead of the larger full-sized iconView
                     BitmapInfo iconInfo = li.createBadgedIconBitmap(
                             appInfo.loadIcon(mPackageManager), user, appInfo.targetSdkVersion,
                             mInstantAppResolver.isInstantApp(appInfo));
@@ -676,7 +679,7 @@ public class IconCache {
                     entry.color = iconInfo.color;
                     entry.isLowResIcon = useLowResIcon;
 
-                    // Add the icon in the DB here, since these do not get written during
+                    // Add the iconView in the DB here, since these do not get written during
                     // package updates.
                     ContentValues values = newContentValues(iconInfo.icon, lowResIcon, entry.color,
                             entry.title.toString(), packageName);
@@ -722,7 +725,7 @@ public class IconCache {
                 return true;
             }
         } catch (SQLiteException e) {
-            Log.d(TAG, "Error reading icon cache", e);
+            Log.d(TAG, "Error reading iconView cache", e);
         } finally {
             if (c != null) {
                 c.close();
@@ -865,7 +868,7 @@ public class IconCache {
     }
 
     /**
-     * Generates a new low-res icon given a high-res icon.
+     * Generates a new low-res iconView given a high-res iconView.
      */
     private Bitmap generateLowResIcon(Bitmap icon) {
         return Bitmap.createScaledBitmap(icon,
@@ -903,7 +906,7 @@ public class IconCache {
     }
 
     /**
-     * Interface for receiving itemInfo with high-res icon.
+     * Interface for receiving itemInfo with high-res iconView.
      */
     public interface ItemInfoUpdateReceiver {
 

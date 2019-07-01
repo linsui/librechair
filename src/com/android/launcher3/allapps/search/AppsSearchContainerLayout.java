@@ -18,7 +18,6 @@ package com.android.launcher3.allapps.search;
 import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.getSize;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
-
 import static com.android.launcher3.graphics.IconNormalizer.ICON_VISIBLE_AREA_FACTOR;
 
 import android.content.Context;
@@ -33,7 +32,6 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
-
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Insettable;
@@ -45,7 +43,6 @@ import com.android.launcher3.allapps.AlphabeticalAppsList;
 import com.android.launcher3.allapps.SearchUiManager;
 import com.android.launcher3.graphics.TintedDrawableSpan;
 import com.android.launcher3.util.ComponentKey;
-
 import java.util.ArrayList;
 
 /**
@@ -86,10 +83,10 @@ public class AppsSearchContainerLayout extends ExtendedEditText
         mFixedTranslationY = getTranslationY();
         mMarginTopAdjusting = mFixedTranslationY - getPaddingTop();
 
-        // Update the hint to contain the icon.
-        // Prefix the original hint with two spaces. The first space gets replaced by the icon
+        // Update the hint to contain the iconView.
+        // Prefix the original hint with two spaces. The first space gets replaced by the iconView
         // using span. The second space is used for a singe space character between the hint
-        // and the icon.
+        // and the iconView.
         SpannableString spanned = new SpannableString("  " + getHint());
         spanned.setSpan(new TintedDrawableSpan(getContext(), R.drawable.ic_allapps_search),
                 0, 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);

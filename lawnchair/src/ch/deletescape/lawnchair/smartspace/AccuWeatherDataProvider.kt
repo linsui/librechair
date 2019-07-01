@@ -170,7 +170,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
         fun getIcon(context: Context, iconID: Int): Bitmap {
             var resID = iconID
             if (!ID_MAP.containsKey(resID)) {
-                Log.e("WeatherIconProvider", "No weather icon exists for condition: $resID")
+                Log.e("WeatherIconProvider", "No weather iconView exists for condition: $resID")
                 resID = CONDITION_UNKNOWN
             }
 

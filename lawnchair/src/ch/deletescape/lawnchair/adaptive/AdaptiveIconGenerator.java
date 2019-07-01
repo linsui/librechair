@@ -129,7 +129,7 @@ public class AdaptiveIconGenerator {
             aWidth = width * (1 - (bounds.left + bounds.right));
             aHeight = height * (1 - (bounds.top + bounds.bottom));
 
-            // Check if the icon is squareish
+            // Check if the iconView is squareish
             final float ratio = aHeight / aWidth;
             if (ratio < 0.99 || ratio > 1.001) {
                 isFullBleed = false;
@@ -153,7 +153,7 @@ public class AdaptiveIconGenerator {
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
 
             /*
-             *   Calculate the number of padding pixels around the actual icon (i)
+             *   Calculate the number of padding pixels around the actual iconView (i)
              *   +----------------+
              *   |      top       |
              *   +---+--------+---+
@@ -171,7 +171,7 @@ public class AdaptiveIconGenerator {
             float bottom = bounds.bottom * height * width;
             int addPixels = Math.round(l + top + r + bottom);
 
-            // Any icon with less than 13% transparent pixels (padding excluded) is considered "full-bleed-ish"
+            // Any iconView with less than 13% transparent pixels (padding excluded) is considered "full-bleed-ish"
             final int maxTransparent = (int) (round(size * .13) + addPixels);
 
             int highScore = 0;

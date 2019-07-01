@@ -22,14 +22,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import com.android.launcher3.R
-import java.util.*
 
 class WeatherIconProvider(private val context: Context) {
 
     fun getIcon(iconID: String?): Bitmap {
         var resID = iconID
         if (!ID_MAP.containsKey(resID)) {
-            Log.e("WeatherIconProvider", "No weather icon exists for condition: $resID")
+            Log.e("WeatherIconProvider", "No weather iconView exists for condition: $resID")
             resID = CONDITION_UNKNOWN
         }
 

@@ -33,7 +33,6 @@ import android.graphics.Shader;
 import android.support.v4.graphics.ColorUtils;
 import android.util.Property;
 import android.view.View;
-
 import ch.deletescape.lawnchair.folder.FolderShape;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
@@ -84,8 +83,8 @@ public class PreviewBackground {
     public int delegateCellX;
     public int delegateCellY;
 
-    // When the PreviewBackground is drawn under an icon (for creating a folder) the border
-    // should not occlude the icon
+    // When the PreviewBackground is drawn under an iconView (for creating a folder) the border
+    // should not occlude the iconView
     public boolean isClipping = true;
 
     // Drawing / animation configurations

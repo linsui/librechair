@@ -24,7 +24,6 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 import android.util.FloatProperty;
 import android.view.View;
-
 import com.android.launcher3.Utilities;
 import com.android.quickstep.views.RecentsView;
 import com.android.quickstep.views.TaskThumbnailView;
@@ -46,7 +45,7 @@ public class TaskViewDrawable extends Drawable {
             };
 
     /**
-     * The progress at which we play the atomic icon scale animation.
+     * The progress at which we play the atomic iconView scale animation.
      */
     private static final float ICON_SCALE_THRESHOLD = 0.95f;
 
@@ -93,7 +92,7 @@ public class TaskViewDrawable extends Drawable {
         mIconScaleAnimator.addUpdateListener(valueAnimator -> {
             mIconScale = (float) valueAnimator.getAnimatedValue();
             if (mProgress > ICON_SCALE_THRESHOLD) {
-                // Speed up the icon scale to ensure it is 1 when progress is 1.
+                // Speed up the iconView scale to ensure it is 1 when progress is 1.
                 float iconProgress = (mProgress - ICON_SCALE_THRESHOLD) / (1 - ICON_SCALE_THRESHOLD);
                 if (iconProgress > mIconScale) {
                     mIconScale = iconProgress;

@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.BubbleTextView;
@@ -45,7 +44,6 @@ import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.touch.ItemLongClickListener;
 import com.android.launcher3.util.PackageManagerHelper;
-
 import java.util.List;
 
 /**
@@ -55,7 +53,7 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
 
     public static final String TAG = "AppsGridAdapter";
 
-    // A normal icon
+    // A normal iconView
     public static final int VIEW_TYPE_ICON = 1 << 1;
     // The message shown when there are no filtered results
     public static final int VIEW_TYPE_EMPTY_SEARCH = 1 << 2;
@@ -83,7 +81,7 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
     }
 
     /**
-     * ViewHolder for each icon.
+     * ViewHolder for each iconView.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -262,7 +260,7 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
                 icon.setLongPressTimeout(ViewConfiguration.getLongPressTimeout());
                 icon.setOnFocusChangeListener(mIconFocusListener);
 
-                // Ensure the all apps icon height matches the workspace icons in portrait mode.
+                // Ensure the all apps iconView height matches the workspace icons in portrait mode.
                 icon.getLayoutParams().height = mLauncher.getDeviceProfile().allAppsCellHeightPx;
                 return new ViewHolder(icon);
             case VIEW_TYPE_EMPTY_SEARCH:

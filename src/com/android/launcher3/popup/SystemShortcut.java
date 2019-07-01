@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl;
 import com.android.launcher3.AbstractFloatingView;
@@ -24,12 +23,11 @@ import com.android.launcher3.util.InstantAppResolver;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.widget.WidgetsBottomSheet;
-
 import java.util.List;
 
 /**
  * Represents a system shortcut for a given app. The shortcut should have a static label and
- * icon, and an onClickListener that depends on the item that the shortcut services.
+ * iconView, and an onClickListener that depends on the item that the shortcut services.
  *
  * Example system shortcuts, defined as inner classes, include Widgets and AppInfo.
  */

@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -46,7 +45,7 @@ import com.android.launcher3.util.Themes;
 
 /**
  * A {@link android.widget.FrameLayout} that contains a single notification,
- * e.g. icon + title + text.
+ * e.g. iconView + title + text.
  */
 @TargetApi(Build.VERSION_CODES.N)
 public class NotificationMainView extends FrameLayout implements SwipeDetector.Listener {
@@ -113,7 +112,7 @@ public class NotificationMainView extends FrameLayout implements SwipeDetector.L
     }
 
     /**
-     * Sets the content of this view, animating it after a new icon shifts up if necessary.
+     * Sets the content of this view, animating it after a new iconView shifts up if necessary.
      */
     public void applyNotificationInfo(NotificationInfo mainNotification, boolean animate) {
         mNotificationInfo = mainNotification;

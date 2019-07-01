@@ -21,7 +21,6 @@ import android.graphics.Rect;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.text.TextUtils;
 import android.view.View;
-
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.FolderInfo;
@@ -46,7 +45,7 @@ public class WorkspaceAccessibilityHelper extends DragAndDropAccessibilityDelega
 
     /**
      * Find the virtual view id corresponding to the top left corner of any drop region by which
-     * the passed id is contained. For an icon, this is simply
+     * the passed id is contained. For an iconView, this is simply
      */
     @Override
     protected int intersectsValidDropTarget(int id) {
@@ -96,13 +95,13 @@ public class WorkspaceAccessibilityHelper extends DragAndDropAccessibilityDelega
             }
             return INVALID_POSITION;
         } else {
-            // For an icon, we simply check the view directly below
+            // For an iconView, we simply check the view directly below
             View child = mView.getChildAt(x, y);
             if (child == null || child == dragInfo.item) {
-                // Empty cell. Good for an icon or folder.
+                // Empty cell. Good for an iconView or folder.
                 return id;
             } else if (dragInfo.dragType != DragType.FOLDER) {
-                // For icons, we can consider cells that have another icon or a folder.
+                // For icons, we can consider cells that have another iconView or a folder.
                 ItemInfo info = (ItemInfo) child.getTag();
                 if (info instanceof AppInfo || info instanceof FolderInfo ||
                         info instanceof ShortcutInfo) {

@@ -64,7 +64,7 @@ public class RequestPinItemActivity extends BaseTestingActivity {
     public void pinShortcut() {
         ShortcutManager sm = getSystemService(ShortcutManager.class);
 
-        // Generate icon
+        // Generate iconView
         int r = sm.getIconMaxWidth() / 2;
         Bitmap icon = Bitmap.createBitmap(r * 2, r * 2, Bitmap.Config.ARGB_8888);
         Paint p = new Paint();

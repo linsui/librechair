@@ -17,7 +17,6 @@
 package com.android.launcher3.folder;
 
 import static com.android.launcher3.BubbleTextView.TEXT_ALPHA_PROPERTY;
-import static com.android.launcher3.LauncherAnimUtils.ALPHA_PROPERTY;
 import static com.android.launcher3.LauncherAnimUtils.SCALE_PROPERTY;
 import static com.android.launcher3.folder.ClippedFolderIconLayoutRule.MAX_NUM_ITEMS_IN_PREVIEW;
 import static com.android.launcher3.folder.FolderIcon.ICON_SCALE_PROPERTY;
@@ -134,7 +133,7 @@ public class FolderAnimationManager {
         mFolder.setPivotY(0);
 
         // We want to create a small X offset for the preview items, so that they follow their
-        // expected path to their final locations. ie. an icon should not move right, if it's final
+        // expected path to their final locations. ie. an iconView should not move right, if it's final
         // location is to its left. This value is arbitrarily defined.
         int previewItemOffsetX = (int) (previewSize / 2);
         if (Utilities.isRtl(mContext.getResources())) {
@@ -264,7 +263,7 @@ public class FolderAnimationManager {
 
             // Match positions of the icons in the folder with their positions in the preview
             rule.computePreviewItemDrawingParams(i, numItemsInFirstPagePreview, mTmpParams);
-            // The PreviewLayoutRule assumes that the icon size takes up the entire width so we
+            // The PreviewLayoutRule assumes that the iconView size takes up the entire width so we
             // offset by the actual size.
             int iconOffsetX = (int) ((btvLp.width - btv.getIconSize()) * iconScale) / 2;
 

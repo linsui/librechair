@@ -23,7 +23,6 @@ import android.os.UserHandle;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-
 import android.text.TextUtils;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
@@ -35,7 +34,6 @@ import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.DeepShortcutView;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.util.PackageUserKey;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -156,7 +154,7 @@ public class PopupPopulator {
             for (int i = 0; i < shortcuts.size() && i < shortcutViews.size(); i++) {
                 final ShortcutInfoCompat shortcut = shortcuts.get(i);
                 final ShortcutInfo si = new ShortcutInfo(shortcut, launcher);
-                // Use unbadged icon for the menu.
+                // Use unbadged iconView for the menu.
                 LauncherIcons li = LauncherIcons.obtain(launcher);
                 li.createShortcutIcon(shortcut, false /* badged */).applyTo(si);
                 li.recycle();

@@ -18,11 +18,9 @@ package com.android.launcher3.widget;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-
 import com.android.launcher3.IconCache;
 import com.android.launcher3.model.PackageItemInfo;
 import com.android.launcher3.widget.WidgetsListAdapter.WidgetListRowEntryComparator;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -99,7 +97,7 @@ public class WidgetsDiffReporter {
 
             } else {
                 // same package name but,
-                // did the icon, title, etc, change?
+                // did the iconView, title, etc, change?
                 // or did the widget size and desc, span, etc change?
                 if (!isSamePackageItemInfo(orgRowEntry.pkgItem, newRowEntry.pkgItem) ||
                         !orgRowEntry.widgets.equals(newRowEntry.widgets)) {

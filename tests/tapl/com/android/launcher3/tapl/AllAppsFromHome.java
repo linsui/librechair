@@ -49,8 +49,8 @@ public final class AllAppsFromHome {
     }
 
     /**
-     * Finds an icon. Fails if the icon doesn't exist. Scrolls the app list when needed to make
-     * sure the icon is visible.
+     * Finds an iconView. Fails if the iconView doesn't exist. Scrolls the app list when needed to make
+     * sure the iconView is visible.
      *
      * @param appName name of the app.
      * @return The app.
@@ -98,7 +98,7 @@ public final class AllAppsFromHome {
         final int appHeight = appIcon.getVisibleBounds().height();
         if (appHeight < MIN_INTERACT_SIZE) {
             // Try to figure out how much percentage of the container needs to be scrolled in order
-            // to reveal the app icon to have the MIN_INTERACT_SIZE
+            // to reveal the app iconView to have the MIN_INTERACT_SIZE
             final float pct = Math.max(((float) (MIN_INTERACT_SIZE - appHeight)) / mHeight, 0.2f);
             allAppsContainer.scroll(Direction.DOWN, pct);
             mLauncher.waitForIdle();

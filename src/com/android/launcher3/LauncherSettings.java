@@ -68,19 +68,19 @@ public class LauncherSettings {
         public static final int ITEM_TYPE_SHORTCUT = 1;
 
         /**
-         * The icon package name in Intent.ShortcutIconResource
+         * The iconView package name in Intent.ShortcutIconResource
          * <P>Type: TEXT</P>
          */
         public static final String ICON_PACKAGE = "iconPackage";
 
         /**
-         * The icon resource name in Intent.ShortcutIconResource
+         * The iconView resource name in Intent.ShortcutIconResource
          * <P>Type: TEXT</P>
          */
         public static final String ICON_RESOURCE = "iconResource";
 
         /**
-         * The custom icon bitmap.
+         * The custom iconView bitmap.
          * <P>Type: BLOB</P>
          */
         public static final String ICON = "icon";
@@ -144,7 +144,7 @@ public class LauncherSettings {
         public static final String CONTAINER = "container";
 
         /**
-         * The icon is a resource identified by a package name and an integer id.
+         * The iconView is a resource identified by a package name and an integer id.
          */
         public static final int CONTAINER_DESKTOP = -100;
         public static final int CONTAINER_HOTSEAT = -101;

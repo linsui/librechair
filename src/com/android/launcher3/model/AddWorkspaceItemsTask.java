@@ -72,7 +72,7 @@ public class AddWorkspaceItemsTask extends BaseModelUpdateTask {
                 ItemInfo item = entry.first;
                 if (item.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
                         item.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
-                    // Short-circuit this logic if the icon exists somewhere on the workspace
+                    // Short-circuit this logic if the iconView exists somewhere on the workspace
                     if (shortcutExists(dataModel, item.getIntent(), item.user)) {
                         continue;
                     }
@@ -186,7 +186,7 @@ public class AddWorkspaceItemsTask extends BaseModelUpdateTask {
                             return true;
                         }
 
-                        // checking for existing promise icon with same package name
+                        // checking for existing promise iconView with same package name
                         if (isLauncherAppTarget
                                 && info.isPromise()
                                 && info.hasStatusFlag(ShortcutInfo.FLAG_AUTOINSTALL_ICON)

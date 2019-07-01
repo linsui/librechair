@@ -25,7 +25,7 @@ public class LogConfig {
     public static final String KEEP_ALL_ICONS = "KeepAllIcons";
 
     /**
-     * When turned on, icon cache is only fetched from memory and not disk.
+     * When turned on, iconView cache is only fetched from memory and not disk.
      */
     public static final String MEMORY_ONLY_ICON_CACHE = "MemoryOnlyIconCache";
 }

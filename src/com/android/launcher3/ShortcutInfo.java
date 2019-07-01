@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents a launchable icon on the workspaces and in folders.
+ * Represents a launchable iconView on the workspaces and in folders.
  */
 public class ShortcutInfo extends ItemInfoWithIcon {
 
@@ -48,14 +48,14 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     public static final int FLAG_RESTORED_ICON = 1;
 
     /**
-     * The icon was added as an auto-install app, and is not ready to be used. This flag can't be
+     * The iconView was added as an auto-install app, and is not ready to be used. This flag can't be
      * present along with {@link #FLAG_RESTORED_ICON}, and is set during default layout parsing.
      */
     public static final int FLAG_AUTOINSTALL_ICON = 2; //0B10;
 
     /**
-     * The icon is being installed. If {@link #FLAG_RESTORED_ICON} or {@link #FLAG_AUTOINSTALL_ICON}
-     * is set, then the icon is either being installed or is in a broken state.
+     * The iconView is being installed. If {@link #FLAG_RESTORED_ICON} or {@link #FLAG_AUTOINSTALL_ICON}
+     * is set, then the iconView is either being installed or is in a broken state.
      */
     public static final int FLAG_INSTALL_SESSION_ACTIVE = 4; // 0B100;
 
@@ -75,7 +75,7 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     public Intent intent;
 
     /**
-     * If isShortcut=true and customIcon=false, this contains a reference to the shortcut icon as an
+     * If isShortcut=true and customIcon=false, this contains a reference to the shortcut iconView as an
      * application's resource.
      */
     public Intent.ShortcutIconResource iconResource;

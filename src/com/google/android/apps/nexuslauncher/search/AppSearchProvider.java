@@ -28,12 +28,17 @@ import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.LoaderResults;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.LooperExecutor;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class AppSearchProvider extends ContentProvider
 {
@@ -112,7 +117,7 @@ public class AppSearchProvider extends ContentProvider
             bundle2.putParcelable("suggest_icon_1", mLooper.submit(g).get());
             return bundle2;
         } catch (Exception ex) {
-            Log.e("AppSearchProvider", "Unable to load icon " + ex);
+            Log.e("AppSearchProvider", "Unable to load iconView " + ex);
             return null;
         }
         return super.call(s, s2, bundle);

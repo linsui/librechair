@@ -26,7 +26,6 @@ import android.util.AttributeSet;
 import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.View;
-
 import ch.deletescape.lawnchair.colors.ColorEngine.ColorResolver;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
 import com.android.launcher3.BaseRecyclerView;
@@ -40,7 +39,6 @@ import com.android.launcher3.logging.UserEventDispatcher.LogContainerProvider;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.views.RecyclerViewFastScroller;
-
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -357,7 +355,7 @@ public class AllAppsRecyclerView extends BaseRecyclerView implements LogContaine
                             posItem.rowIndex == item.rowIndex) {
                         break;
                     }
-                    // Otherwise, only account for the first icon in the row since they are the same
+                    // Otherwise, only account for the first iconView in the row since they are the same
                     // size within a row
                     if (item.rowAppIndex == 0) {
                         y += mViewHeights.get(item.viewType, 0);

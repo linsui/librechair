@@ -17,7 +17,10 @@
 package com.android.launcher3.widget;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Layout;
@@ -27,21 +30,17 @@ import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.View.OnClickListener;
-
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.FastBitmapDrawable;
 import com.android.launcher3.IconCache;
 import com.android.launcher3.IconCache.ItemInfoUpdateReceiver;
 import com.android.launcher3.ItemInfoWithIcon;
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppWidgetInfo;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.DrawableFactory;
 import com.android.launcher3.model.PackageItemInfo;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Themes;
-import com.android.launcher3.widget.LauncherAppWidgetHostView;
 
 public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
         implements OnClickListener, ItemInfoUpdateReceiver {
@@ -130,9 +129,9 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
         }
         if (info.iconBitmap != null) {
             // The view displays three modes,
-            //   1) App icon in the center
-            //   2) Preload icon in the center
-            //   3) Setup icon in the center and app icon in the top right corner.
+            //   1) App iconView in the center
+            //   2) Preload iconView in the center
+            //   3) Setup iconView in the center and app iconView in the top right corner.
             DrawableFactory drawableFactory = DrawableFactory.get(getContext());
             if (mDisabledForSafeMode) {
                 FastBitmapDrawable disabledIcon = drawableFactory.newIcon(info);
@@ -223,7 +222,7 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
             float iconSize = Math.max(0, Math.min(availableWidth, availableHeight));
 
             // Use twice the setting size factor, as the setting is drawn at a corner and the
-            // icon is drawn in the center.
+            // iconView is drawn in the center.
             float settingIconScaleFactor = 1 + SETUP_ICON_SIZE_FACTOR * 2;
             int maxSize = Math.max(availableWidth, availableHeight);
             if (iconSize * settingIconScaleFactor > maxSize) {
@@ -244,7 +243,7 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
                         Layout.Alignment.ALIGN_CENTER, 1, 0, true);
                 int textHeight = mSetupTextLayout.getHeight();
 
-                // Extra icon size due to the setting icon
+                // Extra iconView size due to the setting iconView
                 float minHeightWithText = textHeight + actualIconSize * settingIconScaleFactor
                         + grid.iconDrawablePaddingPx;
 

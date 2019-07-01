@@ -17,7 +17,6 @@
 package com.android.launcher3.dragndrop;
 
 import android.graphics.Point;
-
 import com.android.launcher3.DropTarget;
 
 /**
@@ -34,7 +33,7 @@ public class DragOptions {
     /** Determines when a pre-drag should transition to a drag. By default, this is immediate. */
     public PreDragCondition preDragCondition = null;
 
-    /** Scale of the icons over the workspace icon size. */
+    /** Scale of the icons over the workspace iconView size. */
     public float intrinsicIconScaleFactor = 1f;
 
     /**

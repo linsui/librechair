@@ -15,6 +15,9 @@
  */
 package com.android.launcher3.graphics;
 
+import static com.android.launcher3.Utilities.getDevicePrefs;
+import static com.android.launcher3.Utilities.getPrefs;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -25,19 +28,13 @@ import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
-
 import com.android.launcher3.util.LooperExecutor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-
-import static com.android.launcher3.Utilities.getDevicePrefs;
-import static com.android.launcher3.Utilities.getPrefs;
-import static com.android.launcher3.Utilities.restartLauncher;
 
 /**
  * Utility class to override shape of {@link android.graphics.drawable.AdaptiveIconDrawable}.
@@ -95,7 +92,7 @@ public class IconShapeOverride {
                 ((ResourcesOverride) override).setArrayOverrideId(masks);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to override icon shape", e);
+            Log.e(TAG, "Unable to override iconView shape", e);
             // revert value.
             getPrefs(context).edit().remove(KEY_PREFERENCE).apply();
         }
@@ -218,7 +215,7 @@ public class IconShapeOverride {
         public void run() {
             // Synchronously write the preference.
             getPrefs(mContext).edit().putString(KEY_PREFERENCE, mValue).commit();
-            // Clear the icon cache.
+            // Clear the iconView cache.
             LauncherAppState.getInstance(mContext).getIconCache().clear();
 
             // Schedule restart

@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.CellLayout.ContainerType;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
@@ -144,7 +143,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup implements LawnchairPr
             // Widgets have their own padding
         } else {
             lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX);
-            // Center the icon/folder
+            // Center the iconView/folder
             int cHeight = getCellContentHeight();
             int cellPaddingY = (int) Math.max(0, ((lp.height - cHeight) / 2f));
             int cellPaddingX = mContainerType == CellLayout.WORKSPACE

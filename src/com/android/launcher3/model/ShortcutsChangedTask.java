@@ -17,7 +17,6 @@ package com.android.launcher3.model;
 
 import android.content.Context;
 import android.os.UserHandle;
-
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
@@ -30,7 +29,6 @@ import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.MultiHashMap;
 import com.android.launcher3.util.Provider;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -93,8 +91,8 @@ public class ShortcutsChangedTask extends BaseModelUpdateTask {
                 }
                 for (final ShortcutInfo shortcutInfo : shortcutInfos) {
                     shortcutInfo.updateFromDeepShortcutInfo(fullDetails, context);
-                    // If the shortcut is pinned but no longer has an icon in the system,
-                    // keep the current icon instead of reverting to the default icon.
+                    // If the shortcut is pinned but no longer has an iconView in the system,
+                    // keep the current iconView instead of reverting to the default iconView.
                     LauncherIcons li = LauncherIcons.obtain(context);
                     li.createShortcutIcon(fullDetails, true, Provider.of(shortcutInfo.iconBitmap))
                             .applyTo(shortcutInfo);

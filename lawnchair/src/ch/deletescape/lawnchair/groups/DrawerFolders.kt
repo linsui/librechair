@@ -18,10 +18,10 @@
 package ch.deletescape.lawnchair.groups
 
 import android.content.Context
-import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.LawnchairPreferencesChangeCallback
+import ch.deletescape.lawnchair.random
 import com.android.launcher3.FolderInfo
 import com.android.launcher3.R
-import com.android.launcher3.ShortcutInfo
 import com.android.launcher3.allapps.AlphabeticalAppsList
 
 class DrawerFolders(private val manager: AppGroupsManager) : AppGroups<DrawerFolders.Folder>(manager, AppGroupsManager.CategorizationType.Folders) {
@@ -40,7 +40,7 @@ class DrawerFolders(private val manager: AppGroupsManager) : AppGroups<DrawerFol
     private fun createCustomFolder(context: Context) = CustomFolder(context)
 
     override fun onGroupsChanged(changeCallback: LawnchairPreferencesChangeCallback) {
-        // TODO: reload after icon cache is ready to ensure high res folder previews
+        // TODO: reload after iconView cache is ready to ensure high res folder previews
         changeCallback.reloadDrawer()
     }
 
@@ -54,7 +54,7 @@ class DrawerFolders(private val manager: AppGroupsManager) : AppGroups<DrawerFol
             .flatMap { it.contents.value() }
 
     abstract class Folder(val context: Context, type: Int, titleRes: Int) : Group(type, context, titleRes) {
-        // Ensure icon customization sticks across group changes
+        // Ensure iconView customization sticks across group changes
         val id = LongCustomization(KEY_ID, Long.random + 9999L)
         open val isEmpty = true
 

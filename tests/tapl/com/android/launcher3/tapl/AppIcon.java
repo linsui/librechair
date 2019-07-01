@@ -23,7 +23,7 @@ import android.support.test.uiautomator.Until;
 import android.widget.TextView;
 
 /**
- * App icon, whether in all apps or in workspace/
+ * App iconView, whether in all apps or in workspace/
  */
 public final class AppIcon {
     private final Launcher mLauncher;
@@ -39,7 +39,7 @@ public final class AppIcon {
     }
 
     /**
-     * Clicks the icon to launch its app.
+     * Clicks the iconView to launch its app.
      */
     public void launch() {
         mLauncher.assertTrue("Launching an app didn't open a new window: " + mIcon.getText(),

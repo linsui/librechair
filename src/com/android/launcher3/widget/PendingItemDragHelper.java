@@ -24,7 +24,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.RemoteViews;
-
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DragSource;
 import com.android.launcher3.Launcher;
@@ -96,7 +95,7 @@ public class PendingItemDragHelper extends DragPreviewProvider {
             }
 
             if (previewSizeBeforeScale[0] < previewBitmapWidth) {
-                // The icon has extra padding around it.
+                // The iconView has extra padding around it.
                 int padding = (previewBitmapWidth - previewSizeBeforeScale[0]) / 2;
                 if (previewBitmapWidth > previewViewWidth) {
                     padding = padding * previewViewWidth / previewBitmapWidth;
@@ -120,7 +119,7 @@ public class PendingItemDragHelper extends DragPreviewProvider {
 
             dragOffset = new Point(previewPadding / 2, previewPadding / 2);
 
-            // Create a preview same as the workspace cell size and draw the icon at the
+            // Create a preview same as the workspace cell size and draw the iconView at the
             // appropriate position.
             DeviceProfile dp = launcher.getDeviceProfile();
             int iconSize = dp.iconSizePx;

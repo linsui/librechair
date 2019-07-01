@@ -36,7 +36,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.Interpolator;
 import android.widget.TextView;
-
 import ch.deletescape.lawnchair.touch.WorkspaceOptionModeTouchHelper;
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.CellLayout;
@@ -54,7 +53,6 @@ import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.views.BaseDragLayer;
-
 import java.util.ArrayList;
 
 /**
@@ -291,8 +289,8 @@ public class DragLayer extends BaseDragLayer<Launcher> {
         float toScale = scale;
         if (child instanceof TextView) {
             TextView tv = (TextView) child;
-            // Account for the source scale of the icon (ie. from AllApps to Workspace, in which
-            // the workspace may have smaller icon bounds).
+            // Account for the source scale of the iconView (ie. from AllApps to Workspace, in which
+            // the workspace may have smaller iconView bounds).
             toScale = scale / dragView.getIntrinsicIconScaleFactor();
 
             // The child may be scaled (always about the center of the view) so to account for it,

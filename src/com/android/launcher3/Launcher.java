@@ -18,7 +18,6 @@ package com.android.launcher3;
 
 import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
 import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
-
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
@@ -48,7 +47,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,7 +54,6 @@ import android.os.Parcelable;
 import android.os.Process;
 import android.os.StrictMode;
 import android.os.UserHandle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.text.method.TextKeyListener;
@@ -73,10 +70,8 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
-
-import ch.deletescape.lawnchair.*;
-import ch.deletescape.lawnchair.blur.BlurWallpaperProvider;
-import ch.deletescape.lawnchair.theme.ThemeOverride;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.LauncherStateManager.StateListener;
 import com.android.launcher3.Workspace.ItemOperator;
@@ -136,7 +131,6 @@ import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetParser;
-
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -923,8 +917,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         if (mLauncherCallbacks != null) {
             return mLauncherCallbacks.hasSettings();
         } else {
-            // On O and above we there is always some setting present settings (add icon to
-            // home screen or icon badging). On earlier APIs we will have the allow rotation
+            // On O and above we there is always some setting present settings (add iconView to
+            // home screen or iconView badging). On earlier APIs we will have the allow rotation
             // setting, on devices with a locked orientation,
             return Utilities.ATLEAST_OREO || !getResources().getBoolean(R.bool.allow_rotation);
         }
@@ -1599,7 +1593,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         // Create the view
         FolderIcon newFolder = FolderIcon.fromXml(R.layout.folder_icon, this, layout, folderInfo);
         mWorkspace.addInScreen(newFolder, folderInfo);
-        // Force measure the new folder icon
+        // Force measure the new folder iconView
         CellLayout parent = mWorkspace.getParentCellLayoutForView(newFolder);
         parent.getShortcutsAndWidgets().measureChild(newFolder);
         return newFolder;

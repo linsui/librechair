@@ -32,7 +32,7 @@
         android:paddingRight="?attr/dialogPreferredPadding"
         android:paddingTop="@dimen/abc_dialog_padding_top_material">
 
-        <!-- TODO: Reconsider adding an icon here after discussing with phil and lumiq -->
+        <!-- TODO: Reconsider adding an iconView here after discussing with phil and lumiq -->
         <ImageView
             android:id="@android:id/icon"
             android:layout_width="32dip"

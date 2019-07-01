@@ -27,7 +27,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.View;
-
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
@@ -35,7 +34,6 @@ import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.util.UiThreadHelper;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -92,7 +90,7 @@ public class DragPreviewProvider {
 
             boolean textVisible = false;
             if (mView instanceof FolderIcon) {
-                // For FolderIcons the text can bleed into the icon area, and so we need to
+                // For FolderIcons the text can bleed into the iconView area, and so we need to
                 // hide the text completely (which can't be achieved by clipping).
                 if (((FolderIcon) mView).getTextVisible()) {
                     ((FolderIcon) mView).setTextVisible(false);

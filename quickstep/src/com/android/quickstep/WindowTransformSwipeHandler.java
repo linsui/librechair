@@ -52,7 +52,6 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnDrawListener;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
-
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.DeviceProfile;
@@ -88,8 +87,6 @@ import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplier;
 import com.android.systemui.shared.system.WindowCallbacksCompat;
 import com.android.systemui.shared.system.WindowManagerWrapper;
-
-import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
 
@@ -930,7 +927,7 @@ public class WindowTransformSwipeHandler<T extends BaseDraggingActivity> {
         }
         mActivityControlHelper.onSwipeUpComplete(mActivity);
 
-        // Animate the first icon.
+        // Animate the first iconView.
         mRecentsView.setRunningTaskIconScaledDown(false /* isScaledDown */, true /* animate */);
         mRecentsView.setSwipeDownShouldLaunchApp(true);
 

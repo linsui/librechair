@@ -22,7 +22,6 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.util.ArrayMap;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.AllAppsList;
@@ -51,7 +50,6 @@ import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LongArrayMap;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.util.PackageUserKey;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -111,7 +109,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                             !LawnchairUtilsKt.workspaceContains(dataModel, packages[i])) {
                         SessionCommitReceiver.queueAppIconAddition(context, packages[i], mUser);
                     } else if (!Utilities.ATLEAST_OREO && !Process.myUserHandle().equals(mUser)) {
-                        // Automatically add homescreen icon for work profile apps for below O device.
+                        // Automatically add homescreen iconView for work profile apps for below O device.
                         SessionCommitReceiver.queueAppIconAddition(context, packages[i], mUser);
                     }
                 }
@@ -239,7 +237,7 @@ public class PackageUpdatedTask extends BaseModelUpdateTask {
                                 }
 
                                 if (si.hasStatusFlag(ShortcutInfo.FLAG_AUTOINSTALL_ICON)) {
-                                    // Auto install icon
+                                    // Auto install iconView
                                     if (!isTargetValid) {
                                         // Try to find the best match activity.
                                         Intent intent = new PackageManagerHelper(context)

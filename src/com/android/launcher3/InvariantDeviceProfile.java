@@ -27,23 +27,20 @@ import android.util.DisplayMetrics;
 import android.util.Xml;
 import android.view.Display;
 import android.view.WindowManager;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.settings.IconScale;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.Thunk;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class InvariantDeviceProfile {
 
-    // This is a static that we use for the default icon size on a 4/5-inch phone
+    // This is a static that we use for the default iconView size on a 4/5-inch phone
     private static float DEFAULT_ICON_SIZE_DP = 60;
 
     private static final float ICON_SIZE_DEFINED_IN_APP_DP = 48;

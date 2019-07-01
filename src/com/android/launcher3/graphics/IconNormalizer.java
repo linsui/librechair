@@ -24,7 +24,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -37,21 +36,20 @@ import android.util.Log;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
-
 import java.nio.ByteBuffer;
 
 public class IconNormalizer {
 
     private static final String TAG = "IconNormalizer";
     private static final boolean DEBUG = false;
-    // Ratio of icon visible area to full icon size for a square shaped icon
+    // Ratio of iconView visible area to full iconView size for a square shaped iconView
     private static final float MAX_SQUARE_AREA_FACTOR = 375.0f / 576;
-    // Ratio of icon visible area to full icon size for a circular shaped icon
+    // Ratio of iconView visible area to full iconView size for a circular shaped iconView
     private static final float MAX_CIRCLE_AREA_FACTOR = 380.0f / 576;
 
     private static final float CIRCLE_AREA_BY_RECT = (float) Math.PI / 4;
 
-    // Slope used to calculate icon visible area to full icon size for any generic shaped icon.
+    // Slope used to calculate iconView visible area to full iconView size for any generic shaped iconView.
     private static final float LINEAR_SCALE_SLOPE =
             (MAX_CIRCLE_AREA_FACTOR - MAX_SQUARE_AREA_FACTOR) / (1 - CIRCLE_AREA_BY_RECT);
 
@@ -62,7 +60,7 @@ public class IconNormalizer {
     private static final float PIXEL_DIFF_PERCENTAGE_THRESHOLD = 0.005f;
     private static final float SCALE_NOT_INITIALIZED = 0;
 
-    // Ratio of the diameter of an normalized circular icon to the actual icon size.
+    // Ratio of the diameter of an normalized circular iconView to the actual iconView size.
     public static final float ICON_VISIBLE_AREA_FACTOR = 0.92f;
 
     private final int mMaxSize;
@@ -84,7 +82,7 @@ public class IconNormalizer {
 
     /** package private **/
     IconNormalizer(Context context) {
-        // Use twice the icon size as maximum size to avoid scaling down twice.
+        // Use twice the iconView size as maximum size to avoid scaling down twice.
         mMaxSize = LauncherAppState.getIDP(context).iconBitmapSize * 2;
         mBitmap = Bitmap.createBitmap(mMaxSize, mMaxSize, Bitmap.Config.ALPHA_8);
         mCanvas = new Canvas(mBitmap);
@@ -111,12 +109,12 @@ public class IconNormalizer {
     }
 
     /**
-     * Returns if the shape of the icon is same as the path.
+     * Returns if the shape of the iconView is same as the path.
      * For this method to work, the shape path bounds should be in [0,1]x[0,1] bounds.
      */
     private boolean isShape(Path maskPath) {
         // Condition1:
-        // If width and height of the path not close to a square, then the icon shape is
+        // If width and height of the path not close to a square, then the iconView shape is
         // not same as the mask shape.
         float iconRatio = ((float) mBounds.width()) / mBounds.height();
         if (Math.abs(iconRatio - 1) > BOUND_RATIO_MARGIN) {
@@ -127,10 +125,10 @@ public class IconNormalizer {
         }
 
         // Condition 2:
-        // Actual icon (white) and the fitted shape (e.g., circle)(red) XOR operation
-        // should generate transparent image, if the actual icon is equivalent to the shape.
+        // Actual iconView (white) and the fitted shape (e.g., circle)(red) XOR operation
+        // should generate transparent image, if the actual iconView is equivalent to the shape.
 
-        // Fit the shape within the icon's bounding box
+        // Fit the shape within the iconView's bounding box
         mMatrix.reset();
         mMatrix.setScale(mBounds.width(), mBounds.height());
         mMatrix.postTranslate(mBounds.left, mBounds.top);
@@ -178,14 +176,14 @@ public class IconNormalizer {
 
     /**
      * Returns the amount by which the {@param d} should be scaled (in both dimensions) so that it
-     * matches the design guidelines for a launcher icon.
+     * matches the design guidelines for a launcher iconView.
      *
-     * We first calculate the convex hull of the visible portion of the icon.
+     * We first calculate the convex hull of the visible portion of the iconView.
      * This hull then compared with the bounding rectangle of the hull to find how closely it
      * resembles a circle and a square, by comparing the ratio of the areas. Note that this is not an
      * ideal solution but it gives satisfactory result without affecting the performance.
      *
-     * This closeness is used to determine the ratio of hull area to the full icon size.
+     * This closeness is used to determine the ratio of hull area to the full iconView size.
      * Refer {@link #MAX_CIRCLE_AREA_FACTOR} and {@link #MAX_SQUARE_AREA_FACTOR}
      *
      * @param outBounds optional rect to receive the fraction distance from each edge.
@@ -223,7 +221,7 @@ public class IconNormalizer {
         buffer.rewind();
         mBitmap.copyPixelsToBuffer(buffer);
 
-        // Overall bounds of the visible icon.
+        // Overall bounds of the visible iconView.
         int topY = -1;
         int bottomY = -1;
         int leftX = mMaxSize + 1;

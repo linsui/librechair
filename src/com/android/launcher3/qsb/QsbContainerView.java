@@ -37,7 +37,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-
 import com.android.launcher3.AppWidgetResizeFrame;
 import com.android.launcher3.InvariantDeviceProfile;
 import com.android.launcher3.LauncherAppState;
@@ -123,7 +122,7 @@ public class QsbContainerView extends FrameLayout {
             mWidgetInfo = getSearchWidgetProvider();
             if (mWidgetInfo == null) {
                 // There is no search provider, just show the default widget.
-                return getDefaultView(container, false /* show setup icon */);
+                return getDefaultView(container, false /* show setup iconView */);
             }
             Bundle opts = createBindOptions();
             Activity activity = getActivity();
@@ -166,8 +165,8 @@ public class QsbContainerView extends FrameLayout {
                 return mQsb;
             }
 
-            // Return a default widget with setup icon.
-            return getDefaultView(container, true /* show setup icon */);
+            // Return a default widget with setup iconView.
+            return getDefaultView(container, true /* show setup iconView */);
         }
 
         private void saveWidgetId(int widgetId) {
@@ -230,7 +229,7 @@ public class QsbContainerView extends FrameLayout {
         }
 
         protected View getDefaultView(ViewGroup container, boolean showSetupIcon) {
-            // Return a default widget with setup icon.
+            // Return a default widget with setup iconView.
             View v = QsbWidgetHostView.getDefaultView(container);
             if (showSetupIcon) {
                 View setupButton = v.findViewById(R.id.btn_qsb_setup);

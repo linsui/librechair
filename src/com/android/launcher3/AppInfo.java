@@ -25,7 +25,6 @@ import android.os.Build;
 import android.os.Process;
 import android.os.UserHandle;
 import com.android.launcher3.compat.UserManagerCompat;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
 
@@ -115,7 +114,7 @@ public class AppInfo extends ItemInfoWithIcon {
         if (Utilities.ATLEAST_OREO
                 && appInfo.targetSdkVersion >= Build.VERSION_CODES.O
                 && Process.myUserHandle().equals(lai.getUser())) {
-            // The icon for a non-primary user is badged, hence it's not exactly an adaptive icon.
+            // The iconView for a non-primary user is badged, hence it's not exactly an adaptive iconView.
             info.runtimeStatusFlags |= FLAG_ADAPTIVE_ICON;
         }
     }

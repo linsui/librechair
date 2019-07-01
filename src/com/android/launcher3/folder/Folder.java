@@ -28,7 +28,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.text.InputType;
@@ -44,12 +43,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
-import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
-
 import ch.deletescape.lawnchair.groups.DrawerFolderInfo;
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Alarm;
@@ -84,7 +81,6 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-
 import com.google.android.apps.nexuslauncher.CustomBottomSheet;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,7 +117,7 @@ public class Folder extends AbstractFloatingView implements DragSource,
     public static final int SCROLL_RIGHT = 1;
 
     /**
-     * Fraction of icon width which behave as scroll region.
+     * Fraction of iconView width which behave as scroll region.
      */
     private static final float ICON_OVERSCROLL_WIDTH_FACTOR = 0.45f;
 
@@ -575,7 +571,7 @@ public class Folder extends AbstractFloatingView implements DragSource,
             mPageIndicator.prepareEntryAnimation();
 
             // Do not update the flag if we are in drag mode. The flag will be updated, when we
-            // actually drop the icon.
+            // actually drop the iconView.
             final boolean updateAnimationFlag = !mDragInProgress;
             anim.addListener(new AnimatorListenerAdapter() {
 
@@ -722,7 +718,7 @@ public class Folder extends AbstractFloatingView implements DragSource,
     public void onDragEnter(DragObject d) {
         mPrevTargetRank = -1;
         mOnExitAlarm.cancelAlarm();
-        // Get the area offset such that the folder only closes if the drag icon width
+        // Get the area offset such that the folder only closes if the drag iconView width
         // is outside the folder area
         mScrollAreaOffset = d.dragView.getDragRegionWidth() - d.xOffset;
     }
@@ -1167,8 +1163,8 @@ public class Folder extends AbstractFloatingView implements DragSource,
     }
 
     public void onDrop(DragObject d, DragOptions options) {
-        // If the icon was dropped while the page was being scrolled, we need to compute
-        // the target location again such that the icon is placed of the final page.
+        // If the iconView was dropped while the page was being scrolled, we need to compute
+        // the target location again such that the iconView is placed of the final page.
         if (!mContent.rankOnCurrentPage(mEmptyCellRank)) {
             // Reorder again.
             mTargetRank = getTargetRank(d, null);
@@ -1265,7 +1261,7 @@ public class Folder extends AbstractFloatingView implements DragSource,
 
     // This is used so the item doesn't immediately appear in the folder when added. In one case
     // we need to create the illusion that the item isn't added back to the folder yet, to
-    // to correspond to the animation of the icon back into the folder. This is
+    // to correspond to the animation of the iconView back into the folder. This is
     public void hideItem(ShortcutInfo info) {
         View v = getViewForInfo(info);
         v.setVisibility(INVISIBLE);

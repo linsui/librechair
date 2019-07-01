@@ -27,7 +27,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.BinderThread;
 import android.support.annotation.UiThread;
-
 import com.android.systemui.shared.system.RemoteAnimationRunnerCompat;
 import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 
@@ -130,7 +129,7 @@ public abstract class LauncherAnimationRunner implements RemoteAnimationRunnerCo
                 });
                 mAnimator.start();
 
-                // Because t=0 has the app icon in its original spot, we can skip the
+                // Because t=0 has the app iconView in its original spot, we can skip the
                 // first frame and have the same movement one frame earlier.
                 mAnimator.setCurrentPlayTime(SINGLE_FRAME_MS);
             }

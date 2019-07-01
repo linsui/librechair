@@ -27,19 +27,18 @@ import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.graphics.ShadowGenerator;
 
 /**
- * Contains parameters necessary to draw a badge for an icon (e.g. the size of the badge).
+ * Contains parameters necessary to draw a badge for an iconView (e.g. the size of the badge).
  * @see BadgeInfo for the data to draw
  */
 public class BadgeRenderer {
 
     private static final String TAG = "BadgeRenderer";
 
-    // The badge sizes are defined as percentages of the app icon size.
+    // The badge sizes are defined as percentages of the app iconView size.
     private static final float SIZE_PERCENTAGE = 0.38f;
     private static final float SIZE_PERCENTAGE_WITH_COUNT = 0.58f;
 
@@ -88,8 +87,8 @@ public class BadgeRenderer {
     /**
      * Draw a circle in the top right corner of the given bounds, and draw
      * {@link BadgeInfo#getNotificationCount()} on top of the circle.
-     * @param color The color (based on the icon) to use for the badge.
-     * @param iconBounds The bounds of the icon being badged.
+     * @param color The color (based on the iconView) to use for the badge.
+     * @param iconBounds The bounds of the iconView being badged.
      * @param badgeScale The progress of the animation, from 0 to 1.
      * @param spaceForOffset How much space is available to offset the badge up and to the right.
      */

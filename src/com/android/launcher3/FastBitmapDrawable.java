@@ -33,7 +33,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.Property;
 import android.util.SparseArray;
-
 import com.android.launcher3.graphics.BitmapInfo;
 
 public class FastBitmapDrawable extends Drawable {
@@ -229,7 +228,7 @@ public class FastBitmapDrawable extends Drawable {
     }
 
     /**
-     * Sets the saturation of this icon, 0 [full color] -> 1 [desaturated]
+     * Sets the saturation of this iconView, 0 [full color] -> 1 [desaturated]
      */
     private void setDesaturation(float desaturation) {
         int newDesaturation = (int) Math.floor(desaturation * REDUCED_FILTER_VALUE_SPACE);
@@ -244,7 +243,7 @@ public class FastBitmapDrawable extends Drawable {
     }
 
     /**
-     * Sets the brightness of this icon, 0 [no add. brightness] -> 1 [2bright2furious]
+     * Sets the brightness of this iconView, 0 [no add. brightness] -> 1 [2bright2furious]
      */
     private void setBrightness(float brightness) {
         int newBrightness = (int) Math.floor(brightness * REDUCED_FILTER_VALUE_SPACE);
@@ -267,7 +266,7 @@ public class FastBitmapDrawable extends Drawable {
         if (mDesaturation > 0) {
             key = (mDesaturation << 16) | mBrightness;
         } else if (mBrightness > 0) {
-            // Compose a key with a fully saturated icon if we are just animating brightness
+            // Compose a key with a fully saturated iconView if we are just animating brightness
             key = (1 << 16) | mBrightness;
 
             // We found that in L, ColorFilters cause drawing artifacts with shadows baked into

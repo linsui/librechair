@@ -30,14 +30,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Process;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.android.launcher3.compat.LauncherAppsCompat;
-
 import java.util.List;
 
 /**
@@ -52,7 +49,7 @@ public class SessionCommitReceiver extends BroadcastReceiver {
     // <package name>.addtohomescreen
     private static final String MARKER_PROVIDER_PREFIX = ".addtohomescreen";
 
-    // Preference key for automatically adding icon to homescreen.
+    // Preference key for automatically adding iconView to homescreen.
     public static final String ADD_ICON_PREFERENCE_KEY = "pref_add_icon_to_home";
     public static final String ADD_ICON_PREFERENCE_INITIALIZED_KEY =
             "pref_add_icon_to_home_initialized";

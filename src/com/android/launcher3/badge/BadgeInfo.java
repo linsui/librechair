@@ -19,12 +19,11 @@ package com.android.launcher3.badge;
 import com.android.launcher3.notification.NotificationInfo;
 import com.android.launcher3.notification.NotificationKeyData;
 import com.android.launcher3.util.PackageUserKey;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains data to be used in an icon badge.
+ * Contains data to be used in an iconView badge.
  */
 public class BadgeInfo {
 
@@ -99,7 +98,7 @@ public class BadgeInfo {
      * and one of those notifications is updated, this method should return false because
      * the badge still says "3" and the contents of those notifications are only retrieved
      * upon long-click. This method always returns true when adding or removing notifications,
-     * or if the badge has a notification icon to show.
+     * or if the badge has a notification iconView to show.
      */
     public boolean shouldBeInvalidated(BadgeInfo newBadge) {
         return mPackageUserKey.equals(newBadge.mPackageUserKey)

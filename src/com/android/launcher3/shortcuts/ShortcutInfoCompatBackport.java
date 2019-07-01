@@ -26,15 +26,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Process;
 import android.os.UserHandle;
-
 import com.android.launcher3.R;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 public class ShortcutInfoCompatBackport extends ShortcutInfoCompat {
     private final static String USE_PACKAGE = "shortcut_backport_use_package";
@@ -76,8 +73,8 @@ public class ShortcutInfoCompatBackport extends ShortcutInfoCompat {
 
         mEnabled = !xmlData.containsKey("enabled") || xmlData.get("enabled").toLowerCase().equals("true");
 
-        if (xmlData.containsKey("icon")) {
-            String icon = xmlData.get("icon");
+        if (xmlData.containsKey("iconView")) {
+            String icon = xmlData.get("iconView");
             int resId = resources.getIdentifier(icon, null, packageName);
             mIcon = resId == 0
                     ? Integer.parseInt(icon.substring(1))

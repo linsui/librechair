@@ -18,8 +18,6 @@ package com.android.quickstep;
 
 import static com.android.launcher3.anim.Interpolators.LINEAR;
 import static com.android.launcher3.anim.Interpolators.TOUCH_RESPONSE_INTERPOLATOR;
-import static com.android.systemui.shared.recents.utilities.Utilities.getNextFrameNumber;
-import static com.android.systemui.shared.recents.utilities.Utilities.getSurface;
 import static com.android.systemui.shared.system.RemoteAnimationTargetCompat.MODE_OPENING;
 
 import android.animation.ValueAnimator;
@@ -30,9 +28,7 @@ import android.content.pm.PackageManager;
 import android.graphics.RectF;
 import android.os.UserHandle;
 import android.util.Log;
-import android.view.Surface;
 import android.view.View;
-
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Utilities;
@@ -47,7 +43,6 @@ import com.android.quickstep.views.TaskView;
 import com.android.systemui.shared.recents.model.Task;
 import com.android.systemui.shared.system.RemoteAnimationTargetCompat;
 import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplier;
-
 import java.util.List;
 
 /**
@@ -58,7 +53,7 @@ public class TaskUtils {
     private static final String TAG = "TaskUtils";
 
     /**
-     * TODO: remove this once we switch to getting the icon and label from IconCache.
+     * TODO: remove this once we switch to getting the iconView and label from IconCache.
      */
     public static CharSequence getTitle(Context context, Task task) {
         LauncherAppsCompat launcherAppsCompat = LauncherAppsCompat.getInstance(context);
@@ -129,13 +124,13 @@ public class TaskUtils {
             }
         }
 
-        // If there is no opening task id, fall back to the normal app icon launch animation
+        // If there is no opening task id, fall back to the normal app iconView launch animation
         if (openingTaskId == -1) {
             return null;
         }
 
         // If the opening task id is not currently visible in overview, then fall back to normal app
-        // icon launch animation
+        // iconView launch animation
         TaskView taskView = recentsView.getTaskView(openingTaskId);
         if (taskView == null || !recentsView.isTaskViewVisible(taskView)) {
             return null;

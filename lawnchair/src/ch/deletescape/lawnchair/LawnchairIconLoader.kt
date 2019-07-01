@@ -56,9 +56,9 @@ class LawnchairIconLoader(private val context: Context, iconCache: TaskKeyLruCac
                 val res = pm.getResourcesForApplication(appInfo)
                 return createBadgedDrawable(res.getDrawable(iconResource, null), userId, desc)
             } catch (e: Resources.NotFoundException) {
-                Log.e(TAG, "Could not find icon drawable from resource", e)
+                Log.e(TAG, "Could not find iconView drawable from resource", e)
             } catch (e: PackageManager.NameNotFoundException) {
-                Log.e(TAG, "Could not find icon drawable from resource", e)
+                Log.e(TAG, "Could not find iconView drawable from resource", e)
             }
         }
 

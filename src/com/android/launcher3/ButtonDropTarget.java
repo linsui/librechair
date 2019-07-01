@@ -17,7 +17,6 @@
 package com.android.launcher3;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
-
 import static com.android.launcher3.LauncherState.NORMAL;
 
 import android.animation.AnimatorSet;
@@ -39,7 +38,6 @@ import android.view.View.OnClickListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragLayer;
@@ -264,7 +262,7 @@ public abstract class ButtonDropTarget extends TextView
     }
 
     /**
-     * On drop animate the dropView to the icon.
+     * On drop animate the dropView to the iconView.
      */
     @Override
     public void onDrop(final DragObject d, final DragOptions options) {
@@ -337,7 +335,7 @@ public abstract class ButtonDropTarget extends TextView
 
         to.set(left, top, right, bottom);
 
-        // Center the destination rect about the trash icon
+        // Center the destination rect about the trash iconView
         final int xOffset = -(viewWidth - width) / 2;
         final int yOffset = -(viewHeight - height) / 2;
         to.offset(xOffset, yOffset);
