@@ -57,7 +57,7 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         }
         val notif = NotificationInfo(context, sbn)
         val app = getApp(sbn).toString()
-        if (sbn.packageName.contains("clock")) {
+        if (app.matches(Regex("[Cc]lock"))) {
             /*
              * The alarm provider should display upcoming alarms
              */
