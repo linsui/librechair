@@ -354,4 +354,6 @@
     <string name="search_provider_kiss_launcher">KISS Launcher</string>
     <string name="reusable_string_all_day_event">All-day event</string>
     <string name="activity_weather_title_placeholder">419 Kelvin</string>
+    <string name="placeholder_forcast_time">11:00</string>
+    <string name="bullet">•</string>
 </resources>
