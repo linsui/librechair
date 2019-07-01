@@ -19,14 +19,26 @@
 
 package ch.deletescape.lawnchair.smartspace.weather.owm
 
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
+import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
 import com.android.launcher3.R
 
 class OWMWeatherActivity : SettingsBaseActivity() {
 
+    var iconView: ImageView? = null
+    var weatherTitleText: TextView? = null
+    var icon: Bitmap? = null;
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_owmweather)
+        iconView = findViewById(R.id.current_weather_icon);
+        weatherTitleText = findViewById(R.id.current_weather_text);
+        icon = WeatherIconProvider(this).getIcon(intent!!.extras!!.getString("weather_icon"))
+        weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
     }
 }

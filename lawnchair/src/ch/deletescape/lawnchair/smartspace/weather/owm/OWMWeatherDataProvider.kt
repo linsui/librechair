@@ -36,6 +36,7 @@
 
 package ch.deletescape.lawnchair.smartspace.weather.owm
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.location.Criteria
@@ -82,7 +83,7 @@ import kotlin.math.roundToInt
                                             "pref_weather_units")
     }
 
-    override fun updateData() {
+    @SuppressLint("MissingPermission") override fun updateData() {
         // TODO: Create a search/dropdown for cities, make Auto the default
         if (prefs.weatherCity == "##Auto") {
             if (!locationAccess) {
@@ -104,6 +105,10 @@ import kotlin.math.roundToInt
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
         val intent = Intent(controller.context, OWMWeatherActivity::class.java)
+        val fancyInt = currentWeather.main!!.temp.roundToInt()
+        val fancy = "" + fancyInt + " °" + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
+        intent.putExtra("weather_text", fancy)
+        intent.putExtra("weather_icon", icon);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         updateData(LawnchairSmartspaceController.WeatherData(iconProvider.getIcon(icon),
                                                              Temperature(temp.roundToInt(),
