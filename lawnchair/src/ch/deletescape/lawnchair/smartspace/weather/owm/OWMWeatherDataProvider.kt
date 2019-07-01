@@ -57,6 +57,7 @@ import com.kwabenaberko.openweathermaplib.implementation.callbacks.CurrentWeathe
 import com.kwabenaberko.openweathermaplib.models.currentweather.CurrentWeather
 import kotlin.math.roundToInt
 
+
 @Keep @Suppress("DEPRECATION") class OWMWeatherDataProvider(
     controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.PeriodicDataProvider(controller),
@@ -102,11 +103,13 @@ import kotlin.math.roundToInt
     override fun onSuccess(currentWeather: CurrentWeather) {
         val temp = currentWeather.main?.temp ?: return
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
+        val intent = Intent(controller.context, OWMWeatherActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         updateData(LawnchairSmartspaceController.WeatherData(iconProvider.getIcon(icon),
                                                              Temperature(temp.roundToInt(),
                                                                          if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius else Temperature.Unit.Fahrenheit),
                                                              "https://openweathermap.org/city/${currentWeather.id}",
-                   Intent(controller.context, OWMWeatherActivity::class.java)), null)
+                                                             intent), null)
     }
 
     override fun onFailure(throwable: Throwable?) {
