@@ -103,20 +103,21 @@ tasks.whenTaskAdded { task ->
     def name = task.name
     if (name.startsWith('pre') && name.contains('Lawnchair') && name.endsWith('Build')) {
         task.dependsOn 'buildLawnchairSmali'
+    } else if (task.name.startsWith('mergeLibDex')) {
+        def variantName = String.valueOf(name.substring('mergeExtDex'.length()).charAt(0)).uncapitalize() + name.substring('mergeLibDex'.length() + 1)
+        task.dependsOn("mergeExtDex${variantName.substring(0, 1).capitalize() + variantName.substring(1)}")
     } else if (name.startsWith('mergeExtDex') && !name.endsWith('Test')) {
         def variantName = String.valueOf(name.substring('mergeExtDex'.length()).charAt(0)).uncapitalize() + name.substring('mergeExtDex'.length() + 1)
         def split = dashSeparated(variantName).split('-')
         def buildType = split[split.length - 1]
         int classNo = 1;
         File classOutFolder = new File("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeLibDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/");
-        if (!classOutFolder.exists())
-        {
+        if (!classOutFolder.exists()) {
             classOutFolder.mkdirs();
         }
         variantName = variantName.substring(0, variantName.length() - buildType.length())
-        def dirName = "./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeLibDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/classes${classNo == 0 ? "" : String.valueOf(classNo)}.dex"
         task.doLast {
-            copySmaliLibDex("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeLibDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/", "classes${classNo == 0 ? "" : String.valueOf(classNo)}.dex")
+            copySmaliLibDex("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeLibDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/", "classes${classNo == 0 ? "" : "_" + String.valueOf(classNo)}.dex")
         }
     } else if (name.startsWith('transformClassesAndResourcesWithR8For') && !name.endsWith('Test')) {
         /*

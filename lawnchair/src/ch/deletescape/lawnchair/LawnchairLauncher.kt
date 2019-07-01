@@ -86,9 +86,9 @@ open class LawnchairLauncher : NexusLauncherActivity(),
             Utilities.requestStoragePermission(this)
         }
 
-        IconPackManager.getInstance(this).defaultPack.dynamicClockDrawer
-
         super.onCreate(savedInstanceState)
+
+        IconPackManager.getInstance(this).defaultPack.dynamicClockDrawer
 
         hookGoogleSansDialogTitle()
 
@@ -121,18 +121,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     private fun performSignatureVerification() {
         if (!verifySignature()) {
-            val message = "The \"${BuildConfig.FLAVOR_build}\" build flavor is reserved for " +
-                    "official Lawnchair distributions only. Please do not use it.\n" +
-                    "\n" +
-                    "If you're a ROM developer and including Lawnchair in your ROM, please use " +
-                    "the official apks provided as a prebuilt or change the package name so that " +
-                    "users can still update to official versions if they wish to."
-            AlertDialog.Builder(this)
-                    .setTitle(R.string.derived_app_name)
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.ok) { _, _ -> }
-                    .setCancelable(false)
-                    .show().applyAccent()
+            // LIBRE_CHANGED: We don't need sig verification
         }
     }
 
