@@ -106,7 +106,7 @@ import kotlin.math.roundToInt
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
         val intent = Intent(controller.context, OWMWeatherActivity::class.java)
         val fancyInt = currentWeather.main!!.temp.roundToInt()
-        val fancy = "" + fancyInt + " °" + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
+        val fancy = "" + fancyInt + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
         intent.putExtra("weather_text", fancy)
         intent.putExtra("weather_icon", icon);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)

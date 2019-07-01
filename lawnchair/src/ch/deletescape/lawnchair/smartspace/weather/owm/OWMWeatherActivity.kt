@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.smartspace.weather.owm
 
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.TextView
@@ -39,6 +40,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         iconView = findViewById(R.id.current_weather_icon);
         weatherTitleText = findViewById(R.id.current_weather_text);
         icon = WeatherIconProvider(this).getIcon(intent!!.extras!!.getString("weather_icon"))
-        weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
+        weatherTitleText!!.text = intent!!.extras!! .getString("weather_text")
+        iconView!!.setImageDrawable(BitmapDrawable(resources, icon!!))
     }
 }
