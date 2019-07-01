@@ -52,12 +52,12 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
     private var icon: Bitmap? = null;
     private var threeHourAdapter: ThreeHourForecastAdapter? = null
     private var cityId: String? = null
-    private val owm by lazy { OpenWeatherMapHelper(prefs.weatherApiKey) }
     private val prefs = Utilities.getLawnchairPrefs(this)
+    private val owm = OpenWeatherMapHelper(prefs.weatherApiKey)
 
     override fun onSuccess(threeHourForecast: ThreeHourForecast?) {
         threeHourAdapter =
-                ThreeHourForecastAdapter(threeHourForecast!!, this, prefs!!.weatherUnit)
+                ThreeHourForecastAdapter(threeHourForecast!!, this, prefs.weatherUnit)
         threeHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
     }
