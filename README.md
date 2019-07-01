@@ -26,7 +26,7 @@
     [ ] Inline the private platform API jar
     [ ] Inline or eliminate build-tools blobs
     [ ] De-smalify all Google smali blobs
-    [ ] Find a smart way to de-smalify all AOSP smali blobs
+    [*] Find a smart way to de-smalify all AOSP smali blobs (completed upstream and merged; credits @paphonb)
 
 # Lawnchair - [![Crowdin](https://d322cqt584bo4o.cloudfront.net/lawnchairandroid/localized.svg)](https://translate.lawnchair.app)
 
