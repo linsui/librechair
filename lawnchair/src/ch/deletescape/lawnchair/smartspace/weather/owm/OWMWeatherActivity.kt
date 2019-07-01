@@ -32,15 +32,33 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
     var iconView: ImageView? = null
     var weatherTitleText: TextView? = null
+    var weatherHelpfulTip: TextView? = null
     var icon: Bitmap? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_owmweather)
-        iconView = findViewById(R.id.current_weather_icon);
-        weatherTitleText = findViewById(R.id.current_weather_text);
+        iconView = findViewById(R.id.current_weather_icon)
+        weatherTitleText = findViewById(R.id.current_weather_text)
+        weatherHelpfulTip = findViewById(R.id.weather_helpful_tip)
+
         icon = WeatherIconProvider(this).getIcon(intent!!.extras!!.getString("weather_icon"))
-        weatherTitleText!!.text = intent!!.extras!! .getString("weather_text")
+        weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
         iconView!!.setImageDrawable(BitmapDrawable(resources, icon!!))
+
+        var resId: Int = R.string.helpful_tip_non_available
+        when (intent!!.extras!!.getString("weather_icon"))
+        {
+            "01d", "02d", "03d" -> resId = R.string.helpful_tip_01_03
+            "01n", "02n", "03n" -> resId = R.string.helpful_tip_01n_03n
+            "04d" -> resId = R.string.helpful_tip_04
+            "04n" -> resId = R.string.helpful_tip_04n
+            "09d", "09n", "10d" -> resId = R.string.helpful_tip_09_10
+            "10n" -> resId = R.string.helpful_tip_10n
+            "11d", "11n" -> resId = R.string.helpful_tip_11
+            "13d", "13n" -> resId = R.string.helpful_tip_13
+            "50d", "50n" -> resId = R.string.helpful_tip_50
+        }
+        weatherHelpfulTip!!.text = getString(resId)
     }
 }

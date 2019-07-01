@@ -343,6 +343,9 @@
     <string name="work_mode_off_label">Notifications and apps are off</string>
     <string name="bottom_work_tab_user_education_close_button">Close</string>
     <string name="bottom_work_tab_user_education_closed">Closed</string>
+
+    <!-- Librechair -->
+
     <string name="search_provider_just_search" translatable="false">Just Search</string>
     <string name="title_activity_web_search_provider">Search apps, web and more</string>
     <string name="search_provider_built_in">Built-in search</string>
@@ -357,4 +360,16 @@
     <string name="placeholder_forcast_time">11:00</string>
     <string name="bullet">•</string>
     <string name="name_provider_alarm_events">Upcoming alarms</string>
+
+        <!-- Weather helpful tips -->
+    <string name="helpful_tip_01_03">Remember to put on your sunscreen, and drink plenty of water!</string>
+    <string name="helpful_tip_01n_03n">Remember to drink some coffee and don\'t drive while fatigued</string>
+    <string name="helpful_tip_04">It\'s going to be cloudy today</string>
+    <string name="helpful_tip_04n">Remember to take your bug spray!</string>
+    <string name="helpful_tip_09_10">Take an umbrella, and drive slowly in slippery areas!</string>
+    <string name="helpful_tip_10n">Slippery roads and low visibility don\'t go together.</string>
+    <string name="helpful_tip_11">Watch out for lightning, and if you are in the outside, don\'t hide under a tree</string>
+    <string name="helpful_tip_50">Put on a mask, watch out for low visibility, and frail family members should stay inside.</string>
+    <string name="helpful_tip_13">Snow and ice can make your day a very miserable one. Watch out for slippery roads when walking and driving, and make sure to keep warm</string>
+    <string name="helpful_tip_non_available">No helpful tip available</string>
 </resources>
