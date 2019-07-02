@@ -27,6 +27,7 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
         <LinearLayout
+            android:animateLayoutChanges="true"
             android:orientation="vertical"
             android:layout_margin="16dp"
             android:layout_width="match_parent"
@@ -63,6 +64,7 @@
                 android:text="@string/activity_weather_next_three_hours" />
 
             <android.support.v7.widget.RecyclerView
+                android:animateLayoutChanges="true"
                 android:id="@+id/next_three_hours_forecast"
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
@@ -79,6 +81,7 @@
                 android:text="@string/activity_weather_next_twenty_four_hours" />
 
             <android.support.v7.widget.RecyclerView
+                android:animateLayoutChanges="true"
                 android:id="@+id/next_twenty_four_forecast"
                 android:orientation="horizontal"
                 android:layout_margin="8dp"
