@@ -43,6 +43,7 @@ import net.aksingh.owmjapis.core.OWM
 import net.aksingh.owmjapis.model.HourlyWeatherForecast
 import java.util.*
 import java.util.concurrent.Executors
+import kotlin.math.roundToInt
 
 class OWMWeatherActivity : SettingsBaseActivity() {
     private var iconView: ImageView? = null
@@ -108,6 +109,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         }
     }
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     class HourlyForecastAdapter(val hourlyWeatherForecast: HourlyWeatherForecast, val context: Context,
                                 val weatherUnit: Temperature.Unit) :
             RecyclerView.Adapter<HourlyForecastAdapter.ThreeHourForecastViewHolder>() {
@@ -131,7 +133,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                 Calendar.HOUR_OF_DAY) else time.get(Calendar.HOUR_OF_DAY)}:${if (time.get(Calendar.MINUTE) < 10)  "0" + time.get(
                 Calendar.MINUTE) else time.get(Calendar.MINUTE)}"
             holder.temperature.text =
-                    "${currentWeather.mainData?.temp}${weatherUnit.suffix.capitalize()}"
+                    "${currentWeather.mainData?.temp?.roundToInt()}${weatherUnit.suffix.capitalize()}"
         }
 
         class ThreeHourForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
