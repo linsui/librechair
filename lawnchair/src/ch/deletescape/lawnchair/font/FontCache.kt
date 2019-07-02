@@ -29,11 +29,12 @@ import ch.deletescape.lawnchair.font.googlefonts.GoogleFontsListing
 import ch.deletescape.lawnchair.uiWorkerHandler
 import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
+import librechair.fonts.provider.FontRequestHelper
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.lang.Exception
 
 class FontCache(private val context: Context) {
 
@@ -270,13 +271,12 @@ class FontCache(private val context: Context) {
 
         override fun load(callback: LoadCallback) {
             val request = FontRequest(
-                    "com.google.android.gms.fonts", // ProviderAuthority
-                    "com.google.android.gms",  // ProviderPackage
-                    GoogleFontsListing.buildQuery(family, variant),  // Query
-                    R.array.com_google_android_gms_fonts_certs)
+                "null",
+                BuildConfig.APPLICATION_ID,  // ProviderPackage
+                GoogleFontsListing.buildQuery(family, variant),  // Query
+                -1)
 
-            // retrieve font in the background
-            FontsContractCompat.requestFont(context, request, object : FontsContractCompat.FontRequestCallback() {
+            FontRequestHelper.postFontRequest(context, request, object : FontsContractCompat.FontRequestCallback() {
                 override fun onTypefaceRetrieved(typeface: Typeface) {
                     callback.onFontLoaded(typeface)
                 }
