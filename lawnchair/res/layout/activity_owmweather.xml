@@ -64,7 +64,6 @@
                 android:text="@string/activity_weather_next_three_hours" />
 
             <android.support.v7.widget.RecyclerView
-                android:focusableInTouchMode="true"
                 android:animateLayoutChanges="true"
                 android:id="@+id/next_three_hours_forecast"
                 android:orientation="horizontal"
@@ -83,7 +82,6 @@
 
             <android.support.v7.widget.RecyclerView
                 android:animateLayoutChanges="true"
-                android:focusableInTouchMode="true"
                 android:id="@+id/next_twenty_four_forecast"
                 android:orientation="horizontal"
                 android:layout_margin="8dp"

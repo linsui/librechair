@@ -109,7 +109,6 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                             HourlyForecastAdapter(hourlyForecast, this, prefs.weatherUnit)
                     threeHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
                     threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
-                    threeHourForecastRecyclerView!!.layoutManager!!.isItemPrefetchEnabled = false
                 }
             } catch (e: APIException) {
                 Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!")
@@ -122,7 +121,6 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                             DailyForecastAdapter(dailyForecast, this, prefs.weatherUnit)
                     twentyFourHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
                     twentyFourHourForecastRecyclerView!!.adapter = threeHourAdapter!!
-                    twentyFourHourForecastRecyclerView!!.layoutManager!!.isItemPrefetchEnabled = false
                 }
             } catch (e: APIException) {
                 Log.w(javaClass.name, "onCreate lambda failed to obtain daily weather report!")
