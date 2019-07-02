@@ -96,12 +96,9 @@ import kotlin.collections.ArrayList
                     ArrayList<LawnchairSmartspaceController.Line>();
             string.add(LawnchairSmartspaceController.Line(
                 controller.context.getString(R.string.resuable_text_alarm)));
-            string.add(LawnchairSmartspaceController.Line(
-                "" + if (Date(alarmClock.triggerTime).hours < 10) "0" + Date(
-                    alarmClock.triggerTime).hours else "" + Date(
-                    alarmClock.triggerTime).hours + ":" + Date(alarmClock.triggerTime).minutes))
+            string.add(LawnchairSmartspaceController.Line(String.format("%02d:%02d", Date(alarmClock.triggerTime).hours, Date(alarmClock.triggerTime).minutes)))
             updateData(weather, LawnchairSmartspaceController.CardData(drawableToBitmap(
-                controller.context.getDrawable(R.drawable.ic_alarm_on_black_24dp)), string, false))
+                controller.context.getDrawable(R.drawable.ic_alarm_on_black_24dp)), string, true))
         } else {
             updateData(weather, card = null)
         }
