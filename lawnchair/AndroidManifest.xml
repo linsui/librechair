@@ -94,6 +94,15 @@
     <application
         android:name="ch.deletescape.lawnchair.LawnchairApp"
         android:networkSecurityConfig="@xml/network_security_config">
+        <receiver android:name="ch.deletescape.lawnchair.smartspace.LawnchairCalendarProviderChangesReceiver"
+            android:priority="1000" >
+            <intent-filter>
+                <action android:name="android.intent.action.PROVIDER_CHANGED" />
+                <data android:scheme="content" />
+                <data android:host="com.android.calendar" />
+            </intent-filter>
+        </receiver>
+
         <activity android:name="ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity"
             android:label="@string/pref_category_weather"
             android:theme="@style/SettingsTheme"/>

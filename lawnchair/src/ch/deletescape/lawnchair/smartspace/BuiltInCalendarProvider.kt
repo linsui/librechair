@@ -61,6 +61,7 @@ import java.util.*
     private val contentResolver = controller.context.contentResolver
     private var refreshThread: Thread? = null;
     private val handler: Handler = Handler()
+    private var interrupt = false;
 
     init {
         Log.d(javaClass.name, "class initializer: init")
@@ -75,10 +76,10 @@ import java.util.*
                         try {
                             Thread.sleep(10000)
                         } catch (e: InterruptedException) {
-                            break
+                            if (interrupt) break
                         }
                         if (refreshThread!!.isInterrupted) {
-                            break;
+                            if (interrupt) break
                         }
                         handler.post {
                             updateInformation()
@@ -210,6 +211,7 @@ import java.util.*
 
     override fun onDestroy() {
         if (refreshThread != null) {
+            interrupt = true;
             refreshThread!!.interrupt()
         }
     }
