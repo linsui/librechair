@@ -9,6 +9,7 @@ variables:
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
+  APK_NAME:            "librechair-quickstep-launcher-dev-debug.apk"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
@@ -25,7 +26,7 @@ before_script:
 stages:
   - build
   - sign
-  - telegram_releases
+  - deploy
 
 assemble:
   stage: build
@@ -51,15 +52,15 @@ signRelease:
     script:
      - mkdir outputs
      - echo "${KEYSTORE}" | base64 -d - > Librechair.jks
-     - jarsigner -keystore Librechair.jks build/outputs/apk/${VARIANT}/${FLAVOUR}/apk/*.apk -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_PASSWORD}" "${KEYSTORE_ALIAS}" --signedjar librechair-ci-signed.apk
+     - jarsigner -keystore Librechair.jks build/outputs/apk/${VARIANT}/${FLAVOUR}/apk/${APK_NAME}.apk -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_PASSWORD}" "${KEYSTORE_ALIAS}" --signedjar librechair-ci-signed.apk
      - mkdir outputs
      - ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-aligned.apk
     artifacts:
        paths:
           - outputs/librechair-ci-signed-aligned.apk
 
-sendRelease:
-  stage: telegram_releases
+sendReleaseTelegram:
+  stage: deploy
   script:
     - apt-get install curl
     - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=CI build completed. A new release is on it's way!"
