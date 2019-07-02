@@ -130,8 +130,8 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
             val currentWeather = hourlyWeatherForecast.dataList!!.get(position)
-            val zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time), ZoneId.of("GMT"))
-            zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)));
+            var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
+            zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)));
             holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
             holder.time.text = "${if (zonedDateTime.hour < 10)  "0" + zonedDateTime.hour else "" + zonedDateTime.hour}:${if (zonedDateTime.minute < 10)  "0" + zonedDateTime.minute else zonedDateTime.minute}"
             holder.temperature.text =
