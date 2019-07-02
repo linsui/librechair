@@ -64,7 +64,6 @@ import kotlin.math.roundToInt
         LawnchairSmartspaceController.PeriodicDataProvider(controller),
         LawnchairPreferences.OnPreferenceChangeListener, CurrentWeatherCallback {
 
-    private val context = controller.context
     private val prefs = Utilities.getLawnchairPrefs(context)
     private val owm by lazy { OpenWeatherMapHelper(prefs.weatherApiKey) }
     private val iconProvider by lazy {

@@ -18,20 +18,18 @@
 package ch.deletescape.lawnchair.smartspace
 
 import android.content.Context
-import android.net.Uri
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.support.annotation.Keep
 import android.support.v4.content.ContextCompat
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.Utilities
-import java.lang.RuntimeException
 
 @Keep
 class PEWeatherDataProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.PeriodicDataProvider(controller) {
 
-    private val context = controller.context
     private val contentResolver = context.contentResolver
 
     init {
