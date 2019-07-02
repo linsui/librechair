@@ -51,7 +51,8 @@ signRelease:
     script:
      - mkdir outputs
      - echo "${KEYSTORE}" | base64 -d - > Librechair.jks
-     - jarsigner -keystore Librechair.jks outputs/apk/${VARIANT_NAME}/${FLAVOUR}/*.apk -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_PASSWORD}" "${KEYSTORE_ALIAS}" --signedjar librechair-ci-signed.apk
+     - jarsigner -keystore Librechair.jks build/outputs/apk/${VARIANT_NAME}/${FLAVOUR}/*.apk -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_PASSWORD}" "${KEYSTORE_ALIAS}" --signedjar librechair-ci-signed.apk
+     - mkdir outputs
      - ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-aligned.apk
     artifacts:
        paths:
