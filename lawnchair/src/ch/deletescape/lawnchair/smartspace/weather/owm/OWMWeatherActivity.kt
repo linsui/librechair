@@ -111,7 +111,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                     threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
                 }
             } catch (e: APIException) {
-                Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!")
+                Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!", e)
             }
             try {
                 val dailyForecast = OWMPro(prefs.weatherApiKey).dailyWeatherForecastByCoords(intent!!.extras!!.getDouble("city_lat"),
@@ -123,7 +123,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                     twentyFourHourForecastRecyclerView!!.adapter = threeHourAdapter!!
                 }
             } catch (e: APIException) {
-                Log.w(javaClass.name, "onCreate lambda failed to obtain daily weather report!")
+                Log.w(javaClass.name, "onCreate lambda failed to obtain daily weather report!", e)
             }
         }
     }
