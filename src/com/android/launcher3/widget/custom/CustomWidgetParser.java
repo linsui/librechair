@@ -15,6 +15,8 @@
  */
 package com.android.launcher3.widget.custom;
 
+import static com.android.launcher3.LauncherAppWidgetProviderInfo.CLS_CUSTOM_WIDGET_PREFIX;
+
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
@@ -25,19 +27,14 @@ import android.os.Parcel;
 import android.os.Process;
 import android.util.SparseArray;
 import android.util.Xml;
-
 import com.android.launcher3.LauncherAppWidgetInfo;
 import com.android.launcher3.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.R;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.android.launcher3.LauncherAppWidgetProviderInfo.CLS_CUSTOM_WIDGET_PREFIX;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 /**
  * Utility class to parse {@ink CustomAppWidgetProviderInfo} definitions from xml
@@ -124,8 +121,12 @@ public class CustomWidgetParser {
 
     private static CustomAppWidgetProviderInfo newInfo(TypedArray a, Parcel parcel, Context context) {
         int providerId = a.getInt(R.styleable.CustomAppWidgetProviderInfo_providerId, 0);
-        CustomAppWidgetProviderInfo info = new CustomAppWidgetProviderInfo(parcel, false, providerId);
+        boolean noPadding = a.getBoolean(R.styleable.CustomAppWidgetProviderInfo_noPadding, false);
+        CustomAppWidgetProviderInfo info = new CustomAppWidgetProviderInfo(parcel, false, providerId, noPadding);
         info.provider = new ComponentName(context.getPackageName(), CLS_CUSTOM_WIDGET_PREFIX + providerId);
+        info.customizeTitle = a.getResourceId(R.styleable.CustomAppWidgetProviderInfo_customizeTitle, 0);
+        info.customizeScreen = a.getResourceId(R.styleable.CustomAppWidgetProviderInfo_customizeScreen, 0);
+        info.customizeHasPreview = a.getBoolean(R.styleable.CustomAppWidgetProviderInfo_customizeHasPreview, false);
 
         info.label = a.getString(R.styleable.CustomAppWidgetProviderInfo_android_label);
         info.initialLayout = a.getResourceId(R.styleable.CustomAppWidgetProviderInfo_android_initialLayout, 0);

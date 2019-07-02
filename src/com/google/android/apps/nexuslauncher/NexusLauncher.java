@@ -8,8 +8,13 @@ import android.os.Handler;
 import android.support.v4.graphics.ColorUtils;
 import android.view.View;
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
-import com.android.launcher3.*;
-import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
+import com.android.launcher3.AppInfo;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherCallbacks;
+import com.android.launcher3.LauncherExterns;
+import com.android.launcher3.LauncherModel;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.Themes;
@@ -23,14 +28,16 @@ import com.google.android.apps.nexuslauncher.utils.ActionIntentFilter;
 import com.google.android.libraries.gsa.launcherclient.LauncherClient;
 import com.google.android.libraries.gsa.launcherclient.LauncherClientService;
 import com.google.android.libraries.gsa.launcherclient.StaticInteger;
-
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class NexusLauncher {
     private final Launcher mLauncher;
-    final LauncherCallbacks mCallbacks;
+    final NexusLauncherCallbacks mCallbacks;
     private boolean mFeedRunning;
     private final LauncherExterns mExterns;
     private boolean mRunning;
@@ -50,8 +57,12 @@ public class NexusLauncher {
         mLauncher.addOnDeviceProfileChangeListener(dp -> mClient.redraw());
     }
 
+    void registerSmartspaceView(SmartspaceView smartspace) {
+        mCallbacks.registerSmartspaceView(smartspace);
+    }
+
     class NexusLauncherCallbacks implements LauncherCallbacks, SharedPreferences.OnSharedPreferenceChangeListener, WallpaperColorInfo.OnChangeListener {
-        private SmartspaceView mSmartspace;
+        private Set<SmartspaceView> mSmartspaceViews = Collections.newSetFromMap(new WeakHashMap<>());
         private final FeedReconnector mFeedReconnector = new FeedReconnector();
 
         private final Runnable mUpdatePredictionsIfResumed = this::updatePredictionsIfResumed;
@@ -95,6 +106,10 @@ public class NexusLauncher {
             mFeedReconnector.start();
         }
 
+        void registerSmartspaceView(SmartspaceView smartspace) {
+            mSmartspaceViews.add(smartspace);
+        }
+
         public void onCreate(final Bundle bundle) {
             SharedPreferences prefs = Utilities.getPrefs(mLauncher);
             mOverlay = new NexusLauncherOverlay(mLauncher);
@@ -105,7 +120,6 @@ public class NexusLauncher {
             prefs.registerOnSharedPreferenceChangeListener(this);
 
             SmartspaceController.get(mLauncher).cW();
-            mSmartspace = mLauncher.findViewById(R.id.search_container_workspace);
 
             mQsbAnimationController = new QsbAnimationController(mLauncher);
 
@@ -178,8 +192,8 @@ public class NexusLauncher {
             mRunning = false;
             mClient.onPause();
 
-            if (mSmartspace != null) {
-                mSmartspace.onPause();
+            for (SmartspaceView smartspace : mSmartspaceViews) {
+                smartspace.onPause();
             }
         }
 
@@ -194,8 +208,8 @@ public class NexusLauncher {
 
             mClient.onResume();
 
-            if (mSmartspace != null) {
-                mSmartspace.onResume();
+            for (SmartspaceView smartspace : mSmartspaceViews) {
+                smartspace.onResume();
             }
 
             Handler handler = mLauncher.getDragLayer().getHandler();

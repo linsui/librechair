@@ -75,10 +75,8 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     private fun forceUpdate() {
-        updateData(weatherData, eventDataProviders
-                .asSequence()
-                .mapNotNull { eventDataMap[it] }
-                .firstOrNull())
+        updateData(weatherData,
+                   eventDataProviders.asSequence().mapNotNull { eventDataMap[it] }.firstOrNull())
     }
 
     private fun notifyListeners() {
@@ -136,22 +134,22 @@ class LawnchairSmartspaceController(val context: Context) {
             eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
 
             runOnMainThread {
-                if (eventProvidersPref.contains(BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    BlankActivity.requestPermission(context, android.Manifest.permission.READ_CALENDAR, LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
-                        if (it)
-                        {
-                            needsUpdate.forEach { it.forceUpdate() }
-                            forceUpdate()
-                        }
-                        else
-                        {
-                            /*
-                             * Fail silently
-                             */
-                        }
-                    }
-                }
-                else {
+                if (eventProvidersPref.contains(
+                            BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(
+                            android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    BlankActivity
+                            .requestPermission(context, android.Manifest.permission.READ_CALENDAR,
+                                               LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
+                                if (it) {
+                                    needsUpdate.forEach { it.forceUpdate() }
+                                    forceUpdate()
+                                } else {
+                                    /*
+                                     * Fail silently
+                                     */
+                                }
+                            }
+                } else {
                     needsUpdate.forEach { it.forceUpdate() }
                     forceUpdate()
                 }
@@ -172,29 +170,23 @@ class LawnchairSmartspaceController(val context: Context) {
             launcher.startActivitySafely(v, weatherData!!.forecastIntent, null)
         } else {
             Utilities.openURLinBrowser(launcher, weatherData!!.forecastUrl,
-                    launcher.getViewBounds(v), launcher.getActivityLaunchOptions(v).toBundle())
+                                       launcher.getViewBounds(v),
+                                       launcher.getActivityLaunchOptions(v).toBundle())
         }
     }
 
     fun openEvent(v: View) {
-        val data = cardData ?: return
-        val launcher = Launcher.getLauncher(v.context)
-        if (data.pendingIntent != null) {
-            val opts = launcher.getActivityLaunchOptionsAsBundle(v)
-            launcher.startIntentSender(
-                    data.pendingIntent.intentSender, null,
-                    Intent.FLAG_ACTIVITY_NEW_TASK,
-                    Intent.FLAG_ACTIVITY_NEW_TASK, 0, opts)
-        }
+        cardData?.onClickListener?.onClick(v)
     }
 
     private fun createDataProvider(className: String): DataProvider {
         return try {
-            (Class.forName(className).getConstructor(LawnchairSmartspaceController::class.java)
-                    .newInstance(this) as DataProvider).apply {
-                runOnMainThread(::performSetup)
-                waitForSetup()
-            }
+            (Class.forName(className).getConstructor(
+                LawnchairSmartspaceController::class.java).newInstance(this) as DataProvider)
+                    .apply {
+                        runOnMainThread(::performSetup)
+                        waitForSetup()
+                    }
         } catch (t: Throwable) {
             Log.d("LSC", "couldn't create provider", t)
             BlankDataProvider(this)
@@ -342,22 +334,21 @@ class LawnchairSmartspaceController(val context: Context) {
             val msg = context.getString(R.string.event_provider_missing_notification_access,
                                         context.getString(providerName),
                                         context.getString(R.string.derived_app_name))
-            BlankActivity.startActivityWithDialog(
-                    context, intent, 1030,
-                    context.getString(R.string.title_missing_notification_access),
-                    msg,
-                    context.getString(R.string.title_change_settings)) {
+            BlankActivity.startActivityWithDialog(context, intent, 1030, context.getString(
+                R.string.title_missing_notification_access), msg, context.getString(
+                R.string.title_change_settings)) {
                 onSetupComplete()
             }
         }
 
         private fun checkNotificationAccess(): Boolean {
             val context = controller.context
-            val enabledListeners = Settings.Secure.getString(
-                    context.contentResolver, "enabled_notification_listeners")
+            val enabledListeners = Settings.Secure
+                    .getString(context.contentResolver, "enabled_notification_listeners")
             val myListener = ComponentName(context, NotificationListener::class.java)
             return enabledListeners?.let {
-                it.contains(myListener.flattenToString()) || it.contains(myListener.flattenToString())
+                it.contains(myListener.flattenToString()) || it.contains(
+                    myListener.flattenToString())
             } ?: false
         }
 
@@ -386,8 +377,18 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     data class CardData(val icon: Bitmap? = null, val lines: List<Line>,
-                        val pendingIntent: PendingIntent? = null,
+                        val onClickListener: View.OnClickListener? = null,
                         val forceSingleLine: Boolean = false) {
+
+        constructor(icon: Bitmap? = null, lines: List<Line>, intent: PendingIntent? = null,
+                    forceSingleLine: Boolean = false) : this(icon, lines, intent?.let {
+            PendingIntentClickListener(it)
+        }, forceSingleLine)
+
+        constructor(icon: Bitmap? = null, lines: List<Line>,
+                    forceSingleLine: Boolean = false) : this(icon, lines,
+                                                             null as View.OnClickListener?,
+                                                             forceSingleLine)
 
         constructor(icon: Bitmap?, title: CharSequence,
                     titleEllipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END,
@@ -427,6 +428,18 @@ class LawnchairSmartspaceController(val context: Context) {
         }
     }
 
+    class PendingIntentClickListener(private val pendingIntent: PendingIntent) :
+            View.OnClickListener {
+
+        override fun onClick(v: View) {
+            val launcher = Launcher.getLauncher(v.context)
+            val opts = launcher.getActivityLaunchOptionsAsBundle(v)
+            launcher.startIntentSender(pendingIntent.intentSender, null,
+                                       Intent.FLAG_ACTIVITY_NEW_TASK, Intent.FLAG_ACTIVITY_NEW_TASK,
+                                       0, opts)
+        }
+    }
+
     data class Line(val text: CharSequence,
                     val ellipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END) {
 
@@ -440,17 +453,22 @@ class LawnchairSmartspaceController(val context: Context) {
 
     companion object {
 
-        private val displayNames = mapOf(
-            Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
-            Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
-            Pair(AccuWeatherDataProvider::class.java.name, R.string.weather_provider_accu),
-            Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
-            Pair(NowPlayingProvider::class.java.name, R.string.event_provider_now_playing),
-            Pair(NotificationUnreadProvider::class.java.name, R.string.event_provider_unread_notifications),
-            Pair(BatteryStatusProvider::class.java.name, R.string.battery_status),
-            Pair(AlarmEventProvider::class.java.name, R.string.name_provider_alarm_events),
-            Pair(BuiltInCalendarProvider::class.java.name, R.string.provider_built_in_calendar_title),
-            Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
+        private val displayNames =
+                mapOf(Pair(BlankDataProvider::class.java.name, R.string.weather_provider_disabled),
+                      Pair(OWMWeatherDataProvider::class.java.name, R.string.weather_provider_owm),
+                      Pair(AccuWeatherDataProvider::class.java.name,
+                           R.string.weather_provider_accu),
+                      Pair(PEWeatherDataProvider::class.java.name, R.string.weather_provider_pe),
+                      Pair(NowPlayingProvider::class.java.name,
+                           R.string.event_provider_now_playing),
+                      Pair(NotificationUnreadProvider::class.java.name,
+                           R.string.event_provider_unread_notifications),
+                      Pair(BatteryStatusProvider::class.java.name, R.string.battery_status),
+                      Pair(AlarmEventProvider::class.java.name,
+                           R.string.name_provider_alarm_events),
+                      Pair(BuiltInCalendarProvider::class.java.name,
+                           R.string.provider_built_in_calendar_title),
+                      Pair(FakeDataProvider::class.java.name, R.string.weather_provider_testing))
 
         fun getDisplayName(providerName: String): Int {
             return displayNames[providerName] ?: error("No display name for provider $providerName")
