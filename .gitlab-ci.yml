@@ -4,11 +4,12 @@ variables:
   ANDROID_COMPILE_SDK: "28"
   ANDROID_BUILD_TOOLS: "28.0.3"
   ANDROID_SDK_TOOLS:   "4333796"
-  VARIANT:             "quickstepLauncherDev"
-  VARIANT_CAP:         "QuickstepLauncherDev"
+  VARIANT:             "quickstepLawnchairDev"
+  VARIANT_CAP:         "QuickstepLawnchairDev"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
+  SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
   - git submodule update --recursive --init
@@ -20,7 +21,8 @@ before_script:
   - echo "sdk.dir=$ANDROID_HOME" > local.properties
   - echo "sdk-location=$ANDROID_HOME" >> local.properties
   - chmod +x ./gradlew
-  - curl https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text="Continual integration triggered"
+  - echo curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN_PLACEHOLDER}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
+  - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
 
 stages:
   - build
@@ -59,7 +61,7 @@ sendRelease:
   stage: telegram_releases
   script:
     - apt-get install curl
-    - curl https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text="CI build completed. A new release is on it's way!"
-    - curl -F chat_id=${CHAT_ID} -F document=@"outputs/librechair-ci-signed-aligned.apk" https://api.telegram.org/bot@${SECRET_BOT_TOKEN}/sendDocument
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=CI build completed. A new release is on it's way!"
+    - curl -F chat_id=${CHAT_ID} -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument"
   dependencies:
     - signRelease
