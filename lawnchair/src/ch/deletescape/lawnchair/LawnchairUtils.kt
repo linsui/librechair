@@ -883,25 +883,38 @@ fun Context.checkPackagePermission(packageName: String, permissionName: String):
 
 fun <T> Sequence<T>.isEmpty() = !iterator().hasNext()
 
-fun formatDateTime(dateTime: Date, context: Context? = null): String {
+fun formatTime(dateTime: Date, context: Context? = null): String {
     return when (context) {
         null -> String.format("%02d:%02d", dateTime.hours, dateTime.minutes)
-        else -> DateFormat.getTimeFormat(context).format(dateTime)
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", dateTime.hours,
+                                                                      dateTime.minutes) else String.format(
+            "%02d:%02d %s", dateTime.hours % 12, dateTime.minutes,
+            if (dateTime.hours < 12) "AM" else "PM")
     }
 }
 
-fun formatDateTime(calendar: Calendar, context: Context? = null): String {
+fun formatTime(calendar: Calendar, context: Context? = null): String {
     return when (context) {
         null -> String.format("%02d:%02d", calendar.get(Calendar.HOUR_OF_DAY),
                               calendar.get(Calendar.HOUR_OF_DAY))
-        else -> DateFormat.getTimeFormat(context).format(calendar)
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", calendar.get(
+            Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)) else String.format("%02d:%02d %s",
+                                                                                     calendar.get(
+                                                                                         Calendar.HOUR_OF_DAY) % 12,
+                                                                                     calendar.get(
+                                                                                         Calendar.MINUTE),
+                                                                                     if (calendar.get(
+                                                                                                 Calendar.HOUR_OF_DAY) < 12) "AM" else "PM")
     }
 }
 
-fun formatDateTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
+fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
     return when (context) {
-        null -> String.format("%02d:%02d", zonedDateTime.hour,
-                              zonedDateTime.minute)
-        else -> DateFormat.getTimeFormat(context).format(zonedDateTime.toOffsetDateTime().toLocalDate())
+        null -> String.format("%02d:%02d", zonedDateTime.hour, zonedDateTime.minute)
+        else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d",
+                                                                      zonedDateTime.hour,
+                                                                      zonedDateTime.minute) else String.format(
+            "%02d:%02d %s", zonedDateTime.hour % 12, zonedDateTime.minute,
+            if (zonedDateTime.hour < 12) "AM" else "PM")
     }
 }

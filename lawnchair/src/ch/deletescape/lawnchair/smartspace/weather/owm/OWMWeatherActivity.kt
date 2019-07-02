@@ -32,7 +32,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.formatDateTime
+import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
 import ch.deletescape.lawnchair.util.Temperature
@@ -159,7 +159,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
             holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
-            holder.time.text = formatDateTime(zonedDateTime, context)
+            holder.time.text = formatTime(zonedDateTime, context)
             holder.temperature.text =
                     "${currentWeather.mainData?.temp?.roundToInt()}${weatherUnit.suffix.capitalize()}"
         }
