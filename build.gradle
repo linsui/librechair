@@ -70,7 +70,7 @@ android {
         }
     }
     defaultConfig {
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 28
 
         if (System.getenv("CI_BUILD") == "true") {

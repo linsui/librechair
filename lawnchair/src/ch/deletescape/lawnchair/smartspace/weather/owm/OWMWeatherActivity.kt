@@ -41,6 +41,10 @@ import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import net.aksingh.owmjapis.api.APIException
 import net.aksingh.owmjapis.core.OWM
 import net.aksingh.owmjapis.model.HourlyWeatherForecast
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
@@ -126,12 +130,10 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
             val currentWeather = hourlyWeatherForecast.dataList!!.get(position)
-            val time = GregorianCalendar()
-            time.timeInMillis = currentWeather!!.dateTime!!.time
+            val zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time), ZoneId.of("GMT"))
+            zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)));
             holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
-            holder.time.text = "${if (time.get(Calendar.HOUR_OF_DAY) < 10)  "0" + time.get(
-                Calendar.HOUR_OF_DAY) else time.get(Calendar.HOUR_OF_DAY)}:${if (time.get(Calendar.MINUTE) < 10)  "0" + time.get(
-                Calendar.MINUTE) else time.get(Calendar.MINUTE)}"
+            holder.time.text = "${if (zonedDateTime.hour < 10)  "0" + zonedDateTime.hour else "" + zonedDateTime.hour}:${if (zonedDateTime.minute < 10)  "0" + zonedDateTime.minute else zonedDateTime.minute}"
             holder.temperature.text =
                     "${currentWeather.mainData?.temp?.roundToInt()}${weatherUnit.suffix.capitalize()}"
         }
