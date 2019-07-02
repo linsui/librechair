@@ -21,8 +21,6 @@ before_script:
   - echo "sdk.dir=$ANDROID_HOME" > local.properties
   - echo "sdk-location=$ANDROID_HOME" >> local.properties
   - chmod +x ./gradlew
-  - echo curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN_PLACEHOLDER}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
-  - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
 
 stages:
   - build
@@ -32,6 +30,8 @@ stages:
 assemble:
   stage: build
   script:
+    - echo curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN_PLACEHOLDER}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=Continual integration triggered"
     - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
     - unzip -d android-sdk-linux android-sdk.zip
     - echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" > /dev/null
