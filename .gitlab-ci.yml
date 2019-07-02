@@ -62,7 +62,7 @@ sendReleaseTelegram:
   stage: deploy
   script:
     - apt-get install curl
-    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=CI build completed. A new release is on it's way!"
-    - curl -F chat_id=${CHAT_ID} -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument"
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=CI build completed. A new release is on it's way!"
+    - curl -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
   dependencies:
     - signRelease
