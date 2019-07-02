@@ -85,3 +85,10 @@ make sure to inform yourself before creating your own project based on Lawnchair
 
 [Website](https://lawnchair.app) - [Twitter](https://twitter.com/lawnchairapp) - [Telegram](https://t.me/lawnchair) - 
 [XDA Thread](https://forum.xda-developers.com/android/apps-games/lawnchair-customizable-pixel-launcher-t3627137) - [APK Mirror](https://www.apkmirror.com/apk/deletescape/lawnchair/)
+
+# Librechair-changed-contact-me
+
+    You can reach me at Po Lu < Luangruo (arse) Yahoo (dog) com >
+    You'd better fill in the E-Mail address.
+
+    I'm @oldosfan on Freenode. I might or might not be online.

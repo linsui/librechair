@@ -40,11 +40,14 @@ import com.android.launcher3.Utilities
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
 import net.aksingh.owmjapis.api.APIException
 import net.aksingh.owmjapis.core.OWM
+import net.aksingh.owmjapis.core.OWMPro
+import net.aksingh.owmjapis.model.DailyWeatherForecast
 import net.aksingh.owmjapis.model.HourlyWeatherForecast
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.time.format.TextStyle
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
@@ -57,10 +60,10 @@ class OWMWeatherActivity : SettingsBaseActivity() {
     private var twentyFourHourForecastRecyclerView: RecyclerView? = null;
     private var icon: Bitmap? = null;
     private var threeHourAdapter: HourlyForecastAdapter? = null
+    private var twentyFourHourAdapter: DailyForecastAdapter? = null
     private val prefs = Utilities.getLawnchairPrefs(this)
     private val owm = OpenWeatherMapHelper(prefs.weatherApiKey)
     private val owmApi = OWM(prefs.weatherApiKey)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_owmweather)
@@ -110,13 +113,35 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             } catch (e: APIException) {
                 Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!")
             }
+            try {
+                val dailyForecast = OWMPro(prefs.weatherApiKey).dailyWeatherForecastByCoords(intent!!.extras!!.getDouble("city_lat"),
+                                                                                              intent!!.extras!!.getDouble("city_lon"));
+                runOnUiThread() {
+                    twentyFourHourAdapter =
+                            DailyForecastAdapter(dailyForecast, this, prefs.weatherUnit)
+                    twentyFourHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+                    twentyFourHourForecastRecyclerView!!.adapter = threeHourAdapter!!
+                }
+            } catch (e: APIException) {
+                Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!")
+            }
         }
+    }
+
+    class ThreeHourForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val icon: ImageView = itemView.findViewById(R.id.forecast_weather_icon)
+        val time: TextView = itemView.findViewById(R.id.forecast_current_time)
+        val temperature: TextView = itemView.findViewById(R.id.forecast_current_temperature);
+
+        constructor(parentView: ViewGroup) : this(
+            LayoutInflater.from(parentView.context).inflate(R.layout.three_hour_forecast_item,
+                                                            parentView, false))
     }
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     class HourlyForecastAdapter(val hourlyWeatherForecast: HourlyWeatherForecast, val context: Context,
                                 val weatherUnit: Temperature.Unit) :
-            RecyclerView.Adapter<HourlyForecastAdapter.ThreeHourForecastViewHolder>() {
+            RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
         private val iconProvider by lazy { WeatherIconProvider(context) }
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
@@ -138,14 +163,31 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                     "${currentWeather.mainData?.temp?.roundToInt()}${weatherUnit.suffix.capitalize()}"
         }
 
-        class ThreeHourForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val icon: ImageView = itemView.findViewById(R.id.forecast_weather_icon)
-            val time: TextView = itemView.findViewById(R.id.forecast_current_time)
-            val temperature: TextView = itemView.findViewById(R.id.forecast_current_temperature);
+    }
 
-            constructor(parentView: ViewGroup) : this(
-                LayoutInflater.from(parentView.context).inflate(R.layout.three_hour_forecast_item,
-                                                                parentView, false))
+    @Suppress("IMPLICIT_CAST_TO_ANY")
+    class DailyForecastAdapter(val dailyWeatherForcast: DailyWeatherForecast, val context: Context,
+                              val weatherUnit: Temperature.Unit) :
+            RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
+        private val iconProvider by lazy { WeatherIconProvider(context) }
+        override fun onCreateViewHolder(parent: ViewGroup,
+                                        viewType: Int): ThreeHourForecastViewHolder {
+            return ThreeHourForecastViewHolder(parent)
+        }
+
+        override fun getItemCount(): Int {
+            return dailyWeatherForcast.dataList!!.size
+        }
+
+        @SuppressLint("SetTextI18n") override fun onBindViewHolder(
+            holder: ThreeHourForecastViewHolder, position: Int) {
+            val currentWeather = dailyWeatherForcast.dataList!!.get(position)
+            var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
+            zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
+            holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
+            holder.time.text = "${zonedDateTime.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault())} ${zonedDateTime.month.value}/${zonedDateTime.dayOfMonth}"
+            holder.temperature.text =
+                    "${currentWeather.tempData?.tempMin}${weatherUnit.suffix.capitalize()} –– ${currentWeather.tempData?.tempMax}${weatherUnit.suffix.capitalize()}"
         }
     }
 }
