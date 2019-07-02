@@ -37,37 +37,24 @@ import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.kwabenaberko.openweathermaplib.constants.Units
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
-import com.kwabenaberko.openweathermaplib.implementation.callbacks.ThreeHourForecastCallback
-import com.kwabenaberko.openweathermaplib.models.threehourforecast.ThreeHourForecast
+import net.aksingh.owmjapis.api.APIException
+import net.aksingh.owmjapis.core.OWM
+import net.aksingh.owmjapis.model.HourlyWeatherForecast
 import java.util.*
-import kotlin.math.roundToInt
+import java.util.concurrent.Executors
 
-class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
+class OWMWeatherActivity : SettingsBaseActivity() {
     private var iconView: ImageView? = null
     private var weatherTitleText: TextView? = null
     private var weatherHelpfulTip: TextView? = null
     private var threeHourForecastRecyclerView: RecyclerView? = null;
     private var twentyFourHourForecastRecyclerView: RecyclerView? = null;
     private var icon: Bitmap? = null;
-    private var threeHourAdapter: ThreeHourForecastAdapter? = null
+    private var threeHourAdapter: HourlyForecastAdapter? = null
     private val prefs = Utilities.getLawnchairPrefs(this)
     private val owm = OpenWeatherMapHelper(prefs.weatherApiKey)
-
-    override fun onSuccess(threeHourForecast: ThreeHourForecast?) {
-        threeHourAdapter =
-                ThreeHourForecastAdapter(threeHourForecast!!, this, prefs.weatherUnit)
-        threeHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
-    }
-
-    override fun onFailure(throwable: Throwable?) {
-        /*
-        * For now we fail silently
-        * TODO implement fail & retry logic
-        */
-    }
+    private val owmApi = OWM(prefs.weatherApiKey)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,18 +82,35 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
             "50d", "50n" -> resId = R.string.helpful_tip_50
         }
         weatherHelpfulTip!!.text = getString(resId)
-        owm.setUnits(when (prefs.weatherUnit) {
-                         Temperature.Unit.Celsius -> Units.METRIC
-                         Temperature.Unit.Fahrenheit -> Units.IMPERIAL
-                         else -> Units.METRIC
-                     })
-
-        owm.getThreeHourForecastByGeoCoordinates(intent!!.extras!!.getDouble("city_lat"), intent!!.extras!!.getDouble("city_lon"), this)
+        Executors.newSingleThreadExecutor().submit {
+            owmApi.unit = when (prefs.weatherUnit) {
+                Temperature.Unit.Celsius -> OWM.Unit.METRIC
+                Temperature.Unit.Fahrenheit -> OWM.Unit.IMPERIAL
+                Temperature.Unit.Kelvin -> OWM.Unit.STANDARD
+                Temperature.Unit.Rakine -> TODO()
+                Temperature.Unit.Delisle -> TODO()
+                Temperature.Unit.Newton -> TODO()
+                Temperature.Unit.Reaumur -> TODO()
+                Temperature.Unit.Romer -> TODO()
+            }
+            try {
+                val hourlyForecast = owmApi.hourlyWeatherForecastByCoords(intent!!.extras!!.getDouble("weather_lat"),
+                                                                          intent!!.extras!!.getDouble("weather_lon"))
+                runOnUiThread() {
+                    threeHourAdapter =
+                            HourlyForecastAdapter(hourlyForecast, this, prefs.weatherUnit)
+                    threeHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+                    threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
+                }
+            } catch (e: APIException) {
+                Log.w(javaClass.name, "onCreate lambda failed to obtain hourly weather report!")
+            }
+        }
     }
 
-    class ThreeHourForecastAdapter(val threeHourForecast: ThreeHourForecast, val context: Context,
-                                   val weatherUnit: Temperature.Unit) :
-            RecyclerView.Adapter<ThreeHourForecastAdapter.ThreeHourForecastViewHolder>() {
+    class HourlyForecastAdapter(val hourlyWeatherForecast: HourlyWeatherForecast, val context: Context,
+                                val weatherUnit: Temperature.Unit) :
+            RecyclerView.Adapter<HourlyForecastAdapter.ThreeHourForecastViewHolder>() {
         private val iconProvider by lazy { WeatherIconProvider(context) }
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
@@ -114,20 +118,20 @@ class OWMWeatherActivity : SettingsBaseActivity(), ThreeHourForecastCallback {
         }
 
         override fun getItemCount(): Int {
-            return threeHourForecast.list.get(0).weatherArray.size
+            return hourlyWeatherForecast.dataList!!.size
         }
 
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
-            val threeHourWeather = threeHourForecast.list.get(0)
-            Log.d(javaClass.name, "onBindViewHolder: processing weather item: " + position + " with dt: " + threeHourWeather.dt)
+            val currentWeather = hourlyWeatherForecast.dataList!!.get(position)
             val time = GregorianCalendar()
-            time.timeInMillis = threeHourWeather.dt
-            val weather = threeHourWeather.weatherArray.get(position)
-            holder.icon.setImageBitmap(iconProvider.getIcon(weather.icon))
-            holder.time.text = "${time.get(Calendar.HOUR_OF_DAY)}:${time.get(Calendar.MINUTE)}"
+            time.timeInMillis = currentWeather!!.dateTime!!.time
+            holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
+            holder.time.text = "${if (time.get(Calendar.HOUR_OF_DAY) < 10)  "0" + time.get(
+                Calendar.HOUR_OF_DAY) else time.get(Calendar.HOUR_OF_DAY)}:${if (time.get(Calendar.MINUTE) < 10)  "0" + time.get(
+                Calendar.MINUTE) else time.get(Calendar.MINUTE)}"
             holder.temperature.text =
-                    "${threeHourWeather.main.temp.roundToInt()}${weatherUnit.suffix.capitalize()}"
+                    "${currentWeather.mainData?.temp}${weatherUnit.suffix.capitalize()}"
         }
 
         class ThreeHourForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
