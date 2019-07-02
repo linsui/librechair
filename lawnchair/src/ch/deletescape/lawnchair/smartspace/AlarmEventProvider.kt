@@ -42,6 +42,7 @@ import android.os.Handler
 import android.support.annotation.Keep
 import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
+import ch.deletescape.lawnchair.formatDateTime
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
@@ -96,7 +97,7 @@ import kotlin.collections.ArrayList
                     ArrayList<LawnchairSmartspaceController.Line>();
             string.add(LawnchairSmartspaceController.Line(
                 controller.context.getString(R.string.resuable_text_alarm)));
-            string.add(LawnchairSmartspaceController.Line(String.format("%02d:%02d", Date(alarmClock.triggerTime).hours, Date(alarmClock.triggerTime).minutes)))
+            string.add(LawnchairSmartspaceController.Line(formatDateTime(Date(alarmClock.triggerTime), controller.context)))
             updateData(weather, LawnchairSmartspaceController.CardData(drawableToBitmap(
                 controller.context.getDrawable(R.drawable.ic_alarm_on_black_24dp)), string, true))
         } else {
