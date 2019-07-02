@@ -186,14 +186,14 @@ import java.util.*
                 val eventEndTime = GregorianCalendar()
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
+                var lines = listOf(
+                    LawnchairSmartspaceController.Line(title, TextUtils.TruncateAt.MARQUEE),
+                    LawnchairSmartspaceController.Line(controller.context.getString(
+                        if (eventCursor.getInt(
+                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing), TextUtils.TruncateAt.END))
                 val description = eventCursor.getString(3);
                 card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), title,
-                                                              TextUtils.TruncateAt.MARQUEE,
-                                                              controller.context.getString(
-                                                                  if (eventCursor.getInt(
-                                                                              4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
-                                                              TextUtils.TruncateAt.END)
+                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
                 eventCursor.close();
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
