@@ -272,5 +272,11 @@
             repo="Chainfire/librootjava"
             license="apache-2.0" />
 
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
+            title="OWM JAPIs"
+            repo="aksinghnet/owm-japis"
+            license="Simplified BSD" />
+
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>
