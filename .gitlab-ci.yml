@@ -9,7 +9,7 @@ variables:
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
-  APK_NAME:            "librechair-quickstep-lawnchair-dev-debug.apk"
+  APK_NAME:            "librechair-quickstep-lawnchair-dev-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
