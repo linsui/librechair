@@ -374,4 +374,5 @@
     <string name="helpful_tip_non_available">No helpful tip available</string>
     <string name="activity_weather_next_three_hours">Today</string>
     <string name="activity_weather_next_twenty_four_hours">This week</string>
+    <string name="placeholder_empty_title">[No title]</string>
 </resources>

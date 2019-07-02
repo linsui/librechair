@@ -149,7 +149,9 @@ import java.util.*
                 R.string.reusable_str_now) else controller.context.getString(
                 R.string.subtitle_smartspace_in_minutes, diffMinutes)
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)), title,
+                controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)),
+                                                          if (title == null) controller.context.getString(
+                                                              R.string.placeholder_empty_title) else title,
                                                           TextUtils.TruncateAt.MARQUEE, text,
                                                           TextUtils.TruncateAt.END)
             updateData(weather, card)
@@ -187,10 +189,13 @@ import java.util.*
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
                 var lines = listOf(
-                    LawnchairSmartspaceController.Line(title, TextUtils.TruncateAt.MARQUEE),
+                    LawnchairSmartspaceController.Line(if (title == null) controller.context.getString(
+                        R.string.placeholder_empty_title) else title,
+                                                       TextUtils.TruncateAt.MARQUEE),
                     LawnchairSmartspaceController.Line(controller.context.getString(
                         if (eventCursor.getInt(
-                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing), TextUtils.TruncateAt.END))
+                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
+                                                       TextUtils.TruncateAt.END))
                 val description = eventCursor.getString(3);
                 card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
