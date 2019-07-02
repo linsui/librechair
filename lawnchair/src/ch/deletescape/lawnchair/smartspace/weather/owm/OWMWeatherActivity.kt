@@ -99,8 +99,8 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                 Temperature.Unit.Romer -> TODO()
             }
             try {
-                val hourlyForecast = owmApi.hourlyWeatherForecastByCoords(intent!!.extras!!.getDouble("weather_lat"),
-                                                                          intent!!.extras!!.getDouble("weather_lon"))
+                val hourlyForecast = owmApi.hourlyWeatherForecastByCoords(intent!!.extras!!.getDouble("city_lat"),
+                                                                          intent!!.extras!!.getDouble("city_lon"))
                 runOnUiThread() {
                     threeHourAdapter =
                             HourlyForecastAdapter(hourlyForecast, this, prefs.weatherUnit)
@@ -131,7 +131,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             holder: ThreeHourForecastViewHolder, position: Int) {
             val currentWeather = hourlyWeatherForecast.dataList!!.get(position)
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
-            zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)));
+            zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
             holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.weatherList!!.get(0)!!.iconCode))
             holder.time.text = "${if (zonedDateTime.hour < 10)  "0" + zonedDateTime.hour else "" + zonedDateTime.hour}:${if (zonedDateTime.minute < 10)  "0" + zonedDateTime.minute else zonedDateTime.minute}"
             holder.temperature.text =
