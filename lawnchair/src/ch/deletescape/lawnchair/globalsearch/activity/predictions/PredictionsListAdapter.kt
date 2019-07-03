@@ -20,26 +20,34 @@
 package ch.deletescape.lawnchair.globalsearch.activity.predictions
 
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 
-class PredictionsListAdapter() :
+class PredictionsListAdapter(val predictions: List<String>, var onCallHandler: OnCallHandler) :
         RecyclerView.Adapter<PredictionsListAdapter.PredictionViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PredictionViewHolder {
-        TODO(
-            "not implemented") //To change body of created functions use File | Settings | File Templates.
+        return PredictionViewHolder(
+            LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent,
+                                                        false))
     }
 
     override fun getItemCount(): Int {
-        TODO(
-            "not implemented") //To change body of created functions use File | Settings | File Templates.
+        return predictions.size
     }
 
     override fun onBindViewHolder(holder: PredictionViewHolder, position: Int) {
-        TODO(
-            "not implemented") //To change body of created functions use File | Settings | File Templates.
+        (holder.itemView as TextView).setText(predictions.get(position))
+        holder.itemView.setOnClickListener({
+                                               onCallHandler.onClick(position)
+                                           })
     }
 
-    data class PredictionViewHolder(val itemView: View) : RecyclerView.ViewHolder(itemView)
+    class PredictionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    interface OnCallHandler {
+        fun onClick(item: Int)
+    }
 }
