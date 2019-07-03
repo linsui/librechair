@@ -64,23 +64,31 @@ public class FontRequestHelper {
             FontRequestCallback callback, Handler handler) {
 
         handler.post(() -> {
-            String apiCall = String.format("https://www.googleapis.com/webfonts/v1/webfonts?key=%s", GOOGLE_FONT_KEY);
-            File cachedTypeface = new File(context.getCacheDir(), "typeface_google_" + request.hashCode() + "_cached.ttf");
+            String apiCall = String.format("https://www.googleapis.com/webfonts/v1/webfonts?key=%s",
+                    GOOGLE_FONT_KEY);
+            File cachedTypeface = new File(context.getCacheDir(),
+                    "typeface_google_" + request.hashCode() + "_cached.ttf");
             if (cachedTypeface.exists()) {
                 callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
                 return;
             }
             try {
-                String rawJson = IOUtils.toString(new URL(apiCall).openConnection().getInputStream(),
-                        Charset.defaultCharset());
+                String rawJson = IOUtils
+                        .toString(new URL(apiCall).openConnection().getInputStream(),
+                                Charset.defaultCharset());
                 JsonParser jsonParser = new JsonParser();
                 JsonObject jsonObject = jsonParser.parse(rawJson).getAsJsonObject();
                 JsonArray fontItems = jsonObject.getAsJsonArray("items");
                 for (JsonElement object : fontItems) {
                     JsonArray variants = object.getAsJsonObject().getAsJsonArray("variants");
                     JsonObject files = object.getAsJsonObject().getAsJsonObject("files");
-                    if (variants.contains(new JsonPrimitive(request.get("weight")))) {
-                        IOUtils.copy(new URL(files.getAsJsonPrimitive(request.get("weight")).toString()).openConnection().getInputStream(), new FileOutputStream(cachedTypeface));
+                    if (object.getAsJsonObject().getAsJsonPrimitive("family").getAsString()
+                            .equalsIgnoreCase(request.get("family")) && variants
+                            .contains(new JsonPrimitive(request.get("weight")))) {
+                        IOUtils.copy(
+                                new URL(files.getAsJsonPrimitive(request.get("weight")).toString())
+                                        .openConnection().getInputStream(),
+                                new FileOutputStream(cachedTypeface));
                         callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
                         return;
                     }
