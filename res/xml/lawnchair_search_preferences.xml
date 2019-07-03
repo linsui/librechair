@@ -68,4 +68,14 @@
             app:colorMode="RGB"
             app:resolvers="@array/resolvers_allapps_qsb"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:key="prefCat_otherSearchProviders"
+        android:title="@string/pref_category_misc">
+        <EditTextPreference
+            android:key="pref_chromiumPackageName"
+            android:defaultValue="@string/chromium_default_package"
+            android:title="@string/title_pref_chromium_package_name"
+            android:summary="@string/summary_pref_chromium_package_name" />
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>

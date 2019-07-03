@@ -109,6 +109,7 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) { ThemeManager.getInstance(context).updateTheme() }
     val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment", lawnchairConfig.enableLegacyTreatment, reloadIcons)
     val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds", lawnchairConfig.enableColorizedLegacyTreatment, reloadIcons)
+    var chromiumPackageName by StringPref("pref_chromiumPackageName", "org.chromium.chrome")
     val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment", lawnchairConfig.enableWhiteOnlyTreatment, reloadIcons)
     val hideStatusBar by BooleanPref("pref_hideStatusBar", lawnchairConfig.hideStatusBar, doNothing)
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
@@ -265,7 +266,7 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
         val now = GregorianCalendar.getInstance()
         val date = now.get(Calendar.DAY_OF_MONTH)
         val month = now.get(Calendar.MONTH)
-        return date == 1 && month == Calendar.APRIL
+        return date == 1 && month == Calendar.APRIL && now.get(Calendar.YEAR) == 2369 /* DS9 */
     }
 
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)

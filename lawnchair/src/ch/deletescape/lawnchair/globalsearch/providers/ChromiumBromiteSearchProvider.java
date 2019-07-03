@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import com.android.launcher3.R;
 import java.io.IOException;
@@ -100,7 +101,7 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                     Runtime.getRuntime().exec(new String[]{"su", "-c",
                             String.format(
                                     "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
-                                    "org.chromium.chrome")});
+                                    LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName())});
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
