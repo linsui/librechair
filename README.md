@@ -1,3 +1,7 @@
+# Downloads
+
+You can download directly from CI / CD or [join the Telegram releases channel](https://t.me/librechair)
+
 # Librechair-changed
   The original project Lawnchair can be found [here](https://github.com/LawnchairLauncher/Lawnchair)^Warning: ^LibreJS ^Incompatible.
   This project is a fork of Lawnchair that aims to remove non-free (proprietary) blobs from Lawnchair, and make it completely free (libre) software.
@@ -16,8 +20,10 @@
     [x] Remove all search providers that require non-free software
         [-] Add replacement search providers using purely free software (ongoing work)
             [x] Just Search from F-Droid
-            [ ] Searx
-            [ ] KISS Launcher from F-Droid
+            [ ] Searx (ongoing work)
+            [*] KISS Launcher from F-Droid
+            [*] Chromium
+                 [*] Bromite
     [x] Remove all weather providers that require non-free software
     [x] Remove all calendar providers that require non-free software
         [x] Add replacement calendar providers using purely free software
