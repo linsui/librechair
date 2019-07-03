@@ -105,7 +105,8 @@ import java.util.*
                        arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
                                CalendarContract.Instances.DTEND,
                                CalendarContract.Instances.DESCRIPTION,
-                               CalendarContract.Events._ID), query, null,
+                               CalendarContract.Events._ID,
+                               CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
                        CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
             Log.v(javaClass.name,
@@ -137,6 +138,11 @@ import java.util.*
                 if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                 diffMinutes)
             val intent = Intent(Intent.ACTION_VIEW)
+            if (eventCursor.getString(5) != null) {
+                if (controller.context.packageManager.getApplicationEnabledSetting(eventCursor.getString(5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+                    intent.`package` = eventCursor.getString(5)!!
+                }
+            }
             intent.data = Uri
                     .parse("content://com.android.calendar/events/" + eventCursor.getLong(4).toString())
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
