@@ -103,6 +103,8 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name="ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider$Trampoline" />
+
         <activity android:name="ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity"
             android:label="@string/pref_category_weather"
             android:theme="@style/SettingsTheme"/>
