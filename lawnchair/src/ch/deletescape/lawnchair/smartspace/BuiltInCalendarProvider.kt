@@ -39,11 +39,11 @@ package ch.deletescape.lawnchair.smartspace
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
-import android.os.Handler
 import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
+import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
@@ -59,8 +59,6 @@ import java.util.*
             .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "")
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver = controller.context.contentResolver
-    private var refreshThread: Thread? = null;
-    private val handler: Handler = Handler()
     private var interrupt = false;
 
     init {
@@ -69,27 +67,9 @@ import java.util.*
     }
 
     private fun updateInformation() {
-        if (refreshThread == null) {
-            refreshThread = Thread {
-                run {
-                    while (true) {
-                        try {
-                            Thread.sleep(10000)
-                        } catch (e: InterruptedException) {
-                            if (interrupt) break
-                        }
-                        if (refreshThread!!.isInterrupted) {
-                            if (interrupt) break
-                        }
-                        handler.post {
-                            updateInformation()
-                        }
-                    }
-                }
-            }
-            refreshThread!!.start();
-        }
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
+        LawnchairLauncher.getLauncher(controller.context).launcherWorkHandler
+                .postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
         if (controller.context.checkSelfPermission(
                     android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
@@ -205,15 +185,11 @@ import java.util.*
                 updateData(weather, card = null)
             }
         }
-
-
     }
 
     override fun onDestroy() {
-        if (refreshThread != null) {
-            interrupt = true;
-            refreshThread!!.interrupt()
-        }
+        LawnchairLauncher.getLauncher(controller.context).launcherWorkHandler
+                .removeCallbacksAndMessages(this)
     }
 
     override fun forceUpdate() {

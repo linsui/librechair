@@ -30,10 +30,7 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.ResultReceiver
+import android.os.*
 import android.support.v4.app.ActivityCompat
 import android.view.LayoutInflater
 import android.view.View
@@ -70,6 +67,8 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     val background by lazy { findViewById<LawnchairBackgroundView>(R.id.lawnchair_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
+    private val launcherWorkHandlerThread by lazy { HandlerThread(javaClass.simpleName + "@" + hashCode()) }
+    val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
 
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
@@ -102,6 +101,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
 
         performSignatureVerification()
+        launcherWorkHandlerThread.start()
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {
