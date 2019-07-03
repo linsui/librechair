@@ -28,6 +28,7 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.v4.provider.FontRequest;
 import android.support.v4.provider.FontsContractCompat.FontRequestCallback;
+import android.util.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -64,15 +65,20 @@ public class FontRequestHelper {
             FontRequestCallback callback, Handler handler) {
 
         handler.post(() -> {
+            Log.d(FontRequestHelper.class.getName(), "postFontRequest: request executed: " + request.toString());
             String apiCall = String.format("https://www.googleapis.com/webfonts/v1/webfonts?key=%s",
                     GOOGLE_FONT_KEY);
+            Log.d(FontRequestHelper.class.getName(), "postFontRequest: API call will be: " + apiCall);
             File cachedTypeface = new File(context.getCacheDir(),
                     "typeface_google_" + request.hashCode() + "_cached.ttf");
+            Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached path " + cachedTypeface.getAbsolutePath());
             if (cachedTypeface.exists()) {
+                Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached font exists! returning that");
                 callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
                 return;
             }
             try {
+                Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached font does not exist. we need to download it");
                 String rawJson = IOUtils
                         .toString(new URL(apiCall).openConnection().getInputStream(),
                                 Charset.defaultCharset());
@@ -80,6 +86,7 @@ public class FontRequestHelper {
                 JsonObject jsonObject = jsonParser.parse(rawJson).getAsJsonObject();
                 JsonArray fontItems = jsonObject.getAsJsonArray("items");
                 for (JsonElement object : fontItems) {
+                    Log.d(FontRequestHelper.class.getName(), "postFontRequest: iter: " + object.toString());
                     JsonArray variants = object.getAsJsonObject().getAsJsonArray("variants");
                     JsonObject files = object.getAsJsonObject().getAsJsonObject("files");
                     if (object.getAsJsonObject().getAsJsonPrimitive("family").getAsString()
@@ -93,6 +100,7 @@ public class FontRequestHelper {
                         return;
                     }
                 }
+                Log.d(FontRequestHelper.class.getName(), "postFontRequest: no such font found! signaling error");
                 callback.onTypefaceRequestFailed(FAIL_REASON_FONT_NOT_FOUND);
 
             } catch (IOException | NullPointerException e) {
