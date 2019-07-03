@@ -90,7 +90,7 @@ public class FontRequestHelper {
                     JsonArray variants = object.getAsJsonObject().getAsJsonArray("variants");
                     JsonObject files = object.getAsJsonObject().getAsJsonObject("files");
                     if (object.getAsJsonObject().getAsJsonPrimitive("family").getAsString()
-                            .equalsIgnoreCase(request.get("family").trim()) && variants
+                            .equalsIgnoreCase(request.get("name").trim()) && variants
                             .contains(new JsonPrimitive(request.get("weight")))) {
                         IOUtils.copy(
                                 new URL(files.getAsJsonPrimitive(request.get("weight")).toString())
