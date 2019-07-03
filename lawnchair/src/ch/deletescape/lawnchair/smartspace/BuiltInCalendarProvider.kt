@@ -127,7 +127,6 @@ import java.util.*
             eventEndTime.timeInMillis = eventCursor.getLong(2)
             Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
             val description = eventCursor.getString(3);
-            eventCursor.close();
             val diff = startTime.timeInMillis - currentTime.timeInMillis
             Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
             val diffSeconds = diff / 1000
@@ -139,13 +138,14 @@ import java.util.*
                 diffMinutes)
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri
-                    .parse("content://com.android.calendar/events/" + eventCursor.getInt(4).toString())
+                    .parse("content://com.android.calendar/events/" + eventCursor.getLong(4).toString())
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                 controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)),
                                                           if (title == null || title.trim().isEmpty()) controller.context.getString(
                                                               R.string.placeholder_empty_title) else title,
                                                           TextUtils.TruncateAt.MARQUEE, text,
                                                           TextUtils.TruncateAt.END, PendingIntent.getActivity(controller.context, 0, intent, 0, null))
+            eventCursor.close();
             updateData(weather, card)
         } catch (e: CursorIndexOutOfBoundsException) {
             val currentTime = GregorianCalendar();
