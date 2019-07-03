@@ -278,5 +278,10 @@
             repo="aksinghnet/owm-japis"
             license="Simplified BSD" />
 
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
+            title="Apache Commons IO"
+            license="Apache License 2.0" />
+
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>
