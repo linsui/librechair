@@ -193,6 +193,7 @@ import java.util.*
 
     override fun onDestroy() {
         workerHandler.removeCallbacksAndMessages(this)
+        handlerThread.quitSafely()
     }
 
     override fun forceUpdate() {
