@@ -303,4 +303,9 @@
 <!-- Librechair Weather -->
     <dimen name="activity_weather_title_text_size">64sp</dimen>
     <dimen name="activity_weather_icon_size">64dp</dimen>
+    <dimen name="dimen_feed_card_padding">16dp</dimen>
+    <dimen name="dimen_card_icon_small">24dp</dimen>
+    <dimen name="dimen_elevation_raised_feed_card">8dp</dimen>
+    <dimen name="card_default_size">220dp</dimen>
+    <dimen name="card_narrow_height">120dp</dimen>
 </resources>
