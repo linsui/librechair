@@ -143,6 +143,7 @@
                 <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET" />
             </intent-filter>
         </activity>
+        <activity android:name="ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider$Trampoline" />
 
         <!--
         Should point to the content provider which can be used to dump Launcher3 compatible

@@ -19,9 +19,12 @@
 
 package ch.deletescape.lawnchair.globalsearch.providers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import com.android.launcher3.R;
 import java.io.IOException;
@@ -29,7 +32,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
 
-public class ChromiumBromiteSearchProvider extends SearchProvider {
+public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
 
     private ProviderType type;
 
@@ -41,9 +44,9 @@ public class ChromiumBromiteSearchProvider extends SearchProvider {
     @NotNull
     @Override
     public String getName() {
-        return type == ProviderType.CHROMIUM ? getContext().getString(R.string.chromium)
+        return (type == ProviderType.CHROMIUM ? getContext().getString(R.string.chromium)
                 : getContext().getString(
-                        R.string.bromite) + " (root)";
+                        R.string.bromite)) + " (root)";
     }
 
     @Override
@@ -63,14 +66,9 @@ public class ChromiumBromiteSearchProvider extends SearchProvider {
 
     @Override
     public void startSearch(@NotNull Function1<? super Intent, Unit> callback) {
-        try {
-            Runtime.getRuntime().exec(new String[]{"su", "-c",
-                    String.format("am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
-                            type == ProviderType.CHROMIUM ? "org.chromium.chrome"
-                                    : "org.bromite.bromite")});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Intent i = new Intent(getContext(), Trampoline.class);
+        i.putExtra("type", type == ProviderType.BROMITE ? "bromite" : "chromium");
+        callback.invoke(i);
     }
 
     @NotNull
@@ -81,5 +79,46 @@ public class ChromiumBromiteSearchProvider extends SearchProvider {
 
     public enum ProviderType {
         BROMITE, CHROMIUM
+    }
+
+    public static class Trampoline extends Activity {
+
+        @Override
+        protected void onCreate(@Nullable Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            if (getIntent().getStringExtra("type").equals("bromite")) {
+                try {
+                    Runtime.getRuntime().exec(new String[]{"su", "-c",
+                            String.format(
+                                    "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
+                                    "org.bromite.bromite")});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Runtime.getRuntime().exec(new String[]{"su", "-c",
+                            String.format(
+                                    "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
+                                    "org.chromium.chrome")});
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static class BromiteSearchProvider extends ChromiumBromiteSearchProvider {
+
+        public BromiteSearchProvider(Context context) {
+            super(ProviderType.BROMITE, context);
+        }
+    }
+
+    public static class ChromiumSearchProvider extends ChromiumBromiteSearchProvider {
+
+        public ChromiumSearchProvider(Context context) {
+            super(ProviderType.CHROMIUM, context);
+        }
     }
 }
