@@ -20,17 +20,18 @@
 package ch.deletescape.lawnchair.globalsearch.activity;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.view.ViewGroup;
 import android.widget.EditText;
+import ch.deletescape.lawnchair.globalsearch.activity.predictions.PredictionsListAdapter;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
 import com.android.launcher3.R;
+import java.util.Arrays;
 
 public class WebSearchProviderActivity extends SettingsBaseActivity {
     private EditText searchQuery;
     private RecyclerView suggestions;
+    private PredictionsListAdapter predictionsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,25 +39,9 @@ public class WebSearchProviderActivity extends SettingsBaseActivity {
         setContentView(R.layout.activity_web_search_provider);
         searchQuery = findViewById(R.id.search_query);
         suggestions = findViewById(R.id.search_query_suggestions);
-    }
-
-    private class WebSearchSuggestionsAdapter extends RecyclerView.Adapter {
-        // TODO add suggestions adapter and make Searx functional
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return null;
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return 0;
-        }
+        suggestions.setLayoutManager(new LinearLayoutManager(this));
+        suggestions.setAdapter(new PredictionsListAdapter(Arrays.asList("Test A", "Test B", "Test C"), item -> {
+            // TODO make predictions work
+        }));
     }
 }

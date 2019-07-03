@@ -25,8 +25,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
-class PredictionsListAdapter(val predictions: List<String>, var onCallHandler: OnCallHandler) :
+class PredictionsListAdapter(predictions: List<String>, onCallHandler: OnCallHandler) :
         RecyclerView.Adapter<PredictionsListAdapter.PredictionViewHolder>() {
+
+    var onCallHandler = onCallHandler
+        get() = field
+        set(value) {
+            field = value
+        }
+    var predictions = predictions
+        get() = field
+        set(value) {
+            field = value
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PredictionViewHolder {
         return PredictionViewHolder(
