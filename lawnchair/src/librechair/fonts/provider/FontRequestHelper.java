@@ -25,6 +25,8 @@ import static android.support.v4.provider.FontsContractCompat.FontRequestCallbac
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.support.v4.provider.FontRequest;
 import android.support.v4.provider.FontsContractCompat.FontRequestCallback;
@@ -55,26 +57,36 @@ public class FontRequestHelper {
             for (String iter : split) {
                 processedRequest.put(iter.split("=")[0], iter.split("=")[1]);
             }
-            postFontRequest(context, processedRequest, callback, handler);
+            postFontRequest(context, processedRequest, callback, handler, request.getQuery());
         } catch (IndexOutOfBoundsException e) {
             callback.onTypefaceRequestFailed(FAIL_REASON_MALFORMED_QUERY);
         }
     }
 
     public static void postFontRequest(Context context, Map<String, String> request,
-            FontRequestCallback callback, Handler handler) {
+            FontRequestCallback callback, Handler handler, String originalRequest) {
 
+        Handler handler1 = new Handler();
         handler.post(() -> {
+            try {
+                if (request.get("name").trim().equals("Google Sans")) {
+                    Log.d(FontRequestHelper.class.getName(), "postFontRequest: Requesting Google Sans! Deferred to the Google Sans font provider");
+                    handler1.post(() -> callback.onTypefaceRetrieved(getGoogleSans(request)));
+                    return;
+                }
+            } catch (NullPointerException e) {
+                callback.onTypefaceRequestFailed(FAIL_REASON_MALFORMED_QUERY);
+            }
             Log.d(FontRequestHelper.class.getName(), "postFontRequest: request executed: " + request.toString());
             String apiCall = String.format("https://www.googleapis.com/webfonts/v1/webfonts?key=%s",
                     GOOGLE_FONT_KEY);
             Log.d(FontRequestHelper.class.getName(), "postFontRequest: API call will be: " + apiCall);
             File cachedTypeface = new File(context.getCacheDir(),
-                    "typeface_google_" + request.hashCode() + "_cached.ttf");
+                    "typeface_google_" + originalRequest.hashCode() + "_cached.ttf");
             Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached path " + cachedTypeface.getAbsolutePath());
             if (cachedTypeface.exists()) {
                 Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached font exists! returning that");
-                callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
+                handler1.post(() -> callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface)));
                 return;
             }
             try {
@@ -90,22 +102,30 @@ public class FontRequestHelper {
                     JsonObject files = object.getAsJsonObject().getAsJsonObject("files");
                     if (object.getAsJsonObject().getAsJsonPrimitive("family").getAsString()
                             .equalsIgnoreCase(request.get("name").trim()) && variants
-                            .contains(new JsonPrimitive(request.get("weight")))) {
+                            .contains(new JsonPrimitive(request.get("weight").replaceAll("400", "regular") + (request.get("italic").equals(1) ? "italic" : "")))) {
                         IOUtils.copy(
-                                new URL(files.getAsJsonPrimitive(request.get("weight")).toString())
+                                new URL(files.getAsJsonPrimitive(request.get("weight").replaceAll("400", "regular") + (request.get("italic").equals(1) ? "italic" : "")).toString().replaceAll("\"", "").replaceAll("http", "https"))
                                         .openConnection().getInputStream(),
                                 new FileOutputStream(cachedTypeface));
-                        callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
+                        handler1.post(() -> callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface)));
                         return;
                     }
                 }
                 Log.d(FontRequestHelper.class.getName(), "postFontRequest: no such font found! signaling error");
-                callback.onTypefaceRequestFailed(FAIL_REASON_FONT_NOT_FOUND);
+                handler1.post(() -> callback.onTypefaceRequestFailed(FAIL_REASON_FONT_NOT_FOUND));
 
             } catch (IOException | NullPointerException e) {
                 e.printStackTrace();
-                callback.onTypefaceRequestFailed(FAIL_REASON_FONT_LOAD_ERROR);
+                handler1.post(() -> callback.onTypefaceRequestFailed(FAIL_REASON_FONT_LOAD_ERROR));
             }
         });
+    }
+
+    private static Typeface getGoogleSans(Map<String, String> request) throws NullPointerException, NumberFormatException {
+        if (VERSION.SDK_INT >= VERSION_CODES.P) {
+            return Typeface.create(Typeface.DEFAULT, Integer.valueOf(request.get("weight")), request.get("italic").equals(1));
+        } else {
+            return Typeface.create(Typeface.DEFAULT, request.get("italic").equals(1) ? Typeface.ITALIC : Typeface.NORMAL);
+        }
     }
 }
