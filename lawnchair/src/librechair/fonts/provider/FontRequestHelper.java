@@ -86,7 +86,6 @@ public class FontRequestHelper {
                 JsonObject jsonObject = jsonParser.parse(rawJson).getAsJsonObject();
                 JsonArray fontItems = jsonObject.getAsJsonArray("items");
                 for (JsonElement object : fontItems) {
-                    Log.v(FontRequestHelper.class.getName(), "postFontRequest: iter: " + object.toString());
                     JsonArray variants = object.getAsJsonObject().getAsJsonArray("variants");
                     JsonObject files = object.getAsJsonObject().getAsJsonObject("files");
                     if (object.getAsJsonObject().getAsJsonPrimitive("family").getAsString()

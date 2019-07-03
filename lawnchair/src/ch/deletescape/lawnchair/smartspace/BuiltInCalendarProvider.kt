@@ -43,8 +43,8 @@ import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
-import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.drawableToBitmap
+import ch.deletescape.lawnchair.uiWorkerHandler
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
@@ -64,12 +64,13 @@ import java.util.*
     init {
         Log.d(javaClass.name, "class initializer: init")
         forceUpdate()
+        Log.d(javaClass.name, "updateInformation: refreshing calendar")
+        uiWorkerHandler.postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
     }
 
     private fun updateInformation() {
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        LawnchairLauncher.getLauncher(controller.context).launcherWorkHandler
-                .postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
+        uiWorkerHandler.postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
         if (controller.context.checkSelfPermission(
                     android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
@@ -123,12 +124,13 @@ import java.util.*
             eventCursor.close();
             val diff = startTime.timeInMillis - currentTime.timeInMillis
             Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
-            val diffSeconds = diff / 1000 % 60
-            val diffMinutes = diff / (60 * 1000) % 60
+            val diffSeconds = diff / 1000
+            val diffMinutes = diff / (60 * 1000)
             val diffHours = diff / (60 * 60 * 1000)
             val text = if (diffMinutes <= 0) controller.context.getString(
                 R.string.reusable_str_now) else controller.context.getString(
-                R.string.subtitle_smartspace_in_minutes, diffMinutes)
+                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                diffMinutes)
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                 controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)),
                                                           if (title == null || title.trim().isEmpty()) controller.context.getString(
@@ -188,8 +190,7 @@ import java.util.*
     }
 
     override fun onDestroy() {
-        LawnchairLauncher.getLauncher(controller.context).launcherWorkHandler
-                .removeCallbacksAndMessages(this)
+        uiWorkerHandler.removeCallbacksAndMessages(this)
     }
 
     override fun forceUpdate() {
