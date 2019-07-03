@@ -39,12 +39,14 @@ package ch.deletescape.lawnchair.smartspace
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
+import android.os.Handler
+import android.os.HandlerThread
+import android.os.SystemClock
 import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
-import ch.deletescape.lawnchair.uiWorkerHandler
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
@@ -58,19 +60,19 @@ import java.util.*
     private val weather = LawnchairSmartspaceController
             .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "")
     private var card: LawnchairSmartspaceController.CardData? = null
+    private val handlerThread by lazy { HandlerThread(javaClass.hashCode().toString()) }
+    private val workerHandler by lazy { Handler(handlerThread.looper) }
     private val contentResolver = controller.context.contentResolver
-    private var interrupt = false;
 
     init {
         Log.d(javaClass.name, "class initializer: init")
-        forceUpdate()
+        handlerThread.start()
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        uiWorkerHandler.postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
+        workerHandler.postAtTime(this::forceUpdate, this, SystemClock.uptimeMillis() + 5000)
     }
 
     private fun updateInformation() {
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        uiWorkerHandler.postAtTime(this::updateInformation, this, System.currentTimeMillis() + 5000)
         if (controller.context.checkSelfPermission(
                     android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
@@ -171,7 +173,7 @@ import java.util.*
                 val eventEndTime = GregorianCalendar()
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
-                var lines = listOf(LawnchairSmartspaceController.Line(
+                val lines = listOf(LawnchairSmartspaceController.Line(
                     if (title == null || title.trim().isEmpty()) controller.context.getString(
                         R.string.placeholder_empty_title) else title, TextUtils.TruncateAt.MARQUEE),
                                    LawnchairSmartspaceController.Line(controller.context.getString(
@@ -190,10 +192,11 @@ import java.util.*
     }
 
     override fun onDestroy() {
-        uiWorkerHandler.removeCallbacksAndMessages(this)
+        workerHandler.removeCallbacksAndMessages(this)
     }
 
     override fun forceUpdate() {
+        workerHandler.postAtTime(this::forceUpdate, this, SystemClock.uptimeMillis() + 5000)
         updateInformation()
     }
 }

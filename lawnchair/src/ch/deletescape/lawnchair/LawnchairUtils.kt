@@ -286,6 +286,7 @@ class PropertyDelegate<T>(private val property: KMutableProperty0<T>) {
 val mainHandler by lazy { Handler(Looper.getMainLooper()) }
 val uiWorkerHandler by lazy { Handler(LauncherModel.getUiWorkerLooper()) }
 val iconPackUiHandler by lazy { Handler(LauncherModel.getIconPackUiLooper()) }
+val workerHandler by lazy { Handler(LauncherModel.getWorkerLooper()) }
 
 fun runOnUiWorkerThread(r: () -> Unit) {
     runOnThread(uiWorkerHandler, r)
