@@ -74,7 +74,7 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
     @NotNull
     @Override
     public Drawable getIcon() {
-        return null;
+        return getContext().getResources().getDrawable(R.drawable.ic_search);
     }
 
     public enum ProviderType {
