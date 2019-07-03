@@ -36,9 +36,12 @@
 
 package ch.deletescape.lawnchair.smartspace
 
+import android.app.PendingIntent
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
+import android.net.Uri
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.SystemClock
@@ -101,7 +104,8 @@ import java.util.*
                 .query(CalendarContract.Events.CONTENT_URI,
                        arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
                                CalendarContract.Instances.DTEND,
-                               CalendarContract.Instances.DESCRIPTION), query, null,
+                               CalendarContract.Instances.DESCRIPTION,
+                               CalendarContract.Events._ID), query, null,
                        CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
             Log.v(javaClass.name,
@@ -133,12 +137,15 @@ import java.util.*
                 R.string.reusable_str_now) else controller.context.getString(
                 if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                 diffMinutes)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri
+                    .parse("content://com.android.calendar/events/" + eventCursor.getInt(4).toString())
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                 controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)),
                                                           if (title == null || title.trim().isEmpty()) controller.context.getString(
                                                               R.string.placeholder_empty_title) else title,
                                                           TextUtils.TruncateAt.MARQUEE, text,
-                                                          TextUtils.TruncateAt.END)
+                                                          TextUtils.TruncateAt.END, PendingIntent.getActivity(controller.context, 0, intent, 0, null))
             updateData(weather, card)
         } catch (e: CursorIndexOutOfBoundsException) {
             val currentTime = GregorianCalendar();
@@ -152,7 +159,8 @@ import java.util.*
                                    CalendarContract.Instances.DTSTART,
                                    CalendarContract.Instances.DTEND,
                                    CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Instances.ALL_DAY), query, null,
+                                   CalendarContract.Instances.ALL_DAY,
+                                   CalendarContract.Events._ID), query, null,
                            CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,

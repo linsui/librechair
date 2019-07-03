@@ -23,7 +23,7 @@ public class ActionIntentFilter {
         try {
             return context.getPackageManager().getApplicationInfo("com.google.android.googlequicksearchbox", 0).enabled;
         } catch (PackageManager.NameNotFoundException ex) {
-            return false;
+            return /* false */ true;
         }
     }
 }
