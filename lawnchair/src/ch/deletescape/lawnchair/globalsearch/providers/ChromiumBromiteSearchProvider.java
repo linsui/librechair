@@ -105,6 +105,11 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                     e.printStackTrace();
                 }
             }
+        }
+
+        @Override
+        protected void onResume() {
+            super.onResume();
             finish();
         }
     }
