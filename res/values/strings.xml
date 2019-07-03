@@ -376,4 +376,6 @@
     <string name="activity_weather_next_twenty_four_hours">This week</string>
     <string name="placeholder_empty_title">[No title]</string>
     <string name="subtitle_smartspace_in_minute">In %d minute</string>
+    <string name="chromium">Chromium</string>
+    <string name="bromite">Bromite</string>
 </resources>
