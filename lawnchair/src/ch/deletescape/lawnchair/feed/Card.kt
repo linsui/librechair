@@ -21,12 +21,17 @@ package ch.deletescape.lawnchair.feed
 
 import android.graphics.drawable.Drawable
 import android.view.View
+import android.view.ViewGroup
 
-data class Card(val icon: Drawable, val title: String, val view: View, val type: Int) {
+data class Card(val icon: Drawable, val title: String, val inflateHelper: InflateHelper, val type: Int) {
     companion object {
         val DEFAULT = 0
         val RAISE = 1 shl 1
         val NARROW = 1 shl 2
         val TEXT_ONLY = 1 shl 3
+
+        interface InflateHelper {
+            fun inflate(parent: ViewGroup): View
+        }
     }
 }

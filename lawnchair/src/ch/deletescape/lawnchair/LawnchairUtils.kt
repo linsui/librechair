@@ -919,3 +919,24 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
             if (zonedDateTime.hour < 12) "AM" else "PM")
     }
 }
+
+fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context, parentView: ViewGroup) : View {
+    val v = LayoutInflater.from(context).inflate(R.layout.calendar_event, parentView, false)
+    var description = v.findViewById(R.id.calendar_event_title) as TextView
+    var address = v.findViewById(R.id.calendar_event_title) as TextView
+    var directions = v.findViewById(R.id.calendar_event_title) as TextView
+    if (addressNullable == null) {
+        address.visibility = View.GONE
+        directions.visibility = View.GONE
+    }
+    else {
+        address.text = addressNullable
+        directions.setOnClickListener { /* TODO Address directions in calendar feed provider */ }
+    }
+    if (descriptionNullable == null) {
+        description.visibility = View.GONE
+    } else {
+        description.text = descriptionNullable
+    }
+    return v;
+}

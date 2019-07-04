@@ -27,7 +27,7 @@
     app:cardElevation="@dimen/dimen_elevation_raised_feed_card">
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/card_default_size">
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/card_provider_small_icon"
             android:layout_width="24dp"
@@ -45,6 +45,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/card_provider_small_icon" />
         <LinearLayout
+            android:layout_marginTop="8dp"
             android:id="@+id/card_view_holder"
             android:orientation="horizontal"
             android:layout_width="match_parent"

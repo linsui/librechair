@@ -61,7 +61,7 @@ class FeedAdapter(var providers: List<FeedProvider>) : RecyclerView.Adapter<Card
         holder.description.text = cards[position].title
         holder.icon.setImageDrawable(cards[position].icon)
         holder.viewHolder.removeAllViewsInLayout()
-        holder.viewHolder.addView(cards[position].view)
+        holder.viewHolder.addView(cards[position].inflateHelper.inflate(holder.viewHolder))
     }
 
 }

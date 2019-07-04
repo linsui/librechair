@@ -28,6 +28,8 @@ import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
+import ch.deletescape.lawnchair.getCalendarFeedView
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
@@ -79,7 +81,8 @@ import kotlin.collections.ArrayList
                                    CalendarContract.Instances.DTEND,
                                    CalendarContract.Instances.DESCRIPTION,
                                    CalendarContract.Events._ID,
-                                   CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
+                                   CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                   CalendarContract.Events.EVENT_LOCATION), query, null,
                            CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
@@ -117,15 +120,23 @@ import kotlin.collections.ArrayList
                             intent.`package` = eventCursor.getString(5)!!
                         }
                     }
+                    val address = eventCursor
                     intent.data = Uri.parse(
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
                     cards.add(Card(calendarDrawable,
                                    if (title == null || title.trim().isEmpty()) context.getString(
                                        R.string.placeholder_empty_title) else title + " • " + text,
-                                   View(context), Card.RAISE or Card.TEXT_ONLY))
+                                   object : Card.Companion.InflateHelper {
+                                       override fun inflate(parent: ViewGroup): View {
+                                           return getCalendarFeedView(description,
+                                                                      eventCursor.getString(6),
+                                                                      context, parent)
+                                       }
+                                   }, Card.RAISE or Card.TEXT_ONLY))
                     eventCursor.moveToNext()
                 }
+                eventCursor.close()
             } catch (e: CursorIndexOutOfBoundsException) {
 
             }
@@ -169,8 +180,13 @@ import kotlin.collections.ArrayList
 
                     val description = eventCursor.getString(3);
                     eventCursor.moveToNext();
-                    cards.add(Card(calendarDrawable, text, View(context), Card.TEXT_ONLY))
+                    cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
+                        override fun inflate(parent: ViewGroup): View {
+                            return View(context)
+                        }
+                    }, Card.TEXT_ONLY))
                 }
+                eventCursor.close()
 
             } catch (e: CursorIndexOutOfBoundsException) {
 
