@@ -925,7 +925,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     var description = v.findViewById(R.id.calendar_event_title) as TextView
     var address = v.findViewById(R.id.calendar_event_address) as TextView
     var directions = v.findViewById(R.id.calendar_event_directions) as TextView
-    if (addressNullable == null) {
+    if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
     }
