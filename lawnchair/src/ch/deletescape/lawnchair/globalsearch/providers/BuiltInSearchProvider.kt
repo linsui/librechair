@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.globalsearch.providers
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import ch.deletescape.lawnchair.feed.FeedActivity
 import ch.deletescape.lawnchair.globalsearch.SearchProvider
 import ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity
 import com.android.launcher3.R
@@ -34,7 +35,7 @@ class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
     override val supportsAssistant: Boolean
         get() = false
     override val supportsFeed: Boolean
-        get() = false
+        get() = true
 
 
     override fun startSearch(callback: (intent: Intent) -> Unit) {
@@ -46,6 +47,11 @@ class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
         val i = Intent(context, WebSearchProviderActivity::class.java);
         i.putExtra("voice_search", true);
         callback.invoke(i);
+    }
+
+    override fun startFeed(callback: (intent: Intent) -> Unit) {
+        val i = Intent(context, FeedActivity::class.java)
+        callback.invoke(i)
     }
 
     override fun getIcon(): Drawable {

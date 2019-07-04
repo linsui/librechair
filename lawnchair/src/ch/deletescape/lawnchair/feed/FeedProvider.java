@@ -25,8 +25,7 @@ import java.util.List;
 public abstract class FeedProvider {
 
     private Context context;
-    private boolean shouldRefresh;
-    private long refreshIntervalMillis;
+    private FeedAdapter adapter;
 
     public FeedProvider(Context c) {
         context = c;
@@ -37,43 +36,33 @@ public abstract class FeedProvider {
     }
 
     /*
-     * This function will be called periodically once per refreshIntervalMillis if shouldRefresh
-     */
-    public abstract void refresh();
-    /*
      * This function is called whenever the feed adapter is shown
      */
     public abstract void onFeedShown();
+
     /*
      * This function may be called when the feed adapter is destroyed (this is not guaranteed)
      */
     public abstract void onFeedHidden();
+
     /*
      * All initialization work should be done here; this is the entry point in the lifecycle
      */
     public abstract void onCreate();
+
     /*
      * All finalization work should be done here; this is the exit point in the lifecycle
      */
     public abstract void onDestroy();
+
     /*
      * Get a list of cards that should be displayed in the feed
      */
     public abstract List<Card> getCards();
-
-    public long getRefreshIntervalMillis() {
-        return refreshIntervalMillis;
+    protected void onAttachedToAdapter(FeedAdapter adapter) {
+        this.adapter = adapter;
     }
-
-    public void setRefreshIntervalMillis(long refreshIntervalMillis) {
-        this.refreshIntervalMillis = refreshIntervalMillis;
-    }
-
-    public boolean isShouldRefresh() {
-        return shouldRefresh;
-    }
-
-    public void setShouldRefresh(boolean shouldRefresh) {
-        this.shouldRefresh = shouldRefresh;
+    public void requestRefresh() {
+        adapter.notifyDataSetChanged(); /* TODO: Prettier implementation that uses the notifyItem* functions */
     }
 }

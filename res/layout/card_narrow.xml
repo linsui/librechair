@@ -40,4 +40,11 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@+id/card_provider_small_icon"
         app:layout_constraintEnd_toEndOf="parent" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/card_view_holder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_title" />
 </android.support.constraint.ConstraintLayout>
