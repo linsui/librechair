@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -51,7 +52,9 @@ class FeedAdapter(var providers: List<FeedProvider>) : RecyclerView.Adapter<Card
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-
+        providers.iterator().forEachRemaining {
+            it.onDestroy()
+        }
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
@@ -78,7 +81,13 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                         Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
                                                         Card.DEFAULT or Card.RAISE -> R.layout.card_raised
                                                         Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
-                                                        else -> error(
-                                                            "magic: can't happen! we covered all possible iterations of the bitmap yet the compiler is still not satisfied!")
-                                                    }, parent, false))
+                                                        Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
+                                                        Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
+
+                                                        else -> error("magic: invalid bitmask")
+                                                    }, parent, false)) {
+        if (type and Card.TEXT_ONLY == 1) {
+            viewHolder.visibility = View.GONE
+        }
+    }
 }

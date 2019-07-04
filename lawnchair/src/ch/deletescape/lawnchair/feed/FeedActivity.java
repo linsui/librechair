@@ -22,12 +22,9 @@ package ch.deletescape.lawnchair.feed;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
 import com.android.launcher3.R;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class FeedActivity extends SettingsBaseActivity {
 
@@ -41,34 +38,7 @@ public class FeedActivity extends SettingsBaseActivity {
         setContentView(R.layout.activity_feed);
         feed = findViewById(R.id.feed_recycler);
         providerArrayList = new ArrayList<>();
-        providerArrayList.add(new FeedProvider(this) {
-            @Override
-            public void onFeedShown() {
-
-            }
-
-            @Override
-            public void onFeedHidden() {
-
-            }
-            @Override
-            public void onCreate() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-
-            }
-
-            @Override
-            public List<Card> getCards() {
-                return Arrays.asList(new Card(getDrawable(R.drawable.ic_smartspace), "Big Brother is watching you...", new View(FeedActivity.this), Card.Companion.getDEFAULT()),
-                        new Card(getDrawable(R.drawable.ic_smartspace), "Big Brother is watching you...", new View(FeedActivity.this), Card.Companion.getRAISE()),
-                        new Card(getDrawable(R.drawable.ic_smartspace), "Big Brother is watching you...", new View(FeedActivity.this), Card.Companion.getNARROW()),
-                        new Card(getDrawable(R.drawable.ic_smartspace), "Big Brother is watching you...", new View(FeedActivity.this), Card.Companion.getRAISE() | Card.Companion.getNARROW()));
-            }
-        });
+        providerArrayList.add(new CalendarEventProvider(this));
         feed.setLayoutManager(new LinearLayoutManager(this));
         feed.setAdapter(adapter = new FeedAdapter(providerArrayList));
         adapter.notifyDataSetChanged();

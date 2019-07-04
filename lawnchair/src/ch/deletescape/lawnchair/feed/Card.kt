@@ -27,5 +27,6 @@ data class Card(val icon: Drawable, val title: String, val view: View, val type:
         val DEFAULT = 0
         val RAISE = 1 shl 1
         val NARROW = 1 shl 2
+        val TEXT_ONLY = 1 shl 3
     }
 }
