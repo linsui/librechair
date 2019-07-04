@@ -383,4 +383,7 @@
     <string name="chromium_default_package">org.chromium.chrome</string>
     <string name="placeholder_raised_card_text">Partly cloudy • Weather • 24°C</string>
     <string name="activity_feed_title">Feed</string>
+    <string name="placeholder_event_description">Tea with Katie and Tom to talk about the deal • With Katie and Tom</string>
+    <string name="title_calendar_event_directions">Directions</string>
+    <string name="placeholder_calendar_event_address">Grand Hall, 447 Mays Avenue, Bekersville District</string>
 </resources>

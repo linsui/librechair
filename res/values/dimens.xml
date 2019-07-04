@@ -308,4 +308,5 @@
     <dimen name="dimen_elevation_raised_feed_card">8dp</dimen>
     <dimen name="card_default_size">220dp</dimen>
     <dimen name="card_narrow_height">120dp</dimen>
+    <dimen name="dimen_calendar_feed_event_description">15sp</dimen>
 </resources>
