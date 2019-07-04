@@ -933,7 +933,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         address.text = addressNullable
         directions.setOnClickListener { /* TODO Address directions in calendar feed provider */ }
     }
-    if (descriptionNullable == null) {
+    if (descriptionNullable == null || descriptionNullable.trim().isEmpty()) {
         description.visibility = View.GONE
     } else {
         description.text = descriptionNullable
