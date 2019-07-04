@@ -120,7 +120,7 @@ import kotlin.collections.ArrayList
                             intent.`package` = eventCursor.getString(5)!!
                         }
                     }
-                    val address = eventCursor
+                    val address = eventCursor.getString(6)
                     intent.data = Uri.parse(
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
@@ -130,10 +130,10 @@ import kotlin.collections.ArrayList
                                    object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
                                            return getCalendarFeedView(description,
-                                                                      eventCursor.getString(6),
+                                                                      address,
                                                                       context, parent)
                                        }
-                                   }, Card.RAISE or Card.TEXT_ONLY))
+                                   }, Card.RAISE))
                     eventCursor.moveToNext()
                 }
                 eventCursor.close()
