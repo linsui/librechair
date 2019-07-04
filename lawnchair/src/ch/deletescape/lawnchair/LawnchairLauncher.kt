@@ -40,6 +40,7 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.FeedOverlay
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -69,7 +70,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     private val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-
+    val feed by lazy { FeedOverlay(this) }
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
@@ -104,6 +105,8 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
 
         performSignatureVerification()
+
+        setLauncherOverlay(feed)
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {

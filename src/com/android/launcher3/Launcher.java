@@ -131,7 +131,6 @@ import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetParser;
-import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -893,9 +892,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         private void hideOverlay(boolean animate) {
             Launcher launcher = Launcher.this;
-            if (launcher instanceof NexusLauncherActivity) {
-                ((NexusLauncherActivity) launcher).getGoogleNow().hideOverlay(animate);
-            }
+            launcher.getWorkspace().mLauncherOverlay.onScrollChange(0, false);
         }
 
         @Override
