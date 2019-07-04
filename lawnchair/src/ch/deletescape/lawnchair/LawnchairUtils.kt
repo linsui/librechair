@@ -923,8 +923,8 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
 fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context, parentView: ViewGroup) : View {
     val v = LayoutInflater.from(context).inflate(R.layout.calendar_event, parentView, false)
     var description = v.findViewById(R.id.calendar_event_title) as TextView
-    var address = v.findViewById(R.id.calendar_event_title) as TextView
-    var directions = v.findViewById(R.id.calendar_event_title) as TextView
+    var address = v.findViewById(R.id.calendar_event_address) as TextView
+    var directions = v.findViewById(R.id.calendar_event_directions) as TextView
     if (addressNullable == null) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
