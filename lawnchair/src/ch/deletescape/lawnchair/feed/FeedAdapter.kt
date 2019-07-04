@@ -40,9 +40,11 @@ class FeedAdapter(var providers: List<FeedProvider>) : RecyclerView.Adapter<Card
     }
 
     override fun getItemCount(): Int {
+        cards.clear()
         var i = 0;
         providers.iterator().forEachRemaining {
             i += it.cards.size
+            cards.addAll(it.cards)
         }
         return i;
     }
