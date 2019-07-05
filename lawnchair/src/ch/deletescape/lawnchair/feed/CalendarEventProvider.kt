@@ -65,6 +65,9 @@ import kotlin.collections.ArrayList
 
     override fun getCards(): List<Card> {
         d("getCards: retrieving calendar cards...")
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            return emptyList()
+        }
         val cards = ArrayList<Card>()
         run {
             val currentTime = GregorianCalendar();
