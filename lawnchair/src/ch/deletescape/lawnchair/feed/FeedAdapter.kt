@@ -44,6 +44,7 @@ class FeedAdapter(var providers: List<FeedProvider>) : RecyclerView.Adapter<Card
         cards.clear()
         var i = 0;
         providers.iterator().forEachRemaining {
+            it.onAttachedToAdapter(this)
             i += it.cards.size
             cards.addAll(it.cards)
         }

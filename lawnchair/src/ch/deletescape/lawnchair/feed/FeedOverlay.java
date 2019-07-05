@@ -22,6 +22,8 @@ package ch.deletescape.lawnchair.feed;
 import android.util.Log;
 import com.android.launcher3.Launcher;
 
+// TODO We need to figure out how overlays work, but in the meanwhile we'll just use DrawerLayout to implement the desktop feed
+
 public class FeedOverlay implements Launcher.LauncherOverlay {
 
     private final Launcher mLauncher;

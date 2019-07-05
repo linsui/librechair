@@ -89,10 +89,8 @@ class LawnchairApp : Application() {
         return if (accessibilityService != null) {
             accessibilityService!!.performGlobalAction(action)
         } else {
-            startActivity(
-                    Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                         )
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK))
             false
         }
     }
@@ -125,8 +123,7 @@ class LawnchairApp : Application() {
         }
 
         override fun onActivityDestroyed(activity: Activity) {
-            if (activity == foregroundActivity)
-                foregroundActivity = null
+            if (activity == foregroundActivity) foregroundActivity = null
             activities.remove(activity)
         }
 
@@ -143,8 +140,7 @@ class LawnchairApp : Application() {
         }
     }
 
-    @Keep
-    fun checkRecentsComponent(): Boolean {
+    @Keep fun checkRecentsComponent(): Boolean {
         if (!Utilities.ATLEAST_P) {
             d("API < P, disabling recents")
             return false
@@ -164,8 +160,8 @@ class LawnchairApp : Application() {
             d("config_recentsComponentName is empty, disabling recents")
             return false
         }
-        val isRecentsComponent = recentsComponent.packageName == packageName
-                                 && recentsComponent.className == RecentsActivity::class.java.name
+        val isRecentsComponent =
+                recentsComponent.packageName == packageName && recentsComponent.className == RecentsActivity::class.java.name
         if (!isRecentsComponent) {
             d("config_recentsComponentName ($recentsComponent) is not Lawnchair, disabling recents")
             return false

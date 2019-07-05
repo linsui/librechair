@@ -32,6 +32,9 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
 import android.support.v4.app.ActivityCompat
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +43,8 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.feed.FeedOverlay
+import ch.deletescape.lawnchair.feed.CalendarEventProvider
+import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -70,7 +74,8 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     private val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-    val feed by lazy { FeedOverlay(this) }
+    val feed by lazy { findViewById(R.id.feed_recycler) as RecyclerView }
+    val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
@@ -103,10 +108,30 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         }
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
-
+        setLauncherOverlay(null)
         performSignatureVerification()
 
-        setLauncherOverlay(feed)
+        feed.setLayoutManager(LinearLayoutManager(this))
+        feed.setAdapter(FeedAdapter(listOf(CalendarEventProvider(this))));
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            var originalVisibility = window.decorView.systemUiVisibility
+
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                window.decorView.systemUiVisibility = originalVisibility
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                feed.adapter?.notifyDataSetChanged()
+            }
+
+        })
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {

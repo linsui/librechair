@@ -1229,7 +1229,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     @Override
     public LauncherRootView getRootView() {
-        return (LauncherRootView) mLauncherView;
+        return (LauncherRootView) mLauncherView.findViewById(R.id.launcher);
     }
 
     @Override

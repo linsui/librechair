@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/calendar_event_address" />
         <TextView
-            android:background="?attr/selectableItemBackground"
+            android:foreground="@drawable/ripple"
             android:padding="3dp"
             android:textColor="?attr/colorAccent"
             android:layout_marginStart="8dp"
