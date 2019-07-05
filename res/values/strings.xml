@@ -386,5 +386,5 @@
     <string name="placeholder_event_description">Tea with Katie and Tom to talk about the deal • With Katie and Tom</string>
     <string name="title_calendar_event_directions">Directions</string>
     <string name="placeholder_calendar_event_address">Grand Hall, 447 Mays Avenue, Bekersville District</string>
-    <string name="title_card_weather_temperature">Weather • %d%s</string>
+    <string name="title_card_weather_temperature">Weather • %s</string>
 </resources>

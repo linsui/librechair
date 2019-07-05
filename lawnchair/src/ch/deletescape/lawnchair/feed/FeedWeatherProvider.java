@@ -20,15 +20,26 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+import ch.deletescape.lawnchair.LawnchairAppKt;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.DataContainer;
+import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Listener;
+import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
 import com.android.launcher3.R;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
-public class FeedWeatherProvider extends FeedProvider {
+public class FeedWeatherProvider extends FeedProvider implements Listener {
+
+    private WeatherData weatherData;
 
     public FeedWeatherProvider(Context c) {
         super(c);
+        LawnchairAppKt.getLawnchairApp(c.getApplicationContext()).getSmartspace().addListener(this);
     }
 
     @Override
@@ -53,6 +64,20 @@ public class FeedWeatherProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
-        return Arrays.asList(new Card(getContext().getDrawable(R.drawable.weather_03), getContext().getString(R.string.title_card_weather_temperature), parent -> new View(getContext()), Card.Companion.getTEXT_ONLY()));
+        return weatherData != null ? Arrays.asList(new Card(new BitmapDrawable(getContext().getResources(),
+                weatherData.getIcon()), getContext()
+                .getString(R.string.title_card_weather_temperature,
+                        weatherData.getTitle(LawnchairUtilsKt.getLawnchairPrefs(getContext()).getWeatherUnit())),
+                parent -> new View(getContext()), Card.Companion.getTEXT_ONLY())) : Collections.emptyList();
+    }
+
+    @Override
+    public void onDataUpdated(@NotNull DataContainer data) {
+        if (data.isWeatherAvailable()) {
+            weatherData = data.getWeather();
+            requestRefresh();
+        } else {
+            weatherData = null;
+        }
     }
 }

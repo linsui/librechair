@@ -26,6 +26,7 @@ public abstract class FeedProvider {
 
     private Context context;
     private FeedAdapter adapter;
+    private boolean requestedRefresh;
 
     public FeedProvider(Context c) {
         context = c;
@@ -63,6 +64,8 @@ public abstract class FeedProvider {
         this.adapter = adapter;
     }
     public void requestRefresh() {
-        adapter.notifyDataSetChanged(); /* TODO: Prettier implementation that uses the notifyItem* functions */
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 }
