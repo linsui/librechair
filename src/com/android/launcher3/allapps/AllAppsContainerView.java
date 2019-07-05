@@ -106,6 +106,8 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
 
     private AllAppsTabsController mTabsController;
 
+    private String mLastSearchQuery;
+
     public AllAppsContainerView(Context context) {
         this(context, null);
     }
@@ -478,6 +480,7 @@ public class AllAppsContainerView extends SpringRelativeLayout implements DragSo
     }
 
     public void setLastSearchQuery(String query) {
+        mLastSearchQuery = query;
         for (int i = 0; i < mAH.length; i++) {
             mAH[i].adapter.setLastSearchQuery(query);
         }

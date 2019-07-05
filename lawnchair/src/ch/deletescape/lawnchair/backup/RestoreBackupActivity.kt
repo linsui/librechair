@@ -30,7 +30,10 @@ import android.support.design.widget.Snackbar
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.support.v7.widget.AppCompatEditText
 import android.view.View
-import android.widget.*
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import com.android.launcher3.R
@@ -245,7 +248,7 @@ class RestoreBackupActivity : SettingsBaseActivity(), LawnchairBackup.MetaLoader
                 val tintList = ColorStateList.valueOf(resolveInfo.color)
                 startButton.apply {
                     DrawableCompat.setTint(background, resolveInfo.color)
-                    DrawableCompat.setTint(drawable, resolveInfo.color)
+                    DrawableCompat.setTint(drawable, resolveInfo.foregroundColor)
                     backgroundTintList = tintList
                 }
                 backupName.apply {

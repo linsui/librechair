@@ -20,8 +20,10 @@ import android.content.Context;
 import android.content.pm.LauncherActivityInfo;
 import android.os.Handler;
 import android.os.UserHandle;
-
 import ch.deletescape.lawnchair.LawnchairAppFilter;
+import ch.deletescape.lawnchair.globalsearch.SearchProvider;
+import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
+import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
 import com.android.launcher3.AppFilter;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.IconCache;
@@ -30,9 +32,9 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.util.ComponentKey;
-
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -65,11 +67,12 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
     public void doSearch(final String query,
             final AllAppsSearchBarController.Callbacks callback) {
         final ArrayList<ComponentKey> result = getTitleMatchResult(query);
+        final List<String> suggestions = getSuggestions(query);
         mResultHandler.post(new Runnable() {
 
             @Override
             public void run() {
-                callback.onSearchResult(query, result);
+                callback.onSearchResult(query, result, suggestions);
             }
         });
     }
@@ -86,6 +89,15 @@ public class DefaultAppSearchAlgorithm implements SearchAlgorithm {
             }
         }
         return result;
+    }
+
+    private List<String> getSuggestions(String query) {
+        SearchProvider provider = SearchProviderController.Companion
+                .getInstance(mContext).getSearchProvider();
+        if (provider instanceof WebSearchProvider) {
+            return ((WebSearchProvider) provider).getSuggestions(query);
+        }
+        return Collections.emptyList();
     }
 
     public static List<AppInfo> getApps(Context context, List<AppInfo> defaultApps, AppFilter filter) {

@@ -40,6 +40,7 @@ import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.MutableInt;
 import ch.deletescape.lawnchair.iconpack.IconPackManager;
+import ch.deletescape.lawnchair.model.HomeWidgetMigrationTask;
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.FolderInfo;
@@ -188,7 +189,7 @@ public class LoaderTask implements Runnable {
             mResults.bindAllApps();
 
             verifyNotStopped();
-            TraceHelper.partitionSection(TAG, "step 2.3: Update iconView cache");
+            TraceHelper.partitionSection(TAG, "step 2.3: Update icon cache");
             updateIconCache();
 
             // Take a break
@@ -244,6 +245,10 @@ public class LoaderTask implements Runnable {
         } catch (Exception e) {
             // Migration failed. Clear workspace.
             clearDb = true;
+        }
+
+        if (!clearDb) {
+            HomeWidgetMigrationTask.migrateIfNeeded(context);
         }
 
         if (!clearDb && GridSizeMigrationTask.ENABLED &&
@@ -813,7 +818,7 @@ public class LoaderTask implements Runnable {
     }
 
     private void updateIconCache() {
-        // Ignore packages which have a promise iconView.
+        // Ignore packages which have a promise icon.
         HashSet<String> packagesToIgnore = new HashSet<>();
         synchronized (mBgDataModel) {
             for (ItemInfo info : mBgDataModel.itemsIdMap) {
@@ -849,7 +854,7 @@ public class LoaderTask implements Runnable {
             // Create the ApplicationInfos
             for (int i = 0; i < apps.size(); i++) {
                 LauncherActivityInfo app = apps.get(i);
-                // This builds the iconView bitmaps.
+                // This builds the icon bitmaps.
                 mBgAllAppsList.add(new AppInfo(app, user, quietMode), app);
             }
         }

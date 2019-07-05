@@ -20,7 +20,6 @@ package ch.deletescape.lawnchair.settings.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.support.annotation.Keep
 import android.support.v7.preference.Preference
 import android.util.AttributeSet
@@ -28,16 +27,16 @@ import android.view.View
 import android.widget.ImageView
 import ch.deletescape.lawnchair.iconpack.DefaultPack
 import ch.deletescape.lawnchair.iconpack.IconPackManager
-import ch.deletescape.lawnchair.mainHandler
 import ch.deletescape.lawnchair.preferences.IconPackFragment
-import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.settings.ui.search.SearchIndex
 import com.android.launcher3.R
-import java.lang.IllegalStateException
 
 class IconPackPreference(context: Context, attrs: AttributeSet? = null) : Preference(context, attrs) {
+
     private val ipm = IconPackManager.getInstance(context)
     private val packList = ipm.packList
+
+    private val onChangeListener = ::updatePreview
 
     init {
         layoutResource = R.layout.pref_with_preview_icon
@@ -47,13 +46,13 @@ class IconPackPreference(context: Context, attrs: AttributeSet? = null) : Prefer
     override fun onAttached() {
         super.onAttached()
 
-        ipm.addListener(this::updatePreview)
+        ipm.addListener(onChangeListener)
     }
 
     override fun onDetached() {
         super.onDetached()
 
-       ipm.removeListener(this::updatePreview)
+       ipm.removeListener(onChangeListener)
     }
 
     private fun updatePreview() {

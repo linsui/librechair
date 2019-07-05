@@ -16,8 +16,6 @@
 package com.android.launcher3.allapps.search;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -28,14 +26,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.PackageManagerHelper;
-
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An interface to a search box that AllApps can command.
@@ -175,8 +172,9 @@ public class AllAppsSearchBarController
          * Called when the search is complete.
          *
          * @param apps sorted list of matching components or null if in case of failure.
+         * @param suggestions relevancy sorted list of matching suggestions or null
          */
-        void onSearchResult(String query, ArrayList<ComponentKey> apps);
+        void onSearchResult(String query, ArrayList<ComponentKey> apps, List<String> suggestions);
 
         /**
          * Called when the search results should be cleared.
