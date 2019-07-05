@@ -19,27 +19,40 @@
 
 package ch.deletescape.lawnchair.feed;
 
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
+import android.content.Context;
+import android.view.View;
 import com.android.launcher3.R;
+import java.util.Arrays;
 import java.util.List;
 
-public class FeedActivity extends SettingsBaseActivity {
+public class FeedWeatherProvider extends FeedProvider {
 
-    private RecyclerView feed;
-    private FeedAdapter adapter;
-    private List<FeedProvider> providers;
+    public FeedWeatherProvider(Context c) {
+        super(c);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
-        feed = findViewById(R.id.feed_recycler);
-        providers = FeedControllerKt.getFeedController(this).getProviders();
-        feed.setLayoutManager(new LinearLayoutManager(this));
-        feed.setAdapter(adapter = new FeedAdapter(providers));
-        adapter.notifyDataSetChanged();
+    public void onFeedShown() {
+        // TODO
+    }
+
+    @Override
+    public void onFeedHidden() {
+        // TODO
+    }
+
+    @Override
+    public void onCreate() {
+        // TODO
+    }
+
+    @Override
+    public void onDestroy() {
+        // TODO
+    }
+
+    @Override
+    public List<Card> getCards() {
+        return Arrays.asList(new Card(getContext().getDrawable(R.drawable.weather_03), getContext().getString(R.string.title_card_weather_temperature), parent -> new View(getContext()), Card.Companion.getTEXT_ONLY()));
     }
 }

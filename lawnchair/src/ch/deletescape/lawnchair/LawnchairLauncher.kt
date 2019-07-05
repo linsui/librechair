@@ -43,8 +43,8 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.feed.CalendarEventProvider
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -112,7 +112,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         performSignatureVerification()
 
         feed.setLayoutManager(LinearLayoutManager(this))
-        feed.setAdapter(FeedAdapter(listOf(CalendarEventProvider(this))));
+        feed.setAdapter(FeedAdapter(getFeedController(this).getProviders()));
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
             var originalVisibility = window.decorView.systemUiVisibility
 
