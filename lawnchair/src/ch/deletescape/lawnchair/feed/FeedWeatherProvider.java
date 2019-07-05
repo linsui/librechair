@@ -31,6 +31,7 @@ import com.android.launcher3.R;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class FeedWeatherProvider extends FeedProvider implements Listener {
@@ -73,11 +74,11 @@ public class FeedWeatherProvider extends FeedProvider implements Listener {
 
     @Override
     public void onDataUpdated(@NotNull DataContainer data) {
-        if (data.isWeatherAvailable()) {
+        if (data.isWeatherAvailable() && !Objects.equals(data.getWeather(), weatherData)) {
             weatherData = data.getWeather();
             requestRefresh();
         } else {
-            weatherData = null;
+            weatherData = data.getWeather();
         }
     }
 }

@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.FeedOverlay
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
@@ -76,6 +77,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
     val feed by lazy { findViewById(R.id.feed_recycler) as RecyclerView }
     val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
+    val feedOverlay by lazy { FeedOverlay(this) }
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
@@ -113,17 +115,20 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         feed.setLayoutManager(LinearLayoutManager(this))
         feed.setAdapter(FeedAdapter(getFeedController(this).getProviders()));
+        setLauncherOverlay(feedOverlay)
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
             var originalVisibility = window.decorView.systemUiVisibility
-
+                var overscrollPage = 0;
             override fun onDrawerStateChanged(newState: Int) {
             }
 
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+
             }
 
             override fun onDrawerClosed(drawerView: View) {
                 window.decorView.systemUiVisibility = originalVisibility
+                workspace.onOverlayScrollChanged(0f )
             }
 
             override fun onDrawerOpened(drawerView: View) {
