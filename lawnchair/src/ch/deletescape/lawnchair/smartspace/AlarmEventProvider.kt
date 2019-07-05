@@ -88,6 +88,6 @@ import kotlin.collections.ArrayList
 
     override fun forceUpdate() {
         updateInformation()
-        handler.postAtTime(this::forceUpdate, SystemClock.uptimeMillis())
+        handler.postAtTime(this::forceUpdate, SystemClock.uptimeMillis() + TimeUnit.SECONDS.toMillis(5))
     }
 }
