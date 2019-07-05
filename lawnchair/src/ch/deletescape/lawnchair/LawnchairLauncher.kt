@@ -52,6 +52,7 @@ import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
@@ -115,6 +116,10 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         feed.setLayoutManager(LinearLayoutManager(this))
         feed.setAdapter(FeedAdapter(getFeedController(this).getProviders()));
+        val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
+        if (ThemeManager.isDark(themeFlags)) {
+            (findViewById(R.id.overlay_feed) as View).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
+        }
         setLauncherOverlay(feedOverlay)
         drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
             var originalVisibility = window.decorView.systemUiVisibility
