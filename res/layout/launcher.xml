@@ -17,12 +17,6 @@
     xmlns:launcher="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <include
-        layout="@layout/overlay_feed"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="false"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
     <com.android.launcher3.LauncherRootView
         android:id="@+id/launcher"
         android:fitsSystemWindows="true"
@@ -104,5 +98,11 @@
         </com.android.launcher3.dragndrop.DragLayer>
 
     </com.android.launcher3.LauncherRootView>
-
+    <include
+        layout="@layout/overlay_feed"
+        android:clickable="true"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="false"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </android.support.v4.widget.DrawerLayout>
