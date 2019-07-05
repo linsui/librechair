@@ -34,6 +34,7 @@ import android.util.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import java.io.File;
@@ -114,7 +115,7 @@ public class FontRequestHelper {
                 Log.d(FontRequestHelper.class.getName(), "postFontRequest: no such font found! signaling error");
                 handler1.post(() -> callback.onTypefaceRequestFailed(FAIL_REASON_FONT_NOT_FOUND));
 
-            } catch (IOException | NullPointerException e) {
+            } catch (IOException | NullPointerException | JsonParseException e) {
                 e.printStackTrace();
                 handler1.post(() -> callback.onTypefaceRequestFailed(FAIL_REASON_FONT_LOAD_ERROR));
             }
