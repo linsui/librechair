@@ -36,6 +36,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
+import com.squareup.leakcanary.LeakCanary
 
 class LawnchairApp : Application() {
 

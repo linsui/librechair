@@ -241,7 +241,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         return !Utilities
                 .getLawnchairPrefs(getContext()).getAllAppsGlobalSearch()
                 || provider instanceof AppSearchSearchProvider
-                || provider instanceof WebSearchProvider
+                || provider instanceof WebSearchProvider;
     }
 
     public void searchFallback(String query) {

@@ -119,7 +119,7 @@ android {
                 matchingFallbacks = ['debug']
             }
 
-            buildConfigField "boolean", "HAS_LEAKCANARY", isPublicBuild ? "false" : "true"
+            buildConfigField "boolean", "HAS_LEAKCANARY", "false"
         }
 
         optimized {
