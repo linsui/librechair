@@ -59,6 +59,7 @@ import kotlin.collections.ArrayList
 
     init {
         Log.d(javaClass.name, "class initializer: init")
+        handlerThread.start();
         forceUpdate()
     }
 
