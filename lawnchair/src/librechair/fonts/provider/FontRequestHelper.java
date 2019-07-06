@@ -44,6 +44,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
 public class FontRequestHelper {
@@ -72,10 +74,11 @@ public class FontRequestHelper {
             try {
                 if (request.get("name").trim().equals("Google Sans")) {
                     Log.d(FontRequestHelper.class.getName(), "postFontRequest: Requesting Google Sans! Deferred to the Google Sans font provider");
-                    handler1.post(() -> callback.onTypefaceRetrieved(getGoogleSans(request)));
+                    Typeface typeface = getGoogleSans(context, request, originalRequest);
+                    handler1.post(() -> callback.onTypefaceRetrieved(typeface));
                     return;
                 }
-            } catch (NullPointerException e) {
+            } catch (NullPointerException | IOException e) {
                 callback.onTypefaceRequestFailed(FAIL_REASON_MALFORMED_QUERY);
             }
             Log.d(FontRequestHelper.class.getName(), "postFontRequest: request executed: " + request.toString());
@@ -122,11 +125,34 @@ public class FontRequestHelper {
         });
     }
 
-    private static Typeface getGoogleSans(Map<String, String> request) throws NullPointerException, NumberFormatException {
-        if (VERSION.SDK_INT >= VERSION_CODES.P) {
-            return Typeface.create(Typeface.DEFAULT, Integer.valueOf(request.get("weight")), request.get("italic").equals(1));
+    private static Typeface getGoogleSans(Context context, Map<String, String> request, String originalRequest)
+            throws NullPointerException, NumberFormatException, IOException {
+        File cachedTypeface = new File(context.getCacheDir(),
+                "typeface_google_" + originalRequest.hashCode() + "_cached.ttf");
+        if (cachedTypeface.exists()) {
+            Log.d(FontRequestHelper.class.getName(), "getGoogleSans: cached font exists! returning that");
+            return Typeface.createFromFile(cachedTypeface);
+        }
+        String requestURL = String.format("https://fonts.googleapis.com/css?family=Google+Sans:" + request.get("weight") + (request.get("italic").equals("1") ? ":italic" : ""));
+        Log.v(FontRequestHelper.class.getName(), "getGoogleSans: requesting Google Sans from " + requestURL);
+        String response = IOUtils.toString(new URL(requestURL).openConnection().getInputStream(), Charset.defaultCharset());
+        Pattern regexQuery = Pattern.compile("https://fonts.gstatic.com/s/googlesans/.+.ttf");
+        Log.v(FontRequestHelper.class.getName(), "getGoogleSans: Google responded to request with" + response);
+        Matcher matcher = regexQuery.matcher(response);
+        if (matcher.find()) {
+            URL url = new URL(response.substring(matcher.start(), matcher.end()));
+            Log.v(FontRequestHelper.class.getName(), "getGoogleSans: found Google Sans URL at " + url.toString());
+            FileOutputStream outputStream = new FileOutputStream(cachedTypeface);
+            IOUtils.copy(url.openConnection().getInputStream(), outputStream);
+            return Typeface.createFromFile(cachedTypeface);
         } else {
-            return Typeface.create(Typeface.DEFAULT, request.get("italic").equals(1) ? Typeface.ITALIC : Typeface.NORMAL);
+            Log.v(FontRequestHelper.class.getName(), "getGoogleSans: couldn't retrieve Google Sans! Falling back to system font (which is probably Roboto)");
+            if (VERSION.SDK_INT >= VERSION_CODES.P) {
+                return Typeface.create(Typeface.DEFAULT, Integer.valueOf(request.get("weight")),
+                        request.get("italic").equals(1));
+            } else {
+                return Typeface.DEFAULT;
+            }
         }
     }
 }
