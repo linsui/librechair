@@ -94,7 +94,7 @@ android {
         def githubToken = localProps.getProperty('githubToken') ?: '"' + System.getenv("GITHUB_TOKEN") + '"'
         buildConfigField "String", "GITHUB_TOKEN", githubToken
 
-        buildConfigField "boolean", "SIGNATURE_VERIFICATION", "false"
+        buildConfigField "boolean", "SIGNATURE_VERIFICATION", "true"
 
         def debugMenuCode = System.getenv("DEBUG_MENU_CODE") ?: "veryperu"
         buildConfigField "String", "DEBUG_MENU_CODE_HASH", '"' + debugMenuCode.digest('SHA-1') + '"'
@@ -118,8 +118,6 @@ android {
             dexOptions {
                 matchingFallbacks = ['debug']
             }
-
-            buildConfigField "boolean", "HAS_LEAKCANARY", "false"
         }
 
         optimized {
@@ -182,7 +180,7 @@ android {
 
         quickstep {
             dimension "default"
-            applicationId 'launcher.libre'
+            applicationId 'launcher.libre.go'
             testApplicationId 'com.android.launcher3.tests'
         }
 
@@ -341,7 +339,7 @@ dependencies {
     } else {
         implementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
     }
-
+    implementation 'fastily:jwiki:1.7.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation "org.mockito:mockito-core:1.9.5"
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
