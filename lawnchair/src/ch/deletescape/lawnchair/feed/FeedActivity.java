@@ -39,7 +39,7 @@ public class FeedActivity extends SettingsBaseActivity {
         feed = findViewById(R.id.feed_recycler);
         providers = FeedControllerKt.getFeedController(this).getProviders();
         feed.setLayoutManager(new LinearLayoutManager(this));
-        feed.setAdapter(adapter = new FeedAdapter(providers));
+        feed.setAdapter(adapter = new FeedAdapter(providers, this));
         adapter.notifyDataSetChanged();
     }
 }
