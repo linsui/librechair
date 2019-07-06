@@ -389,5 +389,5 @@
     <string name="title_card_weather_temperature">Weather • %s</string>
     <string name="title_text_calendar_feed_provider_in_d_days">In %d days</string>
     <string name="tomorrow">Tomorrow</string>
-    <string name="title_text_calendar_feed_in_d_hours">In %s hours</string>
+    <string name="title_text_calendar_feed_in_d_hours">In %d hours</string>
 </resources>

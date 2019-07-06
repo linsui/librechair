@@ -119,7 +119,7 @@ import kotlin.collections.ArrayList
                             R.string.title_text_calendar_feed_provider_in_d_days,
                             diffDays) else context.getString(R.string.tomorrow)
                     } else if (diffHours > 4) {
-                        text = context.getString(R.string.title_text_calendar_feed_in_d_hours)
+                        text = context.getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
                     } else {
                         text = if (diffMinutes <= 0) context.getString(
                             R.string.reusable_str_now) else context.getString(
