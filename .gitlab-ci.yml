@@ -28,11 +28,8 @@ before_script:
 
 stages:
   - build
-  - buildGo
   - sign
-  - signGo
   - deploy
-  - deployGo
 
 assemble:
   stage: build
@@ -52,7 +49,7 @@ assemble:
       untracked: true
 
 assembleGo:
-  stage: buildGo
+  stage: build
   script:
     - echo curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN_PLACEHOLDER}/sendMessage?chat_id=@${CHAT_ID}&text=Continual integration triggered"
     - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=Continual integration triggered"
@@ -82,7 +79,7 @@ signRelease:
           - outputs/librechair-ci-signed-aligned.apk
 
 signReleaseGo:
-  stage: signGo
+  stage: sign
   dependencies:
     - assembleGo
   script:
