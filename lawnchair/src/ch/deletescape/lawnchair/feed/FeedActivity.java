@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
+import ch.deletescape.lawnchair.theme.ThemeManager;
 import com.android.launcher3.R;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class FeedActivity extends SettingsBaseActivity {
         feed = findViewById(R.id.feed_recycler);
         providers = FeedControllerKt.getFeedController(this).getProviders();
         feed.setLayoutManager(new LinearLayoutManager(this));
-        feed.setAdapter(adapter = new FeedAdapter(providers, this));
+        feed.setAdapter(adapter = new FeedAdapter(providers, ThemeManager.Companion.getInstance(this)));
         adapter.notifyDataSetChanged();
     }
 }
