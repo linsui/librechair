@@ -89,7 +89,7 @@ signReleaseGo:
     - ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-go-aligned.apk
   artifacts:
     paths:
-      - outputs/librechair-go-ci-signed-go-aligned.apk
+      - outputs/librechair-ci-signed-go-aligned.apk
 
 sendReleaseTelegram:
   stage: deploy
