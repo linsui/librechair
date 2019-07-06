@@ -32,7 +32,7 @@ fun getFeedController(c: Context): FeedController {
 
 class FeedController(val context: Context) {
 
-    private val theProviders = listOf(FeedWeatherProvider(context), CalendarEventProvider(context))
+    private val theProviders = listOf(FeedWeatherProvider(context), CalendarEventProvider(context), FeedForecastProvider(context))
 
     fun getProviders(): List<FeedProvider> {
         return theProviders
