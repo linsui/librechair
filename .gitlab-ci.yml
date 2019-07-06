@@ -6,10 +6,13 @@ variables:
   ANDROID_SDK_TOOLS:   "4333796"
   VARIANT:             "quickstepLawnchairL3riDev"
   VARIANT_CAP:         "QuickstepLawnchairL3riDev"
+  VARIANTGO:           "quickstepLawnchairL3goDev"
+  VARIANTGO_CAP:       "QuickstepLawnchairL3goDev"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
   APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
@@ -25,8 +28,11 @@ before_script:
 
 stages:
   - build
+  - buildGo
   - sign
+  - signGo
   - deploy
+  - deployGo
 
 assemble:
   stage: build
@@ -44,6 +50,23 @@ assemble:
     - ./gradlew assemble${VARIANT_CAP}${FLAVOUR_CAP}
   artifacts:
       untracked: true
+
+assembleGo:
+  stage: buildGo
+  script:
+    - echo curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN_PLACEHOLDER}/sendMessage?chat_id=@${CHAT_ID}&text=Continual integration triggered"
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=Continual integration triggered"
+    - wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+    - unzip -d android-sdk-linux android-sdk.zip
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" > /dev/null
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" > /dev/null
+    - echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" > /dev/null
+    - set +o pipefail
+    - yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+    - set -o pipefail
+    - ./gradlew assemble${VARIANTGO_CAP}${FLAVOUR_CAP}
+  artifacts:
+    untracked: true
       
 signRelease:
     stage: sign
@@ -58,6 +81,19 @@ signRelease:
        paths:
           - outputs/librechair-ci-signed-aligned.apk
 
+signReleaseGo:
+  stage: signGo
+  dependencies:
+    - assembleGo
+  script:
+    - mkdir outputs
+    - echo "${KEYSTORE}" | base64 -d - > Librechair.jks
+    - jarsigner -keystore Librechair.jks build/outputs/apk/${VARIANTGO}/${FLAVOUR}/${APK_NAME}.apk -storepass "${KEYSTORE_PASSWORD}" -keypass "${KEY_PASSWORD}" "${KEYSTORE_ALIAS}" --signedjar librechair-ci-signed.apk
+    - ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-go-aligned.apk
+  artifacts:
+    paths:
+      - outputs/librechair-go-ci-signed-go-aligned.apk
+
 sendReleaseTelegram:
   stage: deploy
   script:
@@ -66,3 +102,12 @@ sendReleaseTelegram:
     - curl -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
   dependencies:
     - signRelease
+
+sendReleaseTelegramGo:
+  stage: deploy
+  script:
+    - apt-get install curl
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=CI build completed. A new release is on it's way!"
+    - curl -F document=@"outputs/librechair-ci-signed-go-aligned.apk" -F text="These are Lawnchair Go builds intended for devices with little resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
+  dependencies:
+    - signReleaseGo
