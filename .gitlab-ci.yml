@@ -4,12 +4,12 @@ variables:
   ANDROID_COMPILE_SDK: "28"
   ANDROID_BUILD_TOOLS: "28.0.3"
   ANDROID_SDK_TOOLS:   "4333796"
-  VARIANT:             "quickstepLawnchairDev"
-  VARIANT_CAP:         "QuickstepLawnchairDev"
+  VARIANT:             "quickstepLawnchairL3riDev"
+  VARIANT_CAP:         "QuickstepLawnchairL3riDev"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
-  APK_NAME:            "librechair-quickstep-lawnchair-dev-debug"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:

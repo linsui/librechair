@@ -163,7 +163,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    flavorDimensions "default", "custom", "build"
+    flavorDimensions "default", "custom", "go", "build"
 
     productFlavors {
         aosp {
@@ -173,9 +173,13 @@ android {
         }
 
         l3go {
-            dimension "default"
-            applicationId 'com.android.launcher3.go'
-            testApplicationId 'com.android.launcher3.tests'
+            dimension "go"
+            applicationIdSuffix ".go"
+            versionNameSuffix "-dev"
+        }
+
+        l3ri {
+            dimension "go"
         }
 
         quickstep {
@@ -252,13 +256,17 @@ android {
 
         l3go {
             res.srcDirs = ['go/res']
-            java.srcDirs = ['go/src_flags', "src_ui_overrides"]
+            java.srcDirs = ['go/src_flags']
             manifest.srcFile "go/AndroidManifest.xml"
+        }
+
+        l3ri {
+            java.srcDirs = ['src_flags']
         }
 
         quickstep {
             res.srcDirs = ['quickstep/res']
-            java.srcDirs = ['src_flags', 'quickstep/src']
+            java.srcDirs = ['quickstep/src']
             manifest.srcFile "quickstep/AndroidManifest.xml"
         }
 
@@ -329,6 +337,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
 
     quickstepImplementation project(':systemui-shared')
+    l3goImplementation project(':systemui-shared')
 
     if (!isPublicBuild) {
         // TODO: update to 2.x when we're on AndroidX
