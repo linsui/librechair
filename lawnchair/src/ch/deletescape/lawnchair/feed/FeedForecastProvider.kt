@@ -23,6 +23,7 @@ import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.LawnchairApp
@@ -36,14 +37,12 @@ import net.aksingh.owmjapis.api.APIException
 import net.aksingh.owmjapis.core.OWM
 import net.aksingh.owmjapis.model.HourlyWeatherForecast
 import java.util.concurrent.Executors
-import java.util.logging.Handler
 
 class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
 
     private var forecast: HourlyWeatherForecast? = null
     private var weatherData: WeatherData? = null
     private val openWeatherMap = OWM(context.lawnchairPrefs.weatherApiKey)
-    private val uiThreadHandler: Handler? = null
 
     init {
         c.applicationContext.lawnchairApp.smartspace.addListener(this)
@@ -72,7 +71,6 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                 } catch (e: NullPointerException) {
                     e.printStackTrace()
                 }
-
             }
         }
     }
@@ -98,14 +96,16 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
             Card(BitmapDrawable(context.resources, weatherData?.icon),
                  context.getString(R.string.forecast_s), object : Card.Companion.InflateHelper {
                     override fun inflate(parent: ViewGroup): View {
-                        val recyclerView = RecyclerView(context)
-                        if (forecast == null) {
+                        val recyclerView = LayoutInflater.from(parent.context).inflate(R.layout.width_inflatable_recyclerview, parent, false) as RecyclerView
+                        if (forecast != null) {
                             recyclerView.layoutManager =
                                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
                                                         false)
                             recyclerView.adapter =
                                     OWMWeatherActivity.HourlyForecastAdapter(forecast!!, context, (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit)
                         }
+                        recyclerView.layoutParams = ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
                         return recyclerView;
                     }
 
