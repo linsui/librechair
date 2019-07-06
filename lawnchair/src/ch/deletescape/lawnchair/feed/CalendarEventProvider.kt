@@ -150,7 +150,7 @@ import kotlin.collections.ArrayList
                     eventCursor.moveToNext()
                 }
                 eventCursor.close()
-            } catch (e: CursorIndexOutOfBoundsException) {
+            } catch (e: Throwable) {
 
             }
         }
