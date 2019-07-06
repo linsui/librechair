@@ -65,14 +65,15 @@ import kotlin.collections.ArrayList
 
     override fun getCards(): List<Card> {
         d("getCards: retrieving calendar cards...")
-        if (context.checkSelfPermission(android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+        if (context.checkSelfPermission(
+                    android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             return emptyList()
         }
         val cards = ArrayList<Card>()
         run {
             val currentTime = GregorianCalendar();
             val endTime = GregorianCalendar();
-            endTime.add(Calendar.MINUTE, 240);
+            endTime.add(Calendar.DAY_OF_MONTH, 5);
             Log.v(javaClass.name,
                   "getCards: searching for events between " + currentTime + " and " + endTime.toString())
             val query =
@@ -111,10 +112,20 @@ import kotlin.collections.ArrayList
                     val diffSeconds = diff / 1000
                     val diffMinutes = diff / (60 * 1000)
                     val diffHours = diff / (60 * 60 * 1000)
-                    val text = if (diffMinutes <= 0) context.getString(
-                        R.string.reusable_str_now) else context.getString(
-                        if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                        diffMinutes)
+                    val diffDays = diff / (24 * 60 * 60 * 1000)
+                    var text: String
+                    if (diffDays >= 1) {
+                        text = if (diffDays < 1 || diffDays > 1) context.getString(
+                            R.string.title_text_calendar_feed_provider_in_d_days,
+                            diffDays) else context.getString(R.string.tomorrow)
+                    } else if (diffHours > 4) {
+                        text = context.getString(R.string.title_text_calendar_feed_in_d_hours)
+                    } else {
+                        text = if (diffMinutes <= 0) context.getString(
+                            R.string.reusable_str_now) else context.getString(
+                            if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                            diffMinutes)
+                    }
                     val intent = Intent(Intent.ACTION_VIEW)
                     if (eventCursor.getString(5) != null) {
                         if (context.packageManager.getApplicationEnabledSetting(
@@ -128,13 +139,12 @@ import kotlin.collections.ArrayList
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
                     cards.add(Card(calendarDrawable,
-                                   if (title == null || title.trim().isEmpty()) context.getString(
-                                       R.string.placeholder_empty_title) else title + " • " + text,
+                                   (if (title == null || title.trim().isEmpty()) context.getString(
+                                       R.string.placeholder_empty_title) else title + " • ") + text,
                                    object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
-                                           return getCalendarFeedView(description,
-                                                                      address,
-                                                                      context, parent)
+                                           return getCalendarFeedView(description, address, context,
+                                                                      parent)
                                        }
                                    }, Card.RAISE))
                     eventCursor.moveToNext()
