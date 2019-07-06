@@ -32,7 +32,8 @@ import ch.deletescape.lawnchair.theme.ThemeManager
 import com.android.launcher3.R
 import java.util.*
 
-class FeedAdapter(var providers: List<FeedProvider>, val context: Context) : RecyclerView.Adapter<CardViewHolder>() {
+class FeedAdapter(var providers: List<FeedProvider>, val context: Context) :
+        RecyclerView.Adapter<CardViewHolder>() {
     private val cards = ArrayList<Card>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -67,9 +68,11 @@ class FeedAdapter(var providers: List<FeedProvider>, val context: Context) : Rec
         holder.viewHolder.removeAllViewsInLayout()
         holder.viewHolder.addView(cards[position].inflateHelper.inflate(holder.viewHolder))
         if (holder.itemViewType and Card.RAISE == 1 && ThemeManager.getInstance(context).isDark) {
-            (holder.itemView as CardView).setCardBackgroundColor(context.getColor(R.color.qsb_background_dark));
-        } else {
-            (holder.itemView as CardView).setCardBackgroundColor(context.getColor(R.color.qsb_background));
+            (holder.itemView as CardView)
+                    .setCardBackgroundColor(context.getColor(R.color.qsb_background_dark));
+        } else if (holder.itemViewType and Card.RAISE == 1) {
+            (holder.itemView as CardView)
+                    .setCardBackgroundColor(context.getColor(R.color.qsb_background));
         }
     }
 
