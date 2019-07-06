@@ -391,4 +391,5 @@
     <string name="tomorrow">Tomorrow</string>
     <string name="title_text_calendar_feed_in_d_hours">In %d hours</string>
     <string name="forecast_s">Forecast • %s</string>
+    <string name="app_name_go">Librechair Go</string>
 </resources>

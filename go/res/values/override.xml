@@ -19,4 +19,5 @@
 <resources>
     <!-- String representing the intent to delete a package. -->
     <string name="delete_package_intent" translatable="false">#Intent;action=android.intent.action.DELETE;launchFlags=0x10800000;B.android.intent.extra.RETURN_RESULT=true;end</string>
+    <string name="app_name_lawnchair">Librechair Go</string>
 </resources>
