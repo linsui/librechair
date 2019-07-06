@@ -105,17 +105,20 @@ import kotlin.math.roundToInt
         val icon = currentWeather.weather.getOrNull(0)?.icon ?: return
         val intent = Intent(controller.context, OWMWeatherActivity::class.java)
         val fancyInt = currentWeather.main!!.temp.roundToInt()
-        val fancy = "" + fancyInt + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
+        val fancy =
+                "" + fancyInt + if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius.suffix.toUpperCase() else Temperature.Unit.Fahrenheit.suffix.toUpperCase()
         intent.putExtra("weather_text", fancy)
         intent.putExtra("weather_icon", icon);
         intent.putExtra("city_lon", currentWeather.coord.lon)
         intent.putExtra("city_lat", currentWeather.coord.lat)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
         updateData(LawnchairSmartspaceController.WeatherData(iconProvider.getIcon(icon),
                                                              Temperature(temp.roundToInt(),
                                                                          if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius else Temperature.Unit.Fahrenheit),
                                                              "https://openweathermap.org/city/${currentWeather.id}",
-                                                             intent), null)
+                                                             intent, null, currentWeather.coord.lat,
+                                                             currentWeather.coord.lon), null)
     }
 
     override fun onFailure(throwable: Throwable?) {
