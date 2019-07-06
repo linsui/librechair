@@ -135,23 +135,6 @@ class LawnchairShortcut(private val context: Context) {
             }
         }
     }
-
-    class SesameSettings :
-            SystemShortcut<Launcher>(R.drawable.ic_sesame, R.string.shortcut_sesame) {
-
-        override fun getOnClickListener(
-                launcher: Launcher, itemInfo: ItemInfo
-                                       ): View.OnClickListener? {
-            if (itemInfo.itemType != ITEM_TYPE_APPLICATION) return null
-            val packageName = itemInfo.targetComponent?.packageName ?: itemInfo.intent.`package`
-                              ?: itemInfo.intent.component?.packageName ?: return null
-
-            return View.OnClickListener {
-                launcher.startActivity(intent)
-            }
-        }
-    }
-
     companion object : LawnchairSingletonHolder<LawnchairShortcut>(::LawnchairShortcut)
 
 }
