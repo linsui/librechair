@@ -133,7 +133,7 @@ public class FontRequestHelper {
             Log.d(FontRequestHelper.class.getName(), "getGoogleSans: cached font exists! returning that");
             return Typeface.createFromFile(cachedTypeface);
         }
-        String requestURL = String.format("https://fonts.googleapis.com/css?family=Google+Sans:" + request.get("weight") + (request.get("italic").equals("1") ? ":italic" : ""));
+        String requestURL = String.format("https://fonts.googleapis.com/css?family=Google+Sans:" + request.get("weight") + (request.get("italic").equals("1") ? "i" : ""));
         Log.v(FontRequestHelper.class.getName(), "getGoogleSans: requesting Google Sans from " + requestURL);
         String response = IOUtils.toString(new URL(requestURL).openConnection().getInputStream(), Charset.defaultCharset());
         Pattern regexQuery = Pattern.compile("https://fonts.gstatic.com/s/googlesans/.+.ttf");
