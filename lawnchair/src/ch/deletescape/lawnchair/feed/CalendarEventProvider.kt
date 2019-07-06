@@ -97,7 +97,7 @@ import kotlin.collections.ArrayList
                 val eventCursor = eventCursorNullable
                 eventCursor.moveToFirst();
                 while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0);
+                    val title = eventCursor.getString(0).take(25)
                     Log.v(javaClass.name, "getCards: query found event")
                     Log.v(javaClass.name, "getCards:     title: " + title)
                     val startTime = GregorianCalendar()
@@ -177,7 +177,7 @@ import kotlin.collections.ArrayList
                 val eventCursor = eventCursorNullable
                 eventCursor.moveToFirst();
                 while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0);
+                    val title = eventCursor.getString(0).take(25)
                     Log.v(javaClass.name, "getCards: query found event")
                     Log.v(javaClass.name, "getCards:     title: " + title)
                     val startTime = GregorianCalendar()
