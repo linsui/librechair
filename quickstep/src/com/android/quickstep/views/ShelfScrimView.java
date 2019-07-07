@@ -80,6 +80,8 @@ public class ShelfScrimView extends ScrimView {
     protected final int DEFAULT_END_ALPHA;
     protected final LawnchairPreferences prefs;
 
+    protected boolean mDrawDebug;
+
     public ShelfScrimView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mMaxScrimAlpha = Math.round(OVERVIEW.getWorkspaceScrimAlpha(mLauncher) * 255);
@@ -177,12 +179,14 @@ public class ShelfScrimView extends ScrimView {
             if (mCurrentFlatColor != 0) {
                 canvas.drawColor(mCurrentFlatColor);
             }
+            drawDebugIfNeeded(canvas);
             return;
         }
 
         if (mProgress <= 0) {
             onDrawFlatColor(canvas);
             canvas.drawColor(mShelfColor);
+            drawDebugIfNeeded(canvas);
             return;
         }
 
@@ -211,6 +215,13 @@ public class ShelfScrimView extends ScrimView {
         mPaint.setColor(mShelfColor);
         onDrawRoundRect(canvas, 0, mShelfTop, getWidth(), height + mRadius,
                 mRadius, mRadius, mPaint);
+        drawDebugIfNeeded(canvas);
+    }
+
+    private void drawDebugIfNeeded(Canvas canvas) {
+        if (mDrawDebug) {
+            onDrawDebug(canvas);
+        }
     }
 
     @Override

@@ -448,6 +448,10 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
 
     }
 
+    protected void onDrawDebug(Canvas canvas) {
+
+    }
+
     protected void onDrawRoundRect(Canvas canvas, float left, float top, float right, float bottom,
             float rx, float ry, Paint paint) {
 
