@@ -20,7 +20,6 @@ import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_POINTER_UP;
 import static android.view.MotionEvent.ACTION_UP;
 import static android.view.ViewConfiguration.getLongPressTimeout;
-
 import static com.android.launcher3.LauncherState.NORMAL;
 
 import android.graphics.PointF;
@@ -29,15 +28,14 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-
 import ch.deletescape.lawnchair.touch.GestureTouchListener;
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
 import com.android.launcher3.Workspace;
 import com.android.launcher3.dragndrop.DragLayer;
-import com.android.launcher3.views.OptionsPopupView;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 
@@ -149,7 +147,7 @@ public class WorkspaceTouchListener extends GestureTouchListener implements OnTo
 
     private boolean canHandleLongPress() {
         return AbstractFloatingView.getTopOpenView(mLauncher) == null
-                && mLauncher.isInState(NORMAL);
+                && mLauncher.isInState(NORMAL) || mLauncher.isInState(LauncherState.OPTIONS);
     }
 
     private void cancelLongPress() {

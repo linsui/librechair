@@ -20,7 +20,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import com.android.launcher3.LauncherAppWidgetInfo;
 import com.android.launcher3.LauncherProvider.DatabaseHelper;
 import com.android.launcher3.LauncherSettings.Favorites;
@@ -28,8 +27,6 @@ import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.FileLog;
 import com.android.launcher3.provider.LauncherDbUtils.SQLiteTransaction;
-import com.android.launcher3.util.LogConfig;
-
 import java.io.InvalidObjectException;
 
 /**
@@ -90,6 +87,11 @@ public class RestoreDbTask {
                 (keepAllIcons ? LauncherAppWidgetInfo.FLAG_RESTORE_STARTED : 0));
         db.update(Favorites.TABLE_NAME, values, "itemType = ?",
                 new String[]{Integer.toString(Favorites.ITEM_TYPE_APPWIDGET)});
+
+        // Mark custom widgets as restore completed
+        values.put(Favorites.RESTORED,  LauncherAppWidgetInfo.RESTORE_COMPLETED);
+        db.update(Favorites.TABLE_NAME, values, "itemType = ?",
+                new String[]{Integer.toString(Favorites.ITEM_TYPE_CUSTOM_APPWIDGET)});
 
         long myProfileId = helper.getDefaultUserSerial();
         if (Utilities.longCompare(oldProfileId, myProfileId) != 0) {

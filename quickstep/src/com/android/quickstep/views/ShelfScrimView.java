@@ -28,7 +28,6 @@ import android.graphics.Path;
 import android.graphics.Path.Direction;
 import android.graphics.Path.Op;
 import android.util.AttributeSet;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.R;
@@ -79,6 +78,8 @@ public class ShelfScrimView extends ScrimView {
 
     protected final int DEFAULT_END_ALPHA;
     protected final LawnchairPreferences prefs;
+
+    protected boolean mDrawDebug;
 
     public ShelfScrimView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -177,12 +178,14 @@ public class ShelfScrimView extends ScrimView {
             if (mCurrentFlatColor != 0) {
                 canvas.drawColor(mCurrentFlatColor);
             }
+            drawDebugIfNeeded(canvas);
             return;
         }
 
         if (mProgress <= 0) {
             onDrawFlatColor(canvas);
             canvas.drawColor(mShelfColor);
+            drawDebugIfNeeded(canvas);
             return;
         }
 
@@ -211,6 +214,13 @@ public class ShelfScrimView extends ScrimView {
         mPaint.setColor(mShelfColor);
         onDrawRoundRect(canvas, 0, mShelfTop, getWidth(), height + mRadius,
                 mRadius, mRadius, mPaint);
+        drawDebugIfNeeded(canvas);
+    }
+
+    private void drawDebugIfNeeded(Canvas canvas) {
+        if (mDrawDebug) {
+            onDrawDebug(canvas);
+        }
     }
 
     @Override

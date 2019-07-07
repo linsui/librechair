@@ -36,6 +36,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
+import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.provider.RestoreDbTask
@@ -199,6 +200,8 @@ class RestoreBackupActivity : SettingsBaseActivity(), LawnchairBackup.MetaLoader
                     Utilities.getLawnchairPrefs(this@RestoreBackupActivity).blockingEdit {
                         restoreSuccess = true
                     }
+                } else {
+                    LauncherAppState.getInstance(context).iconCache.clear()
                 }
 
                 if (result and LawnchairBackup.INCLUDE_HOMESCREEN != 0) {

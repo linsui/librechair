@@ -19,7 +19,6 @@ import static android.content.Context.ACCESSIBILITY_SERVICE;
 import static android.support.v4.graphics.ColorUtils.compositeColors;
 import static android.support.v4.graphics.ColorUtils.setAlphaComponent;
 import static android.view.MotionEvent.ACTION_DOWN;
-
 import static com.android.launcher3.LauncherState.ALL_APPS;
 import static com.android.launcher3.LauncherState.NORMAL;
 import static com.android.launcher3.anim.Interpolators.ACCEL;
@@ -52,7 +51,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
-
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Insettable;
 import com.android.launcher3.Launcher;
@@ -66,7 +64,6 @@ import com.android.launcher3.uioverrides.WallpaperColorInfo.OnChangeListener;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ControlType;
 import com.android.launcher3.util.Themes;
-
 import java.util.List;
 
 /**
@@ -445,6 +442,10 @@ public class ScrimView extends View implements Insettable, OnChangeListener,
     }
 
     protected void onDrawFlatColor(Canvas canvas) {
+
+    }
+
+    protected void onDrawDebug(Canvas canvas) {
 
     }
 

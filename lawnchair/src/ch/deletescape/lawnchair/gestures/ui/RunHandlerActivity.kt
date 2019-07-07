@@ -18,6 +18,7 @@
 package ch.deletescape.lawnchair.gestures.ui
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import ch.deletescape.lawnchair.LawnchairLauncher
@@ -27,7 +28,6 @@ import ch.deletescape.lawnchair.gestures.GestureHandler
 import ch.deletescape.lawnchair.gestures.LawnchairShortcutActivity
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 
 class RunHandlerActivity : Activity() {
     private val fallback by lazy { BlankGestureHandler(this, null) }
@@ -43,9 +43,14 @@ class RunHandlerActivity : Activity() {
             if (handlerString != null) {
                 val handler = GestureController.createGestureHandler(this.applicationContext, handlerString, fallback)
                 if (handler.requiresForeground) {
-                    Utilities.goToHome(this) {
-                        triggerGesture(handler)
-                    }
+                    val listener = GestureHandlerInitListener(handler)
+                    val homeIntent = listener.addToIntent(
+                            Intent(Intent.ACTION_MAIN)
+                                    .addCategory(Intent.CATEGORY_HOME)
+                                    .setPackage(packageName)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+
+                    startActivity(homeIntent)
                 } else {
                     triggerGesture(handler)
                 }
