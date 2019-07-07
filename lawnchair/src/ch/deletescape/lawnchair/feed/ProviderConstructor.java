@@ -20,14 +20,14 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public class ProviderConstructor {
     public static FeedProvider inflateFeedProvider(String clazz, Context context)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         Class clazs = Class.forName(clazz);
-        Method method = clazs.getDeclaredMethod("<init>", Context.class);
-        return (FeedProvider) method.invoke(null, context);
+        Constructor<FeedProvider> method = clazs.getConstructor(Context.class);
+        return (FeedProvider) method.newInstance( context);
     }
 }
