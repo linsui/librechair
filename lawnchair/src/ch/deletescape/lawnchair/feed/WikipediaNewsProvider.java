@@ -30,6 +30,8 @@ import android.view.View;
 import android.webkit.WebView;
 import com.android.launcher3.R;
 import fastily.jwiki.core.Wiki;
+import info.bliki.wiki.model.WikiModel;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -76,7 +78,11 @@ public class WikipediaNewsProvider extends FeedProvider {
         return wikiText == null ? Collections.emptyList() : Collections.singletonList(new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news), item -> {
             if (wikiText != null) {
                 WebView webView = new WebView(getContext());
-                webView.loadData(wikiText, "text/html", "utf-8");
+                try {
+                    webView.loadData(new WikiModel("https://commons.wikipedia.org", "https://en.wikipedia.org").render(wikiText), "text/html", "utf-8");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 return webView;
             }
             return new View(getContext());

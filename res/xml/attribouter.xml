@@ -289,5 +289,10 @@
             title="Apache Commons IO"
             license="apache-2.0" />
 
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
+            license="gpl-2.1+"
+            title="BlikiWiki" />
+
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>
