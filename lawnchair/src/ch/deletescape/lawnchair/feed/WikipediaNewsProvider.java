@@ -25,12 +25,24 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import com.android.launcher3.R;
+import fastily.jwiki.core.Wiki;
+import java.util.Collections;
 import java.util.List;
 
 public class WikipediaNewsProvider extends FeedProvider {
 
+    private Drawable newsIcon;
+    private Wiki wikipedia;
+
     public WikipediaNewsProvider(Context c) {
         super(c);
+        this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
+                .newDrawable().mutate();
+        this.newsIcon.setTint(c.getColor(R.color.colorAccent));
+        this.wikipedia = new Wiki("en.wikipedia.org");
     }
 
     @Override
@@ -55,6 +67,6 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
-        return null;
+        return Collections.singletonList(new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news), item -> new View(getContext()), Card.Companion.getRAISE()));
     }
 }
