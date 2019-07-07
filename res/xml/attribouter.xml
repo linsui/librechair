@@ -276,18 +276,18 @@
         <me.jfenn.attribouter.wedges.LicenseWedge
             title="OWM JAPIs"
             repo="aksinghnet/owm-japis"
-            license="Simplified BSD" />
+            license="bsd" />
 
         <!-- libRootJava -->
         <me.jfenn.attribouter.wedges.LicenseWedge
-            license="GNU GPL version 3.0"
+            license="gpl-3.0"
             repo="fastily/jwiki"
             title="Java MediaWiki bindings" />
 
         <!-- libRootJava -->
         <me.jfenn.attribouter.wedges.LicenseWedge
             title="Apache Commons IO"
-            license="Apache License 2.0" />
+            license="apache-2.0" />
 
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>
