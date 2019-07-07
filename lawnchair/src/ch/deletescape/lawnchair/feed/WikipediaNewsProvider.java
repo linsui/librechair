@@ -27,22 +27,28 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.webkit.WebView;
 import com.android.launcher3.R;
 import fastily.jwiki.core.Wiki;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class WikipediaNewsProvider extends FeedProvider {
 
     private Drawable newsIcon;
     private Wiki wikipedia;
+    private String wikiText;
 
     public WikipediaNewsProvider(Context c) {
         super(c);
         this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
                 .newDrawable().mutate();
         this.newsIcon.setTint(c.getColor(R.color.colorAccent));
-        this.wikipedia = new Wiki("en.wikipedia.org");
+        Executors.newSingleThreadExecutor().submit(() -> {
+            this.wikipedia = new Wiki("en.wikipedia.org");
+            wikiText = wikipedia.getPageText("Template:In the news");
+        });
     }
 
     @Override
@@ -67,6 +73,13 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
-        return Collections.singletonList(new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news), item -> new View(getContext()), Card.Companion.getRAISE()));
+        return wikiText == null ? Collections.emptyList() : Collections.singletonList(new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news), item -> {
+            if (wikiText != null) {
+                WebView webView = new WebView(getContext());
+                webView.loadData(wikiText, "text/html", "utf-8");
+                return webView;
+            }
+            return new View(getContext());
+        }, Card.Companion.getRAISE()));
     }
 }

@@ -280,6 +280,12 @@
 
         <!-- libRootJava -->
         <me.jfenn.attribouter.wedges.LicenseWedge
+            license="GNU GPL version 3.0"
+            repo="fastily/jwiki"
+            title="Java MediaWiki bindings" />
+
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
             title="Apache Commons IO"
             license="Apache License 2.0" />
 
