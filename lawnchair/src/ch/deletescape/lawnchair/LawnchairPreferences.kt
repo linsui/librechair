@@ -25,6 +25,10 @@ import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
 import ch.deletescape.lawnchair.bugreport.BugReportClient
+import ch.deletescape.lawnchair.feed.CalendarEventProvider
+import ch.deletescape.lawnchair.feed.FeedForecastProvider
+import ch.deletescape.lawnchair.feed.FeedWeatherProvider
+import ch.deletescape.lawnchair.feed.WikipediaNewsProvider
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
 import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.DrawerTabs
@@ -146,6 +150,9 @@ class LawnchairPreferences(val context: Context) : SharedPreferences.OnSharedPre
                                                NowPlayingProvider::class.java.name,
                                                BatteryStatusProvider::class.java.name,
                                                PersonalityProvider::class.java.name))
+
+    var feedProviders = StringListPref("pref_feed_providers", ::restart, listOf(FeedWeatherProvider::class.java.name, FeedForecastProvider::class.java.name, CalendarEventProvider::class.java.name, WikipediaNewsProvider::class.java.name))
+
     var weatherApiKey by StringPref("pref_weatherApiKey", context.getString(R.string.default_owm_key))
     var weatherCity by StringPref("pref_weather_city", context.getString(R.string.default_city))
     val weatherUnit by StringBasedPref("pref_weather_units", Temperature.Unit.Celsius, ::updateSmartspaceProvider,

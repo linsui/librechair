@@ -17,28 +17,17 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed
+package ch.deletescape.lawnchair.feed;
 
-import android.content.Context
-import ch.deletescape.lawnchair.LawnchairApp
-import ch.deletescape.lawnchair.lawnchairPrefs
+import android.content.Context;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-private var theController: FeedController? = null
-
-fun getFeedController(c: Context): FeedController {
-    if (theController == null) {
-        theController = FeedController(c)
-    }
-    return theController!!;
-}
-
-class FeedController(val context: Context) {
-
-    fun getProviders(): List<FeedProvider> {
-        val providers = ArrayList<FeedProvider>()
-        (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList().iterator().forEach {
-            providers.add(ProviderConstructor.inflateFeedProvider(it, context))
-        }
-        return providers
+public class ProviderConstructor {
+    public static FeedProvider inflateFeedProvider(String clazz, Context context)
+            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Class clazs = Class.forName(clazz);
+        Method method = clazs.getDeclaredMethod("<init>", Context.class);
+        return (FeedProvider) method.invoke(null, context);
     }
 }
