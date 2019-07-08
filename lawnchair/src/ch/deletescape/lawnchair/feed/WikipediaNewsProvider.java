@@ -29,7 +29,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import ch.deletescape.lawnchair.theme.ThemeManager;
 import com.android.launcher3.R;
 import fastily.jwiki.core.Wiki;
@@ -83,23 +82,26 @@ public class WikipediaNewsProvider extends FeedProvider {
                         item -> {
                             if (wikiText != null) {
                                 WebView webView = new WebView(getContext());
+                                webView.setBackgroundColor(Color.TRANSPARENT);
                                 if (ThemeManager.Companion.getInstance(webView.getContext())
                                         .isDark()) {
-                                    webView.setWebViewClient(new WebViewClient() {
-                                        public void onPageFinished(WebView view, String url) {
-                                            webView.loadUrl(
-                                                    "javascript:document.body.style.setProperty(\"color\", \"white\");"
-                                            );
-                                        }
-                                    });
-                                }
-                                webView.setBackgroundColor(Color.TRANSPARENT);
-                                try {
-                                    webView.loadData(new WikiModel("https://commons.wikipedia.org",
-                                                    "https://en.wikipedia.org").render(wikiText),
-                                            "text/html", "utf-8");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                    try {
+                                        webView.loadData("<font color=\"white\">" + new WikiModel("https://commons.wikipedia.org",
+                                                        "https://en.wikipedia.org").render(wikiText) + "</font>",
+                                                "text/html", "utf-8");
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    try {
+                                        webView.loadData(
+                                                new WikiModel("https://commons.wikipedia.org",
+                                                        "https://en.wikipedia.org")
+                                                        .render(wikiText),
+                                                "text/html", "utf-8");
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                                 return webView;
                             }
