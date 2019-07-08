@@ -114,12 +114,12 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         setLauncherOverlay(null)
         performSignatureVerification()
 
-        if (lawnchairPrefs.swipeForFeed.onGetValue()) {
-            feed.setLayoutManager(LinearLayoutManager(this))
-            feed.setAdapter(FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this)));
+        if (lawnchairPrefs.swipeForFeed) {
+            feed.layoutManager = LinearLayoutManager(this)
+            feed.adapter = FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this));
             val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
             if (ThemeManager.isDark(themeFlags)) {
-                (findViewById(R.id.overlay_feed) as View).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
+                (findViewById<View>(R.id.overlay_feed)).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
             }
             setLauncherOverlay(feedOverlay)
             drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
