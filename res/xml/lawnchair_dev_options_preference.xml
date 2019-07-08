@@ -87,8 +87,8 @@
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="prefCat_wipOptions"
-        android:title="Other"
-        app:controllerClass=".SecretOptionsController">
+        android:dependency="pref_showSecretOptions"
+        android:title="Danger zone">
 
         <ch.deletescape.lawnchair.settings.ui.BasePreference
             android:key="crashLauncher"
@@ -168,9 +168,19 @@
             android:title="Force fake Pie anims"
             android:defaultValue="false" />
 
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="pref_initLeakCanary"
+            android:title="Initialize leak canary" />
+
         <Preference
             android:key="pref_drawerTabs"
             android:title="@string/drawer_tabs"
             android:fragment="ch.deletescape.lawnchair.preferences.DrawerTabsFragment"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+        android:key="pref_showSecretOptions"
+        android:summary="Display informations such as the current Launcher State"
+        android:title="Debug information overlay"/>
 </PreferenceScreen>

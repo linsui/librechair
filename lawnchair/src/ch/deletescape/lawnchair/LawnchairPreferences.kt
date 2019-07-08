@@ -126,6 +126,9 @@ class LawnchairPreferences(val context: Context) :
     var launcherTheme by StringIntPref("pref_launcherTheme", 1) {
         ThemeManager.getInstance(context).updateTheme()
     }
+
+    var leakCanary by BooleanPref("pref_initLeakCanary", BuildConfig.HAS_LEAKCANARY, restart);
+
     val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment",
                                              lawnchairConfig.enableLegacyTreatment, reloadIcons)
     val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds",
@@ -139,6 +142,7 @@ class LawnchairPreferences(val context: Context) :
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
     val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
     val displayNotificationCount by BooleanPref("pref_displayNotificationCount", false, reloadAll)
+    val showSecretOptions by BooleanPref("pref_showSecretOptions", BuildConfig.DEBUG)
 
     // Desktop
     val allowFullWidthWidgets by BooleanPref("pref_fullWidthWidgets", false, restart)

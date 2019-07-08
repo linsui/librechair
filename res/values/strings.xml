@@ -364,7 +364,7 @@
         <!-- Weather helpful tips -->
     <string name="helpful_tip_01_03">Remember to put on your sunscreen, and drink plenty of water!</string>
     <string name="helpful_tip_01n_03n">Remember to drink some coffee and don\'t drive while fatigued</string>
-    <string name="helpful_tip_04">It\'s going to be cloudy today</string>
+    <string name="helpful_tip_04">It\'s going to be cloudy today</string> <!-- Quick! Think up a helpful tip for cloudy days -->
     <string name="helpful_tip_04n">Remember to take your bug spray!</string>
     <string name="helpful_tip_09_10">Take an umbrella, and drive slowly in slippery areas!</string>
     <string name="helpful_tip_10n">Slippery roads and low visibility don\'t go together.</string>
@@ -398,4 +398,5 @@
     <string name="title_feed_provider_forecast">Forecast</string>
     <string name="title_feed_provider_wikipedia_news">In the news</string>
     <string name="title_preference_feed_providers">Feed providers</string>
+    <string name="title_preference_init_leak_canary">LeakCanary debugging</string>
 </resources>
