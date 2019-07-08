@@ -86,11 +86,6 @@
         android:title="Debug information overlay"/>
 
 
-    <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
-        android:key="pref_showSecretOptions"
-        android:summary="Enable secret options"
-        android:title="These options are WIP and probably don't work. You're welcome to submit bug reports, but they're not guaranteed attention"/>
-
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="prefCat_wipOptions"
         android:dependency="pref_showSecretOptions"
@@ -142,7 +137,7 @@
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_scaleAdaptiveBg"
             android:title="Scale adaptive background"
-            android:summary="Increase adaptive icon background size on long press [wow so sexy effect]"
+            android:summary="Increase adaptive icon background size on long press"
             android:defaultValue="false" />
 
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
@@ -184,4 +179,9 @@
             android:title="@string/drawer_tabs"
             android:fragment="ch.deletescape.lawnchair.preferences.DrawerTabsFragment"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+        android:key="pref_showSecretOptions"
+        android:summary="These options are WIP and probably don't work. You're welcome to submit bug reports, but they're not guaranteed attention"
+        android:title="Enable secret options"/>
 </PreferenceScreen>
