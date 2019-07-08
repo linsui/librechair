@@ -188,6 +188,8 @@ class LawnchairPreferences(val context: Context) :
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name))
 
+    var swipeForFeed = BooleanPref("pref_swipe_feed", true, restart);
+
     var weatherApiKey by StringPref("pref_weatherApiKey",
                                     context.getString(R.string.default_owm_key))
     var weatherCity by StringPref("pref_weather_city", context.getString(R.string.default_city))

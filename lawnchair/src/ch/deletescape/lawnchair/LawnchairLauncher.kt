@@ -114,34 +114,38 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         setLauncherOverlay(null)
         performSignatureVerification()
 
-        feed.setLayoutManager(LinearLayoutManager(this))
-        feed.setAdapter(FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this)));
-        val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
-        if (ThemeManager.isDark(themeFlags)) {
-            (findViewById(R.id.overlay_feed) as View).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
-        }
-        setLauncherOverlay(feedOverlay)
-        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-            var originalVisibility = window.decorView.systemUiVisibility
+        if (lawnchairPrefs.swipeForFeed.onGetValue()) {
+            feed.setLayoutManager(LinearLayoutManager(this))
+            feed.setAdapter(FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this)));
+            val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
+            if (ThemeManager.isDark(themeFlags)) {
+                (findViewById(R.id.overlay_feed) as View).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
+            }
+            setLauncherOverlay(feedOverlay)
+            drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+                var originalVisibility = window.decorView.systemUiVisibility
                 var overscrollPage = 0;
-            override fun onDrawerStateChanged(newState: Int) {
-            }
+                override fun onDrawerStateChanged(newState: Int) {
+                }
 
-            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
 
-            }
+                }
 
-            override fun onDrawerClosed(drawerView: View) {
-                window.decorView.systemUiVisibility = originalVisibility
-                workspace.onOverlayScrollChanged(0f )
-            }
+                override fun onDrawerClosed(drawerView: View) {
+                    window.decorView.systemUiVisibility = originalVisibility
+                    workspace.onOverlayScrollChanged(0f )
+                }
 
-            override fun onDrawerOpened(drawerView: View) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                feed.adapter?.notifyDataSetChanged()
-            }
+                override fun onDrawerOpened(drawerView: View) {
+                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+                    feed.adapter?.notifyDataSetChanged()
+                }
 
-        })
+            })
+        } else {
+            setLauncherOverlay(null);
+        }
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {

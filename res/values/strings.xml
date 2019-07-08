@@ -399,4 +399,6 @@
     <string name="title_feed_provider_wikipedia_news">In the news</string>
     <string name="title_preference_feed_providers">Feed providers</string>
     <string name="title_preference_init_leak_canary">LeakCanary debugging</string>
+    <string name="title_preference_swipe_feed">Swipe left for feed</string>
+    <string name="summary_preference_swipe_feed">You can swipe from the left of the home screen for the feed</string>
 </resources>

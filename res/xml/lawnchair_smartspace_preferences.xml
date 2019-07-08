@@ -100,8 +100,13 @@
         android:key="prefCat_smartFeed"
         android:title="@string/activity_feed_title">
         <ch.deletescape.lawnchair.preferences.FeedProvidersPreference
+            android:dependency="pref_swipe_feed"
             android:key="pref_feed_providers"
             android:summary="%s"
             android:title="@string/title_preference_feed_providers" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_swipe_feed"
+            android:summary="@string/summary_preference_swipe_feed"
+            android:title="@string/title_preference_swipe_feed" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>
