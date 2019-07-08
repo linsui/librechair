@@ -145,7 +145,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
             })
         } else {
             setLauncherOverlay(null);
-            drawerLayout.isEnabled = false
+            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         }
     }
 
