@@ -94,4 +94,14 @@
             android:title="@string/pref_smartspace_event_providers"
             />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:key="prefCat_smartFeed"
+        android:title="@string/activity_feed_title">
+        <ch.deletescape.lawnchair.preferences.FeedProvidersPreference
+            android:key="pref_feed_providers"
+            android:summary="%s"
+            android:title="@string/title_preference_feed_providers" />
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>

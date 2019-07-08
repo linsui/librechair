@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed
 import android.content.Context
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
+import com.android.launcher3.R
 
 private var theController: FeedController? = null
 
@@ -36,9 +37,33 @@ class FeedController(val context: Context) {
 
     fun getProviders(): List<FeedProvider> {
         val providers = ArrayList<FeedProvider>()
-        (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList().iterator().forEach {
-            providers.add(ProviderConstructor.inflateFeedProvider(it, context))
-        }
+        (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
+                .iterator().forEach {
+                    providers.add(ProviderConstructor.inflateFeedProvider(it, context))
+                }
         return providers
+    }
+
+    companion object {
+        fun getDisplayName(provider: String, context: Context): String {
+            return when (provider) {
+                CalendarEventProvider::class.java.name -> context.getString(
+                    R.string.title_feed_provider_calendar)
+                FeedWeatherProvider::class.java.name -> context.getString(
+                    R.string.title_feed_provider_weather)
+                FeedForecastProvider::class.java.name -> context.getString(
+                    R.string.title_feed_provider_forecast)
+                WikipediaNewsProvider::class.java.name -> context.getString(
+                    R.string.title_feed_provider_wikipedia_news)
+                else -> error("No such provider ${provider}")
+            }
+        }
+
+        fun getFeedProviders(): List<String> {
+            return listOf(CalendarEventProvider::class.java.name,
+                          FeedWeatherProvider::class.java.name,
+                          FeedForecastProvider::class.java.name,
+                          WikipediaNewsProvider::class.java.name)
+        }
     }
 }
