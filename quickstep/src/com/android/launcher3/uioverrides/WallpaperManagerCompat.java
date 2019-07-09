@@ -16,7 +16,6 @@
 package com.android.launcher3.uioverrides;
 
 import static android.app.WallpaperManager.FLAG_SYSTEM;
-
 import static com.android.launcher3.Utilities.getDevicePrefs;
 import static com.android.launcher3.graphics.ColorExtractor.findDominantColorByHue;
 
@@ -47,9 +46,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 import android.util.Pair;
-
 import com.android.launcher3.Utilities;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -297,8 +294,9 @@ public class WallpaperManagerCompat {
             String value = VERSION_PREFIX + wallpaperId;
 
             if (bitmap != null) {
+                int hints = calculateDarkHints(bitmap);
                 int color = findDominantColorByHue(bitmap, MAX_WALLPAPER_EXTRACTION_AREA);
-                value += "," + color;
+                value += "," + hints + "," + color;
             }
 
             // Send the result

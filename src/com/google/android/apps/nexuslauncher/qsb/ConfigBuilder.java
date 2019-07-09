@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RemoteViews;
-
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.R;
@@ -28,14 +27,12 @@ import com.android.launcher3.graphics.BitmapRenderer;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.Themes;
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
-import com.google.android.apps.nexuslauncher.PredictionUiStateManager;
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.apps.nexuslauncher.search.AppSearchProvider;
 import com.google.android.apps.nexuslauncher.search.nano.SearchProto.a_search;
 import com.google.android.apps.nexuslauncher.search.nano.SearchProto.b_search;
 import com.google.android.apps.nexuslauncher.search.nano.SearchProto.c_search;
 import com.google.android.apps.nexuslauncher.search.nano.SearchProto.d_search;
-
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,7 +217,8 @@ public class ConfigBuilder {
         AllAppsRecyclerView appsView = getAppsView();
         GridLayoutManager.SpanSizeLookup spanSizeLookup = ((GridLayoutManager) appsView.getLayoutManager())
                 .getSpanSizeLookup();
-        int allAppsCols = Math.min(mActivity.getDeviceProfile().inv.numColumns, appsView.getChildCount());
+        int allAppsCols = Math
+                .min(mActivity.getDeviceProfile().inv.numColsDrawer, appsView.getChildCount());
         int childCount = appsView.getChildCount();
         BubbleTextView[] bubbleTextViewArr = new BubbleTextView[allAppsCols];
         int i4 = -1;

@@ -22,15 +22,12 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
-import android.util.Property
 import android.view.View
 import ch.deletescape.lawnchair.blur.BlurDrawable
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.InvertedMultiValueAlpha
 import com.android.launcher3.Insettable
-import com.android.launcher3.Utilities
 
 class LawnchairBackgroundView(context: Context, attrs: AttributeSet) : View(context, attrs),
         Insettable, BlurWallpaperProvider.Listener {
@@ -93,7 +90,7 @@ class LawnchairBackgroundView(context: Context, attrs: AttributeSet) : View(cont
     private fun createFullBlurDrawable() {
         fullBlurDrawable?.let { if (isAttachedToWindow) it.stopListening() }
         fullBlurDrawable = if (BlurWallpaperProvider.isEnabled) {
-            blurProvider.createDrawable(0f, false).apply {
+            blurProvider.createDrawable().apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()

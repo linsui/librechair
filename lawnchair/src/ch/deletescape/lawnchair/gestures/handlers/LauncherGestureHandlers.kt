@@ -31,9 +31,9 @@ import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.gestures.GestureHandler
 import ch.deletescape.lawnchair.gestures.ui.SelectAppActivity
 import ch.deletescape.lawnchair.getIcon
-import com.android.launcher3.LauncherState
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
 import ch.deletescape.lawnchair.lawnchairPrefs
+import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.compat.LauncherAppsCompat
 import com.android.launcher3.compat.UserManagerCompat
@@ -266,8 +266,12 @@ class StartAppGestureHandler(context: Context, config: JSONObject?) : GestureHan
                         Intent().setComponent(target!!.componentName))
             }
             "shortcut" -> {
-                DeepShortcutManager.getInstance(context)
-                        .startShortcut(packageName, id, intent, opts, user)
+                if (id?.startsWith("sesame_") == true) {
+                    context.startActivity(SesameFrontend.addPackageAuth(context, intent!!), opts)
+                } else {
+                    DeepShortcutManager.getInstance(context)
+                            .startShortcut(packageName, id, intent, opts, user)
+                }
             }
         }
     }
