@@ -25,7 +25,6 @@
     <string name="title_disable_suggestions_prompt">Απενεργοποίηση προτεινόμενων εφαρμοφών</string>
     <string name="msg_disable_suggestions_prompt">"Τα δεδομένα χρήσης θα καταργηθούν"</string>
     <string name="label_turn_off_suggestions">Απενεργοποίηση</string>
-    <string name="app_name_lawnchair">Librechair</string>
     <string name="pixel_style_pref_title">Χαρακτηριστικά Pixel</string>
     <string name="about_summary_title">Σύνοψη</string>
     <string name="action_edit">Επεξεργασία</string>
