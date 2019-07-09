@@ -28,6 +28,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val feedController = (LayoutInflater.from(context).inflate(
         R.layout.overlay_feed, null, false) as FeedController).also {
         it.setLauncherFeed(this)
+        if (dark) {
+            it.setBackgroundColor(context.getColor(R.color.qsb_background_dark))
+        }
         val recyclerView: RecyclerView = it.findViewById(R.id.feed_recycler);
 
         recyclerView.adapter =
