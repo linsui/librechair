@@ -33,7 +33,6 @@ import android.net.Uri
 import android.os.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -43,16 +42,13 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedOverlay
-import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
-import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
@@ -111,10 +107,9 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         }
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
-        setLauncherOverlay(null)
         performSignatureVerification()
 
-        if (lawnchairPrefs.swipeForFeed) {
+        /* if (lawnchairPrefs.swipeForFeed) {
             feed.layoutManager = LinearLayoutManager(this)
             feed.adapter = FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this));
             val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
@@ -146,7 +141,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         } else {
             setLauncherOverlay(null);
             drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        }
+        } */
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {

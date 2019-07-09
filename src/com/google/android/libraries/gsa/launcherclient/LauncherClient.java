@@ -1,21 +1,25 @@
 package com.google.android.libraries.gsa.launcherclient;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import ch.deletescape.lawnchair.FeedBridge;
+import ch.deletescape.lawnchair.FeedBridge.BridgeInfo;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 import java.lang.ref.WeakReference;
@@ -29,18 +33,6 @@ public class LauncherClient {
 
     public final BaseClientService mBaseService;
     public final LauncherClientService mLauncherService;
-
-    public final BroadcastReceiver googleInstallListener = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mBaseService.disconnect();
-            mLauncherService.disconnect();
-            LauncherClient.loadApiVersion(context);
-            if ((mActivityState & 2) != 0) {
-                reconnect();
-            }
-        }
-    };
 
     private int mActivityState = 0;
     private int mServiceState = 0;
@@ -123,11 +115,6 @@ public class LauncherClient {
         mLauncherService = LauncherClientService.getInstance(activity);
         mLauncherService.mClient = new WeakReference<>(this);
         mOverlay = mLauncherService.mOverlay;
-
-        IntentFilter intentFilter = new IntentFilter(Intent.ACTION_PACKAGE_ADDED);
-        intentFilter.addDataScheme("package");
-        intentFilter.addDataSchemeSpecificPart("com.google.android.googlequicksearchbox", 0);
-        mActivity.registerReceiver(googleInstallListener, intentFilter);
 
         if (apiVersion <= 0) {
             loadApiVersion(activity);
@@ -281,13 +268,21 @@ public class LauncherClient {
         return mOverlay != null;
     }
 
-    public final void startScroll() {
-        if (isConnected()) {
-            try {
-                mOverlay.startScroll();
-            } catch (RemoteException ignored) {
-            }
-        }
+    static Intent getIntent(Context context, boolean proxy) {
+        BridgeInfo bridgeInfo = FeedBridge.Companion.getInstance(context).resolveBridge();
+        String pkg = context.getPackageName();
+        return new Intent("com.android.launcher3.WINDOW_OVERLAY")
+                .setPackage(bridgeInfo.getPackageName())
+                .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
+                        .append("app://")
+                        .append(pkg)
+                        .append(":")
+                        .append(Process.myUid())
+                        .toString())
+                        .buildUpon()
+                        .appendQueryParameter("v", Integer.toString(7))
+                        .appendQueryParameter("cv", Integer.toString(9))
+                        .build());
     }
 
     public final void endScroll() {
@@ -383,11 +378,21 @@ public class LauncherClient {
         }
     }
 
-    static Intent getIntent(Context context, boolean proxy) {
-        return null;
+    private static void loadApiVersion(Context context) {
+        ResolveInfo resolveService = context.getPackageManager().resolveService(getIntent(context, false), PackageManager.GET_META_DATA);
+        apiVersion = resolveService == null || resolveService.serviceInfo.metaData == null ?
+                1 :
+                resolveService.serviceInfo.metaData.getInt("service.api.version", 1);
     }
 
-    private static void loadApiVersion(Context context) {
-        apiVersion = 0;
+    public final void startScroll() {
+        Log.d(getClass().getName(), "startScroll: scroll started");
+        if (isConnected()) {
+            try {
+                mOverlay.startScroll();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

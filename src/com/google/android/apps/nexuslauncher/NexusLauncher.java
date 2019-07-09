@@ -117,6 +117,8 @@ public class NexusLauncher {
                     (prefs.getBoolean(SettingsActivity.ENABLE_MINUS_ONE_PREF, true) ? 1 : 0) | 2 | 4 | 8));
             mOverlay.setClient(mClient);
 
+            mLauncher.setLauncherOverlay(mOverlay);
+
             prefs.registerOnSharedPreferenceChangeListener(this);
 
             SmartspaceController.get(mLauncher).cW();
@@ -140,9 +142,6 @@ public class NexusLauncher {
 
         public void onDestroy() {
             LauncherClient launcherClient = mClient;
-            if (!launcherClient.mDestroyed) {
-                launcherClient.mActivity.unregisterReceiver(launcherClient.googleInstallListener);
-            }
 
             launcherClient.mDestroyed = true;
             launcherClient.mBaseService.disconnect();
