@@ -327,14 +327,21 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         // Calculate again to apply text size
         updateAvailableDimensions(dm, res);
 
+        int extraSpaceFromY = getCellSizeOriginal().y - iconSizeOriginalPx
+                - iconDrawablePaddingOriginalPx * 2 - verticalDragHandleSizePx;
+        int extraSpaceFromScale;
+        if (dockScale < 1f) {
+            extraSpaceFromScale = extraSpaceFromY;
+        } else {
+            extraSpaceFromScale = (int) (hotseatBarSizePx * (dockScale - 1));
+        }
         // Now that we have all of the variables calculated, we can tune certain sizes.
         if (!isVerticalBarLayout() && isPhone && isTallDevice) {
             // We increase the hotseat size when there is extra space.
             // ie. For a display with a large aspect ratio, we can keep the icons on the workspace
             // in portrait mode closer together by adding more height to the hotseat.
             // Note: This calculation was created after noticing a pattern in the design spec.
-            int extraSpace = (int) ((getCellSizeOriginal().y - iconSizeOriginalPx
-                    - iconDrawablePaddingOriginalPx * 2 - verticalDragHandleSizePx) * dockScale);
+            int extraSpace = Math.min(extraSpaceFromY, extraSpaceFromScale);
             hotseatBarSizePx += extraSpace;
             if (prefs.getDockGradientStyle()) {
                 hotseatBarBottomPaddingPx += extraSpace;
@@ -345,6 +352,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
 
             // Recalculate the available dimensions using the new hotseat size.
             updateAvailableDimensions(dm, res);
+            extraSpaceFromScale -= extraSpace;
         }
 
         if (dockHidden) {
@@ -352,12 +360,13 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
             verticalDragHandleSizePx = 0;
 
             updateAvailableDimensions(dm, res);
-        } else if (!isVerticalBarLayout()) {
+        } else if (!isVerticalBarLayout() && extraSpaceFromScale > 0) {
+            float adjustedDockScale = (float) extraSpaceFromScale / hotseatBarSizePx + 1;
             int qsbHeight = res.getDimensionPixelSize(R.dimen.qsb_widget_height);
-            verticalDragHandleSizePx *= dockScale;
-            int bottomPaddingNew = Math.max((int)(hotseatBarBottomPaddingPx * dockScale), dockSearchBar ? qsbHeight : 0);
+            verticalDragHandleSizePx *= adjustedDockScale;
+            int bottomPaddingNew = Math.max((int)(hotseatBarBottomPaddingPx * adjustedDockScale), dockSearchBar ? qsbHeight : 0);
             if (prefs.getDockGradientStyle()) {
-                hotseatBarTopPaddingPx *= dockScale;
+                hotseatBarTopPaddingPx *= adjustedDockScale;
                 hotseatBarBottomPaddingPx = bottomPaddingNew;
             } else {
                 int difference = hotseatBarBottomPaddingPx - bottomPaddingNew;
@@ -365,9 +374,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
                 hotseatBarBottomPaddingPx = bottomPaddingNew;
             }
 
-            // TODO: Fix iconView cut off on smaller devices with lower values
-            int minHeight = hotseatCellHeightPx * dockRows + hotseatBarBottomPaddingPx + hotseatBarTopPaddingPx;
-            hotseatBarSizePx = Math.max(minHeight, (int) (hotseatBarSizePx * dockScale));
+            hotseatBarSizePx = (int) (hotseatBarSizePx * adjustedDockScale);
         }
 
         updateWorkspacePadding();
@@ -429,7 +436,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         int cellYPadding = (getCellSize().y - cellHeightPx) / 2;
         if (iconDrawablePaddingPx > cellYPadding && !isVerticalLayout
                 && !isMultiWindowMode) {
-            // Ensures that the label is closer to its corresponding iconView. This is not an issue
+            // Ensures that the label is closer to its corresponding icon. This is not an issue
             // with vertical bar layout or multi-window mode since the issue is handled separately
             // with their calls to {@link #adjustToHideWorkspaceLabels}.
             cellHeightPx -= (iconDrawablePaddingPx - cellYPadding);
@@ -465,7 +472,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         if (isVerticalLayout) {
             hotseatBarSizePx =
                     iconSizePx * prefs.getDockRowsCount()
-                    + hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx;
+                            + hotseatBarSidePaddingStartPx + hotseatBarSidePaddingEndPx;
         }
         hotseatCellHeightPx = iconSizePx;
 
@@ -483,7 +490,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
         workspaceOptionsShrinkFactor =
                 res.getInteger(R.integer.config_workspaceOptionsShrinkPercentage) / 100.0f;
 
-        // Folder iconView
+        // Folder icon
         folderIconSizePx = IconNormalizer.getNormalizedCircleSize(iconSizePx);
         folderIconOffsetYPx = (iconSizePx - folderIconSizePx) / 2;
         allAppsFolderIconSizePx = IconNormalizer.getNormalizedCircleSize(allAppsIconSizePx);
@@ -540,7 +547,7 @@ public class DeviceProfile implements LawnchairPreferences.OnPreferenceChangeLis
     private void updateFolderCellSize(float scale, DisplayMetrics dm, Resources res) {
         // Home Folders
         int folderLabelRowCount = prefs.getHomeLabelRows();
-        
+
         folderChildIconSizePx = (int) (Utilities.pxFromDp(inv.iconSize, dm) * scale);
         folderChildTextSizePx =
                 (int) (res.getDimensionPixelSize(R.dimen.folder_child_text_size) * scale);
