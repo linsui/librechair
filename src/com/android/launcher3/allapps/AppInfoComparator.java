@@ -18,11 +18,10 @@ package com.android.launcher3.allapps;
 import android.content.Context;
 import android.os.Process;
 import android.os.UserHandle;
-
+import ch.deletescape.lawnchair.override.AppInfoProvider;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.util.LabelComparator;
-
 import java.util.Comparator;
 
 /**
@@ -33,17 +32,19 @@ public class AppInfoComparator implements Comparator<AppInfo> {
     private final UserManagerCompat mUserManager;
     private final UserHandle mMyUser;
     private final LabelComparator mLabelComparator;
+    private final AppInfoProvider mInfoProvider;
 
     public AppInfoComparator(Context context) {
         mUserManager = UserManagerCompat.getInstance(context);
         mMyUser = Process.myUserHandle();
         mLabelComparator = new LabelComparator();
+        mInfoProvider = AppInfoProvider.Companion.getInstance(context);
     }
 
     @Override
     public int compare(AppInfo a, AppInfo b) {
         // Order by the title in the current locale
-        int result = mLabelComparator.compare(a.title.toString(), b.title.toString());
+        int result = mLabelComparator.compare(mInfoProvider.getTitle(a), mInfoProvider.getTitle(b));
         if (result != 0) {
             return result;
         }

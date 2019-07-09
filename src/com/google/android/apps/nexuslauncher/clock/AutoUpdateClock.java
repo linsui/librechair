@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.SystemClock;
 import com.android.launcher3.FastBitmapDrawable;
-
 import java.util.TimeZone;
 
 public class AutoUpdateClock extends FastBitmapDrawable implements Runnable {
@@ -17,10 +16,8 @@ public class AutoUpdateClock extends FastBitmapDrawable implements Runnable {
     }
 
     private void rescheduleUpdate() {
-        long millisInSecond = 1000L;
         unscheduleSelf(this);
-        long uptimeMillis = SystemClock.uptimeMillis();
-        scheduleSelf(this, uptimeMillis - uptimeMillis % millisInSecond + millisInSecond);
+        scheduleSelf(this, SystemClock.uptimeMillis() + 100);
     }
 
     void updateLayers(ClockLayers layers) {
@@ -42,7 +39,6 @@ public class AutoUpdateClock extends FastBitmapDrawable implements Runnable {
     public void drawInternal(Canvas canvas, Rect bounds) {
         if (mLayers != null) {
             canvas.drawBitmap(mLayers.iconBitmap, null, bounds, mPaint);
-            mLayers.updateAngles();
             canvas.scale(mLayers.scale, mLayers.scale, bounds.exactCenterX() + ((float) mLayers.offset), bounds.exactCenterY() + ((float) mLayers.offset));
             mLayers.clipToMask(canvas);
             mLayers.drawForeground(canvas);

@@ -30,6 +30,7 @@ import android.widget.CheckedTextView
 import ch.deletescape.lawnchair.addOrRemove
 import ch.deletescape.lawnchair.applyAccent
 import ch.deletescape.lawnchair.groups.DrawerTabs
+import ch.deletescape.lawnchair.groups.ui.AppCategorizationFragment
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import com.android.launcher3.R
@@ -63,7 +64,7 @@ class MultiSelectTabPreference(context: Context, attrs: AttributeSet?) : Launche
             loadSummary()
         }
         builder.setNeutralButton(R.string.tabs_manage) { _, _ ->
-            SettingsActivity.startFragment(context, DrawerTabsFragment::class.java.name)
+            SettingsActivity.startFragment(context, AppCategorizationFragment::class.java.name, R.string.categorization)
         }
         builder.setOnDismissListener {
             selections.clear()

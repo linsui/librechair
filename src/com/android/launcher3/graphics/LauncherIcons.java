@@ -32,7 +32,6 @@ import android.graphics.Color;
 import android.graphics.PaintFlagsDrawFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -42,6 +41,7 @@ import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import ch.deletescape.lawnchair.NonAdaptiveIconDrawable;
+import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
 import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.FastBitmapDrawable;
@@ -171,7 +171,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap which is of the appropriate size to be displayed as an iconView
+     * Returns a bitmap which is of the appropriate size to be displayed as an icon
      */
     public BitmapInfo createIconBitmap(Bitmap icon) {
         if (mIconBitmapSize == icon.getWidth() && mIconBitmapSize == icon.getHeight()) {
@@ -182,8 +182,8 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap suitable for displaying as an iconView at various launcher UIs like all apps
-     * view or workspace. The iconView is badged for {@param user}.
+     * Returns a bitmap suitable for displaying as an icon at various launcher UIs like all apps
+     * view or workspace. The icon is badged for {@param user}.
      * The bitmap is also visually normalized with other icons.
      */
     public BitmapInfo createBadgedIconBitmap(Drawable icon, UserHandle user, int iconAppTargetSdk) {
@@ -196,8 +196,8 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Returns a bitmap suitable for displaying as an iconView at various launcher UIs like all apps
-     * view or workspace. The iconView is badged for {@param user}.
+     * Returns a bitmap suitable for displaying as an icon at various launcher UIs like all apps
+     * view or workspace. The icon is badged for {@param user}.
      * The bitmap is also visually normalized with other icons.
      */
     public BitmapInfo createBadgedIconBitmap(Drawable icon, UserHandle user, int iconAppTargetSdk,
@@ -207,7 +207,7 @@ public class LauncherIcons implements AutoCloseable {
         }
         icon = normalizeAndWrapToAdaptiveIcon(icon, iconAppTargetSdk, null, scale);
         Bitmap bitmap = createIconBitmap(icon, scale[0]);
-        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+        if (icon instanceof AdaptiveIconCompat) {
             mCanvas.setBitmap(bitmap);
             getShadowGenerator().recreateIcon(Bitmap.createBitmap(bitmap), mCanvas);
             mCanvas.setBitmap(null);
@@ -244,7 +244,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * Sets the background color used for wrapped adaptive iconView
+     * Sets the background color used for wrapped adaptive icon
      */
     public void setWrapperBackgroundColor(int color) {
         mWrapperBackgroundColor = (Color.alpha(color) < 255) ? DEFAULT_WRAPPER_BACKGROUND : color;
@@ -256,10 +256,9 @@ public class LauncherIcons implements AutoCloseable {
         if (Utilities.ATLEAST_OREO) {
             boolean[] outShape = new boolean[1];
             if (mWrapperIcon == null) {
-                mWrapperIcon = mContext.getDrawable(R.drawable.adaptive_icon_drawable_wrapper)
-                        .mutate();
+                mWrapperIcon = LawnchairIconProvider.getAdaptiveIconDrawableWrapper(mContext);
             }
-            AdaptiveIconDrawable dr = (AdaptiveIconDrawable) mWrapperIcon;
+            AdaptiveIconCompat dr = (AdaptiveIconCompat) mWrapperIcon;
             dr.setBounds(0, 0, 1, 1);
             scale = getNormalizer().getScale(icon, outIconBounds, dr.getIconMask(), outShape);
             if (!outShape[0] && (icon instanceof NonAdaptiveIconDrawable)) {
@@ -299,7 +298,7 @@ public class LauncherIcons implements AutoCloseable {
     }
 
     /**
-     * @param scale the scale to apply before drawing {@param iconView} on the canvas
+     * @param scale the scale to apply before drawing {@param icon} on the canvas
      */
     public Bitmap createIconBitmap(Drawable icon, float scale) {
         int width = mIconBitmapSize;
@@ -321,7 +320,7 @@ public class LauncherIcons implements AutoCloseable {
         int sourceWidth = icon.getIntrinsicWidth();
         int sourceHeight = icon.getIntrinsicHeight();
         if (sourceWidth > 0 && sourceHeight > 0) {
-            // Scale the iconView proportionally to the iconView dimensions
+            // Scale the icon proportionally to the icon dimensions
             final float ratio = (float) sourceWidth / sourceHeight;
             if (sourceWidth > sourceHeight) {
                 height = (int) (width / ratio);
@@ -341,7 +340,7 @@ public class LauncherIcons implements AutoCloseable {
         final int top = (textureHeight-height) / 2;
 
         mOldBounds.set(icon.getBounds());
-        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+        if (icon instanceof AdaptiveIconCompat) {
             int offset = Math.max((int) Math.ceil(BLUR_FACTOR * textureWidth), Math.max(left, top));
             int size = Math.max(width, height);
             icon.setBounds(offset, offset, size - offset, size - offset);

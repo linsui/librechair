@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.dpToPx
 import ch.deletescape.lawnchair.isVisible
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.states.HomeState
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.LauncherState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -70,8 +71,11 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private val key_dock_opacity = "pref_hotseatCustomOpacity"
     private val key_dock_arrow = "pref_hotseatShowArrow"
     private val key_search_radius = "pref_searchbarRadius"
+    private val key_debug_state = "pref_debugDisplayState"
 
-    private val prefsToWatch = arrayOf(key_radius, key_opacity, key_dock_opacity, key_dock_arrow, key_search_radius)
+    private val prefsToWatch =
+            arrayOf(key_radius, key_opacity, key_dock_opacity, key_dock_arrow, key_search_radius,
+                    key_debug_state)
     private val colorsToWatch = arrayOf(ColorEngine.Resolvers.ALLAPPS_BACKGROUND, ColorEngine.Resolvers.DOCK_BACKGROUND)
 
     private val blurDrawableCallback by lazy {
@@ -95,7 +99,6 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private val isRtl by lazy { Utilities.isRtl(resources) }
     private val provider by lazy { BlurWallpaperProvider.getInstance(context) }
     private val useFlatColor get() = mLauncher.deviceProfile.isVerticalBarLayout
-    private val blurRadius get() = if (useFlatColor) 0f else mRadius
     private var blurDrawable: BlurDrawable? = null
     private val shadowHelper by lazy { NinePatchDrawHelper() }
     private val shadowBlur by lazy { resources.getDimension(R.dimen.all_apps_scrim_blur) }
@@ -119,10 +122,17 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private val reInitUiRunnable = this::reInitUi
     private var fullBlurProgress = 0f
 
+    private var shouldDrawDebug = false
+    private val debugTextPaint = Paint().apply {
+        textSize = DEBUG_TEXT_SIZE
+        color = Color.RED
+        typeface = Typeface.DEFAULT_BOLD
+    }
+
     private fun createBlurDrawable(): BlurDrawable? {
         blurDrawable?.let { if (isAttachedToWindow) it.stopListening() }
         return if (BlurWallpaperProvider.isEnabled) {
-            provider.createDrawable(blurRadius, 0f)?.apply {
+            provider.createDrawable(mRadius, 0f).apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()
@@ -137,7 +147,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         val searchBox = mLauncher.hotseatSearchBox
         return if (searchBox?.isVisible == true && BlurWallpaperProvider.isEnabled) {
             val height = searchBox.height - searchBox.paddingTop - searchBox.paddingBottom
-            provider.createDrawable(AbstractQsbLayout.getCornerRadius(context, height / 2f), 0f).apply {
+            provider.createDrawable(AbstractQsbLayout.getCornerRadius(context, height / 2f)).apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()
@@ -183,6 +193,9 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         when (key) {
             key_radius -> {
                 mRadius = dpToPx(prefs.dockRadius)
+                blurDrawable?.also {
+                    it.blurRadii = BlurDrawable.Radii(mRadius, 0f)
+                }
             }
             key_opacity -> {
                 mEndAlpha = prefs.allAppsOpacity.takeIf { it >= 0 } ?: DEFAULT_END_ALPHA
@@ -201,6 +214,9 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
                     searchBlurDrawable = createSearchBlurDrawable()
                     postReInitUi()
                 }
+            }
+            key_debug_state -> {
+                shouldDrawDebug = prefs.displayDebugOverlay
             }
         }
     }
@@ -294,6 +310,10 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
             statusBarPaint.alpha = ((1 - scrimProgress) * 97).toInt()
             canvas.drawRect(0f, 0f, width.toFloat(), insets.top.toFloat(), statusBarPaint)
         }
+
+        if (shouldDrawDebug) {
+            drawDebug(canvas)
+        }
     }
 
     override fun setInsets(insets: Rect) {
@@ -312,7 +332,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
 
     override fun onDrawRoundRect(canvas: Canvas, left: Float, top: Float, right: Float, bottom: Float, rx: Float, ry: Float, paint: Paint) {
         blurDrawable?.run {
-            setBounds(left.toInt(), top.toInt(), right.toInt(), bottom.toInt())
+            setBlurBounds(left, top, right, bottom)
             draw(canvas)
         }
         if (enableShadow) {
@@ -335,7 +355,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         searchBlurDrawable?.run {
             val hotseat = mLauncher.hotseat
             val searchBox = mLauncher.hotseatSearchBox
-            val adjustment = Math.round(hotseat.top + hotseat.translationY + searchBox.translationY + 1)
+            val adjustment = hotseat.top + hotseat.translationY + searchBox.translationY + 1
             val left = searchBox.left + searchBox.paddingLeft
             val top = searchBox.top + adjustment + searchBox.paddingTop
             val right = searchBox.right - searchBox.paddingRight
@@ -343,13 +363,13 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
             val isBubbleUi = (searchBox as? AbstractQsbLayout)?.useTwoBubbles() != false
             val bubbleAdjustmentLeft = if (isBubbleUi && isRtl) micWidth + bubbleGap else 0
             val bubbleAdjustmentRight = if (isBubbleUi && !isRtl) micWidth + bubbleGap else 0
-            setBounds(left + bubbleAdjustmentLeft, top, right - bubbleAdjustmentRight, bottom)
+            setBlurBounds((left + bubbleAdjustmentLeft).toFloat(), top,
+                          (right - bubbleAdjustmentRight).toFloat(), bottom)
             alpha = (searchBox.alpha * 255).toInt()
             draw(canvas)
             if (isBubbleUi) {
-                setBounds(if (!isRtl) right - micWidth else left,
-                        top,
-                        if (isRtl) left + micWidth else right,
+                setBlurBounds((if (!isRtl) right - micWidth else left).toFloat(),
+                        top, (if (isRtl) left + micWidth else right).toFloat(),
                         bottom)
                 draw(canvas)
             }
@@ -406,9 +426,29 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         searchBlurDrawable = createSearchBlurDrawable()
     }
 
+    private fun drawDebug(canvas: Canvas) {
+        listOf(
+                "version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                "state: ${mLauncher.stateManager.state::class.java.simpleName}",
+                "toState: ${mLauncher.stateManager.toState::class.java.simpleName}"
+              ).forEachIndexed { index, line ->
+            canvas.drawText(line, 50f, 200f + (DEBUG_LINE_HEIGHT * index), debugTextPaint)
+        }
+    }
+
     private fun postReInitUi() {
         handler?.removeCallbacks(reInitUiRunnable)
         handler?.post(reInitUiRunnable)
+    }
+
+    fun setOverlayScroll(scroll: Float) {
+        blurDrawable?.viewOffsetX = scroll
+        searchBlurDrawable?.viewOffsetX = scroll
+    }
+
+    companion object {
+        private const val DEBUG_TEXT_SIZE = 30f
+        private const val DEBUG_LINE_HEIGHT = DEBUG_TEXT_SIZE + 3f
     }
 
     class ColorRange(private val start: Float, private val end: Float,

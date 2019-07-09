@@ -59,7 +59,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                         cache = prov
                     }
                 } catch (ignored: Exception) { }
-                if (cache == null) cache = AppSearchSearchProvider(context)
+                if (cache == null) cache = GoogleSearchProvider(context)
                 cached = cache!!::class.java.name
                 notifyProviderChanged()
             }
