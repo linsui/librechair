@@ -133,12 +133,14 @@ import com.android.launcher3.widget.WidgetHostViewLoader;
 import com.android.launcher3.widget.WidgetListRowEntry;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import com.android.launcher3.widget.custom.CustomWidgetParser;
+import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -911,8 +913,12 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
 
         private void hideOverlay(boolean animate) {
-            Launcher launcher = Launcher.this;
-            launcher.getWorkspace().mLauncherOverlay.onScrollChange(0, false);
+            NexusLauncherActivity launcher = (NexusLauncherActivity) Launcher.this;
+            try {
+                Objects.requireNonNull(launcher.getGoogleNow()).hideOverlay(100);
+            } catch (NullPointerException ignored) {
+
+            }
         }
 
         @Override

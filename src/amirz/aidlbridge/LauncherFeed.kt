@@ -17,15 +17,15 @@ import com.android.launcher3.R
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 
-class LauncherFeed(context: Context) : ILauncherOverlay.Stub() {
+class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
-    private val dark: Boolean = ThemeManager.getInstance(context.applicationContext).isDark
+    private val dark: Boolean = ThemeManager.getInstance(contex2t.applicationContext).isDark
 
-
+    private val context = ContextThemeWrapper(contex2t,
+                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2);
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
-    private val feedController = (LayoutInflater.from(ContextThemeWrapper(context,
-                                                                          if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme)).inflate(
+    private val feedController = (LayoutInflater.from(context).inflate(
         R.layout.overlay_feed, null, false) as FeedController).also {
         it.setLauncherFeed(this)
         val recyclerView: RecyclerView = it.findViewById(R.id.feed_recycler);
