@@ -18,8 +18,6 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import ch.deletescape.lawnchair.FeedBridge;
-import ch.deletescape.lawnchair.FeedBridge.BridgeInfo;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 import java.lang.ref.WeakReference;
@@ -268,11 +266,10 @@ public class LauncherClient {
         return mOverlay != null;
     }
 
-    static Intent getIntent(Context context, boolean proxy) {
-        BridgeInfo bridgeInfo = FeedBridge.Companion.getInstance(context).resolveBridge();
+    static Intent getIntent(Context context) {
         String pkg = context.getPackageName();
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
-                .setPackage(bridgeInfo.getPackageName())
+                .setPackage(context.getPackageName())
                 .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
                         .append("app://")
                         .append(pkg)
@@ -379,7 +376,7 @@ public class LauncherClient {
     }
 
     private static void loadApiVersion(Context context) {
-        ResolveInfo resolveService = context.getPackageManager().resolveService(getIntent(context, false), PackageManager.GET_META_DATA);
+        ResolveInfo resolveService = context.getPackageManager().resolveService(getIntent(context), PackageManager.GET_META_DATA);
         apiVersion = resolveService == null || resolveService.serviceInfo.metaData == null ?
                 1 :
                 resolveService.serviceInfo.metaData.getInt("service.api.version", 1);

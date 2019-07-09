@@ -16,10 +16,6 @@ public class BridgeService extends Service {
     private static String sLastConnection;
     private final Set<BridgeImpl> mBridges = new HashSet<>();
 
-    public static String getLastConnection() {
-        return sLastConnection;
-    }
-
     @Override
     public IBinder onBind(Intent intent) {
         Uri caller = intent.getData();
@@ -46,6 +42,10 @@ public class BridgeService extends Service {
             }
         }
         return null;
+    }
+
+    public static String getLastConnection() {
+        return sLastConnection;
     }
 
     @Override

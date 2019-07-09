@@ -23,7 +23,6 @@ import android.net.Uri
 import android.os.Process
 import ch.deletescape.lawnchair.util.SingletonHolder
 import com.android.launcher3.BuildConfig
-import com.android.launcher3.config.FeatureFlags
 
 class FeedBridge(private val context: Context) {
 
@@ -69,6 +68,6 @@ class FeedBridge(private val context: Context) {
         private const val TAG = "FeedBridge"
         private const val overlayAction = "com.android.launcher3.WINDOW_OVERLAY"
 
-        @JvmStatic val useBridge = FeatureFlags.FORCE_FEED_BRIDGE || !BuildConfig.DEBUG
+        @JvmStatic val useBridge = false;
     }
 }

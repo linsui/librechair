@@ -21,6 +21,13 @@ public class BridgeImpl extends Binder implements ServiceConnection {
 
     private boolean mConnected;
     private SparseArray<BridgeCallback> mCallbacks = new SparseArray<>();
+    private IBinder mOverlay;
+
+    public BridgeImpl(Context context, Uri caller) {
+        mContext = context;
+        mCaller = caller;
+    }
+
     private final IBinder mProxy = new Bridge.Stub() {
         @Override
         public void setCallback(int index, BridgeCallback cb) throws RemoteException {
@@ -31,24 +38,12 @@ public class BridgeImpl extends Binder implements ServiceConnection {
             }
         }
     };
-    private IBinder mOverlay;
-
-    public BridgeImpl(Context context, Uri caller) {
-        mContext = context;
-        mCaller = caller;
-    }
-
-    public boolean bind(Intent intent) {
-        return mContext.bindService(intent, this,
-                Context.BIND_AUTO_CREATE | Context.BIND_ADJUST_WITH_ACTIVITY);
-    }
 
     // Server connected
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         Log.w(TAG, "onServiceConnected " + this.toString());
         mOverlay = service;
-        mOverlay = new LauncherFeed(mContext);
 
         mConnected = true;
         for (int i = 0; i < mCallbacks.size(); i++) {
@@ -88,16 +83,23 @@ public class BridgeImpl extends Binder implements ServiceConnection {
         }
     }
 
-    // Forward from client to server
-    @Override
-    protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
-        return mOverlay == null
-                ? super.onTransact(code, data, reply, flags)
-                : mOverlay.transact(code, data, reply, flags);
+    // Client connected
+    public boolean bind(Intent intent) {
+        return mContext.bindService(intent, this,
+                Context.BIND_AUTO_CREATE | Context.BIND_ADJUST_WITH_ACTIVITY);
     }
 
     // AIDL Stub that implements the callback
     public IBinder getProxy() {
         return mProxy;
+    }
+
+    // Forward from client to server
+    @Override
+    protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+        Log.d(getClass().getCanonicalName(), "onTransact: overlay: " + mOverlay);
+        return mOverlay == null
+                ? super.onTransact(code, data, reply, flags)
+                : mOverlay.transact(code, data, reply, flags);
     }
 }

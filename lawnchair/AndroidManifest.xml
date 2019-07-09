@@ -75,7 +75,7 @@
             </intent-filter>
         </activity>
 
-        <service android:exported="true" android:name="amirz.aidlbridge.BridgeService" android:process=":search">
+        <service android:exported="true" android:name="amirz.aidlbridge.OverlayService" android:process=":overlay">
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY"/>
                 <data android:scheme="app"/>

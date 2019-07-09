@@ -5,10 +5,16 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.WindowManager
+import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
@@ -18,7 +24,20 @@ class LauncherFeed(context: Context) : ILauncherOverlay.Stub() {
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private val feedController = (LayoutInflater.from(ContextThemeWrapper(context, android.R.style.Theme_Material))
-            .inflate(R.layout.overlay_feed, null, false) as FeedController).also { it.setLauncherFeed(this) }
+            .inflate(R.layout.overlay_feed, null, false) as FeedController).also {
+        it.setLauncherFeed(this)
+        val recyclerView: RecyclerView = it.findViewById(R.id.feed_recycler);
+
+        if (context.applicationContext is LawnchairApp) {
+            if (ThemeManager.getInstance(context.applicationContext).isDark) {
+                it.setBackgroundColor(context.applicationContext.getColor(R.color.qsb_background_dark))
+            } else {
+                it.setBackgroundColor(context.applicationContext.getColor(R.color.qsb_background))
+            }
+            recyclerView.adapter = FeedAdapter(ch.deletescape.lawnchair.feed.getFeedController(context).getProviders(), ThemeManager.getInstance(context))
+            recyclerView.layoutManager = LinearLayoutManager(context)
+        }
+    }
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
@@ -36,6 +55,7 @@ class LauncherFeed(context: Context) : ILauncherOverlay.Stub() {
         }
 
     override fun startScroll() {
+        d("startScroll: scroll started")
         handler.post {
             feedAttached = true
             feedController.startScroll()
@@ -79,6 +99,7 @@ class LauncherFeed(context: Context) : ILauncherOverlay.Stub() {
     }
 
     override fun openOverlay(flags: Int) {
+        (feedController.findViewById(R.id.feed_recycler) as RecyclerView).adapter!!.notifyDataSetChanged();
         Log.d(TAG, "openOverlay($flags)")
     }
 
@@ -113,6 +134,8 @@ class LauncherFeed(context: Context) : ILauncherOverlay.Stub() {
         Log.d(TAG, "startSearch")
         return false
     }
+
+
 
     fun onProgress(progress: Float, isDragging: Boolean) {
         callback?.overlayScrollChanged(progress)

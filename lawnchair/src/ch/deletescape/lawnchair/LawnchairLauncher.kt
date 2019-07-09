@@ -108,40 +108,15 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
         performSignatureVerification()
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-        /* if (lawnchairPrefs.swipeForFeed) {
-            feed.layoutManager = LinearLayoutManager(this)
-            feed.adapter = FeedAdapter(getFeedController(this).getProviders(), ThemeManager.getInstance(this));
-            val themeFlags = ThemeManager.getInstance(this).getCurrentFlags() /* There must be a better way to do this, but right now I can't figure out how. TODO */
-            if (ThemeManager.isDark(themeFlags)) {
-                (findViewById<View>(R.id.overlay_feed)).setBackgroundColor(resources.getColor(R.color.qsb_background_dark));
-            }
-            setLauncherOverlay(feedOverlay)
-            drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
-                var originalVisibility = window.decorView.systemUiVisibility
-                var overscrollPage = 0;
-                override fun onDrawerStateChanged(newState: Int) {
-                }
-
-                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-
-                }
-
-                override fun onDrawerClosed(drawerView: View) {
-                    window.decorView.systemUiVisibility = originalVisibility
-                    workspace.onOverlayScrollChanged(0f )
-                }
-
-                override fun onDrawerOpened(drawerView: View) {
-                    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-                    feed.adapter?.notifyDataSetChanged()
-                }
-
-            })
+        if (lawnchairPrefs.swipeForFeed) {
+            /*
+             * Perhaps there will be additional initialization code here in the future?
+             */
         } else {
             setLauncherOverlay(null);
-            drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        } */
+        }
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {

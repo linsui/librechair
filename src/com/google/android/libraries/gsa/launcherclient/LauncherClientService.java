@@ -3,7 +3,8 @@ package com.google.android.libraries.gsa.launcherclient;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.IBinder;
-
+import android.os.RemoteException;
+import android.util.Log;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import java.lang.ref.WeakReference;
 
@@ -31,6 +32,11 @@ public class LauncherClientService extends BaseClientService {
 
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
+        try {
+            Log.d(getClass().getCanonicalName(), service.getInterfaceDescriptor());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         setClient(ILauncherOverlay.Stub.asInterface(service));
     }
 
