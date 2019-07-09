@@ -122,7 +122,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     private fun createBlurDrawable(): BlurDrawable? {
         blurDrawable?.let { if (isAttachedToWindow) it.stopListening() }
         return if (BlurWallpaperProvider.isEnabled) {
-            provider.createDrawable(blurRadius, false)?.apply {
+            provider.createDrawable(blurRadius, 0f)?.apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()
@@ -137,7 +137,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         val searchBox = mLauncher.hotseatSearchBox
         return if (searchBox?.isVisible == true && BlurWallpaperProvider.isEnabled) {
             val height = searchBox.height - searchBox.paddingTop - searchBox.paddingBottom
-            provider.createDrawable(AbstractQsbLayout.getCornerRadius(context, height / 2f), false).apply {
+            provider.createDrawable(AbstractQsbLayout.getCornerRadius(context, height / 2f), 0f).apply {
                 callback = blurDrawableCallback
                 setBounds(left, top, right, bottom)
                 if (isAttachedToWindow) startListening()
