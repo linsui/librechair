@@ -31,11 +31,14 @@ public class UsageStatsScoringProvider implements ScoringProvider<UsageStats> {
     }
 
     @Override
-    public int score(UsageStats usageStats) {
+    public int score(UsageStats usageStats, boolean lastMatch) {
         int baseScore = 10000;
         int age = (int) (System.currentTimeMillis() - usageStats.getLastTimeUsed()) / 1000;
         baseScore -= manager.isAppInactive(usageStats.getPackageName()) ? age * 2 : age;
-        // baseScore -= usageStats.describeContents();
-        return 0;
+        baseScore += usageStats.getTotalTimeInForeground() / 1000;
+        if (lastMatch) {
+            baseScore += 1000;
+        }
+        return baseScore;
     }
 }

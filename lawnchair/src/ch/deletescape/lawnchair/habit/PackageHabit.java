@@ -37,7 +37,6 @@ public class PackageHabit implements
     private final transient Context context;
 
     public PackageHabit(String last, String now, String later, Context context) {
-
         this.last = last;
         this.now = now;
         this.later = later;

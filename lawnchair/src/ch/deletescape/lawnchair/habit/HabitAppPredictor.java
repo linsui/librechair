@@ -19,6 +19,12 @@
 
 package ch.deletescape.lawnchair.habit;
 
-public interface ScoringProvider<Data> {
-    int score(Data data, boolean lastMatch);
+import android.content.Context;
+import com.google.android.apps.nexuslauncher.CustomAppPredictor;
+
+public class HabitAppPredictor extends CustomAppPredictor {
+
+    public HabitAppPredictor(Context context) {
+        super(context);
+    }
 }

@@ -32,7 +32,6 @@ import com.android.launcher3.*
 import com.android.launcher3.graphics.LauncherIcons
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.PackageManagerHelper
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.allapps.Action
 import com.google.android.apps.nexuslauncher.allapps.ActionView
@@ -62,7 +61,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     private val appsList = CountRankedArrayPreference(devicePrefs, "recent_app_launches", 250)
     private val phonesList = CountRankedArrayPreference(devicePrefs, "plugged_app_launches", 20)
     private val actionList = CountRankedArrayPreference(devicePrefs, "recent_shortcut_launches", 100)
-    private val isActionsEnabled get() = !(PackageManagerHelper.isAppEnabled(context.packageManager, ACTIONS_PACKAGE, 0) && ActionsController.get(context).actions.size > 0) && prefs.showActions
+    private val isActionsEnabled get() = prefs.showActions
 
     private var actionsCache = listOf<String>()
 
@@ -390,7 +389,6 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     }
 
     companion object {
-        const val ACTIONS_PACKAGE = "com.google.android.as"
 
         const val KEY_ID = "id"
         const val KEY_EXPIRATION = "expiration"
