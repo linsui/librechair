@@ -19,5 +19,5 @@
   -->
 
 <resources>
-    <color name="ic_launcher_background">#4885ED</color>
+    <color name="ic_launcher_background">@color/colorAccent</color>
 </resources>
