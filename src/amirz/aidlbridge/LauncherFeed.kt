@@ -35,7 +35,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     it.setBackgroundColor(context.getColor(R.color.qsb_background_dark))
                 }
             }
-    private val recyclerView =  feedController.findViewById(R.id.feed_recycler) as RecyclerView
+    private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView).also {
+        it.adapter = this.adapter
+        it.layoutManager = LinearLayoutManager(context)
+    }
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
@@ -45,13 +48,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             if (field != value) {
                 field = value
                 if (field) {
-                    recyclerView.adapter = this.adapter
-                    recyclerView.layoutManager = LinearLayoutManager(context)
-                    recyclerView.adapter!!.notifyDataSetChanged()
+                    adapter.refresh()
+                    adapter.notifyDataSetChanged()
                     windowService.addView(feedController, layoutParams)
                 } else {
-                    recyclerView.adapter = null
-                    recyclerView.layoutManager = null
                     windowService.removeView(feedController)
                 }
             }

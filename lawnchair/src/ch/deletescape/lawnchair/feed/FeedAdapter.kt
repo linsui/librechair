@@ -43,12 +43,16 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
         return cards[position].type
     }
 
-    override fun getItemCount(): Int {
+    fun refresh(): Int {
         cards.clear()
         providers.iterator().forEach {
             it.onAttachedToAdapter(this)
             cards.addAll(it.cards)
         }
+        return cards.size;
+    }
+
+    override fun getItemCount(): Int {
         return cards.size;
     }
 

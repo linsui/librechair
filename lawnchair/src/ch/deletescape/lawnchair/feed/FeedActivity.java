@@ -41,6 +41,7 @@ public class FeedActivity extends SettingsBaseActivity {
         providers = FeedControllerKt.getFeedController(this).getProviders();
         feed.setLayoutManager(new LinearLayoutManager(this));
         feed.setAdapter(adapter = new FeedAdapter(providers, ThemeManager.Companion.getInstance(this)));
+        adapter.refresh();
         adapter.notifyDataSetChanged();
     }
 }
