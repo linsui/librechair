@@ -45,13 +45,11 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
 
     override fun getItemCount(): Int {
         cards.clear()
-        var i = 0;
-        providers.iterator().forEachRemaining {
+        providers.iterator().forEach {
             it.onAttachedToAdapter(this)
-            i += it.cards.size
             cards.addAll(it.cards)
         }
-        return i;
+        return cards.size;
     }
 
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {

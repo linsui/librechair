@@ -17,19 +17,17 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package amirz.aidlbridge;
+package amirz.aidlbridge
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
 
-public class OverlayService extends Service {
+class OverlayService : Service() {
 
-    public OverlayService() {
-    }
+    val feed by lazy { LauncherFeed(applicationContext) }
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new LauncherFeed(getApplicationContext());
+    override fun onBind(intent: Intent): IBinder {
+        return feed;
     }
 }
