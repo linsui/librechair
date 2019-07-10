@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.View;
 import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -65,6 +66,7 @@ public class FeedWeatherProvider extends FeedProvider implements Listener {
 
     @Override
     public List<Card> getCards() {
+        Log.d(getClass().getName(), "getCards: " + weatherData);
         return weatherData != null ? Arrays.asList(new Card(new BitmapDrawable(getContext().getResources(),
                 weatherData.getIcon()), getContext()
                 .getString(R.string.title_card_weather_temperature,
