@@ -706,5 +706,4 @@
     <string name="icon_shape_override_miui_explaination">Due to a restriction in MIUI, your icon shape might not change and remain square.\nPlease don\'t report this as a bug.</string>
 
     <string name="button_organize_screens">Organize screens</string>
-    <string name="lock_desktop">Lock desktop</string>
 </resources>
