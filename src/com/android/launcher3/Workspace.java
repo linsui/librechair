@@ -1201,6 +1201,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
     @Override
     protected void overScroll(float amount) {
+        Log.d(getClass().getCanonicalName(), "overScroll: " + amount);
         boolean inOptionsState = mLauncher.isInState(LauncherState.OPTIONS);
 
         boolean shouldScrollOverlay = mLauncherOverlay != null &&

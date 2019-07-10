@@ -22,6 +22,7 @@ import android.support.annotation.Keep
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.config.FeatureFlags
 import com.android.quickstep.OverviewCallbacks
+import com.google.android.apps.nexuslauncher.NexusLauncherActivity
 import com.google.android.apps.nexuslauncher.PredictionUiStateManager
 
 @Keep
@@ -43,8 +44,8 @@ class LawnchairOverviewCallbacks(private val context: Context) : OverviewCallbac
         super.closeAllWindows()
         getActivity()?.let { launcher ->
             launcher.googleNow?.let { client ->
-                if (launcher.isStarted && !launcher.isForceInvisible) {
-                    client.hideOverlay(150)
+                if (launcher.isStarted && !launcher.isForceInvisible && (launcher as NexusLauncherActivity).launcher.isFeedRunning) {
+                    client.hideOverlay(1)
                 } else {
                     client.hideOverlay(false)
                 }

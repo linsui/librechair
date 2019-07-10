@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 import java.lang.ref.WeakReference;
@@ -151,6 +152,9 @@ public class LauncherClient {
                 } catch (RemoteException ignored) {
                 }
             }
+            if (mActivity instanceof NexusLauncherActivity) {
+                ((NexusLauncherActivity) mActivity).getLauncher().setFeedRunning(true);
+            }
         }
     }
 
@@ -166,7 +170,11 @@ public class LauncherClient {
                     }
                 } catch (RemoteException ignored) {
                 }
+                if (mActivity instanceof NexusLauncherActivity) {
+                    ((NexusLauncherActivity) mActivity).getLauncher().setFeedRunning(false);
+                }
             }
+
         }
     }
 
@@ -310,7 +318,7 @@ public class LauncherClient {
     public final void hideOverlay(boolean feedRunning) {
         if (mOverlay != null) {
             try {
-                mOverlay.closeOverlay(feedRunning ? 1 : 0);
+                mOverlay.closeOverlay(0);
             } catch (RemoteException ignored) {
             }
         }

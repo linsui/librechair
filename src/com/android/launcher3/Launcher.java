@@ -913,7 +913,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
         private void hideOverlay(boolean animate) {
             NexusLauncherActivity launcher = (NexusLauncherActivity) Launcher.this;
-            // TODO
         }
 
         @Override

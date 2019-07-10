@@ -14,6 +14,7 @@ public class NexusLauncherOverlay implements Launcher.LauncherOverlay, ISerializ
     boolean mFlagsChanged = false;
     private int mFlags;
     boolean mAttached = false;
+    private int mScrollLevel = 0;
 
     public NexusLauncherOverlay(Launcher launcher) {
         mLauncher = launcher;

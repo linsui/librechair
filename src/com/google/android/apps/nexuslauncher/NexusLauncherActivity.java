@@ -36,4 +36,8 @@ public class NexusLauncherActivity extends Launcher {
     public void registerSmartspaceView(SmartspaceView smartspace) {
         mLauncher.registerSmartspaceView(smartspace);
     }
+
+    public NexusLauncher getLauncher() {
+        return mLauncher;
+    }
 }
