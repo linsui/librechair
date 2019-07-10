@@ -262,6 +262,12 @@ public class IconCache {
                 new String[]{packageName + "/%", Long.toString(userSerial)});
     }
 
+    public synchronized void removeAllIcons() {
+        Preconditions.assertWorkerThread();
+        mCache.clear();
+        mIconDb.delete(null, null);
+    }
+
     public void updateDbIcons(Set<String> ignorePackagesForMainUser) {
         // Remove all active iconView update tasks.
         mWorkerHandler.removeCallbacksAndMessages(ICON_UPDATE_TOKEN);

@@ -23,12 +23,14 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.text.TextUtils;
 import android.util.Log;
-import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.folder.FolderShape;
+import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
@@ -92,7 +94,7 @@ public class IconShapeOverride {
                 ((ResourcesOverride) override).setArrayOverrideId(masks);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Unable to override iconView shape", e);
+            Log.e(TAG, "Unable to override icon shape", e);
             // revert value.
             getPrefs(context).edit().remove(KEY_PREFERENCE).apply();
         }
@@ -194,7 +196,7 @@ public class IconShapeOverride {
                 }
 
                 new LooperExecutor(LauncherModel.getWorkerLooper()).execute(
-                        new OverrideApplyHandler(mContext, newValue));
+                        new OverrideApplyHandler(mContext, newValue, new Handler()));
             }
             return false;
         }
@@ -204,10 +206,12 @@ public class IconShapeOverride {
 
         private final Context mContext;
         private final String mValue;
+        private final Handler mHandler;
 
-        private OverrideApplyHandler(Context context, String value) {
+        private OverrideApplyHandler(Context context, String value, Handler handler) {
             mContext = context;
             mValue = value;
+            mHandler = handler;
         }
 
         @SuppressLint("ApplySharedPref")
@@ -215,16 +219,22 @@ public class IconShapeOverride {
         public void run() {
             // Synchronously write the preference.
             getPrefs(mContext).edit().putString(KEY_PREFERENCE, mValue).commit();
-            // Clear the iconView cache.
-            LauncherAppState.getInstance(mContext).getIconCache().clear();
+            // Clear the icon cache.
+            LauncherAppState.getInstance(mContext).reloadIconCache();
+
+            mHandler.post(() -> {
+                AdaptiveIconCompat.resetMask();
+                FolderShape.init(mContext);
+                Utilities.getLawnchairPrefs(mContext).getRecreate().invoke();
+            });
 
             // Schedule restart
-            LawnchairLauncher launcher = ((LawnchairLauncher) LauncherAppState.getInstanceNoCreate().getLauncher());
-            if (launcher != null) {
-                launcher.scheduleRestart();
-            } else {
-                Utilities.restartLauncher(mContext);
-            }
+//            LawnchairLauncher launcher = ((LawnchairLauncher) LauncherAppState.getInstanceNoCreate().getLauncher());
+//            if (launcher != null) {
+//                launcher.scheduleRestart();
+//            } else {
+//                Utilities.restartLauncher(mContext);
+//            }
 
             // Wait for it
 //            try {

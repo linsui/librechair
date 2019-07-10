@@ -13,9 +13,11 @@ import android.view.WindowManager
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import java.util.concurrent.Executors
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
@@ -36,8 +38,22 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 }
             }
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView).also {
-        it.adapter = this.adapter
-        it.layoutManager = LinearLayoutManager(context)
+        Executors.newSingleThreadExecutor().submit {
+            while (true) {
+                d("refreshing adapter")
+                adapter.refresh()
+                handler.post {
+                    d("notifying adapter")
+                    adapter.notifyDataSetChanged()
+                }
+                try {
+                    d("sleeping for 1 second")
+                    Thread.sleep(3000);
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private var callback: ILauncherOverlayCallback? = null
@@ -48,8 +64,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             if (field != value) {
                 field = value
                 if (field) {
-                    adapter.refresh()
-                    adapter.notifyDataSetChanged()
+                    if (recyclerView.adapter == null) {
+                        recyclerView.adapter = this.adapter
+                        recyclerView.layoutManager = LinearLayoutManager(context)
+                    }
                     windowService.addView(feedController, layoutParams)
                 } else {
                     windowService.removeView(feedController)
@@ -58,8 +76,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
 
     override fun startScroll() {
-        recyclerView.adapter = null
-        recyclerView.layoutManager = null
         handler.post {
             feedAttached = true
             feedController.startScroll()

@@ -109,36 +109,42 @@ val Context.launcherAppState get() = LauncherAppState.getInstance(this)
 val Context.lawnchairPrefs get() = Utilities.getLawnchairPrefs(this)
 
 val Context.hasStoragePermission
-    get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this,
-                                                                                   android.Manifest.permission.READ_EXTERNAL_STORAGE)
+    get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
+            this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
-@ColorInt fun Context.getColorEngineAccent(): Int {
+@ColorInt
+fun Context.getColorEngineAccent(): Int {
     return ColorEngine.getInstance(this).accent
 }
 
-@ColorInt fun Context.getColorAccent(): Int {
+@ColorInt
+fun Context.getColorAccent(): Int {
     return getColorAttr(android.R.attr.colorAccent)
 }
 
-@ColorInt fun Context.getDisabled(inputColor: Int): Int {
+@ColorInt
+fun Context.getDisabled(inputColor: Int): Int {
     return applyAlphaAttr(android.R.attr.disabledAlpha, inputColor)
 }
 
-@ColorInt fun Context.applyAlphaAttr(attr: Int, inputColor: Int): Int {
+@ColorInt
+fun Context.applyAlphaAttr(attr: Int, inputColor: Int): Int {
     val ta = obtainStyledAttributes(intArrayOf(attr))
     val alpha = ta.getFloat(0, 0f)
     ta.recycle()
     return applyAlpha(alpha, inputColor)
 }
 
-@ColorInt fun applyAlpha(a: Float, inputColor: Int): Int {
+@ColorInt
+fun applyAlpha(a: Float, inputColor: Int): Int {
     var alpha = a
     alpha *= Color.alpha(inputColor)
     return Color.argb(alpha.toInt(), Color.red(inputColor), Color.green(inputColor),
-                      Color.blue(inputColor))
+            Color.blue(inputColor))
 }
 
-@ColorInt fun Context.getColorAttr(attr: Int): Int {
+@ColorInt
+fun Context.getColorAttr(attr: Int): Int {
     val ta = obtainStyledAttributes(intArrayOf(attr))
     @ColorInt val colorAccent = ta.getColor(0, 0)
     ta.recycle()

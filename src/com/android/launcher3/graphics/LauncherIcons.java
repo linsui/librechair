@@ -68,21 +68,7 @@ public class LauncherIcons implements AutoCloseable {
     public static final Object sPoolSync = new Object();
     private static LauncherIcons sPool;
 
-    /**
-     * Return a new Message instance from the global pool. Allows us to
-     * avoid allocating new objects in many cases.
-     */
-    public static LauncherIcons obtain(Context context) {
-        synchronized (sPoolSync) {
-            if (sPool != null) {
-                LauncherIcons m = sPool;
-                sPool = m.next;
-                m.next = null;
-                return m;
-            }
-        }
-        return new LauncherIcons(context);
-    }
+    private AdaptiveIconCompat mWrapperIcon;
 
     /**
      * Recycles a LauncherIcons that may be in-use.
@@ -113,7 +99,25 @@ public class LauncherIcons implements AutoCloseable {
     private IconNormalizer mNormalizer;
     private ShadowGenerator mShadowGenerator;
 
-    private Drawable mWrapperIcon;
+    /**
+     * Return a new Message instance from the global pool. Allows us to
+     * avoid allocating new objects in many cases.
+     */
+    public static LauncherIcons obtain(Context context) {
+        synchronized (sPoolSync) {
+            if (sPool != null) {
+                LauncherIcons m = sPool;
+                sPool = m.next;
+                m.next = null;
+                if (m.mWrapperIcon != null && !m.mWrapperIcon.isMaskValid()) {
+                    m.mWrapperIcon = null;
+                    m.mNormalizer.onAdaptiveShapeChanged();
+                }
+                return m;
+            }
+        }
+        return new LauncherIcons(context);
+    }
     private int mWrapperBackgroundColor = DEFAULT_WRAPPER_BACKGROUND;
 
     private IconProvider iconProvider;

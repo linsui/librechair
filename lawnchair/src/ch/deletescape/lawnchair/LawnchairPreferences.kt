@@ -279,6 +279,7 @@ class LawnchairPreferences(val context: Context) :
     val folderBgColored by BooleanPref("pref_folderBgColorGen", false)
     val brightnessTheme by BooleanPref("pref_brightnessTheme", false, restart)
     val debugOkHttp by BooleanPref("pref_debugOkhttp", onChange = restart)
+    val initLeakCanary by BooleanPref("pref_initLeakCanary", true, restart)
     val showCrashNotifications by BooleanPref("pref_showCrashNotifications", true, restart)
     val autoUploadBugReport by BooleanPref("pref_autoUploadBugReport", false) {
         if (showCrashNotifications) {
@@ -391,8 +392,11 @@ class LawnchairPreferences(val context: Context) :
         onChangeCallback?.updateSmartspace()
     }
 
-    private fun reloadIcons() {
-        onChangeCallback?.reloadIcons()
+    fun reloadIcons() {
+        LauncherAppState.getInstance(context).reloadIconCache()
+        runOnMainThread {
+            onChangeCallback?.recreate()
+        }
     }
 
     fun addOnPreferenceChangeListener(listener: OnPreferenceChangeListener, vararg keys: String) {

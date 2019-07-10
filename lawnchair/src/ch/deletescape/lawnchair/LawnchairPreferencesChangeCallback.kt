@@ -69,8 +69,4 @@ class LawnchairPreferencesChangeCallback(val launcher: LawnchairLauncher) {
     fun updateSmartspace() {
         launcher.refreshGrid()
     }
-
-    fun reloadIcons() {
-        ch.deletescape.lawnchair.reloadIcons(launcher)
-    }
 }

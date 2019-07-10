@@ -38,8 +38,10 @@ import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.graphics.drawable.AdaptiveIconDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build.VERSION_CODES;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.v4.graphics.PathParser;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -102,14 +104,30 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
      */
     private static final float EXTRA_INSET_PERCENTAGE = 1 / 4f;
     private static final float DEFAULT_VIEW_PORT_SCALE = 1f / (1 + 2 * EXTRA_INSET_PERCENTAGE);
-    private static final int BACKGROUND_ID = 0;
-    private static final int FOREGROUND_ID = 1;
+
     /**
      * Clip path defined in R.string.config_icon_mask.
      */
     private static Path sMask;
+
+    /**
+     * Scaled mask based on the view bounds.
+     */
+    private final Path mMask;
+    private final Matrix mMaskMatrix;
+    private final Region mTransparentRegion;
+    private static final int BACKGROUND_ID = 0;
+    private static final int FOREGROUND_ID = 1;
     private static Method methodExtractThemeAttrs;
     private static Method methodCreateFromXmlInnerForDensity;
+
+    /**
+     * State variable that maintains the {@link ChildDrawable} array.
+     */
+    LayerState mLayerState;
+
+    private Shader mLayersShader;
+    private Bitmap mLayersBitmap;
 
     static {
         try {
@@ -122,32 +140,23 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Scaled mask based on the view bounds.
-     */
-    private final Path mMask;
-    private final Matrix mMaskMatrix;
-    private final Region mTransparentRegion;
-    private final Rect mTmpOutRect = new Rect();
-    private final Canvas mCanvas;
-    /**
-     * State variable that maintains the {@link ChildDrawable} array.
-     */
-    LayerState mLayerState;
-    private Bitmap mMaskBitmap;
-    private Shader mLayersShader;
-    private Bitmap mLayersBitmap;
     private Rect mHotspotBounds;
     private boolean mMutated;
+
     private boolean mSuspendChildInvalidation;
     private boolean mChildRequestedInvalidation;
+
+    private final int mMaskId;
     private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG |
             Paint.FILTER_BITMAP_FLAG);
+    private final Rect mTmpOutRect = new Rect();
+    private final Canvas mCanvas;
+    private Bitmap mMaskBitmap;
 
     /**
      * Constructor used for xml inflation.
      */
+    @RequiresApi(api = VERSION_CODES.O)
     public AdaptiveIconCompat() throws Exception {
         this((LayerState) null, null);
     }
@@ -156,17 +165,35 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
      * The one constructor to rule them all. This is called by all public
      * constructors to set the state and initialize local properties.
      */
+    @RequiresApi(api = VERSION_CODES.O)
     @SuppressLint("RestrictedApi")
     AdaptiveIconCompat(@Nullable LayerState state, @Nullable Resources res) {
         mLayerState = createConstantState(state, res);
 
         if (sMask == null) {
-            sMask = PathParser.createPathFromPathData(getMaskPath());
+            sMask = createMaskPath();
         }
-        mMask = PathParser.createPathFromPathData(getMaskPath());
+        mMask = createMaskPath();
         mMaskMatrix = new Matrix();
         mCanvas = new Canvas();
         mTransparentRegion = new Region();
+        mMaskId = sMask.hashCode();
+    }
+
+    private int getInt(Field field, Object obj) {
+        try {
+            return field.getInt(obj);
+        } catch (IllegalAccessException e) {
+            return 0;
+        }
+    }
+
+    private <T> T invoke(Method method, Object obj, Object... params) {
+        try {
+            return (T) method.invoke(obj, params);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            return null;
+        }
     }
 
     /**
@@ -186,99 +213,6 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         }
     }
 
-    static int resolveDensity(@Nullable Resources r, int parentDensity) {
-        final int densityDpi = r == null ? parentDensity : r.getDisplayMetrics().densityDpi;
-        return densityDpi == 0 ? DisplayMetrics.DENSITY_DEFAULT : densityDpi;
-    }
-
-    /**
-     * All four sides of the layers are padded with extra inset so as to provide
-     * extra content to reveal within the clip path when performing affine transformations on the
-     * layers.
-     *
-     * @see #getForeground() and #getBackground() for more info on how this value is used
-     */
-    public static float getExtraInsetFraction() {
-        return EXTRA_INSET_PERCENTAGE;
-    }
-
-    /**
-     * @hide
-     */
-    public static float getExtraInsetPercentage() {
-        return EXTRA_INSET_PERCENTAGE;
-    }
-
-    private static Drawable createFromXmlInnerForDensity(@NonNull Resources r,
-            @NonNull XmlPullParser parser, @NonNull AttributeSet attrs, int density,
-            @Nullable Theme theme) {
-        try {
-            return (Drawable) methodCreateFromXmlInnerForDensity.invoke(null,
-                    r, parser, attrs, density, theme);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Error while creating adaptive icon", e);
-        }
-    }
-
-    protected static @NonNull TypedArray obtainAttributes(@NonNull Resources res,
-            @Nullable Theme theme, @NonNull AttributeSet set, @NonNull int[] attrs) {
-        if (theme == null) {
-            return res.obtainAttributes(set, attrs);
-        }
-        return theme.obtainStyledAttributes(set, attrs, 0, 0);
-    }
-
-    @NonNull
-    public static Drawable wrap(@NonNull Drawable icon) {
-        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
-            AdaptiveIconDrawable adaptive = (AdaptiveIconDrawable) icon;
-            return new AdaptiveIconCompat(adaptive.getBackground(), adaptive.getForeground());
-        } else {
-            return icon;
-        }
-    }
-
-    @Nullable
-    public static Drawable wrapNullable(@Nullable Drawable icon) {
-        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
-            AdaptiveIconDrawable adaptive = (AdaptiveIconDrawable) icon;
-            return new AdaptiveIconCompat(adaptive.getBackground(), adaptive.getForeground());
-        } else {
-            return icon;
-        }
-    }
-
-    private int getInt(Field field, Object obj) {
-        try {
-            return field.getInt(obj);
-        } catch (IllegalAccessException e) {
-            return 0;
-        }
-    }
-
-    private <T> T invoke(Method method, Object obj, Object... params) {
-        try {
-            return (T) method.invoke(obj, params);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("Duplicates")
-    private String getMaskPath() {
-//        return "M50,0L100,0 100,100 0,100 0,0z";
-        String mask = "M50 0C77.6 0 100 22.4 100 50C100 77.6 77.6 100 50 100C22.4 100 0 77.6 0 50C0 22.4 22.4 0 50 0Z";
-        try {
-            String override = IconShapeManager.getInstanceNoCreate().getOverride();
-            if (!TextUtils.isEmpty(override)) {
-                mask = override;
-            }
-        } catch (Exception e) {
-            Log.d(TAG, "Can't load mask path", e);
-        }
-        return mask;
-    }
-
     private ChildDrawable createChildDrawable(Drawable drawable) {
         final ChildDrawable layer = new ChildDrawable(mLayerState.mDensity);
         layer.mDrawable = drawable;
@@ -290,6 +224,11 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
 
     LayerState createConstantState(@Nullable LayerState state, @Nullable Resources res) {
         return new LayerState(state, this, res);
+    }
+
+    static int resolveDensity(@Nullable Resources r, int parentDensity) {
+        final int densityDpi = r == null ? parentDensity : r.getDisplayMetrics().densityDpi;
+        return densityDpi == 0 ? DisplayMetrics.DENSITY_DEFAULT : densityDpi;
     }
 
     /**
@@ -326,6 +265,35 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         }
 
         inflateLayers(r, parser, attrs, theme);
+    }
+
+    /**
+     * All four sides of the layers are padded with extra inset so as to provide
+     * extra content to reveal within the clip path when performing affine transformations on the
+     * layers.
+     *
+     * @see #getForeground() and #getBackground() for more info on how this value is used
+     */
+    public static float getExtraInsetFraction() {
+        return EXTRA_INSET_PERCENTAGE;
+    }
+
+    /**
+     * @hide
+     */
+    public static float getExtraInsetPercentage() {
+        return EXTRA_INSET_PERCENTAGE;
+    }
+
+    private static Drawable createFromXmlInnerForDensity(@NonNull Resources r,
+            @NonNull XmlPullParser parser, @NonNull AttributeSet attrs, int density,
+            @Nullable Theme theme) {
+        try {
+            return (Drawable) methodCreateFromXmlInnerForDensity.invoke(null,
+                    r, parser, attrs, density, theme);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Error while creating adaptive icon", e);
+        }
     }
 
     /**
@@ -549,6 +517,14 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         }
     }
 
+    protected static @NonNull TypedArray obtainAttributes(@NonNull Resources res,
+            @Nullable Theme theme, @NonNull AttributeSet set, @NonNull int[] attrs) {
+        if (theme == null) {
+            return res.obtainAttributes(set, attrs);
+        }
+        return theme.obtainStyledAttributes(set, attrs, 0, 0);
+    }
+
     private void dumpAttrs(AttributeSet attrs) {
         final int N = attrs.getAttributeCount();
         for (int i = 0; i < N; i++) {
@@ -748,21 +724,22 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         }
     }
 
+    @NonNull
+    public static Drawable wrap(@NonNull Drawable icon) {
+        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+            AdaptiveIconDrawable adaptive = (AdaptiveIconDrawable) icon;
+            return new AdaptiveIconCompat(adaptive.getBackground(), adaptive.getForeground());
+        } else {
+            return icon;
+        }
+    }
+
     @Override
     public int getOpacity() {
         if (mLayerState.mOpacityOverride != PixelFormat.UNKNOWN) {
             return mLayerState.mOpacityOverride;
         }
         return mLayerState.getOpacity();
-    }
-
-    public void setOpacity(int opacity) {
-        mLayerState.mOpacityOverride = opacity;
-    }
-
-    @Override
-    public boolean isAutoMirrored() {
-        return mLayerState.mAutoMirrored;
     }
 
     @Override
@@ -775,6 +752,16 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
             if (dr != null) {
                 dr.setAutoMirrored(mirrored);
             }
+        }
+    }
+
+    @Nullable
+    public static Drawable wrapNullable(@Nullable Drawable icon) {
+        if (Utilities.ATLEAST_OREO && icon instanceof AdaptiveIconDrawable) {
+            AdaptiveIconDrawable adaptive = (AdaptiveIconDrawable) icon;
+            return new AdaptiveIconCompat(adaptive.getBackground(), adaptive.getForeground());
+        } else {
+            return icon;
         }
     }
 
@@ -896,6 +883,24 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         return this;
     }
 
+    public static void resetMask() {
+        sMask = null;
+    }
+
+    @RequiresApi(api = VERSION_CODES.O)
+    @SuppressLint("RestrictedApi")
+    private Path createMaskPath() {
+        try {
+            String override = IconShapeManager.getInstanceNoCreate().getOverride();
+            if (!TextUtils.isEmpty(override)) {
+                return PathParser.createPathFromPathData(override);
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Can't load mask path", e);
+        }
+        return new AdaptiveIconDrawable(null, null).getIconMask();
+    }
+
     static class ChildDrawable {
         public Drawable mDrawable;
         public int[] mThemeAttrs;
@@ -944,18 +949,37 @@ public class AdaptiveIconCompat extends Drawable implements Drawable.Callback {
         }
     }
 
+    public void setOpacity(int opacity) {
+        mLayerState.mOpacityOverride = opacity;
+    }
+
+    @Override
+    public boolean isAutoMirrored() {
+        return mLayerState.mAutoMirrored;
+    }
+
+    public boolean isMaskValid() {
+        return sMask != null && mMaskId == sMask.hashCode();
+    }
+
     static class LayerState extends ConstantState {
+        private int[] mThemeAttrs;
+
         final static int N_CHILDREN = 2;
         ChildDrawable[] mChildren;
+
         // The density at which to render the drawable and its children.
         int mDensity;
+
         // The density to use when inflating/looking up the children drawables. A value of 0 means
         // use the system's density.
         int mSrcDensityOverride = 0;
+
         int mOpacityOverride = PixelFormat.UNKNOWN;
+
         int mChangingConfigurations;
         int mChildrenChangingConfigurations;
-        private int[] mThemeAttrs;
+
         private boolean mCheckedOpacity;
         private int mOpacity;
 

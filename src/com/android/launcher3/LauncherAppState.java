@@ -16,6 +16,8 @@
 
 package com.android.launcher3;
 
+import static ch.deletescape.lawnchair.settings.ui.SettingsActivity.NOTIFICATION_BADGING;
+
 import android.content.ComponentName;
 import android.content.ContentProviderClient;
 import android.content.Context;
@@ -23,7 +25,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Looper;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.LawnchairAppKt;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.PackageInstallerCompat;
@@ -33,11 +34,8 @@ import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.util.ConfigMonitor;
 import com.android.launcher3.util.Preconditions;
 import com.android.launcher3.util.SettingsObserver;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-
-import static ch.deletescape.lawnchair.settings.ui.SettingsActivity.NOTIFICATION_BADGING;
 
 public class LauncherAppState {
 
@@ -173,6 +171,11 @@ public class LauncherAppState {
 
     public InvariantDeviceProfile getInvariantDeviceProfile() {
         return mInvariantDeviceProfile;
+    }
+
+    public void reloadIconCache() {
+        mIconCache.removeAllIcons();
+        mModel.forceReloadOnNextLaunch();
     }
 
     /**
