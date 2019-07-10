@@ -28,6 +28,6 @@ public class ProviderConstructor {
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         Class clazs = Class.forName(clazz);
         Constructor<FeedProvider> method = clazs.getConstructor(Context.class);
-        return (FeedProvider) method.newInstance( context);
+        return method.newInstance(context);
     }
 }

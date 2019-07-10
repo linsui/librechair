@@ -23,9 +23,11 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.annotation.Keep
+import android.webkit.WebView
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
@@ -51,6 +53,12 @@ class LawnchairApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        d("Current process: " + getCurrentProcessName(this))
+        if (getCurrentProcessName(this).contains("overlay")) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                WebView.setDataDirectorySuffix("_overlay")
+            }
+        }
         if (lawnchairPrefs.leakCanary) {
             if (LeakCanary.isInAnalyzerProcess(this)) {
                 // This process is dedicated to LeakCanary for heap analysis.

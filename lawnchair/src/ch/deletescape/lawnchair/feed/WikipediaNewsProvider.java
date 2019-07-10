@@ -81,8 +81,8 @@ public class WikipediaNewsProvider extends FeedProvider {
         return wikiText == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
+                            WebView webView = new WebView(getContext());
                             if (wikiText != null) {
-                                WebView webView = new WebView(getContext());
                                 webView.setBackgroundColor(Color.TRANSPARENT);
                                 if (ThemeManager.Companion.getInstance(webView.getContext())
                                         .isDark()) {

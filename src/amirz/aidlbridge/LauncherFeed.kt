@@ -42,13 +42,15 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             while (true) {
                 d("refreshing adapter")
                 adapter.refresh()
+                d("adapter refreshed")
                 handler.post {
                     d("notifying adapter")
                     adapter.notifyDataSetChanged()
+                    d("adapter notified")
                 }
                 try {
-                    d("sleeping for 1 second")
-                    Thread.sleep(3000);
+                    d("sleeping for 8 seconds")
+                    Thread.sleep(8000);
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }

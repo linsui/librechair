@@ -18,6 +18,7 @@
 package ch.deletescape.lawnchair
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.ContentResolver
 import android.content.Context
 import android.content.pm.LauncherActivityInfo
@@ -946,6 +947,17 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     }
     return v;
 }
+
+fun getCurrentProcessName(context: Context): String {
+    val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    manager.runningAppProcesses.iterator().forEach {
+        if (it.pid == android.os.Process.myPid()) {
+            return it.processName;
+        }
+    }
+    error("This function may only be called within Librechair")
+}
+
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
 
