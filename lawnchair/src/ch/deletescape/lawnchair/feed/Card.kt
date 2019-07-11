@@ -23,7 +23,14 @@ import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
 
-data class Card(val icon: Drawable, val title: String, val inflateHelper: InflateHelper, val type: Int) {
+/*
+ * algoFlags is a simple comma-separated string with flags for the sorting algorithm
+ * An example for the Mixer algorithm would be:
+ *     "nosort,top"
+ * which will ensure that the card appears on the top of the screen, in user-defined order
+ */
+
+data class Card(val icon: Drawable, val title: String, val inflateHelper: InflateHelper, val type: Int, val algoFlags: String? = null) {
     companion object {
         val DEFAULT = 0
         val RAISE = 1 shl 1
