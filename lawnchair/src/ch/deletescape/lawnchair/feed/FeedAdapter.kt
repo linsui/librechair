@@ -28,6 +28,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
@@ -98,12 +99,15 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                         Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
                                                         Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default
                                                         Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised
+
                                                         else -> error("invalid bitmask")
                                                     }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
         }
-        if (type and Card.NO_HEADER == 1) {
+
+        if (type and Card.NO_HEADER == 1 || type == Card.NO_HEADER) {
+            d("NO_HEADER")
             icon.visibility = View.GONE
             description.visibility = View.GONE
         }
