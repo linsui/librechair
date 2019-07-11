@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.trebuchet;
 
 import android.app.Service;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -103,8 +104,8 @@ public class Bridge extends Service {
         Log.d(getClass().getCanonicalName(), "onBind: created intent");
         service.setComponent(new ComponentName(BuildConfig.APPLICATION_ID,
                 "com.android.quickstep.TouchInteractionService"));
-        startService(service);
         Log.d(getClass().getCanonicalName(), "onBind: set component and requesting bind");
+        startService(intent);
         bindService(service, new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
@@ -115,7 +116,7 @@ public class Bridge extends Service {
             public void onServiceDisconnected(ComponentName name) {
 
             }
-        }, 0);
+        }, Context.BIND_AUTO_CREATE);
         Log.d(getClass().getCanonicalName(), "onBind: returning binder");
         return bridge;
     }
