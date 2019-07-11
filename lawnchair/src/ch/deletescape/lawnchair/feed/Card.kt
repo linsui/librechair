@@ -29,6 +29,7 @@ data class Card(val icon: Drawable, val title: String, val inflateHelper: Inflat
         val RAISE = 1 shl 1
         val NARROW = 1 shl 2
         val TEXT_ONLY = 1 shl 3
+        val NO_HEADER = 1 shl 4
 
         interface InflateHelper {
             fun inflate(parent: ViewGroup): View

@@ -102,5 +102,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
         }
+        if (type and Card.NO_HEADER == 1) {
+            icon.visibility = View.GONE
+            description.visibility = View.GONE
+        }
     }
 }
