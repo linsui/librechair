@@ -179,6 +179,10 @@
             android:key="pref_initLeakCanary"
             android:title="Initialize leak canary" />
 
+        <ch.deletescape.lawnchair.settings.ui.RecentsProviderPreference
+            android:key="pref_quickstep"
+            android:title="Change Quickstep provider" />
+
         <Preference
             android:key="pref_drawerTabs"
             android:title="@string/drawer_tabs"

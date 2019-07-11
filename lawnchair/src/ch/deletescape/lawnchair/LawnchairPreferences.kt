@@ -298,6 +298,7 @@ class LawnchairPreferences(val context: Context) :
     var searchBarRadius by DimensionPref("pref_searchbarRadius", -1f)
 
     // Quickstep
+    var quickstep by StringPref("pref_quickstep", BuildConfig.APPLICATION_ID, doNothing)
     var swipeUpToSwitchApps by BooleanPref("pref_swipe_up_to_switch_apps_enabled", true, doNothing)
     val recentsRadius by DimensionPref("pref_recents_radius", context.resources.getInteger(
         R.integer.task_corner_radius).toFloat(), doNothing)
