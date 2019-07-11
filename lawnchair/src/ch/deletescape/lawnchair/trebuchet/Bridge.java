@@ -29,7 +29,9 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.MotionEvent;
 import androidx.annotation.Nullable;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.BuildConfig;
+import com.android.quickstep.TouchInteractionService;
 import com.android.systemui.shared.recents.IOverviewProxy;
 import com.android.systemui.shared.recents.IOverviewProxy.Stub;
 import com.android.systemui.shared.recents.ISystemUiProxy;
@@ -101,22 +103,41 @@ public class Bridge extends Service {
     public IBinder onBind(Intent intent) {
         Log.d(getClass().getCanonicalName(), "onBind: beginning bridge");
         Intent service = new Intent();
+        Intent fallbackService = new Intent(this, TouchInteractionService.class);
         Log.d(getClass().getCanonicalName(), "onBind: created intent");
-        service.setComponent(new ComponentName(BuildConfig.APPLICATION_ID,
-                "com.android.quickstep.TouchInteractionService"));
+        if (LawnchairUtilsKt.getLawnchairPrefs(this).getQuickstep().equals(BuildConfig.APPLICATION_ID)) {
+            service = new Intent(this, TouchInteractionService.class);
+        } else {
+            service.setAction("android.intent.action.QUICKSTEP_SERVICE");
+        }
+        service.setPackage(LawnchairUtilsKt.getLawnchairPrefs(this).getQuickstep());
         Log.d(getClass().getCanonicalName(), "onBind: set component and requesting bind");
         startService(intent);
-        bindService(service, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                binder = (IOverviewProxy) service;
-            }
+        try {
+            bindService(service, new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    binder = (IOverviewProxy) service;
+                }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
 
-            }
-        }, Context.BIND_AUTO_CREATE);
+                }
+            }, Context.BIND_AUTO_CREATE);
+        } catch (SecurityException e) {
+            bindService(fallbackService, new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    binder = (IOverviewProxy) service;
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+
+                }
+            }, Context.BIND_AUTO_CREATE);
+        }
         Log.d(getClass().getCanonicalName(), "onBind: returning binder");
         return bridge;
     }
