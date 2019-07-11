@@ -50,9 +50,16 @@ public class WikipediaNewsProvider extends FeedProvider {
                 .newDrawable().mutate();
         this.newsIcon.setTint(c.getColor(R.color.colorAccent));
         Executors.newSingleThreadExecutor().submit(() -> {
-            this.wikipedia = new Wiki("en.wikipedia.org");
-            this.wikipedia.conf.userAgent = "Librechair";
-            wikiText = wikipedia.getPageText("Template:In the news");
+                this.wikipedia = new Wiki("en.wikipedia.org");
+                this.wikipedia.conf.userAgent = "Librechair";
+            while (wikiText == null) {
+                wikiText = wikipedia.getPageText("Template:In the news");
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         });
     }
 

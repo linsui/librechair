@@ -109,7 +109,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                         return recyclerView;
                     }
 
-                }, Card.DEFAULT))
+                }, Card.NO_HEADER))
     }
 
     override fun onDataUpdated(data: DataContainer) {
