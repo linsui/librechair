@@ -76,7 +76,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-        mFeedContent = findViewById(R.id.feed_recycler)
+        mFeedContent = findViewById(R.id.feed_content)
         mFeedBackground = findViewById(R.id.overlay_feed)
     }
 

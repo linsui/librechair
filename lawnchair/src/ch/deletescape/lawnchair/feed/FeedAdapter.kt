@@ -96,8 +96,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                         Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
                                                         Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
                                                         Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
-
-                                                        else -> error("magic: invalid bitmask")
+                                                        Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default
+                                                        Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised
+                                                        else -> error("invalid bitmask")
                                                     }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
