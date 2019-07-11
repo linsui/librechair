@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import com.google.android.apps.nexuslauncher.allapps.PredictionRowView;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class PredictedAppsProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
+        RecyclerView recyclerView = new RecyclerView(getContext());
         return null;
     }
 }

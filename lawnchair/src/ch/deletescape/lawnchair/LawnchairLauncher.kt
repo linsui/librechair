@@ -110,12 +110,9 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         performSignatureVerification()
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-        if (lawnchairPrefs.swipeForFeed) {
-            /*
-             * Perhaps there will be additional initialization code here in the future?
-             */
-        } else {
-            setLauncherOverlay(null);
+
+        if (!lawnchairPrefs.swipeForFeed) {
+            setLauncherOverlay(null)
         }
     }
 
