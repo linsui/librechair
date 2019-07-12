@@ -17,21 +17,21 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.iconpack
+package ch.deletescape.lawnchair.settings.ui.controllers
 
 import android.content.Context
-import ch.deletescape.lawnchair.util.LawnchairSingletonHolder
-import com.android.launcher3.graphics.IconShapeOverride
+import android.support.annotation.Keep
+import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.settings.ui.PreferenceController
+import ch.deletescape.lawnchair.smartspace.AccuWeatherDataProvider
 
-class IconShapeManager(private val context: Context) {
+@Keep
+class WeatherIconPackController(context: Context) : PreferenceController(context) {
 
-    fun getOverride(): String? {
-        return IconShapeOverride.getAppliedValue(context)
-    }
+    override val isVisible= context.lawnchairPrefs.weatherProvider in SUPPORTED
 
-    companion object : LawnchairSingletonHolder<IconShapeManager>(::IconShapeManager) {
-
-        @JvmStatic
-        fun getInstanceNoCreate() = dangerousGetInstance()
+    companion object {
+        private val SUPPORTED = listOf(
+                AccuWeatherDataProvider::class.java.name)
     }
 }

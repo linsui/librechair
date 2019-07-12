@@ -181,7 +181,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
             overrideOpenAnim();
         }
 
-        Utilities.getDevicePrefs(this).edit().putBoolean(OnboardingProvider.PREF_HAS_OPENED_SETTINGS, true).apply();
+        Utilities.getDevicePrefs(this).edit()
+                .putBoolean(OnboardingProvider.PREF_HAS_OPENED_SETTINGS, true).apply();
     }
 
     @Override
@@ -722,6 +723,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = SmartspaceEventProvidersFragment.Companion.newInstance(preference.getKey());
             } else if (preference instanceof FeedProvidersPreference) {
                 f = FeedProvidersFragment.Companion.newInstance(preference.getKey());
+            } else if (preference instanceof WeatherIconPackPreference) {
+                f = WeatherIconPackDialogFragment.Companion.newInstance();
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;
