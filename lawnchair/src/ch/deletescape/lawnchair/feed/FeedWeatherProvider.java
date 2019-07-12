@@ -71,7 +71,7 @@ public class FeedWeatherProvider extends FeedProvider implements Listener {
                 weatherData.getIcon()), getContext()
                 .getString(R.string.title_card_weather_temperature,
                         weatherData.getTitle(LawnchairUtilsKt.getLawnchairPrefs(getContext()).getWeatherUnit())),
-                parent -> new View(getContext()), Card.Companion.getTEXT_ONLY())) : Collections.emptyList();
+                parent -> new View(getContext()), Card.Companion.getTEXT_ONLY(), null)) : Collections.emptyList();
     }
 
     @Override

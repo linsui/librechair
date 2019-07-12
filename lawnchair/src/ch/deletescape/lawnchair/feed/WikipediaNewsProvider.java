@@ -114,6 +114,6 @@ public class WikipediaNewsProvider extends FeedProvider {
                                 return webView;
                             }
                             return new View(getContext());
-                        }, Card.Companion.getRAISE()));
+                        }, Card.Companion.getRAISE(), null));
     }
 }
