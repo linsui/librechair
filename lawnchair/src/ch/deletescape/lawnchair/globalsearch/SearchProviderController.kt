@@ -100,7 +100,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                 BuiltInSearchProvider(context),
                 KISSLauncherSearchProvider(context),
                 ChromiumBromiteSearchProvider.BromiteSearchProvider(context),
-                ChromiumBromiteSearchProvider.ChromiumSearchProvider(context)
+                ChromiumBromiteSearchProvider.ChromiumSearchProvider(context),
+                FennecSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }

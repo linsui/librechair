@@ -402,4 +402,5 @@
     <string name="title_preference_swipe_feed">Swipe left for feed</string>
     <string name="summary_preference_swipe_feed">You can swipe from the left of the home screen for the feed</string>
     <string name="web_search_yahoo">Yahoo (web)</string>
+    <string name="fennec_fdroid">Fennec F-Droid</string>
 </resources>
