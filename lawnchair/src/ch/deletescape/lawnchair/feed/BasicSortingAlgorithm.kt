@@ -17,23 +17,6 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed;
+package ch.deletescape.lawnchair.feed
 
-import java.util.ArrayList;
-import java.util.List;
-import org.jetbrains.annotations.NotNull;
-
-public class OrderedSortingAlgorithm extends BasicSortingAlgorithm {
-
-    public OrderedSortingAlgorithm(int channels) {
-        super(channels);
-    }
-
-    @NotNull
-    @Override
-    public List<Card> sort(@NotNull List<? extends Card> cards) {
-        List<Card> cards1 = new ArrayList<>();
-        cards1.addAll(cards);
-        return cards1;
-    }
-}
+abstract class BasicSortingAlgorithm(channels: Int) : SortingAlgorithm<Card>
