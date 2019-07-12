@@ -23,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import ch.deletescape.lawnchair.getIcon
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.LawnchairSingletonHolder
 import com.android.launcher3.R
@@ -35,7 +34,7 @@ class WeatherIconManager(private val context: Context) {
             object : WeatherIconPack(context, context.getString(R.string.weather_icons_default), "",
                                      RecoloringMode.NEVER) {
                 override val provider = DefaultIconProvider(context)
-                override val icon = context.getIcon()
+                override val icon = context.getDrawable(R.drawable.weather_04)
             }
 
     fun getIconPacks(): List<WeatherIconPack> = mutableListOf<WeatherIconPack>(defaultPack).apply {
@@ -43,7 +42,7 @@ class WeatherIconManager(private val context: Context) {
                 Intent(Intent.ACTION_MAIN).addCategory(
                         INTENT_CATEGORY), PackageManager.GET_META_DATA)?.map {
             val recoloringMode =
-                    it.activityInfo.metaData.getString(METADATA_KEY)?.let {
+                    it.activityInfo.metaData?.getString(METADATA_KEY)?.let {
                         RecoloringMode.fromName(it)
                     } ?: RecoloringMode.NEVER
             WeatherIconPack(
@@ -131,7 +130,7 @@ class WeatherIconManager(private val context: Context) {
 
     open class WeatherIconPack(val context: Context, val name: String, val pkgName: String,
                                val recoloringMode: RecoloringMode) {
-        open val provider: IconProvider by lazy { WeatherIconPackProviderImpl(context, pkgName) }
+        open val provider: IconProvider by lazy { WeatherIconPackProviderImpl(context, pkgName, this) }
         open val icon by lazy { context.packageManager.getApplicationIcon(pkgName) }
     }
 

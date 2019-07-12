@@ -153,11 +153,11 @@
     <string name="about_role_mod_support">Moderator/podrška</string>
     <string name="about_role_family_member">Član obitelji</string>
     <string name="about_role_magisk_maintainer">Održavatelj Magisk modula</string>
-    <string name="blur_pref_summary">Efekt zamagljenosti za izbornik aplikacija, dock itd.</string>
-    <string name="dock_search_bar">Traka za pretraživanje u docku</string>
     <string name="about_bio_deletescape">Android programer, entuzijast, obožava memeove (malo previše, zapravo). Osnivatelj Lawnchair projekta.</string>
     <string name="about_bio_recoded">Srednji programer i grafički dizajner.</string>
     <string name="about_bio_josh">Honorarni grafički dizajner.</string>
+    <string name="blur_pref_summary">Efekt zamagljenosti za izbornik aplikacija, dock itd.</string>
+    <string name="dock_search_bar">Traka za pretraživanje u docku</string>
     <!--Marker E-->
     <string name="debug_crash_launcher">Sruši pokretač</string>
     <string name="gestures_pref_title">Geste</string>
@@ -186,9 +186,9 @@
     <string name="gesture_swipe_down">Povlačenje prema dolje</string>
     <string name="gesture_swipe_up">Povlačenje prema gore</string>
     <string name="gesture_dock_swipe_up">Povlačenje prema gore na docku</string>
+    <string name="pref_show_assistant_title">Tipka glasovnog pretraživanja</string>
     <string name="about_bio_msfjarvis">Ključni programer halogenOS-a i programer aplikacija u substratum.</string>
     <string name="action_none">Ništa</string>
-    <string name="pref_show_assistant_title">Tipka glasovnog pretraživanja</string>
     <string name="smartspace_time_24_h">24-satni format</string>
     <string name="weather_provider_disabled">Onemogućeno</string>
     <string name="weather_provider_pe">PixelExperience</string>
@@ -212,17 +212,17 @@
     <string name="units_imperial">Fahrenheit</string>
     <string name="units_kelvin">Kelvin</string>
     <string name="all_icons">Sve ikone</string>
-    <string name="separate_work_apps_pref_title">Druga kartica za poslovne aplikacije</string>
-    <string name="pref_weather_city_summary">Za najbolje rezultate dodajte poštanski broj</string>
     <string name="error_no_browser">Nema aktivnosti za rukovanje poveznicama</string>
     <string name="no_icon_found">Ikona nije pronađena</string>
+    <string name="separate_work_apps_pref_title">Druga kartica za poslovne aplikacije</string>
+    <string name="pref_weather_city_summary">Za najbolje rezultate dodajte poštanski broj</string>
     <string name="weather_provider_testing">Otklanjanje pogrešaka</string>
     <!--Marker G-->
-    <string name="icon_pack_external_picker">Otvori eksterni odabir</string>
-    <string name="title_use_pill_qsb">Koristi stil tablete za traku pretraživanja</string>
     <string name="backup_generate_report">Stvori izvješće o pogrešci</string>
     <string name="show_top_shadow_pref_title">Sjena na vrhu</string>
     <string name="show_top_shadow_pref_summary">Sjena ispod statusne trake</string>
+    <string name="icon_pack_external_picker">Otvori eksterni odabir</string>
+    <string name="title_use_pill_qsb">Koristi stil tablete za traku pretraživanja</string>
     <string name="reset">Resetiraj</string>
     <string name="theme_title">Tema</string>
     <string name="theme_automatic">Automatska</string>
@@ -230,24 +230,22 @@
     <string name="theme_default">Zadana</string>
     <string name="transparent">Prozirna</string>
     <string name="pref_open_source_licenses_title">Licence</string>
-    <string name="two_row_dock">Dva reda</string>
-    <string name="keep_scroll_state_pref_title">Zapamti poziciju listanja</string>
     <string name="pref_legacy_treatment_title">Stvori prilagodljive ikone</string>
     <string name="pref_legacy_treatment_summary">Auto. prilagodljive ikone za sve aplikacije</string>
     <string name="dt2s_admin_hint">Kako bi koristili dvostruki dodir za zaključavanje, dopustite dozvolu za administrativna prava</string>
     <string name="dt2s_admin_warning">Dvostruki dodir za zaključavanje će biti onemogućen</string>
     <string name="icon_pack_applied_toast">%s primijenjeno</string>
+    <string name="two_row_dock">Dva reda</string>
+    <string name="keep_scroll_state_pref_title">Zapamti poziciju listanja</string>
     <string name="color_presets">Preseti</string>
     <string name="custom">Prilagođeno</string>
-    <string name="color_system_accent">Naglašena boja sustava</string>
-    <string name="color_pixel_accent">Pixel plava</string>
     <string name="color_wallpaper_main">Pozadina - primarna</string>
-    <string name="pref_hide_statusbar">Sakrij statusnu traku</string>
     <string name="color_wallpaper_secondary">Pozadina - sekundarna</string>
     <string name="color_wallpaper_tertiary">Pozadina - tercijarna</string>
-    <string name="quickstep_pref_title">Nedavne aplikacije</string>
+    <string name="color_system_accent">Naglašena boja sustava</string>
     <string name="automatic_short">Auto</string>
     <string name="bridge_missing_message">Instalirajte ili ažurirajte Lawnfeed</string>
+    <string name="color_pixel_accent">Pixel plava</string>
     <string name="quickstep_pref_summary">Geste, kutevi, zamagljenost</string>
     <string name="swipe_up_to_switch_apps_title">Povlačenje prema gore za promjenu aplikacija</string>
     <string name="swipe_left_to_go_back_title">Povlačenje prema lijevo za natrag</string>
@@ -255,6 +253,8 @@
     <string name="gesture_nav_swipe_up_left">S lijeva</string>
     <string name="gesture_nav_swipe_up_center">Iz centra</string>
     <string name="gesture_nav_swipe_up_right">S desna</string>
+    <string name="pref_hide_statusbar">Sakrij statusnu traku</string>
+    <string name="quickstep_pref_title">Nedavne aplikacije</string>
     <string name="searchbar_appearance_title">Izgled</string>
     <string name="google">Google</string>
     <string name="search_provider_google_go">Google Go</string>
@@ -262,33 +262,33 @@
     <string name="search_provider_ddg">DuckDuckGo</string>
     <string name="search_provider_bing">Bing</string>
     <string name="search_provider_baidu">Baidu</string>
-    <string name="action_switch_apps">Promijeni aplikacije</string>
-    <string name="pref_global_search_provider">Pretraživač</string>
     <string name="search_provider_appsearch">Pretraživanje aplikacija</string>
-    <string name="recent_task_option_force_stop">Prisilno zaustavi</string>
-    <string name="pref_icon_packs">Paketi ikona</string>
     <string name="search_provider_search_lite">Search Lite</string>
     <string name="search_provider_cool_search">Cool Search</string>
+    <string name="action_switch_apps">Promijeni aplikacije</string>
+    <string name="pref_global_search_provider">Pretraživač</string>
     <string name="drag_to_enable_packs">Povuci prema gore za omogućavanje</string>
-    <string name="enabled_icon_packs">Omogućeno</string>
     <string name="drag_to_disable_packs">Povuci prema dolje za onemogućavanje</string>
     <string name="get_more_icon_packs">Nabavi više</string>
+    <string name="recent_task_option_force_stop">Prisilno zaustavi</string>
     <string name="pref_icon_pack_masking">Maskiranje ikona</string>
     <string name="pref_icon_pack_masking_summary">Učinite da se ikone koje nisu temirane slažu s primijenjenim paketom ikona</string>
     <string name="pref_legacy_colored_backgrounds">Obojene pozadine</string>
     <string name="pref_legacy_colored_backgrounds_summary">Obojene pozadine za generirane prilagodljive ikone</string>
     <string name="pref_white_only_treatment">Zamijeni bijele pozadine</string>
-    <!--Marker H-->
     <string name="pref_white_only_treatment_summary">Obojene pozadine za sve prilagodljive ikone</string>
     <string name="smartspace_provider_bridge">Rootless Pixel Bridge</string>
+    <!--Marker H-->
     <string name="dismiss_drop_target_label">"Ne prikazuj"</string>
+    <string name="pref_icon_packs">Paketi ikona</string>
+    <string name="enabled_icon_packs">Omogućeno</string>
     <string name="pref_drawer_padding">Visina reda</string>
     <string name="pref_drawer_columns">Broj stupaca</string>
     <string name="pref_prediction_count">Broj prijedloga</string>
-    <string name="suggested_action_content_description">%1$s se otvara u %2$s</string>
-    <string name="lawnchair_actions">Radnje</string>
-    <string name="action_sleep">Spavaj</string>
     <string name="pref_mutliline_labels">Nazivi aplikacija u više redova</string>
+    <string name="suggested_action_content_description">%1$s se otvara u %2$s</string>
+    <string name="action_sleep">Spavaj</string>
+    <string name="lawnchair_actions">Radnje</string>
     <string name="theme_light">Svijetla</string>
     <string name="theme_dark_text">Svijetla s tamnim tekstom</string>
     <string name="theme_with_dark_text">tamni tekst</string>
@@ -301,13 +301,13 @@
     <string name="theme_dark_theme_mode_off">Isključeno</string>
     <string name="theme_dark_theme_mode_follow_wallpaper">@string/theme_auto</string>
     <string name="theme_dark_theme_mode_follow_system">@string/theme_auto_night_mode</string>
-    <string name="theme_auto">Prati pozadinu</string>
-    <string name="theme_auto_night_mode">Prati temu sustava</string>
     <string name="theme_dark_theme_mode_follow_daylight">Prati zalazak sunca</string>
-    <string name="pref_qsb_color">Boja</string>
-    <string name="hide_from_predictions">Sakrij iz prijedloga</string>
     <string name="theme_use_black">Koristi potpuno crnu</string>
     <string name="theme_use_dark_text">Koristi tamni tekst</string>
+    <string name="theme_auto">Prati pozadinu</string>
+    <string name="theme_auto_night_mode">Prati temu sustava</string>
+    <string name="pref_qsb_color">Boja</string>
+    <string name="hide_from_predictions">Sakrij iz prijedloga</string>
     <string name="search_clear_history">Očisti povijest</string>
     <string name="search_no_results">Ništa nije pronađeno</string>
     <string name="search_menu">Pronađi postavke</string>
@@ -322,13 +322,13 @@
     <string name="bubble_searchbar">Dvostruki krug za traku pretraživanja</string>
     <string name="app_actions_pref_title">Radnje</string>
     <string name="app_actions_pref_title_in_search">Prijedlozi radnja</string>
-    <string name="theme_based">Prati temu</string>
-    <string name="change_default_home">Postavi kao početni zaslon</string>
-    <string name="summary_app_suggestions_lawnstep">U nedavnim aplikacijama i izborniku aplikacija</string>
-    <string name="feed_theme_pref_title">Boja pozadine</string>
     <string name="app_actions_pref_desc">Prečac na često otvorene zaslone</string>
+    <string name="theme_based">Prati temu</string>
     <string name="recent_task_option_popup_window">Prozor dijaloga</string>
+    <string name="summary_app_suggestions_lawnstep">U nedavnim aplikacijama i izborniku aplikacija</string>
     <string name="recents_not_connected">Servis nije povezan</string>
+    <string name="change_default_home">Postavi kao početni zaslon</string>
+    <string name="feed_theme_pref_title">Boja pozadine</string>
     <string name="drawer_tabs">Kartice</string>
     <string name="add_new_tab">Dodaj</string>
     <string name="rename_tab">Preimenuj</string>
@@ -349,7 +349,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Prečaci</string>
     <string name="pref_integrations">Integracije</string>
-    <string name="pref_integrations_summary">Pretraživanje</string>
+    <string name="pref_integrations_summary">Pretraživanje, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Integracija podataka</string>
     <string name="sesame_upsell">Dodirnite za instalaciju Sesame</string>
@@ -499,20 +499,6 @@
     <string name="zen_mode_enabled">Uključena opcija \'Ne ometaj\'</string>
     <string name="crash_report_notif_title">%1$s se srušio!</string>
     <string name="personality_provider">Kontekstualne poruke</string>
-    <string name="onbording_settings_title">Postavi %s</string>
-    <string name="onbording_settings_summary">Dugi pritisak na tvoj početni zaslon</string>
-    <string name="onboarding_swipe_up">Klizni prema gore za vidjeti sve aplikacije</string>
-    <string name="web_search_google">Google (web)</string>
-    <string name="web_search_ddg">DuckDuckGo (web)</string>
-    <string name="web_search_startpage">Startpage.com (web)</string>
-    <string name="web_search_bing">Bing (web)</string>
-    <string name="web_search_qwant">Qwant (web)</string>
-    <string name="web_search_ecosia">Ecosia (web)</string>
-    <string name="web_search_yandex">Yandex (web)</string>
-    <string name="web_search_naver">Naver (web)</string>
-    <string name="web_search_baidu">Baidu (web)</string>
-    <string name="icon_shape_override_miui_explaination">Zbog restrikcije MIUI sustava, oblik vaših ikona se možda neće promijeniti te će ostati kvadrat.\nMolimo ne prijavljujte ovo kao pogrešku.</string>
-    <string name="button_organize_screens">Organiziraj zaslone</string>
     <string-array name="greetings_morning">
         <item>Dobro jutro!</item>
         <item>Kakav prekrasan dan!</item>
@@ -528,4 +514,22 @@
         <item>Kakav ti je bio dan?</item>
         <item>Što si danas radio/la?</item>
     </string-array>
+    <string name="onbording_settings_title">Postavi %s</string>
+    <string name="onbording_settings_summary">Dugi pritisak na tvoj početni zaslon</string>
+    <string name="onboarding_swipe_up">Klizni prema gore za vidjeti sve aplikacije</string>
+    <string name="web_search_google">Google (web)</string>
+    <string name="web_search_ddg">DuckDuckGo (web)</string>
+    <string name="web_search_startpage">Startpage.com (web)</string>
+    <string name="web_search_bing">Bing (web)</string>
+    <string name="web_search_qwant">Qwant (web)</string>
+    <string name="web_search_ecosia">Ecosia (web)</string>
+    <string name="web_search_yandex">Yandex (web)</string>
+    <string name="web_search_naver">Naver (web)</string>
+    <string name="web_search_baidu">Baidu (web)</string>
+    <string name="icon_shape_override_miui_explaination">Zbog restrikcije MIUI sustava, oblik vaših ikona se možda neće promijeniti te će ostati kvadrat.\nMolimo ne prijavljujte ovo kao pogrešku.</string>
+    <string name="button_organize_screens">Organiziraj zaslone</string>
+    <string name="weather_icons_default">Zadano</string>
+    <string name="pref_weather_icon_pack">Ikone vremena</string>
+    <string name="weather_icon_packs_not_supported">Nije podržano od vašeg trenutnog pružatelja prognoze vremena</string>
+    <string name="lawnchair_settings">Postavke Lawnchaira</string>
 </resources>

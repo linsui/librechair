@@ -86,7 +86,7 @@
     <string name="backup_location_device_storage">Lawnchair map</string>
     <string name="grid_size_height">Hoogte</string>
     <string name="grid_size_width">Breedte</string>
-    <string name="launcher_theme_override_label">Donker thema gebruiken</string>
+    <string name="launcher_theme_override_label">Donker thema forceren</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="blur_pref_title">Vervaging</string>
     <string name="blur_pref_summary">Vervagingseffect voor app-overzicht, dock, instellingen achtergrond</string>
@@ -354,7 +354,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Snelkoppelingen</string>
     <string name="pref_integrations">Integraties</string>
-    <string name="pref_integrations_summary">Zoeken</string>
+    <string name="pref_integrations_summary">Zoeken, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Gegevensintegratie</string>
     <string name="sesame_upsell">Tik om Sesame te installeren</string>
@@ -504,19 +504,6 @@
     <string name="zen_mode_enabled">Niet storen is ingeschakeld</string>
     <string name="crash_report_notif_title">%1$s is vastgelopen!</string>
     <string name="personality_provider">Contextuele berichten</string>
-    <string name="onbording">Onboarding</string>
-    <string name="onbording_settings_title">%s instellen</string>
-    <string name="onbording_settings_summary">Startscherm lang aanraken</string>
-    <string name="onboarding_swipe_up">Veeg omhoog om alle apps te zien</string>
-    <string name="web_search_google">Google (web)</string>
-    <string name="web_search_ddg">DuckDuckGo (web)</string>
-    <string name="web_search_startpage">Startpage.com (web)</string>
-    <string name="web_search_bing">Bing (web)</string>
-    <string name="web_search_qwant">Qwant (web)</string>
-    <string name="web_search_ecosia">Ecosia (web)</string>
-    <string name="web_search_yandex">Yandex (web)</string>
-    <string name="web_search_naver">Never (web)</string>
-    <string name="web_search_baidu">Baidu (web)</string>
     <string-array name="greetings_morning">
         <item>Goedemorgen!</item>
         <item>Wat een mooie dag!</item>
@@ -532,4 +519,23 @@
         <item>Hoe was je dag?</item>
         <item>Wat heb je gedaan vandaag?</item>
     </string-array>
+    <string name="onbording">Onboarding</string>
+    <string name="onbording_settings_title">%s instellen</string>
+    <string name="onbording_settings_summary">Startscherm lang aanraken</string>
+    <string name="onboarding_swipe_up">Veeg omhoog om alle apps te zien</string>
+    <string name="web_search_google">Google (web)</string>
+    <string name="web_search_ddg">DuckDuckGo (web)</string>
+    <string name="web_search_startpage">Startpage.com (web)</string>
+    <string name="web_search_bing">Bing (web)</string>
+    <string name="web_search_qwant">Qwant (web)</string>
+    <string name="web_search_ecosia">Ecosia (web)</string>
+    <string name="web_search_yandex">Yandex (web)</string>
+    <string name="web_search_naver">Never (web)</string>
+    <string name="web_search_baidu">Baidu (web)</string>
+    <string name="icon_shape_override_miui_explaination">Door een restrictie in MIUI zal je pictogramvorm mogelijk niet wijzigen en vierkant blijven.\n Gelieve dit niet te rapporteren als een fout.</string>
+    <string name="button_organize_screens">Schermen beheren</string>
+    <string name="weather_icons_default">Standaard</string>
+    <string name="pref_weather_icon_pack">Weerpictogrammen</string>
+    <string name="weather_icon_packs_not_supported">Niet ondersteund door je huidige weerbron</string>
+    <string name="lawnchair_settings">Lawnchair Instellingen</string>
 </resources>

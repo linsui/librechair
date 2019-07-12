@@ -360,7 +360,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Skróty</string>
     <string name="pref_integrations">Integracje</string>
-    <string name="pref_integrations_summary">Wyszukiwanie</string>
+    <string name="pref_integrations_summary">Wyszukiwanie, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Integracja danych</string>
     <string name="sesame_upsell">Kliknij aby zainstalować Sesame</string>
@@ -510,19 +510,6 @@
     <string name="zen_mode_enabled">Tryb nie przeszkadzać jest włączony</string>
     <string name="crash_report_notif_title">%1$s uległ awarii!</string>
     <string name="personality_provider">Wiadomości kontekstowe</string>
-    <string name="onbording">Wprowadzenie</string>
-    <string name="onbording_settings_title">Konfiguracja %s</string>
-    <string name="onbording_settings_summary">Dotknij i przytrzymaj na ekranie głównym</string>
-    <string name="onboarding_swipe_up">Przeciągnij w górę aby zobaczyć wszystkie twoje aplikacje</string>
-    <string name="web_search_google">Google (sieć)</string>
-    <string name="web_search_ddg">DuckDuckGo (sieć)</string>
-    <string name="web_search_startpage">Startpage.com (sieć)</string>
-    <string name="web_search_bing">Bing (sieć)</string>
-    <string name="web_search_qwant">Qwant (sieć)</string>
-    <string name="web_search_ecosia">Ecosia (sieć)</string>
-    <string name="web_search_yandex">Yandex (sieć)</string>
-    <string name="web_search_naver">Naver (sieć)</string>
-    <string name="web_search_baidu">Baidu (sieć)</string>
     <string-array name="greetings_morning">
         <item>Dzień dobry!</item>
         <item>Co za piękny dzień!</item>
@@ -538,4 +525,19 @@
         <item>Jak ci mija dzień?</item>
         <item>Co dzisiaj zrobiłeś?</item>
     </string-array>
+    <string name="onbording">Wprowadzenie</string>
+    <string name="onbording_settings_title">Konfiguracja %s</string>
+    <string name="onbording_settings_summary">Dotknij i przytrzymaj na ekranie głównym</string>
+    <string name="onboarding_swipe_up">Przeciągnij w górę aby zobaczyć wszystkie twoje aplikacje</string>
+    <string name="web_search_google">Google (sieć)</string>
+    <string name="web_search_ddg">DuckDuckGo (sieć)</string>
+    <string name="web_search_startpage">Startpage.com (sieć)</string>
+    <string name="web_search_bing">Bing (sieć)</string>
+    <string name="web_search_qwant">Qwant (sieć)</string>
+    <string name="web_search_ecosia">Ecosia (sieć)</string>
+    <string name="web_search_yandex">Yandex (sieć)</string>
+    <string name="web_search_naver">Naver (sieć)</string>
+    <string name="web_search_baidu">Baidu (sieć)</string>
+    <string name="icon_shape_override_miui_explaination">Z uwagi na ograniczenie występujące w MIUI, krztałt ikony może się nie zmienić i pozostać kwadratowy.\nProszę nie zgłaszać tego jako błąd.</string>
+    <string name="button_organize_screens">Organizuj ekrany</string>
 </resources>

@@ -498,20 +498,6 @@ Lawnchair プロジェクトの創始者です。</string>
     <string name="zen_mode_enabled">マナーモードは有効です</string>
     <string name="crash_report_notif_title">%1$sがクラッシュしました</string>
     <string name="personality_provider">コンテキストメッセージ</string>
-    <string name="onbording_settings_title">%sのセットアップ</string>
-    <string name="onbording_settings_summary">ホーム画面を長押しして下さい</string>
-    <string name="onboarding_swipe_up">上スワイプで全てのアプリを表示</string>
-    <string name="web_search_google">Google (ウェブ)</string>
-    <string name="web_search_ddg">DuckDuckGo (ウェブ)</string>
-    <string name="web_search_startpage">Startpage.com (ウェブ)</string>
-    <string name="web_search_bing">Bing (ウェブ)</string>
-    <string name="web_search_qwant">Qwant (ウェブ)</string>
-    <string name="web_search_ecosia">Ecosia (ウェブ)</string>
-    <string name="web_search_yandex">Yandex (ウェブ)</string>
-    <string name="web_search_naver">Naver (ウェブ)</string>
-    <string name="web_search_baidu">Baidu (ウェブ)</string>
-    <string name="icon_shape_override_miui_explaination">MIUI の制限により、アイコンの形が変わらず四角のままになることがあります。\nこれをバグとして報告しないで下さい。</string>
-    <string name="button_organize_screens">画面を組織化</string>
     <string-array name="greetings_morning">
         <item>おはようございます</item>
         <item>なんて美しい日でしょう</item>
@@ -527,4 +513,22 @@ Lawnchair プロジェクトの創始者です。</string>
         <item>どんな1日でしたか?</item>
         <item>今日は何をしましたか?</item>
     </string-array>
+    <string name="onbording_settings_title">%sのセットアップ</string>
+    <string name="onbording_settings_summary">ホーム画面を長押しして下さい</string>
+    <string name="onboarding_swipe_up">上スワイプで全てのアプリを表示</string>
+    <string name="web_search_google">Google (ウェブ)</string>
+    <string name="web_search_ddg">DuckDuckGo (ウェブ)</string>
+    <string name="web_search_startpage">Startpage.com (ウェブ)</string>
+    <string name="web_search_bing">Bing (ウェブ)</string>
+    <string name="web_search_qwant">Qwant (ウェブ)</string>
+    <string name="web_search_ecosia">Ecosia (ウェブ)</string>
+    <string name="web_search_yandex">Yandex (ウェブ)</string>
+    <string name="web_search_naver">Naver (ウェブ)</string>
+    <string name="web_search_baidu">Baidu (ウェブ)</string>
+    <string name="icon_shape_override_miui_explaination">MIUI の制限により、アイコンの形が変わらず四角のままになることがあります。\nこれをバグとして報告しないで下さい。</string>
+    <string name="button_organize_screens">画面を組織化</string>
+    <string name="weather_icons_default">既定</string>
+    <string name="pref_weather_icon_pack">天気アイコン</string>
+    <string name="weather_icon_packs_not_supported">あなたの現在の天気情報ソースはサポートしていません</string>
+    <string name="lawnchair_settings">Lawnchair 設定</string>
 </resources>

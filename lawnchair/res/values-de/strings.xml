@@ -355,7 +355,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Verknüpfungen</string>
     <string name="pref_integrations">Integrationen</string>
-    <string name="pref_integrations_summary">Suche</string>
+    <string name="pref_integrations_summary">Suche, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Datenintegration</string>
     <string name="sesame_upsell">Tippen, um Sesame zu installieren</string>
@@ -505,19 +505,6 @@
     <string name="zen_mode_enabled">\"Nicht stören\" ist aktiviert</string>
     <string name="crash_report_notif_title">%1$s ist abgestürzt!</string>
     <string name="personality_provider">Kontextbasierte Nachrichten</string>
-    <string name="onbording">Onboarding</string>
-    <string name="onbording_settings_title">Stelle %s ein</string>
-    <string name="onbording_settings_summary">Lange Tippen auf dem Startbildschirm</string>
-    <string name="onboarding_swipe_up">Nach oben wischen um alle deine Apps zu sehen</string>
-    <string name="web_search_google">Google (Web)</string>
-    <string name="web_search_ddg">DuckDuckGo (Web)</string>
-    <string name="web_search_startpage">Startpage.com (Web)</string>
-    <string name="web_search_bing">Bing (Web)</string>
-    <string name="web_search_qwant">Qwant (Web)</string>
-    <string name="web_search_ecosia">Ecosia (Web)</string>
-    <string name="web_search_yandex">Yandex (Web)</string>
-    <string name="web_search_naver">Naver (Web)</string>
-    <string name="web_search_baidu">Baidu (Web)</string>
     <string-array name="greetings_morning">
         <item>Guten Morgen!</item>
         <item>Was für ein schöner Tag!</item>
@@ -533,4 +520,23 @@
         <item>Wie war dein Tag?</item>
         <item>Was hast du heute gemacht?</item>
     </string-array>
+    <string name="onbording">Onboarding</string>
+    <string name="onbording_settings_title">Stelle %s ein</string>
+    <string name="onbording_settings_summary">Lange Tippen auf dem Startbildschirm</string>
+    <string name="onboarding_swipe_up">Nach oben wischen um alle deine Apps zu sehen</string>
+    <string name="web_search_google">Google (Web)</string>
+    <string name="web_search_ddg">DuckDuckGo (Web)</string>
+    <string name="web_search_startpage">Startpage.com (Web)</string>
+    <string name="web_search_bing">Bing (Web)</string>
+    <string name="web_search_qwant">Qwant (Web)</string>
+    <string name="web_search_ecosia">Ecosia (Web)</string>
+    <string name="web_search_yandex">Yandex (Web)</string>
+    <string name="web_search_naver">Naver (Web)</string>
+    <string name="web_search_baidu">Baidu (Web)</string>
+    <string name="icon_shape_override_miui_explaination">Wegen einer Beschränkung in MIUI kann es sein, dass sich die Icon-Form nicht ändert und die Icons quadratisch bleiben.\nDies bitte nicht als Fehler melden.</string>
+    <string name="button_organize_screens">Bildschirme organisieren</string>
+    <string name="weather_icons_default">Standard</string>
+    <string name="pref_weather_icon_pack">Wetter-Icons</string>
+    <string name="weather_icon_packs_not_supported">Deine aktuelle Wetter-Quelle unterstützt das leider nicht.</string>
+    <string name="lawnchair_settings">Lawnchair-Einstellungen</string>
 </resources>

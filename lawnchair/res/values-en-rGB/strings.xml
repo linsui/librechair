@@ -346,7 +346,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Shortcuts</string>
     <string name="pref_integrations">Integrations</string>
-    <string name="pref_integrations_summary">Search</string>
+    <string name="pref_integrations_summary">Search, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Data integration</string>
     <string name="sesame_upsell">Tap to install Sesame</string>
@@ -445,6 +445,7 @@
     <string name="category_photography">Personalization</string>
     <string name="category_tools">Utility</string>
     <string name="category_travel_and_navigation">Travel and Navigation</string>
+    <string name="lock_desktop">Lock desktop</string>
     <string name="reset_custom_icons">Reset custom icons</string>
     <string name="reset_custom_icons_confirmation">Are you sure you want to reset all custom icons? This action is non-reversible.</string>
     <string name="open_image_picker">Open image picker</string>
@@ -495,18 +496,6 @@
     <string name="zen_mode_enabled">Do not disturb is enabled</string>
     <string name="crash_report_notif_title">%1$s crashed!</string>
     <string name="personality_provider">Contextual messages</string>
-    <string name="onbording_settings_title">Set-up %s</string>
-    <string name="onbording_settings_summary">Long press your home screen</string>
-    <string name="onboarding_swipe_up">Swipe up to see all your apps</string>
-    <string name="web_search_google">Google (web)</string>
-    <string name="web_search_ddg">DuckDuckGo (web)</string>
-    <string name="web_search_startpage">Startpage.com (web)</string>
-    <string name="web_search_bing">Bing (web)</string>
-    <string name="web_search_qwant">Qwant (web)</string>
-    <string name="web_search_ecosia">Ecosia (web)</string>
-    <string name="web_search_yandex">Yandex (web)</string>
-    <string name="web_search_naver">Naver (web)</string>
-    <string name="web_search_baidu">Baidu (web)</string>
     <string-array name="greetings_morning">
         <item>Good morning!</item>
         <item>What a beautiful day!</item>
@@ -522,4 +511,18 @@
         <item>How was your day?</item>
         <item>What did you do today?</item>
     </string-array>
+    <string name="onbording_settings_title">Set-up %s</string>
+    <string name="onbording_settings_summary">Long press your home screen</string>
+    <string name="onboarding_swipe_up">Swipe up to see all your apps</string>
+    <string name="web_search_google">Google (web)</string>
+    <string name="web_search_ddg">DuckDuckGo (web)</string>
+    <string name="web_search_startpage">Startpage.com (web)</string>
+    <string name="web_search_bing">Bing (web)</string>
+    <string name="web_search_qwant">Qwant (web)</string>
+    <string name="web_search_ecosia">Ecosia (web)</string>
+    <string name="web_search_yandex">Yandex (web)</string>
+    <string name="web_search_naver">Naver (web)</string>
+    <string name="web_search_baidu">Baidu (web)</string>
+    <string name="icon_shape_override_miui_explaination">Due to a restriction in MIUI, your icon shape might not change and remain square.\nPlease don\'t report this as a bug.</string>
+    <string name="button_organize_screens">Organise screens</string>
 </resources>

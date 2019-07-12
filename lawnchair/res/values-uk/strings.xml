@@ -10,18 +10,18 @@
     <string name="smartspace_time">Час</string>
     <string name="smartspace_date">Дата</string>
     <string name="customize">Персоналізувати</string>
+    <string name="smartspace_preferences_in_settings">Стислий огляд</string>
     <plurals name="tab_apps_count">
         <item quantity="one">%1$d додаток</item>
         <item quantity="few">%1$d додатки</item>
         <item quantity="many">%1$d додатків</item>
         <item quantity="other">%1$d додатків</item>
     </plurals>
-    <string name="smartspace_preferences_in_settings">Стислий огляд</string>
     <string name="search">Пошук</string>
     <string name="label_voice_search">Голосовий пошук</string>
+    <string name="icon_pack">Набір значків</string>
     <string name="smartspace_preferences_in_settings_desc">Дата, час, постачальник погоди</string>
     <string name="home_widget">Віджет на головному екрані</string>
-    <string name="icon_pack">Набір значків</string>
     <string name="msg_minus_one_on_left">Стрічка новин зліва робочого столу</string>
     <string name="about">Про додаток</string>
     <string name="google_app">Додаток Google</string>
@@ -32,10 +32,10 @@
     <string name="pixel_style_pref_title">Стиль Pixel</string>
     <string name="title_show_google_app">%1$s зліва</string>
     <string name="action_edit">Редагувати</string>
-    <string name="about_summary_title">Підсумок</string>
-    <string name="hide_app">Приховати програму</string>
     <string name="hide_app_sum">Приховати зі списку додатків</string>
+    <string name="about_summary_title">Підсумок</string>
     <string name="icon_shape_rounded_square">Округлі квадрати</string>
+    <string name="hide_app">Приховати програму</string>
     <string name="app_drawer_pref_title">Список програм</string>
     <string name="app_drawer_pref_summary">Прозорість, пропозиції, приховати додатки</string>
     <string name="pixel_ui_pref_summary">Набір значків, розмиття, кольори</string>
@@ -72,8 +72,8 @@
     <string name="restore_contents">Відновлення даних</string>
     <string name="restore_success">Відновлення завершене</string>
     <string name="failed">Щось пішло не так</string>
-    <string name="no_recent_backups">Нічого показати</string>
     <string name="backup_share_text">Резервна копія Lawnchair</string>
+    <string name="no_recent_backups">Нічого показати</string>
     <string name="full_width_width_widgets_pref_title">Розширити віджети</string>
     <string name="hide_apps">Приховати додатки</string>
     <string name="full_width_widgets_pref_summary">Дозволити віджетам розтягуватись до країв екрану</string>
@@ -82,12 +82,12 @@
     <string name="developer_options_enabled">Параметри розробника ввімкнені</string>
     <string name="restart_lawnchair_pref_title">Перезавантажити</string>
     <string name="restart_lawnchair_pref_summary">Знову застосувати налаштування</string>
-    <string name="hide_apps_sum">Прибрати додатки зі списку</string>
     <string name="show_debug_info_pref_title">Показати назви компонентів</string>
-    <string name="debug_component_name_copied">Скопійовано</string>
     <string name="debug_component_name">Назва компоненту</string>
-    <string name="local_backups">Резервна копія в сховищі</string>
+    <string name="hide_apps_sum">Прибрати додатки зі списку</string>
     <string name="read_external_storage_required">Щоб зберегти резервну копію, надайте доступ до сховища</string>
+    <string name="debug_component_name_copied">Скопійовано</string>
+    <string name="local_backups">Резервна копія в сховищі</string>
     <string name="grid_size_height">Висота</string>
     <string name="grid_size_width">Ширина</string>
     <string name="launcher_theme_override_label">Використовувати темну тему</string>
@@ -100,17 +100,17 @@
     <string name="hotseat_show_arrow">Стрілка</string>
     <string name="hotseat_show_page_indicator">Індикатор сторінки</string>
     <string name="dock_style_pref_title">Стиль док бару</string>
-    <string name="dock_colored_google">Кольорові значки</string>
     <string name="dock_style_p">Округлі</string>
+    <string name="dock_colored_google">Кольорові значки</string>
     <string name="dock_style_hidden">Прихований</string>
     <string name="dock_search_bar">Строка пошуку в док барі</string>
     <string name="opacity">Прозорість</string>
     <string name="title_all_apps_google_search">Глобальний пошук</string>
     <string name="summary_all_apps_google_search">Знаходити веб результати і додатки</string>
-    <string name="dock_style_n">Плаский</string>
     <string name="num_hotseat_icons_pref_title">Кількість значків</string>
     <string name="icon_scale_pref_title">Розмір значків</string>
     <string name="add_settings_shortcut_title">Додати значок налаштування на домашній екран</string>
+    <string name="dock_style_n">Плаский</string>
     <string name="loading">Завантаження...</string>
     <string name="low_performance_mode_pref_title">Режим низької продуктивності</string>
     <string name="title_storage_permission_required">Потрібен дозвіл на доступ до пам\'яті пристрою</string>
@@ -188,8 +188,8 @@
     <string name="gesture_swipe_up">Провести плаьцем вгору</string>
     <string name="gesture_dock_swipe_up">Провести пальцем вгору на док барі</string>
     <string name="pref_show_assistant_title">Кнопка голосового пошуку</string>
-    <string name="action_despacito">Відтворити YouTube Rewind 2018 (distorted)</string>
     <string name="pref_show_assistant_summary">Відображати кнопку голосового пошуку, якщо підтримується</string>
+    <string name="action_despacito">Відтворити YouTube Rewind 2018 (distorted)</string>
     <string name="smartspace_time_24_h">24-годинний формат</string>
     <string name="weather_provider_disabled">Вимкнено</string>
     <string name="weather_provider_owm">OpenWeatherMap</string>
@@ -213,8 +213,8 @@
     <string name="units_metric">Цельсій</string>
     <string name="units_imperial">Фаренгейт</string>
     <string name="units_kelvin">Кельвін</string>
-    <string name="pref_show_as_assistant_summary">Відображати кнопку асистента замість голосового пошуку</string>
     <string name="all_icons">Усі значки</string>
+    <string name="pref_show_as_assistant_summary">Відображати кнопку асистента замість голосового пошуку</string>
     <string name="no_icon_found">Не знайдено жодної іконки</string>
     <string name="icon_pack_external_picker">Відкрити зовнішній вибір</string>
     <string name="week_day_format">%1$s %2$s</string>
@@ -253,8 +253,8 @@
     <string name="quickstep_pref_title">Недавні</string>
     <string name="quickstep_pref_summary">Жести, кути, розмиття</string>
     <string name="swipe_up_to_switch_apps_title">Потягніть палець вгору щоб відкрити додатки</string>
-    <string name="backup_generate_report">Створити звіт про помилку</string>
     <string name="swipe_left_to_go_back_title">Проведіть пальцем вліво щоб повернутися назад</string>
+    <string name="backup_generate_report">Створити звіт про помилку</string>
     <string name="gesture_nav_swipe_up_left">Зліва</string>
     <string name="gesture_nav_swipe_up_center">З центру</string>
     <string name="gesture_nav_swipe_up_right">З права</string>
@@ -301,12 +301,12 @@
     <string name="theme_dark_dark_text">Темна з темним текстом</string>
     <string name="theme_black">Чорна</string>
     <string name="theme_black_dark_text">Чорна з темним текстом</string>
-    <string name="theme_with_dark_text">темний текст</string>
     <string name="theme_dark_theme_mode">Темна тема</string>
     <string name="theme_dark_theme_mode_on">Увімк.</string>
     <string name="theme_dark_theme_mode_off">Вимк.</string>
     <string name="theme_dark_theme_mode_follow_daylight">Враховуючи час доби</string>
     <string name="theme_use_black">Використовувати чорний колір</string>
+    <string name="theme_with_dark_text">темний текст</string>
     <string name="pref_qsb_color">Кольорове</string>
     <string name="hide_from_predictions">Приховати з запропонованого</string>
     <string name="hide_from_predictions_summary">Ніколи не показувати в пропозиціях списку додатків</string>
@@ -357,7 +357,7 @@
     <!--Marker J-->
     <string name="shortcut_sesame">Ярлики</string>
     <string name="pref_integrations">Інтеграції</string>
-    <string name="pref_integrations_summary">Пошук</string>
+    <string name="pref_integrations_summary">Пошук, Sesame, Google</string>
     <string name="sesame">Sesame</string>
     <string name="sesame_data_integration">Інтеграція даних</string>
     <string name="sesame_upsell">Натисніть щоб встановити Sesame</string>
@@ -508,6 +508,12 @@
     <string name="zen_mode_enabled">Режим \"Не турбувати\" ввімкнений</string>
     <string name="crash_report_notif_title">%1$s завершив роботу в аварійному режимі!</string>
     <string name="personality_provider">Контекстні повідомлення</string>
+    <string-array name="greetings_morning">
+        <item>Доброго ранку!</item>
+        <item>Який чудовий день!</item>
+        <item>Ти вже виглядував назовні?</item>
+        <item>Гарного дня!</item>
+    </string-array>
     <string name="onbording_settings_title">Налаштування %s</string>
     <string name="onbording_settings_summary">Тривале натискання на головному екрані</string>
     <string name="onboarding_swipe_up">Проведи пальцем вгору, щоб побачити всі додатки</string>
@@ -520,19 +526,19 @@
     <string name="web_search_yandex">Yandex (Мережа)</string>
     <string name="web_search_naver">Naver (Мережа)</string>
     <string name="web_search_baidu">Baidu (Мережа)</string>
-    <string-array name="greetings_morning">
-        <item>Доброго ранку!</item>
-        <item>Який чудовий день!</item>
-        <item>Ти вже виглядував назовні?</item>
-        <item>Гарного дня!</item>
-    </string-array>
+    <string name="icon_shape_override_miui_explaination">У зв\'язку з обмеженням у MIUI, ваша форма піктограми може не змінитися і залишитися квадратною.\nНе повідомляйте про це як про помилку.</string>
+    <string name="button_organize_screens">Наладити екрани</string>
+    <string name="weather_icons_default">За замовчуванням</string>
+    <string name="pref_weather_icon_pack">Значки погоди</string>
+    <string name="weather_icon_packs_not_supported">Не підтримується вашим поточним джерелом погоди</string>
+    <string name="lawnchair_settings">Налаштування Lawnchair</string>
     <string-array name="greetings_evening">
         <item>На добраніч!</item>
         <item>Приємних снів!</item>
         <item>До завтра!</item>
         <item>Солодких снів!</item>
         <item>Не йди спати занадто пізно</item>
-        <item>Яким пройшов твій день?</item>
+        <item>Як пройшов твій день?</item>
         <item>Що ти робив сьогодні?</item>
     </string-array>
 </resources>
