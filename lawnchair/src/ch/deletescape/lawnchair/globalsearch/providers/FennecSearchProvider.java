@@ -71,7 +71,7 @@ public class FennecSearchProvider extends ch.deletescape.lawnchair.globalsearch.
     @Override
     public void startSearch(@NotNull Function1<? super Intent, Unit> callback) {
         Intent i = new Intent();
-        i.setComponent(new ComponentName("org.mozilla.fennec_fdroid", "org.mozilla.fennec_fdroid.BrowserApp"));
+        i.setComponent(new ComponentName("org.mozilla.fennec_fdroid", "org.mozilla.gecko.BrowserApp"));
         callback.invoke(i);
     }
 
