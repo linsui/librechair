@@ -20,5 +20,5 @@
 package ch.deletescape.lawnchair.feed
 
 interface SortingAlgorithm<T> {
-    fun sort(ts: List<T>): List<T>
+    fun sort(vararg ts: List<T>): List<T>
 }

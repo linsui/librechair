@@ -19,4 +19,4 @@
 
 package ch.deletescape.lawnchair.feed
 
-abstract class BasicSortingAlgorithm(channels: Int) : SortingAlgorithm<Card>
+abstract class AbstractFeedSortingAlgorithm : SortingAlgorithm<Card>

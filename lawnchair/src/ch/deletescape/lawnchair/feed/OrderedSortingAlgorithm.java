@@ -23,17 +23,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class OrderedSortingAlgorithm extends BasicSortingAlgorithm {
-
-    public OrderedSortingAlgorithm(int channels) {
-        super(channels);
-    }
+public class OrderedSortingAlgorithm extends AbstractFeedSortingAlgorithm {
 
     @NotNull
     @Override
-    public List<Card> sort(@NotNull List<? extends Card> cards) {
+    public List<Card> sort(@NotNull List<? extends Card>... cards) {
         List<Card> cards1 = new ArrayList<>();
-        cards1.addAll(cards);
+        for (List<? extends Card> card2 : cards) {
+            cards1.addAll(card2);
+        }
         return cards1;
     }
 }

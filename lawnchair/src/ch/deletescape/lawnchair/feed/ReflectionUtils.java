@@ -23,11 +23,18 @@ import android.content.Context;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class ProviderConstructor {
+public class ReflectionUtils {
     public static FeedProvider inflateFeedProvider(String clazz, Context context)
             throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         Class clazs = Class.forName(clazz);
         Constructor<FeedProvider> method = clazs.getConstructor(Context.class);
         return method.newInstance(context);
+    }
+
+    public static AbstractFeedSortingAlgorithm inflateSortingAlgorithm(String clazz)
+            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        Class clazs = Class.forName(clazz);
+        Constructor<AbstractFeedSortingAlgorithm> method = clazs.getConstructor();
+        return method.newInstance();
     }
 }

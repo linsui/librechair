@@ -39,7 +39,8 @@ class FeedController(val context: Context) {
         val providers = ArrayList<FeedProvider>()
         (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
                 .iterator().forEach {
-                    providers.add(ProviderConstructor.inflateFeedProvider(it, context))
+                    providers.add(
+                        ReflectionUtils.inflateFeedProvider(it, context))
                 }
         return providers
     }
