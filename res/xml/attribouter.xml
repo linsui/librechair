@@ -297,7 +297,7 @@
         <!-- libRootJava -->
         <me.jfenn.attribouter.wedges.LicenseWedge
             license="apache-2.0"
-            title="Rome" />
+            title="RSS Reader" />
 
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>

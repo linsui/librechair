@@ -22,6 +22,9 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven {
+            url 'https://maven.repository.redhat.com/ga/'
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0-beta05'
@@ -305,6 +308,9 @@ allprojects {
         mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
+        maven {
+            url 'https://maven.repository.redhat.com/ga/'
+        }
     }
 }
 
@@ -322,7 +328,8 @@ dependencies {
     implementation 'info.bliki.wiki:bliki-core:3.1.0'
     implementation 'commons-io:commons-io:2.6'
 
-    implementation 'com.rometools:rome-parent:1.12.1'
+    implementation 'com.prof.rssparser:rssparser:2.0.4'
+    implementation 'com.googlecode:openbeans:1.0'
 
     implementation 'com.github.florent37:fiftyshadesof:1.0.0'
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'

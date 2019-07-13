@@ -56,6 +56,8 @@ class FeedController(val context: Context) {
                     R.string.title_feed_provider_forecast)
                 WikipediaNewsProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_wikipedia_news)
+                WikinewsFeedProvider::class.java.name -> context.getString(
+                                    R.string.title_feed_provider_wikinews)
                 else -> error("No such provider ${provider}")
             }
         }
@@ -64,7 +66,8 @@ class FeedController(val context: Context) {
             return listOf(CalendarEventProvider::class.java.name,
                           FeedWeatherProvider::class.java.name,
                           FeedForecastProvider::class.java.name,
-                          WikipediaNewsProvider::class.java.name)
+                          WikipediaNewsProvider::class.java.name,
+                          WikinewsFeedProvider::class.java.name)
         }
     }
 }

@@ -29,7 +29,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.theme.ThemeManager
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeManager) :
@@ -109,7 +108,6 @@ class CardViewHolder : RecyclerView.ViewHolder {
         }
 
         if (type and Card.NO_HEADER == 1 || type == Card.NO_HEADER) {
-            d("NO_HEADER")
             icon.visibility = View.GONE
             description.visibility = View.GONE
         }

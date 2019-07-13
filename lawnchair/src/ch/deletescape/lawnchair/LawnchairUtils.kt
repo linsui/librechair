@@ -962,6 +962,10 @@ fun getCurrentProcessName(context: Context): String {
     error("This function may only be called within Librechair")
 }
 
+fun <T> newList(): MutableList<T> {
+    return ArrayList()
+}
+
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
 

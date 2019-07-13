@@ -403,4 +403,8 @@
     <string name="summary_preference_swipe_feed">You can swipe from the left of the home screen for the feed</string>
     <string name="web_search_yahoo">Yahoo (web)</string>
     <string name="fennec_fdroid">Fennec F-Droid</string>
+    <string name="placeholder_rss_item">Cows and fishes join together and win water fight</string>
+    <string name="title_button_rss_item_read_more">Read more</string>
+    <string name="placeholder_rss_card_description">Just as the majestic Pyongyang Grand Mass Gymnastics ended, the great leader, our Supreme Leader, Kim \'Fatty the Third\' Jong-un used his expert diplomatic skills to organize the Cows and the Fishes together against the closing Imperialist forces...</string>
+    <string name="title_feed_provider_wikinews">Wikinews</string>
 </resources>
