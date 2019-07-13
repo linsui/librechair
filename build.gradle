@@ -322,6 +322,8 @@ dependencies {
     implementation 'info.bliki.wiki:bliki-core:3.1.0'
     implementation 'commons-io:commons-io:2.6'
 
+    implementation 'com.rometools:rome-parent:1.12.1'
+
     implementation 'com.github.florent37:fiftyshadesof:1.0.0'
     implementation 'com.google.protobuf.nano:protobuf-javanano:3.0.0-alpha-7'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
