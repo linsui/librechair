@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class MixerSearchingAlgorithm extends AbstractFeedSortingAlgorithm {
+public class MixerSortingAlgorithm extends AbstractFeedSortingAlgorithm {
 
     private List<Card> top = new ArrayList<>();
     private List<Card> bottom = new ArrayList<>();

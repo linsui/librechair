@@ -27,10 +27,7 @@ import android.provider.Settings
 import android.text.TextUtils
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.feed.CalendarEventProvider
-import ch.deletescape.lawnchair.feed.FeedForecastProvider
-import ch.deletescape.lawnchair.feed.FeedWeatherProvider
-import ch.deletescape.lawnchair.feed.WikipediaNewsProvider
+import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
@@ -188,6 +185,9 @@ class LawnchairPreferences(val context: Context) :
                                               FeedForecastProvider::class.java.name,
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name))
+
+    var feedPresenterAlgorithm by StringPref("pref_feed_algorithm",
+                                             MixerSortingAlgorithm::class.java.name, ::restart);
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
 

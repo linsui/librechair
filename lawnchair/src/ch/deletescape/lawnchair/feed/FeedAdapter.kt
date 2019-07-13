@@ -27,10 +27,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import java.util.*
 
 class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeManager) :
         RecyclerView.Adapter<CardViewHolder>() {
@@ -45,12 +45,14 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
     }
 
     fun refresh(): Int {
-        cards.clear()
+        cards.clear();
+        val toSort: MutableList<List<Card>> = ArrayList()
         providers.iterator().forEach {
-            it.onAttachedToAdapter(this)
-            cards.addAll(it.cards)
+            toSort += it.cards
         }
-        return cards.size;
+        val algorithm = ReflectionUtils.inflateSortingAlgorithm(LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
+        cards += algorithm.sort(* toSort.toTypedArray())
+        return cards.size
     }
 
     override fun getItemCount(): Int {
