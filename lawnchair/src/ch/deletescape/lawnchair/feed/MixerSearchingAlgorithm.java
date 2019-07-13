@@ -30,9 +30,10 @@ public class MixerSearchingAlgorithm extends AbstractFeedSortingAlgorithm {
     private List<Card> bottom = new ArrayList<>();
     private List<List<Card>> shouldMix = new ArrayList<>();
 
+    @SafeVarargs
     @NotNull
     @Override
-    public List<Card> sort(@NotNull List<? extends Card>... ts) {
+    public final List<Card> sort(@NotNull List<? extends Card>... ts) {
         for (List<? extends Card> cards : ts) {
             List<Card> mixQueue = new ArrayList<>();
             for (Card c : cards) {
