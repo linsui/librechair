@@ -294,5 +294,10 @@
             license="gpl-2.1+"
             title="BlikiWiki" />
 
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
+            license="apache-2.0"
+            title="Rome" />
+
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>
