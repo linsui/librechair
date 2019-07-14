@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed
 import android.content.Context
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.newList
 import com.android.launcher3.R
 
 private var theController: FeedController? = null
@@ -36,7 +37,7 @@ fun getFeedController(c: Context): FeedController {
 class FeedController(val context: Context) {
 
     fun getProviders(): List<FeedProvider> {
-        val providers = ArrayList<FeedProvider>()
+        val providers = newList<FeedProvider>()
         (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
                 .iterator().forEach {
                     providers.add(

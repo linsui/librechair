@@ -25,7 +25,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private val adapter by lazy {
-        FeedAdapter(getFeedController(context).getProviders(), ThemeManager.getInstance(context))
+        FeedAdapter(getFeedController(context.applicationContext).getProviders(), ThemeManager.getInstance(context))
     }
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
