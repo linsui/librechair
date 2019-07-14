@@ -129,7 +129,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         }
     }
 
-    public abstract void bindFeed(BindCallback callback);
+    protected abstract void bindFeed(BindCallback callback);
 
     protected interface BindCallback {
 
