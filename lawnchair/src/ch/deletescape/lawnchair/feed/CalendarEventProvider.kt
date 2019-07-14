@@ -146,7 +146,7 @@ import kotlin.collections.ArrayList
                                            return getCalendarFeedView(description, address, context,
                                                                       parent)
                                        }
-                                   }, Card.RAISE))
+                                   }, Card.RAISE, if (diffMinutes < 120) "nosort,top" else ""))
                     eventCursor.moveToNext()
                 }
                 eventCursor.close()
@@ -197,7 +197,7 @@ import kotlin.collections.ArrayList
                         override fun inflate(parent: ViewGroup): View {
                             return View(context)
                         }
-                    }, Card.TEXT_ONLY))
+                    }, Card.TEXT_ONLY, "nosort,top"))
                 }
                 eventCursor.close()
 
