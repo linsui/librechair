@@ -122,6 +122,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
         }
+        if (type and Card.RAISE != 1 && type and Card.NO_HEADER != 1) {
+            description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
+        }
     }
 }
 

@@ -27,6 +27,7 @@ import ch.deletescape.lawnchair.theme.ThemeManager;
 import com.android.launcher3.R;
 import java.util.List;
 
+@Deprecated /* Scheduled for removal */
 public class FeedActivity extends SettingsBaseActivity {
 
     private RecyclerView feed;

@@ -23,7 +23,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="32dp"
-    android:background="@color/qsb_background"
     tools:context="ch.deletescape.lawnchair.feed.FeedActivity">
     <LinearLayout
         android:id="@+id/feed_content"
