@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.smartspace.weather.owm
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -141,7 +142,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     class HourlyForecastAdapter(val hourlyWeatherForecast: HourlyWeatherForecast, val context: Context,
-                                val weatherUnit: Temperature.Unit) :
+                                val weatherUnit: Temperature.Unit, val whiteText: Boolean = false) :
             RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
         private val iconProvider by lazy { WeatherIconProvider(context) }
         override fun onCreateViewHolder(parent: ViewGroup,
@@ -162,6 +163,10 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             holder.time.text = formatTime(zonedDateTime, context)
             holder.temperature.text =
                     "${currentWeather.mainData?.temp?.roundToInt()}${weatherUnit.suffix.capitalize()}"
+            if (whiteText) {
+                holder.time.setTextColor(Color.WHITE)
+                holder.temperature.setTextColor(Color.WHITE)
+            }
         }
 
     }
