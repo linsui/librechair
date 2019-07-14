@@ -20,6 +20,8 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.support.constraint.ConstraintLayout;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,8 +33,11 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.prof.rssparser.Article;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -73,12 +78,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             return Collections.emptyList();
         } else {
             List<Card> cards = LawnchairUtilsKt.newList();
-            Log.d(getClass().getName(), "getCards: iterating through entries: " + articles.toString());
+            Log.d(getClass().getName(),
+                    "getCards: iterating through entries: " + articles.toString());
             for (Article entry : articles) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
                 cards.add(new Card(null, null, parent -> {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
-                    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
+                    View v = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.rss_item, parent, false);
                     TextView title, description;
                     ImageView icon;
                     Button readMore;
@@ -87,6 +94,20 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     description = v.findViewById(R.id.rss_item_description);
                     icon = v.findViewById(R.id.rss_item_icon);
                     readMore = v.findViewById(R.id.rss_item_read_more);
+
+                    icon.setVisibility(View.INVISIBLE);
+
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            icon.setImageBitmap(BitmapFactory
+                                    .decodeStream(new URL(entry.getImage()).openConnection()
+                                            .getInputStream()));
+                            icon.post(() -> icon.setVisibility(View.VISIBLE));
+                        } catch (IOException | NullPointerException e) {
+                            e.printStackTrace();
+                            icon.post(() -> icon.setLayoutParams(new ConstraintLayout.LayoutParams(0, icon.getLayoutParams().height)));
+                        }
+                    });
 
                     title.setText(entry.getTitle());
                     String spanned = Html.fromHtml(entry.getDescription(), 0).toString();
@@ -107,6 +128,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     public abstract void bindFeed(BindCallback callback);
 
     protected interface BindCallback {
+
         void onBind(List<Article> feed);
     }
 }
