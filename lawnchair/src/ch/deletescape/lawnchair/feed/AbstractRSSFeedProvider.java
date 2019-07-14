@@ -86,13 +86,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                     View v = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.rss_item, parent, false);
-                    TextView title, description;
+                    TextView title, description, date;
                     ImageView icon;
                     Button readMore;
 
                     title = v.findViewById(R.id.rss_item_title);
                     description = v.findViewById(R.id.rss_item_description);
                     icon = v.findViewById(R.id.rss_item_icon);
+                    date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
                     icon.setVisibility(View.INVISIBLE);
@@ -119,6 +120,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     readMore.setOnClickListener(v2 -> {
                         Utilities.openURLinBrowser(v2.getContext(), entry.getLink());
                     });
+
+                    date.setText(entry.getPubDate());
                     return v;
                 }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null));
             }
