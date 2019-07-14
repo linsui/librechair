@@ -31,6 +31,7 @@ import android.webkit.WebView
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
+import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -46,6 +47,7 @@ class LawnchairApp : Application() {
     val bugReporter = LawnchairBugReporter(this, Thread.getDefaultUncaughtExceptionHandler())
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
+    val feedController by lazy { getFeedController(this) }
 
     init {
         d("Hidden APIs allowed: ${Utilities.HIDDEN_APIS_ALLOWED}")
