@@ -20,11 +20,8 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
-import ch.deletescape.lawnchair.theme.ThemeManager;
-import com.android.launcher3.R;
 import java.util.List;
 
 @Deprecated /* Scheduled for removal */
@@ -37,12 +34,6 @@ public class FeedActivity extends SettingsBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
-        feed = findViewById(R.id.feed_recycler);
-        providers = FeedControllerKt.getFeedController(this).getProviders();
-        feed.setLayoutManager(new LinearLayoutManager(this));
-        feed.setAdapter(adapter = new FeedAdapter(providers, ThemeManager.Companion.getInstance(this)));
-        adapter.refresh();
-        adapter.notifyDataSetChanged();
+        throw new RuntimeException("Deprecated activity still used: " + getClass().getName());
     }
 }

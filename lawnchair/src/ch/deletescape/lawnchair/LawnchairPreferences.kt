@@ -189,6 +189,8 @@ class LawnchairPreferences(val context: Context) :
 
     var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())
 
+    var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restart)
+
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
 

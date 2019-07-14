@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed
 
 import android.graphics.Rect
+import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -30,10 +31,24 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.useWhiteText
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
-class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeManager) :
+class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager, backgroundColor: Int) :
         RecyclerView.Adapter<CardViewHolder>() {
+
+    var backgroundColor: Int = 0
+        set(value) {
+            d("init: backgroundColor is now ${value}")
+            field = value
+        }
+
+    init {
+        d("init: backgroundColor is ${backgroundColor}")
+        this.backgroundColor = backgroundColor
+    }
+
     private val cards = ArrayList<Card>()
 
     init {
@@ -48,7 +63,7 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
-        return CardViewHolder(parent, viewType)
+        return CardViewHolder(parent, viewType, backgroundColor)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -106,7 +121,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
         itemView.findViewById(R.id.card_view_holder) as LinearLayout
     }
 
-    constructor(parent: ViewGroup, type: Int) : super(
+    constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(
         LayoutInflater.from(parent.context).inflate(when (type) {
                                                         Card.DEFAULT -> R.layout.card_default
                                                         Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
@@ -122,7 +137,10 @@ class CardViewHolder : RecyclerView.ViewHolder {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
         }
-        if (type and Card.RAISE == 0 && description != null) {
+
+        d("constructor: luminace for background ${backgroundColor.toString()} is ${ColorUtils.calculateLuminance(backgroundColor)}")
+
+        if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
         }
     }

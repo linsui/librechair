@@ -31,6 +31,7 @@ import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
+import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
@@ -102,7 +103,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
                                                         false)
                             recyclerView.adapter =
-                                    OWMWeatherActivity.HourlyForecastAdapter(forecast!!, context, (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit, true)
+                                    OWMWeatherActivity.HourlyForecastAdapter(forecast!!, context, (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit, useWhiteText(backgroundColor))
                         }
                         recyclerView.layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)

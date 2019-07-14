@@ -60,12 +60,17 @@ public abstract class FeedProvider {
      * Get a list of cards that should be displayed in the feed
      */
     public abstract List<Card> getCards();
+
     protected void onAttachedToAdapter(FeedAdapter adapter) {
         this.adapter = adapter;
     }
+
     public void requestRefresh() {
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
+    }
+    public int getBackgroundColor() {
+        return adapter == null ? 0 : adapter.getBackgroundColor();
     }
 }

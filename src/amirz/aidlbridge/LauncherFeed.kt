@@ -1,15 +1,18 @@
 package amirz.aidlbridge
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.WindowManager
+import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -24,8 +27,15 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val dark: Boolean = ThemeManager.getInstance(contex2t.applicationContext).isDark
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+    private var backgroundColor: Int = ColorUtils
+            .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
+                               LawnchairPreferences.getInstance(
+                                   context).feedBackgroundOpacity.toInt() * (255 / 100)).also {
+                d("backgroundColor: ${it}")
+            }
     private val adapter by lazy {
-        FeedAdapter(getFeedController(context.applicationContext).getProviders(), ThemeManager.getInstance(context))
+        FeedAdapter(getFeedController(context.applicationContext).getProviders(),
+                    ThemeManager.getInstance(context), backgroundColor)
     }
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
@@ -33,6 +43,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
+                it.setBackgroundColor(backgroundColor!!)
+                d("feedController: background color value: ${LawnchairPreferences.getInstance(
+                    context).feedBackgroundOpacity.toInt()}")
+                adapter.backgroundColor = backgroundColor!!
             }
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
 

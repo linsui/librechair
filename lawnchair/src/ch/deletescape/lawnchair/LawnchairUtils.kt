@@ -30,6 +30,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Color.alpha
 import android.graphics.RectF
 import android.graphics.drawable.*
 import android.net.Uri
@@ -139,7 +140,7 @@ fun Context.applyAlphaAttr(attr: Int, inputColor: Int): Int {
 @ColorInt
 fun applyAlpha(a: Float, inputColor: Int): Int {
     var alpha = a
-    alpha *= Color.alpha(inputColor)
+    alpha *= alpha(inputColor)
     return Color.argb(alpha.toInt(), Color.red(inputColor), Color.green(inputColor),
             Color.blue(inputColor))
 }
@@ -966,10 +967,18 @@ fun <T> newList(): MutableList<T> {
     return ArrayList()
 }
 
+fun useWhiteText(color: Int): Boolean {
+    if (ColorUtils.calculateLuminance(color) < 0.8) {
+        return true;
+    } else {
+        return alpha(color) < 50
+    }
+}
+
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
 
 inline val Int.red get() = Color.red(this)
 inline val Int.green get() = Color.green(this)
 inline val Int.blue get() = Color.blue(this)
-inline val Int.alpha get() = Color.alpha(this)
+inline val Int.alpha get() = alpha(this)
