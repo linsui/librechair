@@ -867,6 +867,7 @@ public final class Utilities {
         Intent intent = new Intent(context, BrowserBoxActivity.class);
         intent.setData(Uri.parse(url));
         intent.setSourceBounds(sourceBounds);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if(options == null){
             context.startActivity(intent);
         } else {
