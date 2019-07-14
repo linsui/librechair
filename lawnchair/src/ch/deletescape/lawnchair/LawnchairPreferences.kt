@@ -186,7 +186,7 @@ class LawnchairPreferences(val context: Context) :
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name))
 
-    var feedPresenterAlgorithm by StringPref("pref_feed_algorithm",
+    var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);

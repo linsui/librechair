@@ -104,6 +104,12 @@
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="prefCat_smartFeed"
         android:title="@string/activity_feed_title">
+        <ch.deletescape.lawnchair.preferences.SortingAlgorithmPreference
+            android:defaultValue="ch.deletescape.lawnchair.feed.MixerSortingAlgorithm"
+            android:dependency="pref_swipe_feed"
+            android:key="pref_feed_sorting_algorithm"
+            android:summary="%s"
+            android:title="@string/title_preference_feed_sorting_algorithm" />
         <ch.deletescape.lawnchair.preferences.FeedProvidersPreference
             android:dependency="pref_swipe_feed"
             android:key="pref_feed_providers"

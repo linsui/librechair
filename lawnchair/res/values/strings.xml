@@ -678,16 +678,7 @@
         <item>Have you looked outside yet?</item>
         <item>Have a great day!</item>
     </string-array>
-    <string-array name="greetings_evening">
-        <item>Good night!</item>
-        <item>Sleep well!</item>
-        <item>See you tomorrow!</item>
-        <item>Sweet dreams!</item>
-        <item>Don\'t stay up too long</item>
-        <item>How was your day?</item>
-        <item>What did you do today?</item>
-        <item>I know what you did today. You...</item>
-    </string-array>
+    <string name="title_preference_feed_sorting_algorithm">Feed sorting algorithm</string>
 
     <string name="onbording">Onboarding</string>
     <string name="onbording_settings_title">Set-up %s</string>
@@ -713,4 +704,14 @@
     <string name="weather_icon_packs_not_supported">Not supported by your current weather source</string>
 
     <string name="lawnchair_settings">Lawnchair Settings</string>
+    <string name="description_pref_feed_algorithm">The feed will be displayed in the selected algorithm</string>
+    <string-array name="greetings_evening">
+        <item>Good night!</item>
+        <item>Sleep well!</item>
+        <item>See you tomorrow!</item>
+        <item>Sweet dreams!</item>
+        <item>Don\'t stay up too long</item>
+        <item>How was your day?</item>
+        <item>I know what they did today… Confusing, isn\'t it?</item>
+    </string-array>
 </resources>
