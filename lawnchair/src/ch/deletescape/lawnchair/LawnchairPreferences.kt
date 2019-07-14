@@ -184,7 +184,10 @@ class LawnchairPreferences(val context: Context) :
                                        listOf(FeedWeatherProvider::class.java.name,
                                               FeedForecastProvider::class.java.name,
                                               CalendarEventProvider::class.java.name,
-                                              WikipediaNewsProvider::class.java.name))
+                                              WikipediaNewsProvider::class.java.name,
+                                              WikinewsFeedProvider::class.java.name))
+
+    var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())
 
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
