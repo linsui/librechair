@@ -109,7 +109,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         }
                     });
 
-                    title.setText(entry.getTitle());
+                    title.setText(String.format("%s: %s", FeedController.Companion
+                            .getDisplayName(getClass().getName(), getContext()), entry.getTitle()));
                     String spanned = Html.fromHtml(entry.getDescription(), 0).toString();
                     if (spanned.length() > 256) {
                         spanned = spanned.subSequence(0, 256).toString() + "...";
