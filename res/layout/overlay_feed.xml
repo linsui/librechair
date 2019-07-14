@@ -30,16 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <Toolbar
-            android:id="@+id/feed_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:title="@string/activity_feed_title"
-            android:titleTextColor="@color/colorAccent"/>
         <android.support.v7.widget.RecyclerView
             android:id="@+id/feed_recycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:layout_marginBottom="32dp"/>
     </LinearLayout>
 </amirz.aidlbridge.FeedController>

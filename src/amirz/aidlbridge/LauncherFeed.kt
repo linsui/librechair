@@ -37,26 +37,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     it.setBackgroundColor(context.getColor(R.color.qsb_background_dark))
                 }
             }
-    private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView).also {
-        Executors.newSingleThreadExecutor().submit {
-            while (true) {
-                d("refreshing adapter")
-                adapter.refresh()
-                d("adapter refreshed")
-                handler.post {
-                    d("notifying adapter")
-                    adapter.notifyDataSetChanged()
-                    d("adapter notified")
-                }
-                try {
-                    d("sleeping for 8 seconds")
-                    Thread.sleep(8000);
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
+    private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
@@ -69,6 +50,17 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     if (recyclerView.adapter == null) {
                         recyclerView.adapter = this.adapter
                         recyclerView.layoutManager = LinearLayoutManager(context)
+                    }
+                    Executors.newSingleThreadExecutor().submit {
+                        Thread.sleep(1000);
+                        d("refreshing adapter")
+                        adapter.refresh()
+                        d("adapter refreshed")
+                        handler.post {
+                            d("notifying adapter")
+                            adapter.notifyDataSetChanged()
+                            d("adapter notified")
+                        }
                     }
                     windowService.addView(feedController, layoutParams)
                 } else {

@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.graphics.Rect
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -39,6 +40,11 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
         providers.forEach {
             it.onAttachedToAdapter(this)
         }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        recyclerView.addItemDecoration(Decoration(recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -73,8 +79,10 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
-        holder.description.text = cards[position].title
-        holder.icon.setImageDrawable(cards[position].icon)
+        if (holder.itemViewType and Card.NO_HEADER != 1) {
+            holder.description?.text = cards[position].title
+            holder.icon?.setImageDrawable(cards[position].icon)
+        }
         holder.viewHolder.removeAllViewsInLayout()
         holder.viewHolder.addView(cards[position].inflateHelper.inflate(holder.viewHolder))
         if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
@@ -90,10 +98,10 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
 }
 
 class CardViewHolder : RecyclerView.ViewHolder {
-    val icon: ImageView by lazy {
-        itemView.findViewById(R.id.card_provider_small_icon) as ImageView
+    val icon: ImageView? by lazy {
+        itemView.findViewById(R.id.card_provider_small_icon) as ImageView?
     }
-    val description: TextView by lazy { itemView.findViewById(R.id.card_title) as TextView }
+    val description: TextView? by lazy { itemView.findViewById(R.id.card_title) as TextView? }
     val viewHolder: LinearLayout by lazy {
         itemView.findViewById(R.id.card_view_holder) as LinearLayout
     }
@@ -113,6 +121,20 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                     }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
+        }
+    }
+}
+
+private class Decoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
+                                state: RecyclerView.State) {
+        with(outRect) {
+            if (parent.getChildAdapterPosition(view) == 0) {
+                top = spaceHeight
+            }
+            left = spaceHeight
+            right = spaceHeight
+            bottom = spaceHeight
         }
     }
 }
