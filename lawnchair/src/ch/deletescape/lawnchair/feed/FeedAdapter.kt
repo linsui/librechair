@@ -35,6 +35,12 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
         RecyclerView.Adapter<CardViewHolder>() {
     private val cards = ArrayList<Card>()
 
+    init {
+        providers.forEach {
+            it.onAttachedToAdapter(this)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         return CardViewHolder(parent, viewType)
     }
@@ -44,12 +50,13 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
     }
 
     fun refresh(): Int {
-        cards.clear();
+        cards.clear()
         val toSort: MutableList<List<Card>> = ArrayList()
         providers.iterator().forEach {
             toSort += it.cards
         }
-        val algorithm = ReflectionUtils.inflateSortingAlgorithm(LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
+        val algorithm = ReflectionUtils.inflateSortingAlgorithm(
+            LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
         cards += algorithm.sort(* toSort.toTypedArray())
         return cards.size
     }
@@ -70,12 +77,13 @@ class FeedAdapter(var providers: List<FeedProvider>, val themeManager: ThemeMana
         holder.icon.setImageDrawable(cards[position].icon)
         holder.viewHolder.removeAllViewsInLayout()
         holder.viewHolder.addView(cards[position].inflateHelper.inflate(holder.viewHolder))
-        if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(themeManager.getCurrentFlags())) {
-            (holder.itemView as CardView)
-                    .setCardBackgroundColor(holder.itemView.context.getColor(R.color.qsb_background_dark));
+        if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
+                    themeManager.getCurrentFlags())) {
+            (holder.itemView as CardView).setCardBackgroundColor(
+                holder.itemView.context.getColor(R.color.qsb_background_dark));
         } else if (holder.itemViewType and Card.RAISE != 0) {
-            (holder.itemView as CardView)
-                    .setCardBackgroundColor(holder.itemView.context.getColor(R.color.qsb_background));
+            (holder.itemView as CardView).setCardBackgroundColor(
+                holder.itemView.context.getColor(R.color.qsb_background));
         }
     }
 
@@ -98,18 +106,13 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                         Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
                                                         Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
                                                         Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
-                                                        Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default
-                                                        Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised
+                                                        Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
+                                                        Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
 
                                                         else -> error("invalid bitmask")
                                                     }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = View.GONE
-        }
-
-        if (type and Card.NO_HEADER == 1 || type == Card.NO_HEADER) {
-            icon.visibility = View.GONE
-            description.visibility = View.GONE
         }
     }
 }

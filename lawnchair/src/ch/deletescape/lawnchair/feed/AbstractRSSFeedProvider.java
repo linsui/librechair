@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.text.Html;
-import android.text.Spanned;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +76,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             Log.d(getClass().getName(), "getCards: iterating through entries: " + articles.toString());
             for (Article entry : articles) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
-                cards.add(new Card(null, entry.getTitle(), parent -> {
+                cards.add(new Card(null, null, parent -> {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                     View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.rss_item, parent, false);
                     TextView title, description;
@@ -90,9 +89,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
                     title.setText(entry.getTitle());
-                    Spanned spanned = Html.fromHtml(entry.getDescription(), 0);
-                    if (spanned.length() > 2048) {
-                        spanned = (Spanned) spanned.subSequence(0, 2048);
+                    String spanned = Html.fromHtml(entry.getDescription(), 0).toString();
+                    if (spanned.length() > 256) {
+                        spanned = spanned.subSequence(0, 256).toString() + "...";
                     }
                     description.setText(spanned);
                     readMore.setOnClickListener(v2 -> {
