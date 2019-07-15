@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
 import com.prof.rssparser.Article
 import com.prof.rssparser.OnTaskCompleted
@@ -29,8 +30,7 @@ import java.util.concurrent.Executors
 class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(c) {
     override fun bindFeeds(handler: OnBindHandler) {
         Executors.newSingleThreadExecutor().submit {
-            val rssProviders = listOf("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en",
-                                      "https://en.wikipedia.org/w/index.php?title=Main_Page&action=history&feed=rss")
+            val rssProviders = LawnchairPreferences.getInstance(context).feedRSSSources.getAll()
             var syndicationFeeds = newList<List<Article>>();
             rssProviders.forEach {
                 val parser = Parser()
