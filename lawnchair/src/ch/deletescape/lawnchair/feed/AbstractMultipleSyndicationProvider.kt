@@ -20,8 +20,6 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.support.constraint.ConstraintLayout
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
@@ -32,12 +30,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.prof.rssparser.Article
-import java.io.IOException
-import java.net.URL
-import java.util.concurrent.Executors
+import com.squareup.picasso.Picasso
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
 
@@ -82,27 +79,10 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             date = v.findViewById(R.id.rss_item_date)
                             readMore = v.findViewById(R.id.rss_item_read_more)
 
-                            icon.visibility = View.INVISIBLE
+                            d("inflate: Image URL is ${entry.image}")
 
-                            Executors.newSingleThreadExecutor().submit {
-                                try {
-                                    icon.setImageBitmap(BitmapFactory.decodeStream(
-                                        URL(entry.image).openConnection().getInputStream()))
-                                    icon.post { icon.visibility = View.VISIBLE }
-                                } catch (e: IOException) {
-                                    e.printStackTrace()
-                                    icon.post {
-                                        icon.layoutParams = ConstraintLayout
-                                                .LayoutParams(0, icon.layoutParams.height)
-                                    }
-                                } catch (e: NullPointerException) {
-                                    e.printStackTrace()
-                                    icon.post {
-                                        icon.layoutParams = ConstraintLayout
-                                                .LayoutParams(0, icon.layoutParams.height)
-                                    }
-                                }
-                            }
+                            Picasso.Builder(parent.context).build().load("https:" + entry.image)
+                                    .placeholder(R.mipmap.ic_launcher).into(icon)
 
                             title.text = entry.title
                             var spanned = Html.fromHtml(entry.description, 0).toString()

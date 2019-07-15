@@ -20,8 +20,6 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.support.constraint.ConstraintLayout;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,11 +31,9 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.prof.rssparser.Article;
-import java.io.IOException;
-import java.net.URL;
+import com.squareup.picasso.Picasso;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -96,19 +92,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
-                    icon.setVisibility(View.INVISIBLE);
+                    Log.d(getClass().getSimpleName(), "inflate: Image URL is " + entry.getImage());
 
-                    Executors.newSingleThreadExecutor().submit(() -> {
-                        try {
-                            icon.setImageBitmap(BitmapFactory
-                                    .decodeStream(new URL(entry.getImage()).openConnection()
-                                            .getInputStream()));
-                            icon.post(() -> icon.setVisibility(View.VISIBLE));
-                        } catch (IOException | NullPointerException e) {
-                            e.printStackTrace();
-                            icon.post(() -> icon.setLayoutParams(new ConstraintLayout.LayoutParams(0, icon.getLayoutParams().height)));
-                        }
-                    });
+                    new Picasso.Builder(parent.getContext())
+                            .build()
+                            .load("https:" + entry.getImage())
+                            .placeholder(R.mipmap.ic_launcher)
+                            .into(icon);
 
                     title.setText(String.format("%s: %s", FeedController.Companion
                             .getDisplayName(getClass().getName(), getContext()), entry.getTitle()));
