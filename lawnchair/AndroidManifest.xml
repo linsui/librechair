@@ -169,7 +169,7 @@
             </intent-filter>
         </activity> <!-- Pixel -->
         <activity-alias
-            android:icon="@mipmap/ic_settings_adaptive"
+            android:icon="@mipmap/ic_launcher_settings"
             android:label="@string/lawnchair_settings"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsLauncherActivity"
             android:targetActivity="ch.deletescape.lawnchair.settings.ui.SettingsActivity">
