@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.globalsearch.providers;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -94,7 +95,16 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                                     "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
                                     "org.bromite.bromite")});
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        /*
+                         * These tricks are needed for certain root methods that do not allow root to call su,
+                         * which can happen when Librechair is installed as a system priv_app/signature app
+                         */
+                        ComponentName info = new ComponentName("org.bromite.bromite", "org.chromium.chrome.browser.searchwidget.SearchActivity");
+                        startActivity(new Intent().setComponent(info));
+                    } catch (SecurityException se) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 try {
@@ -103,7 +113,16 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                                     "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
                                     LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName())});
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        /*
+                         * These tricks are needed for certain root methods that do not allow root to call su,
+                         * which can happen when Librechair is installed as a system priv_app/signature app
+                         */
+                        ComponentName info = new ComponentName(LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName(), "org.chromium.chrome.browser.searchwidget.SearchActivity");
+                        startActivity(new Intent().setComponent(info));
+                    } catch (SecurityException se) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
