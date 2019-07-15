@@ -762,7 +762,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-            return false;
+            return true;
         }
 
         @Override

@@ -251,7 +251,7 @@ class LawnchairPreferences(val context: Context) :
     }
     val predictionGridSize by predictionGridSizeDelegate
     val drawerPaddingScale by FloatPref("pref_allAppsPaddingScale", 1.0f, recreate)
-    val showPredictions by BooleanPref("pref_show_predictions", true, doNothing)
+    val showPredictions by BooleanPref("pref_show_predictions", true, recreate)
     private val drawerMultilineLabel by BooleanPref("pref_iconLabelsInTwoLines", false, recreate)
     val drawerLabelRows get() = if (drawerMultilineLabel) 2 else 1
     val appGroupsManager by lazy { AppGroupsManager(this) }
