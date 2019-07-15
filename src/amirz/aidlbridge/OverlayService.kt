@@ -22,6 +22,7 @@ package amirz.aidlbridge
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.os.Process
 
 class OverlayService : Service() {
 
@@ -29,5 +30,10 @@ class OverlayService : Service() {
 
     override fun onBind(intent: Intent): IBinder {
         return feed;
+    }
+
+    override fun onDestroy() {
+        Process.killProcess(Process.myPid());
+        super.onDestroy()
     }
 }

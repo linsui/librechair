@@ -16,6 +16,7 @@
 
 package com.android.launcher3;
 
+import amirz.aidlbridge.OverlayService;
 import android.Manifest;
 import android.Manifest.permission;
 import android.app.Activity;
@@ -732,6 +733,13 @@ public final class Utilities {
     }
 
     public static void killLauncher() {
+        killLauncher(null);
+    }
+
+    public static void killLauncher(Context context) {
+        if (context != null) {
+            context.stopService(new Intent(context, OverlayService.class));
+        }
         System.exit(0);
     }
 
