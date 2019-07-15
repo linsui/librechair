@@ -415,4 +415,5 @@
     <string name="title_feed_provider_bbc">BBC</string>
     <string name="title_feed_provider_google_news">Google News</string>
     <string name="title_feed_provider_customizable_rss">Custom feeds</string>
+    <string name="title_pref_rss_sources">RSS sources</string>
 </resources>

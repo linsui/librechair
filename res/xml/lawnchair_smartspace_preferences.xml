@@ -103,6 +103,10 @@
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="prefCat_smartFeed"
         android:title="@string/activity_feed_title">
+        <ch.deletescape.lawnchair.preferences.RSSSourcesPreference
+            android:key="pref_rss_sources"
+            android:summary="@string/title_pref_rss_sources"
+            android:title="%s" />
         <ch.deletescape.lawnchair.preferences.SortingAlgorithmPreference
             android:defaultValue="ch.deletescape.lawnchair.feed.MixerSortingAlgorithm"
             android:dependency="pref_swipe_feed"
@@ -114,10 +118,6 @@
             android:key="pref_feed_providers"
             android:summary="%s"
             android:title="@string/title_preference_feed_providers" />
-        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
-            android:key="pref_swipe_feed"
-            android:summary="@string/summary_preference_swipe_feed"
-            android:title="@string/title_preference_swipe_feed" />
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_opacity"
             android:persistent="true"
@@ -128,5 +128,10 @@
             app:steps="100"
             app:summaryFormat="%.0f%%"
             app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_swipe_feed"
+            android:summary="@string/summary_preference_swipe_feed"
+            android:title="@string/title_preference_swipe_feed" />
+
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>
