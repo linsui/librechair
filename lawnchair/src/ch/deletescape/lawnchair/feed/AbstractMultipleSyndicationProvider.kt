@@ -30,11 +30,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
+import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.prof.rssparser.Article
-import com.squareup.picasso.Picasso
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
 
@@ -108,7 +108,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                 cards.add(temporary)
             }
 
-            val sorted = ReflectionUtils.inflateSortingAlgorithm(
+            val sorted = ReflectionUtils
+                    .inflateSortingAlgorithm(
                 LawnchairPreferences.getInstance(context).feedPresenterAlgorithm)
                     .sort(* cards.toTypedArray())
             return sorted

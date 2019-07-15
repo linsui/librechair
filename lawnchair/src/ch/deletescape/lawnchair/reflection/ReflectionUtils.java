@@ -17,10 +17,13 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed;
+package ch.deletescape.lawnchair.reflection;
 
 import android.content.Context;
+import ch.deletescape.lawnchair.feed.AbstractFeedSortingAlgorithm;
+import ch.deletescape.lawnchair.feed.FeedProvider;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
 public class ReflectionUtils {
@@ -36,5 +39,14 @@ public class ReflectionUtils {
         Class clazs = Class.forName(clazz);
         Constructor<AbstractFeedSortingAlgorithm> method = clazs.getConstructor();
         return method.newInstance();
+    }
+
+    public static <R, T> R getObject(Class<T> clazz, T object, String field)
+            throws IllegalAccessException, NoSuchFieldException {
+        Field field1 = clazz.getField(field);
+        if (!field1.isAccessible()) {
+            field1.setAccessible(true);
+        }
+        return (R) field1.get(object);
     }
 }

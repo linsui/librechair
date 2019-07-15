@@ -105,8 +105,8 @@
         android:title="@string/activity_feed_title">
         <ch.deletescape.lawnchair.preferences.RSSSourcesPreference
             android:key="pref_rss_sources"
-            android:summary="@string/title_pref_rss_sources"
-            android:title="%s" />
+            android:summary="%s"
+            android:title="@string/title_pref_rss_sources" />
         <ch.deletescape.lawnchair.preferences.SortingAlgorithmPreference
             android:defaultValue="ch.deletescape.lawnchair.feed.MixerSortingAlgorithm"
             android:dependency="pref_swipe_feed"

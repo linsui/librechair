@@ -30,6 +30,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.extensions.d

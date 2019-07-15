@@ -78,6 +78,8 @@ import ch.deletescape.lawnchair.globalsearch.ui.SearchProviderPreference;
 import ch.deletescape.lawnchair.globalsearch.ui.SelectSearchProviderFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersPreference;
+import ch.deletescape.lawnchair.preferences.RSSSourcesFragment;
+import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersFragment;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersPreference;
@@ -723,6 +725,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = SmartspaceEventProvidersFragment.Companion.newInstance(preference.getKey());
             } else if (preference instanceof FeedProvidersPreference) {
                 f = FeedProvidersFragment.Companion.newInstance(preference.getKey());
+            } else if (preference instanceof RSSSourcesPreference) {
+                f = RSSSourcesFragment.newInstance(preference.getKey());
             } else if (preference instanceof WeatherIconPackPreference) {
                 f = WeatherIconPackDialogFragment.Companion.newInstance();
             } else {

@@ -20,10 +20,12 @@
 package ch.deletescape.lawnchair.preferences;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceDialogFragmentCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +38,12 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     private RecyclerView recyclerView;
     private RSSPreferencesAdapter adapter;
 
-    public RSSSourcesPreference getPreference() {
-        return ((RSSSourcesPreference) super.getPreference());
+    public static RSSSourcesFragment newInstance(String key) {
+        RSSSourcesFragment rssSourcesFragment = new RSSSourcesFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_KEY, key);
+        rssSourcesFragment.setArguments(bundle);
+        return rssSourcesFragment;
     }
 
     @Override
@@ -49,6 +55,11 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     @Override
     public void onDialogClosed(boolean positiveResult) {
 
+    }
+
+    @Override
+    public RSSSourcesPreference getPreference() {
+        return ((RSSSourcesPreference) super.getPreference());
     }
 
     public static class RSSPreferencesAdapter extends RecyclerView.Adapter {
@@ -70,11 +81,11 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             TextView itemView = (TextView) holder.itemView;
             itemView.setText(preferences.getFeedRSSSources().getAll().get(position));
-
         }
 
         @Override
         public int getItemCount() {
+            Log.d(getClass().getSimpleName(), "getItemCount: " + preferences.getFeedRSSSources().getAll() + " " + preferences.getFeedRSSSources().getAll().size());
             return preferences.getFeedRSSSources().getAll().size();
         }
     }
