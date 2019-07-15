@@ -703,7 +703,8 @@
     <string name="pref_weather_icon_pack">Weather Icons</string>
     <string name="weather_icon_packs_not_supported">Not supported by your current weather source</string>
 
-    <string name="lawnchair_settings">Lawnchair Settings</string>
+    <string name="lawnchair_settings">Librechair Settings</string>
+    <string name="librechair_settings">Librechair Settings</string>
     <string name="description_pref_feed_algorithm">The feed will be displayed in the selected algorithm</string>
     <string-array name="greetings_evening">
         <item>Good night!</item>
