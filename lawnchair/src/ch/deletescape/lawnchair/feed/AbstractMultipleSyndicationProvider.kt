@@ -81,8 +81,14 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
 
                             d("inflate: Image URL is ${entry.image}")
 
-                            Picasso.Builder(parent.context).build().load("https:" + entry.image)
-                                    .placeholder(R.mipmap.ic_launcher).into(icon)
+                            if (entry.image != null && entry.image!!.startsWith("http")) {
+                                Picasso.Builder(parent.context).build().load(entry.image)
+                                        .placeholder(R.mipmap.ic_launcher).into(icon)
+                            } else {
+                                Picasso.Builder(parent.context).build().load("https://" + entry.image)
+                                        .placeholder(R.mipmap.ic_launcher).into(icon)
+                            }
+
 
                             title.text = entry.title
                             var spanned = Html.fromHtml(entry.description, 0).toString()

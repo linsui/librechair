@@ -31,7 +31,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.prof.rssparser.Article;
-import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso.Builder;
 import java.util.Collections;
 import java.util.List;
 
@@ -94,11 +94,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
                     Log.d(getClass().getSimpleName(), "inflate: Image URL is " + entry.getImage());
 
-                    new Picasso.Builder(parent.getContext())
-                            .build()
-                            .load("https:" + entry.getImage())
-                            .placeholder(R.mipmap.ic_launcher)
-                            .into(icon);
+
+                    if (entry.getImage() != null && entry.getImage().startsWith("http")) {
+                        new Builder(parent.getContext()).build().load(entry.getImage())
+                                .placeholder(R.mipmap.ic_launcher).into(icon);
+                    } else {
+                        new Builder(parent.getContext()).build().load("https:" + entry.getImage())
+                                .placeholder(R.mipmap.ic_launcher).into(icon);
+                    }
 
                     title.setText(String.format("%s: %s", FeedController.Companion
                             .getDisplayName(getClass().getName(), getContext()), entry.getTitle()));
