@@ -36,6 +36,10 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     private RecyclerView recyclerView;
     private RSSPreferencesAdapter adapter;
 
+    public RSSSourcesPreference getPreference() {
+        return ((RSSSourcesPreference) super.getPreference());
+    }
+
     @Override
     public void onBindDialogView(View v) {
         recyclerView = v.findViewById(R.id.providers_list);
