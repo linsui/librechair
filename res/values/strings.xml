@@ -413,4 +413,6 @@
     <string name="title_feed_provider_wikipedia_fun_facts">Wikipedia • Did you know?</string>
     <string name="placeholder_text_date_time">Jul 16 2019, 7:21 AM</string>
     <string name="title_feed_provider_bbc">BBC</string>
+    <string name="title_feed_provider_google_news">Google News</string>
+    <string name="title_feed_provider_customizable_rss">Custom feeds</string>
 </resources>

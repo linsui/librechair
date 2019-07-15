@@ -39,7 +39,7 @@ import java.io.IOException
 import java.net.URL
 import java.util.concurrent.Executors
 
-abstract class CustomizableRSSFeedProvider(c: Context) : AbstractRSSFeedProvider(c) {
+abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
 
     internal var feeds: List<List<Article>>? = null
 
@@ -104,10 +104,7 @@ abstract class CustomizableRSSFeedProvider(c: Context) : AbstractRSSFeedProvider
                                 }
                             }
 
-                            title.text = String.format("%s: %s",
-                                                       FeedController.getDisplayName(javaClass.name,
-                                                                                     context),
-                                                       entry.title)
+                            title.text = entry.title
                             var spanned = Html.fromHtml(entry.description, 0).toString()
                             if (spanned.length > 256) {
                                 spanned = spanned.subSequence(0, 256).toString() + "..."
