@@ -38,6 +38,6 @@ public class TrebuchetUtil {
 
     public static boolean isQuickstepProvider(String packageName, Context context) {
         Intent intent = new Intent("android.intent.action.QUICKSTEP_SERVICE").setPackage(packageName);
-        return context.getPackageManager().resolveService(intent, 0) != null;
+        return context.getPackageManager().resolveService(intent, 0) != null || packageName.equals("com.android.systemui");
     }
 }
