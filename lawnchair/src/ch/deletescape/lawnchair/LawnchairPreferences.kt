@@ -187,7 +187,7 @@ class LawnchairPreferences(val context: Context) :
                                               WikipediaNewsProvider::class.java.name,
                                               WikinewsFeedProvider::class.java.name))
 
-    var feedRSSSources = StringListPref("pref_rss_sources", ::restart, listOf("https://localhost/placeholder", "a", "aa", "ahh"))
+    var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())
 
     var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restart)
 
