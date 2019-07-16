@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.preferences;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.preference.PreferenceDialogFragmentCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,9 +31,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.R;
+import java.util.Objects;
 
 public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
 
@@ -53,6 +56,18 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         recyclerView = v.findViewById(R.id.providers_list);
         recyclerView.setAdapter(adapter = new RSSPreferencesAdapter(this.getContext()));
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        v.findViewById(R.id.new_rss_provider).setOnClickListener(v2 -> {
+            Builder builder = new Builder(Objects.requireNonNull(this.getContext()));
+            builder.setTitle(R.string.title_dialog_add_new_rss_source);
+            EditText editText;
+            builder.setView(editText = new EditText(this.getContext()));
+            builder.setPositiveButton(R.string.title_button_dialog_ok, (dialog, which) -> {
+                /*
+                 * TODO add code to create and remove RSS sources
+                 */
+            });
+            builder.show();
+        });
     }
 
     @Override
