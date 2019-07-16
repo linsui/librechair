@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-  
+
     <ch.deletescape.lawnchair.preferences.PreviewPreference
         android:key="pref_smartspace_preview"
         app:previewLayout="@layout/smartspace_preview" />
-    
+
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="homewidgetStyle"
         android:title="@string/pref_category_theme">
@@ -127,6 +127,16 @@
             app:minValue="0"
             app:steps="100"
             app:summaryFormat="%.0f%%"
+            app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            android:key="pref_feed_corner_rounding"
+            android:persistent="true"
+            android:title="@string/title_pref_feed_corner_rounding"
+            app:defaultSeekbarValue="0"
+            app:maxValue="24"
+            app:minValue="0"
+            app:steps="1000"
+            app:summaryFormat="%.0fdp"
             app:summaryMultiplier="1" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_swipe_feed"

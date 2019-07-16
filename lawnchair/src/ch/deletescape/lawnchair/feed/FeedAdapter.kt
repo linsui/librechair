@@ -23,6 +23,7 @@ import android.graphics.Rect
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -104,10 +105,13 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
                     themeManager.getCurrentFlags())) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                holder.itemView.context.getColor(R.color.qsb_background_dark));
+                holder.itemView.context.getColor(R.color.qsb_background_dark))
         } else if (holder.itemViewType and Card.RAISE != 0) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                holder.itemView.context.getColor(R.color.qsb_background));
+                holder.itemView.context.getColor(R.color.qsb_background))
+        }
+        if (holder.itemView is CardView) {
+            holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LawnchairPreferences.getInstance(holder.itemView.context).feedCornerRounding, holder.itemView.context.resources.displayMetrics)
         }
     }
 
@@ -139,7 +143,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
             viewHolder.visibility = View.GONE
         }
 
-        d("constructor: luminace for background ${backgroundColor.toString()} is ${ColorUtils.calculateLuminance(backgroundColor)}")
+        d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(backgroundColor)}")
 
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))

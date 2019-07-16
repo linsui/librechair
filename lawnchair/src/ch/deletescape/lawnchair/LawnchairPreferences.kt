@@ -1,4 +1,6 @@
-/*
+/*     Copyright © 2018-2019 the Lawnchair team
+ *     Copyright © 2019 oldosfan (Would on Telegram)
+ *
  *     This file is part of Lawnchair Launcher.
  *
  *     Lawnchair Launcher is free software: you can redistribute it and/or modify
@@ -186,6 +188,8 @@ class LawnchairPreferences(val context: Context) :
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name,
                                               WikinewsFeedProvider::class.java.name))
+
+    var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restart);
 
     var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())
 
