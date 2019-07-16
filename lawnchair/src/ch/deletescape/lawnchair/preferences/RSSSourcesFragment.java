@@ -20,7 +20,6 @@
 package ch.deletescape.lawnchair.preferences;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -87,6 +86,7 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     public static class RSSPreferencesAdapter extends RecyclerView.Adapter {
         private Context context;
         private LawnchairPreferences preferences;
+        private RecyclerView view;
 
         public RSSPreferencesAdapter(Context context) {
             this.context = context;
@@ -96,17 +96,16 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         @Override
         public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
             super.onAttachedToRecyclerView(recyclerView);
+            view = recyclerView;
             new RecyclerViewItemSwipeHelper.Builder()
-                    .setBackgroundColor(new ColorDrawable(Color.TRANSPARENT))
+                    .setBackgroundColor(new ColorDrawable(context.getColor(R.color.primary_text_material_light)))
                     .setSwipeListener(position -> {
                         preferences.getFeedRSSSources().removeAt(position);
                         notifyItemRemoved(position);
                     })
                     .swipeToStart()
-                    .setDeleteDecorationColor(context.getColor(R.color.colorAccent))
+                    .setDeleteDecorationColor(context.getColor(R.color.colorAccentDark))
                     .setDeleteImage(context.getDrawable(R.drawable.ic_delete))
-                    .disableSwipeOnPositions(0, 3)
-                    .disableSwipeOnLastItem()
                     .buildAndAttach(context, recyclerView);
         }
 
@@ -119,6 +118,7 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             TextView itemView = (TextView) holder.itemView;
+            itemView.setWidth(view.getWidth());
             itemView.setText(preferences.getFeedRSSSources().get(position));
         }
 
