@@ -54,6 +54,8 @@ class FeedController(val context: Context) {
                     R.string.title_feed_provider_calendar)
                 FeedWeatherProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_weather)
+                FeedWeatherProvider::class.java.name -> context.getString(
+                                    R.string.title_feed_provider_weather_stats)
                 FeedForecastProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_forecast)
                 WikipediaNewsProvider::class.java.name -> context.getString(
@@ -78,6 +80,7 @@ class FeedController(val context: Context) {
         fun getFeedProviders(): List<String> {
             return listOf(CalendarEventProvider::class.java.name,
                           FeedWeatherProvider::class.java.name,
+                          FeedWeatherStatsProvider::class.java.name,
                           FeedForecastProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
                           WikipediaFunFactsProvider::class.java.name,

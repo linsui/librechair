@@ -420,4 +420,5 @@
     <string name="title_button_dialog_ok">OK</string>
     <string name="title_pref_feed_corner_rounding">Corner radius</string>
     <string name="description_pref_feed_corner_rounding">Feed cards will be rounded %s</string>
+    <string name="title_feed_provider_weather_stats">Heads-up weather</string>
 </resources>
