@@ -35,6 +35,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.prof.rssparser.Article
+import com.squareup.picasso.Picasso
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
 

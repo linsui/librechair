@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.preference.PreferenceDialogFragmentCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
@@ -39,6 +40,7 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     private RSSPreferencesAdapter adapter;
 
     public static RSSSourcesFragment newInstance(String key) {
+        Log.d(RSSSourcesFragment.class.getSimpleName(), "newInstance: preference key is " + key);
         RSSSourcesFragment rssSourcesFragment = new RSSSourcesFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARG_KEY, key);
@@ -50,6 +52,7 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
     public void onBindDialogView(View v) {
         recyclerView = v.findViewById(R.id.providers_list);
         recyclerView.setAdapter(adapter = new RSSPreferencesAdapter(this.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
     }
 
     @Override
