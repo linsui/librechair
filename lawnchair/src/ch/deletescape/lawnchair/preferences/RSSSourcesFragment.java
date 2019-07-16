@@ -62,9 +62,10 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
             EditText editText;
             builder.setView(editText = new EditText(this.getContext()));
             builder.setPositiveButton(R.string.title_button_dialog_ok, (dialog, which) -> {
-                /*
-                 * TODO add code to create and remove RSS sources
-                 */
+               if (editText.getText().toString().trim().length() > 0) {
+                   getPreference().getPreference().add(editText.getText().toString().trim());
+                   adapter.notifyItemInserted(getPreference().getPreference().getAll().size() - 1);
+               }
             });
             builder.show();
         });
@@ -98,7 +99,7 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             TextView itemView = (TextView) holder.itemView;
-            itemView.setText(preferences.getFeedRSSSources().getAll().get(position));
+            itemView.setText(preferences.getFeedRSSSources().get(position));
         }
 
         @Override

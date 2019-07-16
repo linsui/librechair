@@ -22,6 +22,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/providers_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        app:layout_constraintHeight_max="350dp"
+        app:layout_constraintTop_toTopOf="parent" />
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,15 +48,4 @@
             android:src="@drawable/ic_add"
             android:tint="?attr/colorAccent" />
     </LinearLayout>
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/providers_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        app:layout_constraintHeight_max="350dp"
-        app:layout_constraintTop_toTopOf="parent" />
 </LinearLayout>

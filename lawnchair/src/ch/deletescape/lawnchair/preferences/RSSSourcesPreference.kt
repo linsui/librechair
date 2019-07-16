@@ -63,6 +63,10 @@ class RSSSourcesPreference(context: Context, attrs: AttributeSet?) :
         context.lawnchairPrefs.feedRSSSources.setAll(providers)
     }
 
+    fun getPreference(): LawnchairPreferences.StringListPref {
+        return context.lawnchairPrefs.feedRSSSources;
+    }
+
     private fun updateSummary() {
         val providerNames = rssPref.getAll()
                 .map { it.take(35) }
