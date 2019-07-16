@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -73,7 +74,10 @@ public class FeedWeatherStatsProvider extends FeedProvider implements Listener {
                                 weatherData.getTitle(
                                         LawnchairUtilsKt.getLawnchairPrefs(getContext())
                                                 .getWeatherUnit())),
-                        parent -> new View(getContext()), Card.Companion.getNO_HEADER(),
+                        parent -> {
+                            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.weather_heads_up, parent, false);
+                            return v;
+                        }, Card.Companion.getNO_HEADER(),
                         "nosort,top")) : Collections.emptyList();
     }
 
