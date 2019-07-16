@@ -54,7 +54,7 @@ class FeedController(val context: Context) {
                     R.string.title_feed_provider_calendar)
                 FeedWeatherProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_weather)
-                FeedWeatherProvider::class.java.name -> context.getString(
+                FeedWeatherStatsProvider::class.java.name -> context.getString(
                                     R.string.title_feed_provider_weather_stats)
                 FeedForecastProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_forecast)
