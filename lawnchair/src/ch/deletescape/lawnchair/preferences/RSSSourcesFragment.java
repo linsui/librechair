@@ -20,6 +20,8 @@
 package ch.deletescape.lawnchair.preferences;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog.Builder;
@@ -35,6 +37,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import com.android.launcher3.R;
+import com.gryzor.swipenolib.RecyclerViewItemSwipeHelper;
 import java.util.Objects;
 
 public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
@@ -88,6 +91,23 @@ public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
         public RSSPreferencesAdapter(Context context) {
             this.context = context;
             this.preferences = LawnchairPreferences.Companion.getInstance(context);
+        }
+
+        @Override
+        public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+            new RecyclerViewItemSwipeHelper.Builder()
+                    .setBackgroundColor(new ColorDrawable(Color.TRANSPARENT))
+                    .setSwipeListener(position -> {
+                        preferences.getFeedRSSSources().removeAt(position);
+                        notifyItemRemoved(position);
+                    })
+                    .swipeToStart()
+                    .setDeleteDecorationColor(context.getColor(R.color.colorAccent))
+                    .setDeleteImage(context.getDrawable(R.drawable.ic_delete))
+                    .disableSwipeOnPositions(0, 3)
+                    .disableSwipeOnLastItem()
+                    .buildAndAttach(context, recyclerView);
         }
 
         @NonNull

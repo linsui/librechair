@@ -298,6 +298,10 @@
         <me.jfenn.attribouter.wedges.LicenseWedge
             license="apache-2.0"
             title="RSS Reader" />
+        <!-- libRootJava -->
+        <me.jfenn.attribouter.wedges.LicenseWedge
+            license="apache-2.0"
+            title="SwipeNoLib" />
 
     </me.jfenn.attribouter.wedges.LicensesWedge>
 </about>

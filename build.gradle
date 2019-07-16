@@ -362,6 +362,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.0.0-RC1'
     implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
 
+    implementation 'com.github.Gryzor:SwipeNoLib:v1.0.6'
+
     quickstepImplementation project(':systemui-shared')
     l3goImplementation project(':systemui-shared')
 
