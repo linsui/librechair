@@ -421,4 +421,21 @@
     <string name="title_pref_feed_corner_rounding">Corner radius</string>
     <string name="description_pref_feed_corner_rounding">Feed cards will be rounded %s</string>
     <string name="title_feed_provider_weather_stats">Heads-up weather</string>
+    <string name="placeholder_title_weather_hud">10°C / 15°C</string>
+
+    <!-- HUD information for sunny weather -->
+
+    <string name="hud_weather_information_sunny">Sunny throughout</string>
+    <string name="hud_weather_information_sunny_occasional_clouds">Mostly sunny, with occasional clouds</string>
+    <string name="hud_weather_information_sunny_occasional_rain">Mostly sunny, with occasional rain</string>
+    <string name="hud_weather_information_sunny_occasional_snow">Mostly sunny, with occasional snow</string>
+
+
+    <!-- HUD information for cloudy weather -->
+
+    <string name="hud_weather_information_cloudy">Cloudy throughout</string>
+    <string name="hud_weather_information_cloudy_occasional_rain">Mostly cloudy, with occasional rain</string>
+    <string name="hud_weather_information_cloudy_occasional_sun">Mostly cloudy</string>
+    <string name="hud_weather_information_cloudy_occasional_snow">Mostly cloudy, with snow</string>
+
 </resources>
