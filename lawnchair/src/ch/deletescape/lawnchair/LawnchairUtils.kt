@@ -114,6 +114,16 @@ val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(
             this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
 
+fun nothing() {
+
+}
+
+fun tomorrow(current: Date = Date()): Date {
+    val date = current.clone() as Date
+    date.time += (date.time + (1000 * 60 * 60 * 24)) % (1000 * 60 * 60 * 24)
+    return date;
+}
+
 @ColorInt
 fun Context.getColorEngineAccent(): Int {
     return ColorEngine.getInstance(this).accent
