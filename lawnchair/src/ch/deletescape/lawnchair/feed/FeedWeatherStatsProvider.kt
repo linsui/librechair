@@ -31,6 +31,7 @@ import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.useWhiteText
+import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
@@ -77,7 +78,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                  .inflate(R.layout.weather_heads_up, parent, false)
                          val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                          val information = v.findViewById(R.id.weather_hud_information) as TextView
-                         highLow.text = "${forecastHigh} / ${forecastLow}"
+                         highLow.text = "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
 
                          if (useWhiteText(backgroundColor)) {
                              highLow.setTextColor(context.resources.getColor(R.color.textColorPrimary))
@@ -92,6 +93,16 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     override fun onDataUpdated(data: DataContainer) {
         weatherData = data.weather;
         val api = OWM(context.lawnchairPrefs.weatherApiKey)
+        api.unit = when (context.lawnchairPrefs.weatherUnit) {
+            Temperature.Unit.Celsius -> OWM.Unit.METRIC
+            Temperature.Unit.Fahrenheit ->  OWM.Unit.IMPERIAL
+            Temperature.Unit.Kelvin ->  OWM.Unit.STANDARD
+            Temperature.Unit.Rakine -> TODO()
+            Temperature.Unit.Delisle -> TODO()
+            Temperature.Unit.Newton -> TODO()
+            Temperature.Unit.Reaumur -> TODO()
+            Temperature.Unit.Romer -> TODO()
+        }
         if (data.weather != null && data.weather.coordLat != null && data.weather.coordLong != null) {
             Executors.newSingleThreadExecutor().submit {
 
