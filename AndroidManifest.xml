@@ -77,7 +77,7 @@
         <service
             android:enabled="true"
             android:exported="true"
-            android:name="amirz.aidlbridge.OverlayService"></service>
+            android:name="ch.deletescape.lawnchair.feed.impl.OverlayService"></service>
     </application>
     <permission
         android:description="@string/permdesc_write_settings"

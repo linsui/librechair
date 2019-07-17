@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package amirz.aidlbridge;
+package ch.deletescape.lawnchair.feed.impl;
 
-import static amirz.aidlbridge.Interpolators.LINEAR;
+import static ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR;
 
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;

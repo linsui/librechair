@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package amirz.aidlbridge;
+package ch.deletescape.lawnchair.feed.impl;
 
-import static amirz.aidlbridge.Utilities.SINGLE_FRAME_MS;
+import static ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS;
 
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;

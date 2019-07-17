@@ -17,23 +17,20 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package amirz.aidlbridge
+package ch.deletescape.lawnchair.feed.impl;
 
-import android.app.Service
-import android.content.Intent
-import android.os.IBinder
-import android.os.Process
+public class FeedState {
 
-class OverlayService : Service() {
+    public static final FeedState CLOSED = new FeedState(0f);
+    public static final FeedState OPEN = new FeedState(1f);
 
-    val feed by lazy { LauncherFeed(applicationContext) }
+    private float mProgress;
 
-    override fun onBind(intent: Intent): IBinder {
-        return feed;
+    private FeedState(float progress) {
+        mProgress = progress;
     }
 
-    override fun onDestroy() {
-        Process.killProcess(Process.myPid());
-        super.onDestroy()
+    public float getProgress() {
+        return mProgress;
     }
 }

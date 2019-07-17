@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package amirz.aidlbridge
+package ch.deletescape.lawnchair.feed.impl
 
-import amirz.aidlbridge.Interpolators.LINEAR
-import amirz.aidlbridge.Interpolators.scrollInterpolatorForVelocity
-import amirz.aidlbridge.Utilities.SINGLE_FRAME_MS
 import android.animation.*
 import android.content.Context
 import android.util.AttributeSet
@@ -27,6 +24,9 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
+import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
+import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
@@ -48,7 +48,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private val mFlingBlockCheck = FlingBlockCheck()
     private var mFeedBackground: View? = null
     private var mFeedContent: View? = null
-    private var mCurrentState: FeedState? = FeedState.CLOSED
+    private var mCurrentState: FeedState? =
+            FeedState.CLOSED
     private var mDownTime: Long = 0
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
@@ -71,7 +72,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         get() = width.toFloat()
 
     init {
-        mDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
+        mDetector = SwipeDetector(context, this,
+                                                                     SwipeDetector.HORIZONTAL)
     }
 
     override fun onFinishInflate() {
@@ -96,7 +98,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             if (duration == 0) {
                 duration = 350
             }
-            val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
+            val animator = ObjectAnimator.ofFloat(this,
+                                                  PROGRESS, 1f, 0f)
             animator.duration = duration.toLong()
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
@@ -192,7 +195,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     private fun createAnim(toState: FeedState, duration: Long): AnimatorSet {
-        val translationX = ObjectAnimator.ofFloat(this, PROGRESS, toState.progress)
+        val translationX = ObjectAnimator.ofFloat(this,
+                                                  PROGRESS, toState.progress)
         translationX.duration = duration
         translationX.interpolator = LINEAR
 
@@ -302,7 +306,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         val duration: Long
         // Increase the duration if we prevented the fling, as we are going against a high velocity.
         val durationMultiplier =
-                if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
+                if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(
+                    velocity)
                 else 1
 
         if (targetState === mToState) {
@@ -313,9 +318,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             } else {
                 startProgress = Utilities.boundToRange(
                     progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f, 1f)
-                duration = SwipeDetector.calculateDuration(velocity,
-                                                           endProgress - Math.max(progress,
-                                                                                  0f)) * durationMultiplier
+                duration = SwipeDetector.calculateDuration(
+                    velocity, endProgress - Math.max(progress, 0f)) * durationMultiplier
             }
         } else {
             // Let the state manager know that the animation didn't go to the target state,
@@ -332,8 +336,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             } else {
                 startProgress = Utilities.boundToRange(
                     progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f, 1f)
-                duration = SwipeDetector.calculateDuration(velocity, Math.min(progress,
-                                                                              1f) - endProgress) * durationMultiplier
+                duration = SwipeDetector.calculateDuration(
+                    velocity, Math.min(progress, 1f) - endProgress) * durationMultiplier
             }
         }
 
@@ -394,7 +398,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 }
 
         fun blockedFlingDurationFactor(velocity: Float): Int {
-            return Utilities.boundToRange(Math.abs(velocity) / 2, 2f, 6f).toInt()
+            return Utilities
+                    .boundToRange(Math.abs(velocity) / 2, 2f, 6f).toInt()
         }
     }
 }

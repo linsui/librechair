@@ -1,4 +1,23 @@
-package amirz.aidlbridge
+/*
+ *     Copyright (c) 2017-2019 the Lawnchair team
+ *     Copyright (c)  2019 oldosfan (would)
+ *     This file is part of Lawnchair Launcher.
+ *
+ *     Lawnchair Launcher is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Lawnchair Launcher is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package ch.deletescape.lawnchair.feed.impl
 
 import android.content.Context
 import android.util.AttributeSet
@@ -9,12 +28,15 @@ import android.widget.FrameLayout
 import com.android.launcher3.R
 
 class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, attrs),
-        SwipeDetector.Listener {
+                                                           SwipeDetector.Listener {
 
     private var progress = 0f
 
-    private val detector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL).apply {
-        setDetectableScrollConditions(SwipeDetector.DIRECTION_BOTH, true)
+    private val detector = SwipeDetector(context, this,
+                                                                            SwipeDetector.HORIZONTAL)
+            .apply {
+        setDetectableScrollConditions(
+            SwipeDetector.DIRECTION_BOTH, true)
     }
     private val time get() = System.currentTimeMillis()
     private var downTime = 0L
