@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
 import android.util.Log
@@ -29,6 +30,7 @@ import android.widget.TextView
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
 import net.aksingh.owmjapis.core.OWM
@@ -69,11 +71,17 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                  context.getString(R.string.title_card_weather_temperature,
                                    weatherData!!.getTitle(context.lawnchairPrefs.weatherUnit)),
                  object : Card.Companion.InflateHelper {
-                     override fun inflate(parent: ViewGroup): View {
+                     @SuppressLint("SetTextI18n") override fun inflate(parent: ViewGroup): View {
                          val v = LayoutInflater.from(parent.getContext())
                                  .inflate(R.layout.weather_heads_up, parent, false)
-                         val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView;
-                         highLow.text = "$forecastHigh / $forecastLow"
+                         val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
+                         val information = v.findViewById(R.id.weather_hud_information) as TextView
+                         highLow.text = "${forecastHigh} / ${forecastLow}"
+
+                         if (useWhiteText(backgroundColor)) {
+                             highLow.setTextColor(context.resources.getColor(R.color.textColorPrimary))
+                             information.setTextColor(context.resources.getColor(R.color.textColorPrimary))
+                         }
                          return v;
                      }
                  }, Card.NO_HEADER, "nosort,top"))
