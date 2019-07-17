@@ -89,35 +89,29 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     }
 
     override fun onDataUpdated(data: DataContainer) {
+        weatherData = data.weather;
         val api = OWM(context.lawnchairPrefs.weatherApiKey)
         if (data.weather != null && data.weather.coordLat != null && data.weather.coordLong != null) {
             Executors.newSingleThreadExecutor().submit {
-                synchronized(FeedWeatherStatsProvider::class.java) {
-                    /*
-                     * This fixes weird native crashes due to weird libc bugs
-                     */
 
-                    weatherData = weatherData;
+                try {
+                    hourlyWeatherForecast = api
+                            .hourlyWeatherForecastByCoords(data.weather.coordLat,
+                                                           data.weather.coordLong)
 
-                    try {
-                        hourlyWeatherForecast = api
-                                .hourlyWeatherForecastByCoords(data.weather.coordLat,
-                                                               data.weather.coordLong)
-
-                        val integersDay = hourlyWeatherForecast!!.dataList!!.map {
-                            it!!.tempData!!.tempDay
-                        }
-
-                        val integersNight = hourlyWeatherForecast!!.dataList!!.map {
-                            it!!.tempData!!.tempNight
-                        }
-
-                        forecastHigh = integersDay[0]!!.toInt()
-                        forecastLow = integersNight[0]!!.toInt()
-
-                    } catch (e: APIException) {
-                        e.printStackTrace()
+                    val integersDay = hourlyWeatherForecast!!.dataList!!.map {
+                        it!!.tempData!!.tempDay
                     }
+
+                    val integersNight = hourlyWeatherForecast!!.dataList!!.map {
+                        it!!.tempData!!.tempNight
+                    }
+
+                    forecastHigh = integersDay[0]!!.toInt()
+                    forecastLow = integersNight[0]!!.toInt()
+
+                } catch (e: APIException) {
+                    e.printStackTrace()
                 }
             }
         }
