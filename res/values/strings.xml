@@ -444,7 +444,7 @@
 
     <string name="hud_weather_information_rainy">Rainy</string>
     <string name="hud_weather_information_rainy_occasional_clouds">Periodic showers, with clouds</string>
-    <string name="hud_weather_information_rainy_occasional_sun">Periodic showers with sun</string>
+    <string name="hud_weather_information_rainy_occasional_sun">Periodic showers with clear sky</string>
     <string name="hud_weather_information_rainy_occasional_snow">Rain, with bursts of snow</string>
     <string name="hud_weather_information_rainy_occasional_thunder">Rain with thunder</string>
 
