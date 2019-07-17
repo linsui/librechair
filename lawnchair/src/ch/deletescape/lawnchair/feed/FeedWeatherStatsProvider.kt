@@ -27,11 +27,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import ch.deletescape.lawnchair.lawnchairApp
-import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
-import ch.deletescape.lawnchair.tomorrow
-import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -139,6 +136,46 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     forecastLow = Collections.min(today)
                     forecastHigh = Collections.max(today)
+
+                    var thunder = 0
+                    var rain = 0
+                    var snow = 0
+                    var clouds = 0
+                    var clear = 0
+
+                    hourlyWeatherForecast?.dataList?.forEach {
+                        if (it?.weatherList != null) {
+                            it.weatherList!!.forEach {
+                                val condId = it!!.conditionId!!
+                                when {
+                                    condId in 200..299 -> {
+                                        thunder += if (condId - 200 < 10) 1 else if (condId - 200 < 20) 5 else 10
+                                        rain += 5
+                                    }
+                                    condId in 300..399 -> {
+                                        rain += 1
+                                    }
+                                    condId in 500..599 -> {
+                                        rain += if (condId - 400 < 10) 3 else if (condId - 400 < 20) 5 else 10
+                                    }
+                                    condId in 600..699 -> {
+                                        snow += if (condId - 600 < 10) 3 else if (condId - 600 < 20) 5 else 10
+                                    }
+                                    condId in 800..899 -> {
+                                        if (condId != 800) {
+                                            clouds += condId - 800
+                                        } else {
+                                            ++clear
+                                        }
+                                    }
+                                    else -> {}
+                                }
+                            }
+                        }
+                    }
+
+                    val type = WeatherTypes.getWeatherTypeFromStatastics(clear, clouds, rain, snow, thunder)
+
 
                 } catch (e: APIException) {
                     e.printStackTrace()
