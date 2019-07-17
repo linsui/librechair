@@ -458,7 +458,7 @@
 
     <!-- HUD information for thundery weather -->
 
-    <string name="hud_weather_information_thunder">Thundery</string>
+    <string name="hud_weather_information_thunder">Thunderstorms</string>
     <string name="hud_weather_information_thunder_occasional_clouds">Thunderstorms, with clouds</string>
     <string name="hud_weather_information_thunder_occasional_sun">Periodic thunder with clear sky</string>
     <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
