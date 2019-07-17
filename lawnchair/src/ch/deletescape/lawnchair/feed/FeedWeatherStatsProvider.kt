@@ -156,7 +156,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     d("onDataUpdated: classifying weather")
 
-                    hourlyWeatherForecast?.dataList?.forEach {
+                    hourlyWeatherForecast!!.dataList!!.filter { it!!.dateTime!!.before(tomorrow()) }.forEach {
                         if (it?.weatherList != null) {
                             it.weatherList!!.forEach {
                                 val condId = it!!.conditionId!!
