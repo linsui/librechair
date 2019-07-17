@@ -32,7 +32,7 @@ import android.view.ViewConfiguration;
  */
 public class SwipeDetector {
 
-    public static final int DIRECTION_POSITIVE = 1 << 0;
+    public static final int DIRECTION_POSITIVE = 1;
     public static final int DIRECTION_NEGATIVE = 1 << 1;
     public static final int DIRECTION_BOTH = DIRECTION_NEGATIVE | DIRECTION_POSITIVE;
     /**

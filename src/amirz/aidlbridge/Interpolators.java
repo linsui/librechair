@@ -40,7 +40,7 @@ public class Interpolators {
 
     public static final Interpolator DEACCEL = new DecelerateInterpolator();
     public static final Interpolator DEACCEL_1_5 = new DecelerateInterpolator(1.5f);
-    public static final Interpolator DEACCEL_1_7 = new DecelerateInterpolator(1.7f);
+    public static final Interpolator DEACCEL_1_7 = new DecelerateInterpolator(1.7f); /* Did pap just decompile the Google app? */
     public static final Interpolator DEACCEL_2 = new DecelerateInterpolator(2);
     public static final Interpolator DEACCEL_2_5 = new DecelerateInterpolator(2.5f);
     public static final Interpolator DEACCEL_3 = new DecelerateInterpolator(3f);
