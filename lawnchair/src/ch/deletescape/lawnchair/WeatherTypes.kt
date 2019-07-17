@@ -20,19 +20,53 @@
 package ch.deletescape.lawnchair
 
 import ch.deletescape.lawnchair.util.extensions.d
+import com.android.launcher3.R
 import java.util.*
 
 enum class WeatherTypes {
     CLEAR, CLEAR_CLOUDS, CLEAR_RAIN, CLEAR_SNOW, CLEAR_THUNDER, CLOUDS, CLOUDS_CLEAR, CLOUDS_RAIN, CLOUDS_SNOW, CLOUDS_THUNDER, RAIN, RAIN_CLEAR, RAIN_CLOUDS, RAIN_SNOW, RAIN_THUNDER, THUNDER, THUNDER_CLEAR, THUNDER_CLOUDS, THUNDER_SNOW, THUNDER_RAIN, SNOW, SNOW_CLEAR, SNOW_CLOUDS, SNOW_RAIN, SNOW_THUNDER;
 
     companion object {
+        fun getStringResource(type: WeatherTypes): Int {
+            return when (type) {
+                WeatherTypes.CLEAR -> R.string.hud_weather_information_sunny
+                WeatherTypes.CLEAR_CLOUDS -> R.string.hud_weather_information_sunny_occasional_clouds
+                WeatherTypes.CLEAR_RAIN -> R.string.hud_weather_information_sunny_occasional_rain
+                WeatherTypes.CLEAR_SNOW -> R.string.hud_weather_information_sunny_occasional_snow
+                WeatherTypes.CLEAR_THUNDER -> R.string.hud_weather_information_sunny_occasional_thunder
+                WeatherTypes.CLOUDS -> R.string.hud_weather_information_cloudy
+                WeatherTypes.CLOUDS_CLEAR -> R.string.hud_weather_information_cloudy_occasional_sun
+                WeatherTypes.CLOUDS_RAIN -> R.string.hud_weather_information_cloudy_occasional_rain
+                WeatherTypes.CLOUDS_SNOW -> R.string.hud_weather_information_cloudy_occasional_snow
+                WeatherTypes.CLOUDS_THUNDER -> R.string.hud_weather_information_cloudy_occasional_thunder
+                WeatherTypes.RAIN -> R.string.hud_weather_information_rainy
+                WeatherTypes.RAIN_CLEAR -> R.string.hud_weather_information_rainy_occasional_sun
+                WeatherTypes.RAIN_CLOUDS -> R.string.hud_weather_information_rainy_occasional_clouds
+                WeatherTypes.RAIN_SNOW -> R.string.hud_weather_information_rainy_occasional_snow
+                WeatherTypes.RAIN_THUNDER -> R.string.hud_weather_information_rainy_occasional_thunder
+                WeatherTypes.THUNDER -> R.string.hud_weather_information_thunder
+                WeatherTypes.THUNDER_CLEAR -> R.string.hud_weather_information_thunder_occasional_sun
+                WeatherTypes.THUNDER_CLOUDS -> R.string.hud_weather_information_thunder_occasional_clouds
+                WeatherTypes.THUNDER_SNOW -> R.string.hud_weather_information_thunder_occasional_snow
+                WeatherTypes.THUNDER_RAIN -> R.string.hud_weather_information_thunder_occasional_rain
+                WeatherTypes.SNOW -> R.string.hud_weather_information_snowy
+                WeatherTypes.SNOW_CLEAR -> R.string.hud_weather_information_snowy_occasional_sun
+                WeatherTypes.SNOW_CLOUDS -> R.string.hud_weather_information_snowy_occasional_clouds
+                WeatherTypes.SNOW_RAIN -> R.string.hud_weather_information_snowy_occasional_rain
+                WeatherTypes.SNOW_THUNDER -> R.string.hud_weather_information_snowy_occasional_thunder
+            }
+        }
+
         fun getWeatherTypeFromStatistics(clear: Int, clouds: Int, rain: Int, snow: Int,
                                          thunder: Int): WeatherTypes {
             d("getWeatherTypeFromStatistics: concatenating data")
             val concat = arrayListOf(clear, clouds, rain, snow, thunder)
             d("getWeatherTypeFromStatistics: data: $concat")
             val main = Collections.max(concat)
-            val secondary = Collections.max(concat.filter { it != main })
+            var secondary = Collections.max(concat.filter { it != main })
+            if (secondary < (main * (40 / 100) /* Magic threshold though I don't know why */)) {
+                secondary = main
+            }
             d("getWeatherTypeFromStatistics: deducing result ${concat.indexOf(main)} and then ${concat.indexOf(secondary)}")
             val result = when (concat.indexOf(main)) {
                 0 -> {

@@ -169,14 +169,14 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                         rain += 1
                                     }
                                     condId in 500..599 -> {
-                                        rain += if (condId - 400 < 10) 3 else if (condId - 400 < 20) 5 else 10
+                                        rain += if (condId - 400 < 10) 1 else if (condId - 400 < 20) 2 else 5
                                     }
                                     condId in 600..699 -> {
                                         snow += if (condId - 600 < 10) 3 else if (condId - 600 < 20) 5 else 10
                                     }
                                     condId in 800..899 -> {
                                         if (condId != 800) {
-                                            clouds += condId - 800
+                                            clouds += ((condId - 800) / 1.25).toInt()
                                         } else {
                                             ++clear
                                         }
@@ -195,33 +195,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     d("onDataUpdated: weather type is ${type.name}")
 
-                    weatherTypeResource = when (type) {
-                        WeatherTypes.CLEAR -> R.string.hud_weather_information_sunny
-                        WeatherTypes.CLEAR_CLOUDS -> R.string.hud_weather_information_sunny_occasional_clouds
-                        WeatherTypes.CLEAR_RAIN -> R.string.hud_weather_information_sunny_occasional_rain
-                        WeatherTypes.CLEAR_SNOW -> R.string.hud_weather_information_sunny_occasional_snow
-                        WeatherTypes.CLEAR_THUNDER -> R.string.hud_weather_information_sunny_occasional_thunder
-                        WeatherTypes.CLOUDS -> R.string.hud_weather_information_cloudy
-                        WeatherTypes.CLOUDS_CLEAR -> R.string.hud_weather_information_cloudy_occasional_sun
-                        WeatherTypes.CLOUDS_RAIN -> R.string.hud_weather_information_cloudy_occasional_rain
-                        WeatherTypes.CLOUDS_SNOW -> R.string.hud_weather_information_cloudy_occasional_snow
-                        WeatherTypes.CLOUDS_THUNDER -> R.string.hud_weather_information_cloudy_occasional_thunder
-                        WeatherTypes.RAIN -> R.string.hud_weather_information_rainy
-                        WeatherTypes.RAIN_CLEAR -> R.string.hud_weather_information_rainy_occasional_sun
-                        WeatherTypes.RAIN_CLOUDS -> R.string.hud_weather_information_rainy_occasional_clouds
-                        WeatherTypes.RAIN_SNOW -> R.string.hud_weather_information_rainy_occasional_snow
-                        WeatherTypes.RAIN_THUNDER -> R.string.hud_weather_information_rainy_occasional_thunder
-                        WeatherTypes.THUNDER -> R.string.hud_weather_information_thunder
-                        WeatherTypes.THUNDER_CLEAR -> R.string.hud_weather_information_thunder_occasional_sun
-                        WeatherTypes.THUNDER_CLOUDS -> R.string.hud_weather_information_thunder_occasional_clouds
-                        WeatherTypes.THUNDER_SNOW -> R.string.hud_weather_information_thunder_occasional_snow
-                        WeatherTypes.THUNDER_RAIN -> R.string.hud_weather_information_thunder_occasional_rain
-                        WeatherTypes.SNOW -> R.string.hud_weather_information_snowy
-                        WeatherTypes.SNOW_CLEAR -> R.string.hud_weather_information_snowy_occasional_sun
-                        WeatherTypes.SNOW_CLOUDS -> R.string.hud_weather_information_snowy_occasional_clouds
-                        WeatherTypes.SNOW_RAIN -> R.string.hud_weather_information_snowy_occasional_rain
-                        WeatherTypes.SNOW_THUNDER -> R.string.hud_weather_information_snowy_occasional_thunder
-                    }
+                    weatherTypeResource = WeatherTypes.getStringResource(type)
 
                     d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
 
