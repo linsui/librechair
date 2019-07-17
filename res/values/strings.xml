@@ -425,17 +425,43 @@
 
     <!-- HUD information for sunny weather -->
 
-    <string name="hud_weather_information_sunny">Sunny throughout</string>
-    <string name="hud_weather_information_sunny_occasional_clouds">Mostly sunny, with occasional clouds</string>
-    <string name="hud_weather_information_sunny_occasional_rain">Mostly sunny, with occasional rain</string>
-    <string name="hud_weather_information_sunny_occasional_snow">Mostly sunny, with occasional snow</string>
+    <string name="hud_weather_information_sunny">Clear</string>
+    <string name="hud_weather_information_sunny_occasional_clouds">Mostly clear, with occasional clouds</string>
+    <string name="hud_weather_information_sunny_occasional_rain">Mostly clear, with occasional rain</string>
+    <string name="hud_weather_information_sunny_occasional_snow">Mostly clear, with occasional snow</string>
+    <string name="hud_weather_information_sunny_occasional_thunder">Mostly clear, with occasional thunder</string>
 
 
     <!-- HUD information for cloudy weather -->
 
-    <string name="hud_weather_information_cloudy">Cloudy throughout</string>
-    <string name="hud_weather_information_cloudy_occasional_rain">Mostly cloudy, with occasional rain</string>
+    <string name="hud_weather_information_cloudy">Cloudy</string>
+    <string name="hud_weather_information_cloudy_occasional_rain">Periodic showers, mostly clouds</string>
     <string name="hud_weather_information_cloudy_occasional_sun">Mostly cloudy</string>
     <string name="hud_weather_information_cloudy_occasional_snow">Mostly cloudy, with snow</string>
+    <string name="hud_weather_information_cloudy_occasional_thunder">Mostly cloudy, with snow</string>
+
+    <!-- HUD information for rainy weather -->
+
+    <string name="hud_weather_information_rainy">Rainy</string>
+    <string name="hud_weather_information_rainy_occasional_clouds">Periodic showers, with clouds</string>
+    <string name="hud_weather_information_rainy_occasional_sun">Periodic showers with sun</string>
+    <string name="hud_weather_information_rainy_occasional_snow">Rain, with bursts of snow</string>
+    <string name="hud_weather_information_rainy_occasional_thunder">Rain with thunder</string>
+
+    <!-- HUD information for snowy weather -->
+
+    <string name="hud_weather_information_snowy">Snowy</string>
+    <string name="hud_weather_information_snowy_occasional_clouds">Periodic showers, with clouds</string>
+    <string name="hud_weather_information_snowy_occasional_sun">Periodic snow with clear sky</string>
+    <string name="hud_weather_information_snowy_occasional_rain">Snow with rain</string>
+    <string name="hud_weather_information_snowy_occasional_thunder">Snow with thunder</string>
+
+    <!-- HUD information for thundery weather -->
+
+    <string name="hud_weather_information_thunder">Thundery</string>
+    <string name="hud_weather_information_thunder_occasional_clouds">Thunderstorms, with clouds</string>
+    <string name="hud_weather_information_thunder_occasional_sun">Periodic thunder with clear sky</string>
+    <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
+    <string name="hud_weather_information_thunder_occasional_snow">Thunder with snow</string>
 
 </resources>

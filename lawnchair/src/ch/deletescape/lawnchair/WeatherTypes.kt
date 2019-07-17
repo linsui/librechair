@@ -19,19 +19,22 @@
 
 package ch.deletescape.lawnchair
 
+import ch.deletescape.lawnchair.util.extensions.d
 import java.util.*
 
 enum class WeatherTypes {
     CLEAR, CLEAR_CLOUDS, CLEAR_RAIN, CLEAR_SNOW, CLEAR_THUNDER, CLOUDS, CLOUDS_CLEAR, CLOUDS_RAIN, CLOUDS_SNOW, CLOUDS_THUNDER, RAIN, RAIN_CLEAR, RAIN_CLOUDS, RAIN_SNOW, RAIN_THUNDER, THUNDER, THUNDER_CLEAR, THUNDER_CLOUDS, THUNDER_SNOW, THUNDER_RAIN, SNOW, SNOW_CLEAR, SNOW_CLOUDS, SNOW_RAIN, SNOW_THUNDER;
 
     companion object {
-        public fun getWeatherTypeFromStatastics(clear: Int, clouds: Int, rain: Int, snow: Int,
+        fun getWeatherTypeFromStatistics(clear: Int, clouds: Int, rain: Int, snow: Int,
                                          thunder: Int): WeatherTypes {
+            d("getWeatherTypeFromStatistics: concatenating data")
             val concat = arrayListOf(clear, clouds, rain, snow, thunder)
+            d("getWeatherTypeFromStatistics: data: $concat")
             val main = Collections.max(concat)
             val secondary = Collections.max(concat.filter { it != main })
-
-            return when (concat.indexOf(main)) {
+            d("getWeatherTypeFromStatistics: deducing result ${concat.indexOf(main)} and then ${concat.indexOf(secondary)}")
+            val result = when (concat.indexOf(main)) {
                 0 -> {
                     when (concat.indexOf(secondary)) {
                         0 -> CLEAR
@@ -43,7 +46,7 @@ enum class WeatherTypes {
                         else -> error("Invalid secondary index")
                     }
                 }
-                2 -> {
+                1 -> {
                     when (concat.indexOf(secondary)) {
                         0 -> CLOUDS_CLEAR
                         1 -> CLOUDS
@@ -54,7 +57,7 @@ enum class WeatherTypes {
                         else -> error("Invalid secondary index")
                     }
                 }
-                3 -> {
+                2 -> {
                     when (concat.indexOf(secondary)) {
                         0 -> RAIN_CLEAR
                         1 -> RAIN_CLOUDS
@@ -65,7 +68,7 @@ enum class WeatherTypes {
                         else -> error("Invalid secondary index")
                     }
                 }
-                4 -> {
+                3 -> {
                     when (concat.indexOf(secondary)) {
                         0 -> SNOW_CLEAR
                         1 -> SNOW_CLOUDS
@@ -76,7 +79,7 @@ enum class WeatherTypes {
                         else -> error("Invalid secondary index")
                     }
                 }
-                5 -> {
+                4 -> {
                     when (concat.indexOf(secondary)) {
                         0 -> THUNDER_CLEAR
                         1 -> THUNDER_CLOUDS
@@ -90,6 +93,8 @@ enum class WeatherTypes {
 
                 else -> error("Invalid main index")
             }
+            d("getWeatherTypeFromStatistics: result is $result")
+            return result
         }
     }
 }
