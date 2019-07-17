@@ -31,6 +31,7 @@ import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.useWhiteText
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
 import net.aksingh.owmjapis.core.OWM
@@ -94,24 +95,33 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
         if (data.weather != null && data.weather.coordLat != null && data.weather.coordLong != null) {
             Executors.newSingleThreadExecutor().submit {
 
+                d("onDataUpdated: updating forcast HUD")
+
                 try {
+                    d("onDataUpdated: fetching weather data")
                     hourlyWeatherForecast = api
                             .hourlyWeatherForecastByCoords(data.weather.coordLat,
                                                            data.weather.coordLong)
-
+                    d("onDataUpdated: mapping day data to list")
                     val integersDay = hourlyWeatherForecast!!.dataList!!.map {
-                        it!!.tempData!!.tempDay
+                        d("onDataUpdated:     mapping tempDay: ${it}, ${it?.tempData?.tempDay}")
+                        it?.mainData?.tempMax
                     }
 
                     val integersNight = hourlyWeatherForecast!!.dataList!!.map {
-                        it!!.tempData!!.tempNight
+                        d("onDataUpdated:     mapping tempNight: ${it}, ${it?.tempData?.tempMin}")
+                        it?.mainData?.tempMin
                     }
 
+                    d("onDataUpdated: assigning data to results")
                     forecastHigh = integersDay[0]!!.toInt()
                     forecastLow = integersNight[0]!!.toInt()
+                    d("onDataUpdated: forecastHigh: ${forecastHigh}, forecastLow: ${forecastLow}")
 
                 } catch (e: APIException) {
                     e.printStackTrace()
+                } catch (e: NullPointerException) {
+                    e.printStackTrace();
                 }
             }
         }
