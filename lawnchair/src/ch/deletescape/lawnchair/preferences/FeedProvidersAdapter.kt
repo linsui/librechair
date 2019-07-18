@@ -26,7 +26,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import ch.deletescape.lawnchair.feed.MainFeedController
+import ch.deletescape.lawnchair.feed.FeedController
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -52,7 +52,7 @@ class FeedProvidersAdapter(private val context: Context)
     var itemTouchHelper: ItemTouchHelper? = null
 
     init {
-        allProviders.addAll(MainFeedController.getFeedProviders().map { ProviderItem(ProviderInfo(it)) })
+        allProviders.addAll(FeedController.getFeedProviders().map { ProviderItem(ProviderInfo(it)) })
         currentSpecs.addAll(prefs.feedProviders.getAll())
 
         fillItems()
@@ -171,7 +171,7 @@ class FeedProvidersAdapter(private val context: Context)
 
     inner class ProviderInfo(val name: String) {
 
-        val displayName = MainFeedController.getDisplayName(name, context);
+        val displayName = FeedController.getDisplayName(name, context);
     }
 
     class HeaderHolder(itemView: View) : Holder(itemView) {

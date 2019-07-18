@@ -26,7 +26,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
@@ -86,12 +85,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                  .inflate(R.layout.weather_heads_up, parent, false)
                          val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                          val information = v.findViewById(R.id.weather_hud_information) as TextView
-                         val currentInformation = v.findViewById(R.id.weather_hud_current_temp) as TextView
-                         val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
-
-                         currentInformation.text = weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
-                         currentIcon.setImageBitmap(weatherData?.icon)
-
                          highLow.text =
                                  "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                          information.text = context.getString(weatherTypeResource!!)
