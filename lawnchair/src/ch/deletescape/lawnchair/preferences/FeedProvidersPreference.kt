@@ -43,7 +43,7 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
-import ch.deletescape.lawnchair.feed.FeedController
+import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
@@ -66,7 +66,7 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
 
     private fun updateSummary() {
         val providerNames = providersPref.getAll()
-                .map { FeedController.getDisplayName(it, context) }
+                .map { MainFeedController.getDisplayName(it, context) }
         if (providerNames.isNotEmpty()) {
             summary = TextUtils.join(", ", providerNames)
         } else {
