@@ -29,6 +29,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -37,6 +38,7 @@ import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
 import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.util.extensions.w
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.kwabenaberko.openweathermaplib.implementation.OpenWeatherMapHelper
@@ -79,17 +81,21 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         weatherTitleText!!.text = intent!!.extras!!.getString("weather_text")
         iconView!!.setImageDrawable(BitmapDrawable(resources, icon!!))
 
-        var resId: Int = R.string.helpful_tip_non_available
-        when (intent!!.extras!!.getString("weather_icon")) {
-            "01d", "02d", "03d" -> resId = R.string.helpful_tip_01_03
-            "01n", "02n", "03n" -> resId = R.string.helpful_tip_01n_03n
-            "04d" -> resId = R.string.helpful_tip_04
-            "04n" -> resId = R.string.helpful_tip_04n
-            "09d", "09n", "10d" -> resId = R.string.helpful_tip_09_10
-            "10n" -> resId = R.string.helpful_tip_10n
-            "11d", "11n" -> resId = R.string.helpful_tip_11
-            "13d", "13n" -> resId = R.string.helpful_tip_13
-            "50d", "50n" -> resId = R.string.helpful_tip_50
+        var resId: Int = when (intent!!.extras!!.getString("weather_icon")) {
+            "01d", "02d", "03d" -> R.string.helpful_tip_01_03
+            "01n", "02n", "03n" -> R.string.helpful_tip_01n_03n
+            "04d" -> R.string.helpful_tip_04
+            "04n" -> R.string.helpful_tip_04n
+            "09d", "09n", "10d" -> R.string.helpful_tip_09_10
+            "10n" -> R.string.helpful_tip_10n
+            "11d", "11n" -> R.string.helpful_tip_11
+            "13d", "13n" -> R.string.helpful_tip_13
+            "50d", "50n" -> R.string.helpful_tip_50
+
+            else -> {
+                w("Invalid weather!")
+                R.string.helpful_tip_non_available
+            }
         }
         weatherHelpfulTip!!.text = getString(resId)
         Executors.newSingleThreadExecutor().submit {
@@ -156,6 +162,16 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
+            holder.itemView.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                    /* if (event?.action == MotionEvent.ACTION_SCROLL) {
+
+                    } */
+                    v?.parent?.parent?.requestDisallowInterceptTouchEvent(true);
+                    return true
+                }
+
+            })
             val currentWeather = hourlyWeatherForecast.dataList!!.get(position)
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
@@ -187,6 +203,15 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
+            holder.itemView.setOnTouchListener(object : View.OnTouchListener {
+                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                    /* if (event?.action == MotionEvent.ACTION_SCROLL) {
+
+                    } */
+                    v?.parent?.requestDisallowInterceptTouchEvent(true);
+                    return true
+                }
+            })
             val currentWeather = dailyWeatherForcast.dataList!!.get(position)
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather!!.dateTime!!.time / 1000), ZoneId.of("UTC"))
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
