@@ -32,7 +32,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -114,15 +113,14 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (cards[holder.adapterPosition].canHide) {
             holder.itemView.setOnLongClickListener {
                 isDeleteActive = true
-                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.shrink_in))
-                holder.itemView.animate().scaleX(0.7f).scaleY(0.7f)
+                holder.itemView.animate().scaleX(0.7f).scaleY(0.7f).duration = 100
                 true
             }
 
             holder.itemView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
                 if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP) {
                     holder.itemView.animate().scaleX(0f).scaleY(0f).duration = 500
-                    (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(50)
+                    (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(20)
                     val backupCards = cards.clone() as List<Card>
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
                             .add(cards[holder.adapterPosition].identifier)
@@ -146,6 +144,9 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                         }
                     }
                     return@setOnTouchListener true
+                } else if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_CANCEL) {
+                    isDeleteActive = false
+                    holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
                 }
 
                 return@setOnTouchListener false
