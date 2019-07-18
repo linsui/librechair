@@ -31,6 +31,12 @@ import android.view.ViewGroup
  */
 
 data class Card(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper, val type: Int, val algoFlags: String? = null, val identifier: Int = title.hashCode()) {
+    var canHide = false
+
+    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
+        this.canHide = canHide
+    }
+
     companion object {
         val DEFAULT = 0
         val RAISE = 1 shl 1

@@ -105,29 +105,34 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
 
-        holder.itemView.setOnLongClickListener {
-            val backupCards = cards.clone() as List<Card>
-            holder.itemView.context.lawnchairPrefs.feedDisabledCards.add(cards[position].identifier)
-            runOnNewThread {
-                cards.removeAt(position)
-                holder.itemView.post {
-                    notifyItemRemoved(position)
-                    Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
-                            .setAction(R.string.undo) {
-                                runOnNewThread {
-                                    holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                            .remove(cards[position].identifier)
-                                    cards.clear()
-                                    cards.addAll(backupCards)
-                                    holder.itemView.post {
-                                        notifyItemInserted(position)
-                                        recyclerView.scrollToPosition(position)
+        if (cards[position].canHide) {
+            holder.itemView.setOnLongClickListener {
+                val backupCards = cards.clone() as List<Card>
+                holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                        .add(cards[position].identifier)
+                runOnNewThread {
+                    cards.removeAt(position)
+                    holder.itemView.post {
+                        notifyItemRemoved(position)
+                        Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
+                                .setAction(R.string.undo) {
+                                    runOnNewThread {
+                                        holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                                .remove(cards[position].identifier)
+                                        cards.clear()
+                                        cards.addAll(backupCards)
+                                        holder.itemView.post {
+                                            notifyItemInserted(position)
+                                            recyclerView.scrollToPosition(position)
+                                        }
                                     }
-                                }
-                            }.show()
+                                }.show()
+                    }
                 }
+                true
             }
-            true
+        } else {
+            holder.itemView.setOnLongClickListener(null)
         }
         if (holder.itemViewType and Card.NO_HEADER != 1) {
             holder.description?.text = cards[position].title
