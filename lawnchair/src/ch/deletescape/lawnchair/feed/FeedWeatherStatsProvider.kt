@@ -100,6 +100,8 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                  context.resources.getColor(R.color.textColorPrimary))
                              information.setTextColor(
                                  context.resources.getColor(R.color.textColorPrimary))
+                             currentInformation.setTextColor(
+                                 context.resources.getColor(R.color.textColorPrimary))
                          }
                          return v;
                      }
