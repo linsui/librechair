@@ -143,7 +143,7 @@ import kotlin.collections.ArrayList
                                        R.string.placeholder_empty_title) else title + " • ") + text,
                                    object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
-                                           return getCalendarFeedView(description, address, context,
+                                           return getCalendarFeedView(description, address, parent.context,
                                                                       parent)
                                        }
                                    }, Card.RAISE, if (diffMinutes < 120) "nosort,top" else ""))
@@ -195,7 +195,7 @@ import kotlin.collections.ArrayList
                     eventCursor.moveToNext();
                     cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
                         override fun inflate(parent: ViewGroup): View {
-                            return View(context)
+                            return View(parent.context)
                         }
                     }, Card.TEXT_ONLY, "nosort,top"))
                 }
