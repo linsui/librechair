@@ -183,7 +183,7 @@ class LawnchairPreferences(val context: Context) :
                                   PersonalityProvider::class.java.name))
 
     var feedProviders = StringListPref("pref_feed_providers", ::restart,
-                                       listOf(FeedWeatherProvider::class.java.name,
+                                       listOf(FeedWeatherStatsProvider::class.java.name,
                                               FeedForecastProvider::class.java.name,
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name,

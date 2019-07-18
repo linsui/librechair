@@ -26,16 +26,16 @@ import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import com.android.launcher3.R
 
-private var theController: FeedController? = null
+private var theController: MainFeedController? = null
 
-fun getFeedController(c: Context): FeedController {
+fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
-        theController = FeedController(c)
+        theController = MainFeedController(c)
     }
     return theController!!;
 }
 
-class FeedController(val context: Context) {
+class MainFeedController(val context: Context) {
 
     fun getProviders(): List<FeedProvider> {
         val providers = newList<FeedProvider>()
