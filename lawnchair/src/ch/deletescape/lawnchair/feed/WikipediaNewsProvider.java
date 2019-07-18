@@ -25,11 +25,10 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.text.Html;
 import android.view.View;
-import android.webkit.WebView;
-import ch.deletescape.lawnchair.theme.ThemeManager;
+import android.widget.TextView;
 import com.android.launcher3.R;
 import fastily.jwiki.core.Wiki;
 import info.bliki.wiki.model.WikiModel;
@@ -88,30 +87,17 @@ public class WikipediaNewsProvider extends FeedProvider {
         return wikiText == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
-                            WebView webView = new WebView(getContext());
+                            TextView view = new TextView(item.getContext());
                             if (wikiText != null) {
-                                webView.setBackgroundColor(Color.TRANSPARENT);
-                                if (ThemeManager.Companion.getInstance(webView.getContext())
-                                        .isDark()) {
-                                    try {
-                                        webView.loadData("<font color=\"white\">" + new WikiModel("https://commons.wikipedia.org",
-                                                        "https://en.wikipedia.org").render(wikiText) + "</font>",
-                                                "text/html", "utf-8");
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    try {
-                                        webView.loadData(
-                                                new WikiModel("https://commons.wikipedia.org",
-                                                        "https://en.wikipedia.org")
-                                                        .render(wikiText),
-                                                "text/html", "utf-8");
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                                try {
+                                    view.setText(Html.fromHtml(
+                                            new WikiModel("https://commons.wikipedia.org",
+                                                    "https://en.wikipedia.org")
+                                                    .render(wikiText), 0));
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                return webView;
+                                return view;
                             }
                             return new View(getContext());
                         }, Card.Companion.getRAISE(), null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
