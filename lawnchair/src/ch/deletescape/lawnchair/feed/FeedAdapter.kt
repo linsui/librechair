@@ -19,16 +19,20 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
+import android.os.Vibrator
 import android.support.design.widget.Snackbar
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -103,43 +107,59 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         }
     }
 
-    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+    @SuppressLint("MissingPermission") override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+        var isDeleteActive = false
+        holder.itemView.animate().scaleX(1f).scaleY(1f)
 
-        if (cards[position].canHide) {
+        if (cards[holder.adapterPosition].canHide) {
             holder.itemView.setOnLongClickListener {
-                val backupCards = cards.clone() as List<Card>
-                holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                        .add(cards[position].identifier)
-                runOnNewThread {
-                    cards.removeAt(position)
-                    holder.itemView.post {
-                        notifyItemRemoved(position)
-                        Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
-                                .setAction(R.string.undo) {
-                                    runOnNewThread {
-                                        holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                                .remove(cards[position].identifier)
-                                        cards.clear()
-                                        cards.addAll(backupCards)
-                                        holder.itemView.post {
-                                            notifyItemInserted(position)
-                                            recyclerView.scrollToPosition(position)
-                                        }
-                                    }
-                                }.show()
-                    }
-                }
+                isDeleteActive = true
+                holder.itemView.startAnimation(AnimationUtils.loadAnimation(context, R.anim.shrink_in))
+                holder.itemView.animate().scaleX(0.7f).scaleY(0.7f)
                 true
+            }
+
+            holder.itemView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+                if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP) {
+                    holder.itemView.animate().scaleX(0f).scaleY(0f).duration = 500
+                    (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(50)
+                    val backupCards = cards.clone() as List<Card>
+                    holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                            .add(cards[holder.adapterPosition].identifier)
+                    runOnNewThread {
+                        cards.removeAt(holder.adapterPosition)
+                        holder.itemView.post {
+                            notifyItemRemoved(holder.adapterPosition)
+                            Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
+                                    .setAction(R.string.undo) {
+                                        runOnNewThread {
+                                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                                    .remove(cards[holder.adapterPosition].identifier)
+                                            cards.clear()
+                                            cards.addAll(backupCards)
+                                            holder.itemView.post {
+                                                notifyItemInserted(holder.adapterPosition)
+                                                recyclerView.scrollToPosition(holder.adapterPosition)
+                                            }
+                                        }
+                                    }.show()
+                        }
+                    }
+                    return@setOnTouchListener true
+                }
+
+                return@setOnTouchListener false
             }
         } else {
             holder.itemView.setOnLongClickListener(null)
+            holder.itemView.setOnTouchListener(null)
         }
         if (holder.itemViewType and Card.NO_HEADER != 1) {
-            holder.description?.text = cards[position].title
-            holder.icon?.setImageDrawable(cards[position].icon)
+            holder.description?.text = cards[holder.adapterPosition].title
+            holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon)
         }
         holder.viewHolder.removeAllViewsInLayout()
-        holder.viewHolder.addView(cards[position].inflateHelper.inflate(holder.viewHolder))
+        holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(holder.viewHolder))
         if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
                     themeManager.getCurrentFlags())) {
             (holder.itemView as CardView).setCardBackgroundColor(
