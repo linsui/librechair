@@ -114,6 +114,6 @@ public class WikipediaNewsProvider extends FeedProvider {
                                 return webView;
                             }
                             return new View(getContext());
-                        }, Card.Companion.getRAISE(), null));
+                        }, Card.Companion.getRAISE(), null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
     }
 }
