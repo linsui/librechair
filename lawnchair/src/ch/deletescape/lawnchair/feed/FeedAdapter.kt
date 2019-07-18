@@ -19,7 +19,9 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.content.Context
 import android.graphics.Rect
+import android.support.design.widget.Snackbar
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
@@ -31,14 +33,18 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
-class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager, backgroundColor: Int) :
-        RecyclerView.Adapter<CardViewHolder>() {
+class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
+                  backgroundColor: Int, private val context: Context) : RecyclerView.Adapter<CardViewHolder>() {
+
+    private lateinit var recyclerView: RecyclerView
 
     var backgroundColor: Int = 0
         set(value) {
@@ -61,7 +67,9 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        recyclerView.addItemDecoration(Decoration(recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
+        recyclerView.addItemDecoration(Decoration(
+            recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
+        this.recyclerView = recyclerView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
@@ -80,7 +88,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         }
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
             LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
-        cards += algorithm.sort(* toSort.toTypedArray())
+        cards += algorithm.sort(* toSort.toTypedArray()).filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) } as List<Card>
         return cards.size
     }
 
@@ -96,6 +104,31 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
     }
 
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+
+        holder.itemView.setOnLongClickListener {
+            val backupCards = cards.clone() as List<Card>
+            holder.itemView.context.lawnchairPrefs.feedDisabledCards.add(cards[position].identifier)
+            runOnNewThread {
+                cards.removeAt(position)
+                holder.itemView.post {
+                    notifyItemRemoved(position)
+                    Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
+                            .setAction(R.string.undo) {
+                                runOnNewThread {
+                                    holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                            .remove(cards[position].identifier)
+                                    cards.clear()
+                                    cards.addAll(backupCards)
+                                    holder.itemView.post {
+                                        notifyItemInserted(position)
+                                        recyclerView.scrollToPosition(position)
+                                    }
+                                }
+                            }.show()
+                }
+            }
+            true
+        }
         if (holder.itemViewType and Card.NO_HEADER != 1) {
             holder.description?.text = cards[position].title
             holder.icon?.setImageDrawable(cards[position].icon)
@@ -111,7 +144,10 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                 holder.itemView.context.getColor(R.color.qsb_background))
         }
         if (holder.itemView is CardView) {
-            holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, LawnchairPreferences.getInstance(holder.itemView.context).feedCornerRounding, holder.itemView.context.resources.displayMetrics)
+            holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                                               LawnchairPreferences.getInstance(
+                                                                   holder.itemView.context).feedCornerRounding,
+                                                               holder.itemView.context.resources.displayMetrics)
         }
     }
 
@@ -143,7 +179,8 @@ class CardViewHolder : RecyclerView.ViewHolder {
             viewHolder.visibility = View.GONE
         }
 
-        d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(backgroundColor)}")
+        d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
+            backgroundColor)}")
 
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))

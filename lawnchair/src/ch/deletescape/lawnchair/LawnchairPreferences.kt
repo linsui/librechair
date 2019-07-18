@@ -189,6 +189,12 @@ class LawnchairPreferences(val context: Context) :
                                               WikipediaNewsProvider::class.java.name,
                                               WikinewsFeedProvider::class.java.name))
 
+    var feedDisabledCards = object : MutableListPref<Int>("pref_feed_hidden_cards", ::restart, emptyList()) {
+        override fun unflattenValue(value: String): Int {
+            return Integer.valueOf(value)
+        }
+    }
+
     var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restart);
 
     var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())

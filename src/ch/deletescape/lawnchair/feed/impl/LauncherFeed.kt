@@ -54,7 +54,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             }
     private val adapter by lazy {
         FeedAdapter(getFeedController(context.applicationContext).getProviders(),
-                    ThemeManager.getInstance(context), backgroundColor)
+                    ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
     }
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)

@@ -84,6 +84,7 @@ import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
+import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -303,6 +304,12 @@ val workerHandler by lazy { Handler(LauncherModel.getWorkerLooper()) }
 
 fun runOnUiWorkerThread(r: () -> Unit) {
     runOnThread(uiWorkerHandler, r)
+}
+
+fun runOnNewThread(r: () -> Unit) {
+    Executors.newSingleThreadExecutor().submit {
+        r()
+    }
 }
 
 fun runOnMainThread(r: () -> Unit) {

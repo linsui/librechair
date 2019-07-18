@@ -463,5 +463,6 @@
     <string name="hud_weather_information_thunder_occasional_sun">Periodic thunder with clear sky</string>
     <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
     <string name="hud_weather_information_thunder_occasional_snow">Thunder with snow</string>
+    <string name="title_context_menu_feed_dont_show">Don\'t show this again</string>
 
 </resources>

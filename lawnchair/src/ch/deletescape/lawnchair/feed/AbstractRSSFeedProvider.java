@@ -116,7 +116,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
                     date.setText(entry.getPubDate());
                     return v;
-                }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null, articles.toString().hashCode()));
+                }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null, entry.hashCode()));
             }
             return cards;
         }
