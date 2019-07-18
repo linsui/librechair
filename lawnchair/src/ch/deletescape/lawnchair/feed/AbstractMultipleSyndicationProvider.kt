@@ -104,7 +104,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             date.text = entry.pubDate
                             return v
                         }
-                    }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode()))
+                    }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true))
                 }
                 cards.add(temporary)
             }
