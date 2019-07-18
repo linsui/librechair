@@ -18,12 +18,10 @@
   -->
 
 <ch.deletescape.lawnchair.feed.impl.FeedController xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overlay_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="32dp"
-    tools:context="ch.deletescape.lawnchair.feed.FeedActivity">
+    android:paddingTop="32dp">
     <LinearLayout
         android:id="@+id/feed_content"
         android:layout_width="match_parent"

@@ -24,9 +24,6 @@
     <application
         android:name="ch.deletescape.lawnchair.LawnchairApp"
         android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name="ch.deletescape.lawnchair.feed.FeedActivity"
-            android:label="@string/activity_feed_title"/>
-
         <activity android:name="ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider$Trampoline" />
 
         <activity
