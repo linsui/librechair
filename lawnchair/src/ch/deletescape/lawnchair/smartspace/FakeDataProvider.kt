@@ -26,7 +26,7 @@ class FakeDataProvider(controller: LawnchairSmartspaceController) : LawnchairSma
 
     private val iconProvider = WeatherIconProvider(controller.context)
     private val weather = LawnchairSmartspaceController.WeatherData(iconProvider.getIcon("-1"),
-            Temperature(0, Temperature.Unit.Celsius), "")
+            Temperature(0, Temperature.Unit.Celsius), "", iconType = "01n")
     private val card = LawnchairSmartspaceController.CardData(iconProvider.getIcon("-1"),
             "Title", TextUtils.TruncateAt.END, "Subtitle", TextUtils.TruncateAt.END)
 

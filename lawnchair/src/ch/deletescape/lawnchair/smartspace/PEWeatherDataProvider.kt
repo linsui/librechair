@@ -48,7 +48,7 @@ class PEWeatherDataProvider(controller: LawnchairSmartspaceController) :
                     val conditions = cursor.getString(1)
                     val temperature = cursor.getInt(2)
                     return LawnchairSmartspaceController.WeatherData(getConditionIcon(conditions),
-                            Temperature(temperature, Temperature.Unit.Celsius), "")
+                            Temperature(temperature, Temperature.Unit.Celsius), "", iconType = conditions)
                 }
             }
         }

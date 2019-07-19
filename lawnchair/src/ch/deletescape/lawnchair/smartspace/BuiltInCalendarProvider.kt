@@ -61,7 +61,7 @@ import java.util.*
     private var silentlyFail: Boolean = false
     private val iconProvider = WeatherIconProvider(controller.context)
     private val weather = LawnchairSmartspaceController
-            .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "")
+            .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "", iconType = "01n")
     private var card: LawnchairSmartspaceController.CardData? = null
     private val handlerThread by lazy { HandlerThread(javaClass.hashCode().toString()) }
     private val workerHandler by lazy { Handler(handlerThread.looper) }

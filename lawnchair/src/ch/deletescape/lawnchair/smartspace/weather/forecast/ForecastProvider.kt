@@ -54,7 +54,7 @@ interface ForecastProvider {
 
     class Controller {
         companion object {
-            fun getProviderList(c: Context): List<String> {
+            fun getProviderList(): List<String> {
                 return listOf(OWMForecastProvider::class.java.name)
             }
 
