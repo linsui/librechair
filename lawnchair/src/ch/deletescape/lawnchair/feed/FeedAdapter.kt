@@ -28,10 +28,7 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -92,18 +89,18 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
             LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
         cards += algorithm.sort(* toSort.toTypedArray()).filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
-        if (cards.isEmpty()) {
-            cards.add(Card(null, null, object : Card.Companion.InflateHelper {
-                override fun inflate(parent: ViewGroup): View {
-                    return LayoutInflater.from(parent.context).inflate(R.layout.empty_feed, parent, false)
-                }
-
-            }, Card.NO_HEADER, "nosort,top"))
-        }
         return cards.size
     }
 
     override fun getItemCount(): Int {
+        if (cards.isEmpty()) {
+            cards.add(Card(null, null, object : Card.Companion.InflateHelper {
+                override fun inflate(parent: ViewGroup): View {
+                    return LayoutInflater.from(ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(R.layout.empty_feed, parent, false)
+                }
+
+            }, Card.NO_HEADER, "nosort,top"))
+        }
         return cards.size;
     }
 

@@ -18,8 +18,11 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <ImageView
@@ -27,7 +30,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:src="@drawable/ic_round_toc_24dp"
-        android:tint="?attr/colorPrimaryLight"
+        android:tint="?attr/colorControlNormal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <TextView
@@ -36,7 +39,7 @@
         android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
         android:text="@string/title_text_feed_empty"
         app:layout_constraintStart_toEndOf="@+id/feed_placeholder_icon"
@@ -53,4 +56,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/feed_placeholder_icon"
         app:layout_constraintTop_toBottomOf="@+id/feed_placeholder_title_text" />
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
