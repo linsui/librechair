@@ -91,7 +91,15 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         }
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
             LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
-        cards += algorithm.sort(* toSort.toTypedArray()).filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) } as List<Card>
+        cards += algorithm.sort(* toSort.toTypedArray()).filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
+        if (cards.isEmpty()) {
+            cards.add(Card(null, null, object : Card.Companion.InflateHelper {
+                override fun inflate(parent: ViewGroup): View {
+                    return LayoutInflater.from(parent.context).inflate(R.layout.empty_feed, parent, false)
+                }
+
+            }, Card.NO_HEADER, "nosort,top"))
+        }
         return cards.size
     }
 

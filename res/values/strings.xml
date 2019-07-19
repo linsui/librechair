@@ -464,5 +464,7 @@
     <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
     <string name="hud_weather_information_thunder_occasional_snow">Thunder with snow</string>
     <string name="title_context_menu_feed_dont_show">Don\'t show this again</string>
+    <string name="title_text_feed_empty">Your feed is empty</string>
+    <string name="caption_text_feed_empty">You can add more feed providers or come back later</string>
 
 </resources>
