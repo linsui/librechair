@@ -100,7 +100,8 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
                             getIcon(context, conditions.weatherIcon, conditions.isDayTime),
                             Temperature(conditions.temperature.value.toFloat().roundToInt(), Temperature.Unit.Celsius),
                             // TODO add support for intents to open the AccuWeather app if available
-                            forecastUrl = conditions.mobileLink
+                            forecastUrl = conditions.mobileLink,
+                            iconType = (conditions.weatherIcon.toString() + if (conditions.isDayTime) "d" else "n")
                     ), null)
                 }
             }

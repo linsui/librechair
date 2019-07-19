@@ -118,7 +118,7 @@ import kotlin.math.roundToInt
                                                                          if (prefs.weatherUnit != Temperature.Unit.Fahrenheit) Temperature.Unit.Celsius else Temperature.Unit.Fahrenheit),
                                                              "https://openweathermap.org/city/${currentWeather.id}",
                                                              intent, null, currentWeather.coord.lat,
-                                                             currentWeather.coord.lon), null)
+                                                             currentWeather.coord.lon, icon), null)
     }
 
     override fun onFailure(throwable: Throwable?) {

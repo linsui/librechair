@@ -417,11 +417,12 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     data class WeatherData(val icon: Bitmap, private val temperature: Temperature,
-                           val forecastUrl: String? = "https://www.google.com/search?q=weather",
+                           val forecastUrl: String? = "https://duckduckgo.com/search?q=weather",
                            val forecastIntent: Intent? = null,
                            val pendingIntent: PendingIntent? = null,
                            val coordLat: Double? = null,
-                           val coordLong: Double? = null) {
+                           val coordLong: Double? = null,
+                           val iconType: String) {
 
         fun getTitle(unit: Temperature.Unit): String {
             return "${temperature.inUnit(unit)} ${unit.suffix}"
