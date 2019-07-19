@@ -26,12 +26,14 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Weather
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
+import java.util.ArrayList;
 import java.util.List;
 import net.aksingh.owmjapis.api.APIException;
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.core.OWMPro;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
 import net.aksingh.owmjapis.model.HourlyWeatherForecast;
+import net.aksingh.owmjapis.model.param.Weather;
 
 public class OWMForecastProvider implements ForecastProvider {
 
@@ -49,10 +51,18 @@ public class OWMForecastProvider implements ForecastProvider {
         try {
             HourlyWeatherForecast forecast = owm.hourlyWeatherForecastByCoords(lon, lat);
             List<ForecastData> dataList = LawnchairUtilsKt.newList();
+            ArrayList<Integer> integers = new ArrayList<>();
             for (net.aksingh.owmjapis.model.param.WeatherData weather : forecast.getDataList()) {
-                dataList.add(new ForecastData(new WeatherData(new WeatherIconProvider(context).getIcon(weather.getWeatherList().get(0).getIconCode()), new Temperature(weather.getMainData().getTemp().intValue(), Unit.Kelvin), null, null, null, lon, lat, weather.getWeatherList().get(0).getIconCode()), weather.getDateTime()));
+                dataList.add(new ForecastData(new WeatherData(new WeatherIconProvider(context)
+                        .getIcon(weather.getWeatherList().get(0).getIconCode()),
+                        new Temperature(weather.getMainData().getTemp().intValue(), Unit.Kelvin),
+                        null, null, null, lon, lat, weather.getWeatherList().get(0).getIconCode()),
+                        weather.getDateTime()));
+                for (Weather i : weather.getWeatherList()) {
+                    integers.add(i.getConditionId());
+                }
             }
-            return new Forecast(dataList);
+            return new Forecast(dataList, integers.stream().mapToInt(i -> i).toArray());
         } catch (APIException | NullPointerException e) {
             throw new ForecastException(e);
         }
@@ -62,10 +72,13 @@ public class OWMForecastProvider implements ForecastProvider {
     @Override
     public DailyForecast getDailyForecast(double lat, double lon) throws ForecastException {
         try {
-            DailyWeatherForecast forecast = new OWMPro(owm.getApiKey()).dailyWeatherForecastByCoords(lat, lon);
+            DailyWeatherForecast forecast = new OWMPro(owm.getApiKey())
+                    .dailyWeatherForecastByCoords(lat, lon);
             List<DailyForecastData> dataList = LawnchairUtilsKt.newList();
             for (net.aksingh.owmjapis.model.param.ForecastData weather : forecast.getDataList()) {
-                dataList.add(new DailyForecastData(weather.getTempData().getTempMax().intValue(), weather.getTempData().getTempMin().intValue(), weather.getWeatherList().get(0).getIconCode(), null));
+                dataList.add(new DailyForecastData(weather.getTempData().getTempMax().intValue(),
+                        weather.getTempData().getTempMin().intValue(),
+                        weather.getWeatherList().get(0).getIconCode(), null));
             }
             return new DailyForecast(dataList);
         } catch (APIException | NullPointerException e) {

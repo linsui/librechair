@@ -29,16 +29,16 @@ interface ForecastProvider {
     @Throws(ForecastException::class) fun getHourlyForecast(lat: Double, lon: Double): Forecast
     @Throws(ForecastException::class) fun getDailyForecast(lat: Double, lon: Double): DailyForecast
 
-    class Forecast(val data: Array<ForecastData>, vararg weatherCodes: Int) {
+    class Forecast(val data: Array<ForecastData>, weatherCodes: IntArray) {
         private val weatherCodes: IntArray
 
         init {
             this.weatherCodes = weatherCodes
         }
 
-        constructor(dataList: List<ForecastData>, vararg weatherCodes: Int) : this(
+        constructor(dataList: List<ForecastData>, weatherCodes: IntArray) : this(
             Arrays.copyOf<ForecastData, Any>(dataList.toTypedArray(), dataList.size,
-                                             Array<ForecastData>::class.java), *weatherCodes) {
+                                             Array<ForecastData>::class.java), weatherCodes) {
         }
     }
 
