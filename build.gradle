@@ -115,7 +115,7 @@ android {
         def debugMenuCode = System.getenv("DEBUG_MENU_CODE") ?: "veryperu"
         buildConfigField "String", "DEBUG_MENU_CODE_HASH", '"' + debugMenuCode.digest('SHA-1') + '"'
 
-        def accuWeatherKey = localProps.getProperty('accu_key') ?: '"' + System.getenv("ACCU_KEY") + '"'
+        def accuWeatherKey = "\"a66ee5e2ffcb44e8955c7cc9e84f2cf5\"" // Gratias tibi
         buildConfigField "String", "ACCUWEATHER_KEY", accuWeatherKey
 
         ndk {
