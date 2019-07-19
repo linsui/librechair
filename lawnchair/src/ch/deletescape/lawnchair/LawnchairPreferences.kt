@@ -41,6 +41,7 @@ import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
+import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
@@ -213,6 +214,7 @@ class LawnchairPreferences(val context: Context) :
                                        ::updateSmartspaceProvider,
                                        Temperature.Companion::unitFromString,
                                        Temperature.Companion::unitToString) { }
+    val weatherForecastProvider by StringPref("pref_forecast_provider", OWMForecastProvider::class.java.name, recreate)
     var usePillQsb by BooleanPref("pref_use_pill_qsb", false, recreate)
     var weatherIconPack by StringPref("pref_weatherIcons", "", updateWeatherData)
 

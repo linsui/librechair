@@ -416,7 +416,7 @@ class LawnchairSmartspaceController(val context: Context) {
         val isCardAvailable get() = card != null
     }
 
-    data class WeatherData(val icon: Bitmap, private val temperature: Temperature,
+    data class WeatherData(val icon: Bitmap, val temperature: Temperature,
                            val forecastUrl: String? = "https://duckduckgo.com/search?q=weather",
                            val forecastIntent: Intent? = null,
                            val pendingIntent: PendingIntent? = null,

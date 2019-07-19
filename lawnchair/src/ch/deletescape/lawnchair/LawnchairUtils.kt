@@ -60,6 +60,7 @@ import android.view.animation.Interpolator
 import android.widget.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.JSONMap
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.*
@@ -114,6 +115,7 @@ val Context.lawnchairPrefs get() = Utilities.getLawnchairPrefs(this)
 val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this,
                                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
+val Context.forecastProvider get() = ForecastProvider.Controller.inflateForecastProvider(this, lawnchairPrefs.weatherForecastProvider) as ForecastProvider
 
 fun nothing() {
 

@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast
 
 import android.content.Context
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData
+import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
 
@@ -29,26 +30,20 @@ interface ForecastProvider {
     @Throws(ForecastException::class) fun getHourlyForecast(lat: Double, lon: Double): Forecast
     @Throws(ForecastException::class) fun getDailyForecast(lat: Double, lon: Double): DailyForecast
 
-    class Forecast(val data: Array<ForecastData>, weatherCodes: IntArray) {
-        private val weatherCodes: IntArray
-
-        init {
-            this.weatherCodes = weatherCodes
-        }
-
-        constructor(dataList: List<ForecastData>, weatherCodes: IntArray) : this(
+    class Forecast(val data: Array<ForecastData>) {
+        constructor(dataList: List<ForecastData>) : this(
             Arrays.copyOf<ForecastData, Any>(dataList.toTypedArray(), dataList.size,
-                                             Array<ForecastData>::class.java), weatherCodes) {
+                                             Array<ForecastData>::class.java)) {
         }
     }
 
-    data class DailyForecast(private val dailyForecastData: List<DailyForecastData>)
+    data class DailyForecast(val dailyForecastData: List<DailyForecastData>)
 
 
-    data class DailyForecastData(private val high: Int, private val low: Int, private val icon: String,
-                            private val forecast: Forecast?)
+    data class DailyForecastData(val high: Temperature, val low: Temperature, val date: Date,
+                                 val icon: String, val forecast: Forecast?)
 
-    data class ForecastData(private val data: WeatherData, private val date: Date)
+    data class ForecastData(val data: WeatherData, val date: Date, val condCode: Array<Int>?)
 
     class ForecastException(e: Throwable) : RuntimeException(e)
 
@@ -60,22 +55,17 @@ interface ForecastProvider {
 
             fun getProviderName(c: Context, provider: String): String {
                 return when (provider) {
-                    OWMForecastProvider::class.java.name -> c.getString(R.string.weather_provider_owm)
+                    OWMForecastProvider::class.java.name -> c.getString(
+                        R.string.weather_provider_owm)
 
                     else -> error("no such provider $provider")
                 }
             }
 
-            fun inflateForecastController(c: Context, provider: String): ForecastProvider {
+            fun inflateForecastProvider(c: Context, provider: String): ForecastProvider {
                 val clazz = Class.forName(provider)
-                for (constructor in clazz.constructors) {
-                    if (constructor.isAccessible && constructor.parameters.isEmpty()) {
-                        return constructor.newInstance() as ForecastProvider
-                    } else if (constructor.isAccessible && constructor.parameters.size == 1 && constructor.parameterTypes[0] == Context::class.java) {
-                        return constructor.newInstance(c) as ForecastProvider
-                    }
-                }
-                error("no valid constructor in class $provider (Valid constructors accept no arguments or a single Context)")
+                val constructor = clazz.getConstructor(Context::class.java)
+                return constructor.newInstance(c) as ForecastProvider
             }
         }
     }

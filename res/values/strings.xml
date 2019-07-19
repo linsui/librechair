@@ -419,6 +419,7 @@
     <string name="title_dialog_add_new_rss_source">New RSS source</string>
     <string name="title_button_dialog_ok">OK</string>
     <string name="title_pref_feed_corner_rounding">Corner radius</string>
+    <string name="title_pref_forecast_provider">Forecast provider</string>
     <string name="description_pref_feed_corner_rounding">Feed cards will be rounded %s</string>
     <string name="title_feed_provider_weather_stats">Weather</string>
     <string name="placeholder_title_weather_hud">10°C / 15°C</string>

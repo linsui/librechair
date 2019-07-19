@@ -31,24 +31,20 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
-import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import net.aksingh.owmjapis.api.APIException
-import net.aksingh.owmjapis.core.OWM
 import net.aksingh.owmjapis.model.DailyWeatherForecast
-import net.aksingh.owmjapis.model.HourlyWeatherForecast
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
-import kotlin.math.roundToInt
 
 class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
     private var weatherData: WeatherData? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
-    private var hourlyWeatherForecast: HourlyWeatherForecast? = null
+    private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     private var dailyForecast: DailyWeatherForecast? = null
     @StringRes private var weatherTypeResource: Int? = null
 
@@ -114,28 +110,17 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
         weatherData = data.weather;
         if (data.weather?.coordLat != null && data.weather.coordLong != null) {
             refreshExecutor.submit {
-                val api = OWM(context.lawnchairPrefs.weatherApiKey)
-                api.unit = when (context.lawnchairPrefs.weatherUnit) {
-                    Temperature.Unit.Celsius -> OWM.Unit.METRIC
-                    Temperature.Unit.Fahrenheit -> OWM.Unit.IMPERIAL
-                    Temperature.Unit.Kelvin -> OWM.Unit.STANDARD
-                    Temperature.Unit.Rakine -> TODO()
-                    Temperature.Unit.Delisle -> TODO()
-                    Temperature.Unit.Newton -> TODO()
-                    Temperature.Unit.Reaumur -> TODO()
-                    Temperature.Unit.Romer -> TODO()
-                }
                 d("onDataUpdated: updating forcast HUD")
 
                 try {
                     d("onDataUpdated: fetching weather data")
-                    hourlyWeatherForecast = api.hourlyWeatherForecastByCoords(data.weather.coordLat,
-                                                                              data.weather.coordLong)
+                    hourlyWeatherForecast = context.forecastProvider.getHourlyForecast(data.weather.coordLat,
+                                                                                       data.weather.coordLong)
                     d("onDataUpdated: data retrieved")
 
-                    val tempList: List<Int?> = hourlyWeatherForecast!!.dataList!!.map {
-                        if (it!!.dateTime!!.before(tomorrow())) {
-                            it.mainData?.temp?.roundToInt() as Int
+                    val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
+                        if (it.date.before(tomorrow())) {
+                            it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
                         } else {
                             null
                         }
@@ -165,10 +150,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     d("onDataUpdated: classifying weather")
 
-                    hourlyWeatherForecast!!.dataList!!.filter { it!!.dateTime!!.before(tomorrow()) }.forEach {
-                        if (it?.weatherList != null) {
-                            it.weatherList!!.forEach {
-                                val condId = it!!.conditionId!!
+                    hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }.forEach {
+                            it.condCode?.forEach {
+                                val condId = it
                                 when {
                                     condId in 200..299 -> {
                                         thunder += if (condId - 200 < 10) 1 else if (condId - 200 < 20) 5 else 10
@@ -193,7 +177,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                     else -> {
                                     }
                                 }
-                            }
                         }
                     }
 
@@ -208,7 +191,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
 
-                } catch (e: APIException) {
+                } catch (e: ForecastProvider.ForecastException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {
                     e.printStackTrace();
