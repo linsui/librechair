@@ -65,6 +65,18 @@ interface ForecastProvider {
                     else -> error("no such provider $provider")
                 }
             }
+
+            fun inflateForecastController(c: Context, provider: String): ForecastProvider {
+                val clazz = Class.forName(provider)
+                for (constructor in clazz.constructors) {
+                    if (constructor.isAccessible && constructor.parameters.isEmpty()) {
+                        return constructor.newInstance() as ForecastProvider
+                    } else if (constructor.isAccessible && constructor.parameters.size == 1 && constructor.parameterTypes[0] == Context::class.java) {
+                        return constructor.newInstance(c) as ForecastProvider
+                    }
+                }
+                error("no valid constructor in class $provider (Valid constructors accept no arguments or a single Context)")
+            }
         }
     }
 }
