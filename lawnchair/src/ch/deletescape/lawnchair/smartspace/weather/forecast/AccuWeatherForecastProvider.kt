@@ -22,20 +22,17 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast
 import android.content.Context
 import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.newList
-import ch.deletescape.lawnchair.runOnNewThread
-import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.smartspace.AccuWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
-import ch.deletescape.lawnchair.smartspace.accu.model.sub.AccuLocationGSon
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
-import retrofit2.Call
-import retrofit2.Callback
+import com.google.gson.Gson
 import retrofit2.Response
 import java.time.Instant
 import java.util.*
+import kotlin.math.roundToInt
 
 class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     var cachedResponse: CachedResponse<Response<List<AccuHourlyForecastGSon>>>? = null
@@ -44,91 +41,49 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
         synchronized(AccuWeatherForecastProvider::class) {
             d("getHourlyForecast: $lat, $lon")
-            var flag = false
-            var error: Throwable? = null
             var responseResult: Response<List<AccuHourlyForecastGSon>>? = null
             d("getHourlyForecast: retrieving geolocation")
-            runOnUiWorkerThread {
+            try {
                 if (cachedResponse == null || cachedResponse?.expired == true) {
                     d("getHourlyForecast: re-retrieving geolocation")
-                    AccuRetrofitServiceFactory.accuSearchRetrofitService
-                            .getGeoPosition("$lat,$lon", c.locale.language)
-                            .enqueue(object : Callback<AccuLocationGSon> {
-                                override fun onFailure(call: Call<AccuLocationGSon>, t: Throwable) {
-                                    d("getHourlyForecast: geolocation failed", t)
-                                    flag = true
-                                    error = t
-                                }
-
-                                override fun onResponse(call: Call<AccuLocationGSon>,
-                                                        response: Response<AccuLocationGSon>) {
-                                    if (!response.isSuccessful) {
-                                        d("getHourlyForecast: geolocation not successful")
-                                        flag = true
-                                        error = Exception(response.message())
-                                    } else {
-                                        d("getHourlyForecast: retrieving AccuWeather forecast for location ${response.body()?.key}")
-                                        runOnNewThread {
-                                            AccuRetrofitServiceFactory.accuWeatherRetrofitService
-                                                    .getHourly(response.body()!!.key,
-                                                               c.locale.language).enqueue(object :
-                                                                                                  Callback<List<AccuHourlyForecastGSon>> {
-                                                        override fun onResponse(
-                                                            call: Call<List<AccuHourlyForecastGSon>>,
-                                                            response: Response<List<AccuHourlyForecastGSon>>) {
-                                                            if (response.isSuccessful) {
-                                                                d("onResponse: retrieved forecast $response")
-                                                                flag = true
-                                                                responseResult = response
-                                                                cachedResponse = CachedResponse(
-                                                                    System.currentTimeMillis() + (1000 * 60 * 10),
-                                                                    response)
-                                                            } else {
-                                                                onFailure(call, Throwable(
-                                                                    "response was not successful"))
-                                                            }
-                                                        }
-
-                                                        override fun onFailure(
-                                                            call: Call<List<AccuHourlyForecastGSon>>,
-                                                            t: Throwable) {
-                                                            d("onFailure: API call failed", t)
-                                                            flag = true
-                                                            error = t
-                                                        }
-
-                                                    })
-                                        }
-                                    }
-                                }
-                            })
-                } else {
-                    d("response ${cachedResponse?.value} was cached")
-                    flag = true
-                    responseResult = cachedResponse!!.value
+                    val geolocationResponse = AccuRetrofitServiceFactory.accuSearchRetrofitService
+                            .getGeoPosition("$lat,$lon", c.locale.language).execute()
+                    if (!geolocationResponse.isSuccessful) {
+                        d("getHourlyForecast: geolocation not successful")
+                        throw ForecastProvider.ForecastException(
+                            Exception("geolocation couldn't be retrieved"))
+                    } else {
+                        d("getHourlyForecast: retrieving AccuWeather forecast for location ${geolocationResponse.body()?.key}")
+                        responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
+                                .getHourly(geolocationResponse.body()!!.key, c.locale.language)
+                                .execute()
+                        cachedResponse = CachedResponse(System.currentTimeMillis() + (1000 * 60 * 10), responseResult!!)
+                    }
                 }
+            } catch (e: Throwable) {
+                throw ForecastProvider.ForecastException(e)
             }
 
-            while (!flag) {
-            }
+            d("getHourlyForecast: accuWeather response retrieved")
 
-            d("")
-
-            if (error != null || !responseResult!!.isSuccessful) {
-                throw ForecastProvider.ForecastException(
-                    if (error != null) error!! else java.lang.Exception())
+            if (!responseResult!!.isSuccessful) {
+                throw ForecastProvider.ForecastException(Exception(responseResult.message()))
             } else {
-                val data: MutableList<ForecastProvider.ForecastData> =
-                        newList<ForecastProvider.ForecastData>().toMutableList()
+                val data: MutableList<ForecastProvider.ForecastData> = newList()
+                d("getHourlyForecast: converting AccuWeather data into OWM format")
+                responseResult.body()!!.forEach {
+                    d("getHourlyForecast: converting AccuWeather data ${Gson().toJson(it)} into OWM format")
+                    val icon = AccuWeatherDataProvider.getIcon(c, it.weatherIcon, it.isDaylight)
+                    val temperature = Temperature(java.lang.Float.valueOf(it.temperature.value).roundToInt(), Temperature.Unit.Celsius)
+                    val iconRes = (it.weatherIcon.toString() + if (it.isDaylight) "d" else "n")
+                    val date = Date.from(
+                        Instant.ofEpochSecond(it.epochDateTime))
+                    val conds = arrayOf(COND_MAP[it.weatherIcon]!!)
 
-                responseResult!!.body()!!.forEach {
-                    data += ForecastProvider.ForecastData(LawnchairSmartspaceController.WeatherData(
-                        AccuWeatherDataProvider.getIcon(c, it.weatherIcon, it.isDaylight),
-                        Temperature(it.temperature.value.toInt(), Temperature.Unit.Celsius), null,
-                        null, null, 0.toDouble(), 0.toDouble(),
-                        (it.weatherIcon.toString() + if (it.isDaylight) "d" else "n")), Date.from(
-                        Instant.ofEpochSecond(it.epochDateTime)),
-                                                          arrayOf(COND_MAP[it.weatherIcon]!!))
+                    d("getHourlyForecast: converted AccuWeather data into OWM format $icon, $temperature, $iconRes, $date, $conds")
+
+                    data += ForecastProvider.ForecastData(
+                        LawnchairSmartspaceController.WeatherData(icon, temperature, null, null, null, lat, lon, iconRes), date, conds)
                 }
                 return ForecastProvider.Forecast(data)
             }
