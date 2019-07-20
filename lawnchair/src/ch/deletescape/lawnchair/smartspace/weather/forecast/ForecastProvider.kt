@@ -46,7 +46,10 @@ interface ForecastProvider {
 
     data class ForecastData(val data: WeatherData, val date: Date, val condCode: Array<Int>?)
 
-    class ForecastException(e: Throwable) : RuntimeException(e)
+    class ForecastException : RuntimeException {
+        constructor(s: String) : super(s)
+        constructor(e: Throwable) : super(e)
+    }
 
     class Controller {
         companion object {
