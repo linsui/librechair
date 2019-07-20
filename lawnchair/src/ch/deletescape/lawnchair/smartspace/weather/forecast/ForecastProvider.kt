@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast
 import android.content.Context
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData
 import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
@@ -50,19 +51,22 @@ interface ForecastProvider {
     class Controller {
         companion object {
             fun getProviderList(): List<String> {
-                return listOf(OWMForecastProvider::class.java.name)
+                return listOf(OWMForecastProvider::class.java.name,
+                              AccuWeatherForecastProvider::class.java.name)
             }
 
             fun getProviderName(c: Context, provider: String): String {
                 return when (provider) {
                     OWMForecastProvider::class.java.name -> c.getString(
                         R.string.weather_provider_owm)
+                    AccuWeatherForecastProvider::class.java.name -> c.getString(R.string.weather_provider_accu)
 
                     else -> error("no such provider $provider")
                 }
             }
 
             fun inflateForecastProvider(c: Context, provider: String): ForecastProvider {
+                d("inflateForecastProvider: inflating $provider")
                 val clazz = Class.forName(provider)
                 val constructor = clazz.getConstructor(Context::class.java)
                 return constructor.newInstance(c) as ForecastProvider

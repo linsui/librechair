@@ -106,7 +106,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     }
 
     override fun onDataUpdated(data: DataContainer) {
-        d("onDataUpdated: debug trace: ", Throwable())
         weatherData = data.weather;
         if (data.weather?.coordLat != null && data.weather.coordLong != null) {
             refreshExecutor.submit {
@@ -125,6 +124,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                             null
                         }
                     }
+
+                    d("tomorrow is: ${tomorrow()}")
+                    d("today is: ${Date()}")
 
                     d("onDataUpdated: temp list: $tempList")
 

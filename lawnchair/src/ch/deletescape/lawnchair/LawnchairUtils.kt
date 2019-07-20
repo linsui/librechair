@@ -115,7 +115,18 @@ val Context.lawnchairPrefs get() = Utilities.getLawnchairPrefs(this)
 val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this,
                                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
-val Context.forecastProvider get() = ForecastProvider.Controller.inflateForecastProvider(this, lawnchairPrefs.weatherForecastProvider) as ForecastProvider
+val Context.forecastProvider: ForecastProvider
+    get() = run {
+        if (forecastProviderNoCreate != null) {
+            return@run forecastProvider
+        } else {
+            forecastProviderNoCreate = ForecastProvider.Controller
+                    .inflateForecastProvider(this, this.lawnchairPrefs.weatherForecastProvider)
+            return@run forecastProviderNoCreate!!
+        }
+    }
+
+var forecastProviderNoCreate: ForecastProvider? = null
 
 fun nothing() {
 
@@ -124,7 +135,7 @@ fun nothing() {
 fun tomorrow(current: Date = Date()): Date {
     val date = current.clone() as Date
     val oneDayMillis = 1000 * 60 * 60 * 24
-    date.time += oneDayMillis - ((date.time + oneDayMillis) % oneDayMillis)
+    date.time += (oneDayMillis - ((date.time + oneDayMillis) % oneDayMillis))
     return date
 }
 

@@ -24,13 +24,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.ColorUtils
 import android.util.AttributeSet
 import android.view.View
-import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.blur.BlurDrawable
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.dpToPx
-import ch.deletescape.lawnchair.isVisible
-import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.states.HomeState
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.LauncherState
@@ -127,6 +124,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         textSize = DEBUG_TEXT_SIZE
         color = Color.RED
         typeface = Typeface.DEFAULT_BOLD
+        isAntiAlias = true
     }
 
     private fun createBlurDrawable(): BlurDrawable? {
@@ -430,7 +428,8 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
         listOf(
                 "version: ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                 "state: ${mLauncher.stateManager.state::class.java.simpleName}",
-                "toState: ${mLauncher.stateManager.toState::class.java.simpleName}"
+                "toState: ${mLauncher.stateManager.toState::class.java.simpleName}",
+                "forecastProvider: (${context.forecastProvider})"
               ).forEachIndexed { index, line ->
             canvas.drawText(line, 50f, 200f + (DEBUG_LINE_HEIGHT * index), debugTextPaint)
         }
@@ -447,7 +446,7 @@ class BlurScrimView(context: Context, attrs: AttributeSet) : ShelfScrimView(cont
     }
 
     companion object {
-        private const val DEBUG_TEXT_SIZE = 30f
+        private const val DEBUG_TEXT_SIZE = 10f
         private const val DEBUG_LINE_HEIGHT = DEBUG_TEXT_SIZE + 3f
     }
 

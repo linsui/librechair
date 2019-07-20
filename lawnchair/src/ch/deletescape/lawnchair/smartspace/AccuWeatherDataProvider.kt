@@ -122,7 +122,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
 
     companion object {
         // reference: http://apidev.accuweather.com/developers/weatherIcons
-        private val ID_MAP = mapOf(
+        val ID_MAP = mapOf(
                 1 to WeatherIconManager.Icon.CLEAR,
                 2 to WeatherIconManager.Icon.MOSTLY_CLEAR,
                 3 to WeatherIconManager.Icon.PARTLY_CLOUDY,

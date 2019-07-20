@@ -61,7 +61,7 @@ object AccuRetrofitServiceFactory {
         if (okHttpClient == null) {
             synchronized(AccuRetrofitServiceFactory::class.java) {
                 if (okHttpClient == null) {
-                    okHttpClient = OkHttpClientBuilder().addQueryParam(ACCU_APIKEY).addQueryParam(ACCU_DETAILS).addQueryParam(ACCU_METRIC).build(LauncherAppState.getInstanceNoCreate().context)
+                    okHttpClient = OkHttpClientBuilder().addQueryParam(ACCU_APIKEY).addQueryParam(ACCU_DETAILS).addQueryParam(ACCU_METRIC).build(LauncherAppState.getInstanceNoCreate()?.context)
                 }
             }
         }

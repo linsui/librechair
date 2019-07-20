@@ -166,7 +166,7 @@ class LawnchairApp : Application() {
         }
         val recentsComponent = ComponentName.unflattenFromString(resources.getString(resId))
         if (recentsComponent == null) {
-            d("config_recentsComponentName is empty, disabling recents")
+            d("config_recentsComponentName is  empty, disabling recents")
             return false
         }
         val isRecentsComponent =
