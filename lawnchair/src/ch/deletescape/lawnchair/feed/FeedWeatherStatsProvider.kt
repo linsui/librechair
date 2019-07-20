@@ -171,6 +171,11 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                     }
                                     condId in 800..899 -> {
                                         if (condId != 800) {
+                                            if (condId - 800 < 2) {
+                                                clear += 2
+                                            } else if (condId - 800 == 3) {
+                                                clear += 1
+                                            }
                                             clouds += ((condId - 800) / 1.25).toInt()
                                         } else {
                                             clear += 5
