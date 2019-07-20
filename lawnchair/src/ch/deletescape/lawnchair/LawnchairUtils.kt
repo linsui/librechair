@@ -924,11 +924,11 @@ fun <T> Sequence<T>.isEmpty() = !iterator().hasNext()
 
 fun formatTime(dateTime: Date, context: Context? = null): String {
     return when (context) {
-        null -> String.format("%02d:%02d", dateTime.hours, dateTime.minutes)
+        null -> String.format("%d:%02d", dateTime.hours, dateTime.minutes)
         else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", dateTime.hours,
                                                                       dateTime.minutes) else String.format(
-            "%02d:%02d %s", dateTime.hours % 12, dateTime.minutes,
-            if (dateTime.hours < 12) "AM" else "PM")
+            "%d:%02d %s", if (dateTime.hours % 12 == 0) 12 else dateTime.hours % 12, dateTime.minutes,
+            if (dateTime.hours < 12) "am" else "pm")
     }
 }
 
@@ -938,7 +938,8 @@ fun formatTime(calendar: Calendar, context: Context? = null): String {
                               calendar.get(Calendar.HOUR_OF_DAY))
         else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d", calendar.get(
             Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE)) else String.format("%02d:%02d %s",
-                                                                                     calendar.get(
+                                                                                     if (calendar.get(
+                                                                                         Calendar.HOUR_OF_DAY) % 12 == 0) 12 else calendar.get(
                                                                                          Calendar.HOUR_OF_DAY) % 12,
                                                                                      calendar.get(
                                                                                          Calendar.MINUTE),
@@ -949,11 +950,11 @@ fun formatTime(calendar: Calendar, context: Context? = null): String {
 
 fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
     return when (context) {
-        null -> String.format("%02d:%02d", zonedDateTime.hour, zonedDateTime.minute)
+        null -> String.format("%d:%02d", zonedDateTime.hour, zonedDateTime.minute)
         else -> if (DateFormat.is24HourFormat(context)) String.format("%02d:%02d",
                                                                       zonedDateTime.hour,
                                                                       zonedDateTime.minute) else String.format(
-            "%02d:%02d %s", zonedDateTime.hour % 12, zonedDateTime.minute,
+            "%d:%02d %s", if (zonedDateTime.hour % 12 == 0) 12 else zonedDateTime.hour % 12, zonedDateTime.minute,
             if (zonedDateTime.hour < 12) "AM" else "PM")
     }
 }
