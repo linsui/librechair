@@ -21,6 +21,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
 import android.content.pm.PackageManager
@@ -959,7 +960,7 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
 
 fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context,
                         parentView: ViewGroup): View {
-    val v = LayoutInflater.from(context).inflate(R.layout.calendar_event, parentView, false)
+    val v = LayoutInflater.from(parentView.context).inflate(R.layout.calendar_event, parentView, false)
     var description = v.findViewById(R.id.calendar_event_title) as TextView
     var address = v.findViewById(R.id.calendar_event_address) as TextView
     var directions = v.findViewById(R.id.calendar_event_directions) as TextView
@@ -968,7 +969,11 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         directions.visibility = View.GONE
     } else {
         address.text = addressNullable
-        directions.setOnClickListener { /* TODO Address directions in calendar feed provider */ }
+        directions.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            parentView.context.startActivity(intent)
+        }
     }
     if (descriptionNullable == null || descriptionNullable.trim().isEmpty()) {
         description.visibility = View.GONE
