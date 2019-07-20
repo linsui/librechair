@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.smartspace.weather.forecast
 
 import android.content.Context
+import android.graphics.Bitmap
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
@@ -42,7 +43,7 @@ interface ForecastProvider {
 
 
     data class DailyForecastData(val high: Temperature, val low: Temperature, val date: Date,
-                                 val icon: String, val forecast: Forecast?)
+                                 val icon: Bitmap, val forecast: Forecast?)
 
     data class ForecastData(val data: WeatherData, val date: Date, val condCode: Array<Int>?)
 

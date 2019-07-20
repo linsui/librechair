@@ -112,7 +112,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                     twentyFourHourAdapter =
                             DailyForecastAdapter(dailyForecast, this, prefs.weatherUnit)
                     twentyFourHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-                    twentyFourHourForecastRecyclerView!!.adapter = threeHourAdapter!!
+                    twentyFourHourForecastRecyclerView!!.adapter = twentyFourHourAdapter!!
                 }
             } catch (e: ForecastProvider.ForecastException) {
                 Log.w(javaClass.name, "onCreate lambda failed to obtain daily weather report!", e)
@@ -175,7 +175,6 @@ class OWMWeatherActivity : SettingsBaseActivity() {
     class DailyForecastAdapter(val dailyWeatherForcast: ForecastProvider.DailyForecast, val context: Context,
                                val weatherUnit: Temperature.Unit) :
             RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
-        private val iconProvider by lazy { WeatherIconProvider(context) }
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
             return ThreeHourForecastViewHolder(parent)
@@ -199,10 +198,10 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             val currentWeather = dailyWeatherForcast.dailyForecastData[position]
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather.date.time / 1000), ZoneId.of("UTC"))
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
-            holder.icon.setImageBitmap(iconProvider.getIcon(currentWeather.icon))
-            holder.time.text = "${zonedDateTime.dayOfWeek.getDisplayName(TextStyle.NARROW, Locale.getDefault())} ${zonedDateTime.month.value}/${zonedDateTime.dayOfMonth}"
+            holder.icon.setImageBitmap(currentWeather.icon)
+            holder.time.text = "${zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${zonedDateTime.month.value}/${zonedDateTime.dayOfMonth}"
             holder.temperature.text =
-                    "${currentWeather.low.inUnit(weatherUnit)} ${weatherUnit.suffix} –– ${currentWeather.high.inUnit(weatherUnit)} ${weatherUnit.suffix}"
+                    "${currentWeather.low.inUnit(weatherUnit)} ${weatherUnit.suffix}, ${currentWeather.high.inUnit(weatherUnit)} ${weatherUnit.suffix}"
         }
     }
 }

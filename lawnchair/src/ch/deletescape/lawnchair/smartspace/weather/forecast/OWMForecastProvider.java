@@ -83,7 +83,7 @@ public class OWMForecastProvider implements ForecastProvider {
             for (net.aksingh.owmjapis.model.param.ForecastData weather : forecast.getDataList()) {
                 dataList.add(new DailyForecastData(new Temperature(weather.getTempData().getTempMax().intValue(), Unit.Kelvin),
                         new Temperature(weather.getTempData().getTempMin().intValue(), Unit.Kelvin), weather.getDateTime(),
-                        weather.getWeatherList().get(0).getIconCode(), null));
+                        new WeatherIconProvider(context).getIcon(weather.getWeatherList().get(0).getIconCode()), null));
             }
             return new DailyForecast(dataList);
         } catch (APIException | NullPointerException e) {

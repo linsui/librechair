@@ -25,6 +25,7 @@ import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.smartspace.AccuWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
+import ch.deletescape.lawnchair.smartspace.accu.model.AccuDailyForecastsGSon
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
@@ -35,17 +36,17 @@ import java.util.*
 import kotlin.math.roundToInt
 
 class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
-    var cachedResponse: CachedResponse<Response<List<AccuHourlyForecastGSon>>>? = null
-
+    var cachedHourly: CachedResponse<Response<List<AccuHourlyForecastGSon>>>? = null
+    var cachedDaily: CachedResponse<Response<AccuDailyForecastsGSon>>? = null
 
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
-        synchronized(AccuWeatherForecastProvider::class) {
+        synchronized(this) {
             try {
                 d("getHourlyForecast: $lat, $lon")
-                var responseResult: Response<List<AccuHourlyForecastGSon>>? = null
+                val responseResult: Response<List<AccuHourlyForecastGSon>>?
                 d("getHourlyForecast: retrieving geolocation")
                 try {
-                    if (cachedResponse == null || cachedResponse?.expired == true) {
+                    if (cachedHourly == null || cachedHourly?.expired == true) {
                         d("getHourlyForecast: re-retrieving geolocation")
                         val geolocationResponse =
                                 AccuRetrofitServiceFactory.accuSearchRetrofitService
@@ -59,12 +60,12 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                             responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
                                     .getHourly(geolocationResponse.body()!!.key, c.locale.language)
                                     .execute()
-                            cachedResponse =
+                            cachedHourly =
                                     CachedResponse(System.currentTimeMillis() + (1000 * 60 * 10),
                                                    responseResult!!)
                         }
                     } else {
-                        responseResult = cachedResponse?.value
+                        responseResult = cachedHourly?.value
                     }
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)
@@ -105,7 +106,55 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     }
 
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
-        throw ForecastProvider.ForecastException(Exception("Daily forecast not yet implemented"))
+        synchronized(DAILY_LOCK) {
+            d("getDailyForecast: $lat, $lon")
+            val responseResult: Response<AccuDailyForecastsGSon>?
+
+            try {
+                if (cachedDaily == null || cachedDaily?.expired == true) {
+
+                    d("getDailyForecast: re-retrieving geolocation")
+                    val geolocationResponse = AccuRetrofitServiceFactory.accuSearchRetrofitService
+                            .getGeoPosition("$lat,$lon", c.locale.language).execute()
+                    if (!geolocationResponse.isSuccessful) {
+                        d("getDailyForecast: geolocation not successful")
+                        throw ForecastProvider.ForecastException(
+                            "geolocation couldn't be retrieved")
+                    } else {
+                        d("getDailyForecast: retrieving AccuWeather forecast for location ${geolocationResponse.body()?.key}")
+                        responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
+                                .getDaily10Day(geolocationResponse.body()!!.key, c.locale.language)
+                                .execute()
+                        cachedDaily = CachedResponse(System.currentTimeMillis() + (1000 * 60 * 10),
+                                                     responseResult!!)
+                    }
+                } else {
+                    responseResult = cachedDaily?.value
+                }
+            } catch (e: Throwable) {
+                throw ForecastProvider.ForecastException(e)
+            }
+            try {
+                if (responseResult == null || !responseResult.isSuccessful) {
+                    throw ForecastProvider.ForecastException(
+                        "responseResult is null or request failed: $responseResult")
+                } else {
+                    val data: MutableList<ForecastProvider.DailyForecastData> = newList()
+                    responseResult.body()!!.dailyForecasts!!.forEach {
+                        data += ForecastProvider.DailyForecastData(
+                            Temperature(it.temperature.maximum.value.toDouble().toInt(),
+                                        Temperature.Unit.Celsius),
+                            Temperature(it.temperature.minimum.value.toDouble().toInt(),
+                                        Temperature.Unit.Celsius),
+                            Date.from(Instant.ofEpochSecond(it.epochDate)),
+                            AccuWeatherDataProvider.getIcon(c, it.day.icon, true), null)
+                    }
+                    return ForecastProvider.DailyForecast(data)
+                }
+            } catch (e: java.lang.NullPointerException) {
+                throw ForecastProvider.ForecastException(e)
+            }
+        }
     }
 
     companion object {
@@ -116,6 +165,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                              32 to 1200, 33 to 800, 34 to 801, 35 to 804, 36 to 801, 37 to 721,
                              38 to 803, 39 to 500, 40 to 500, 41 to 200, 42 to 200, 43 to 612,
                              44 to 600, 99 to 0)
+        @JvmStatic val DAILY_LOCK = Any() /* Stuff might lock against this from Java */
     }
 
     data class CachedResponse<T>(val expiry: Long, val value: T) {
