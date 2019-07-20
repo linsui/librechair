@@ -30,37 +30,22 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
-import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
-import net.aksingh.owmjapis.core.OWM
-import java.util.concurrent.Executors
 
 class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
 
     private var forecast: ForecastProvider.Forecast? = null
     private var weatherData: WeatherData? = null
-    private val openWeatherMap = OWM(context.lawnchairPrefs.weatherApiKey)
 
     init {
         c.applicationContext.lawnchairApp.smartspace.addListener(this)
     }
 
     private fun updateData() {
-        Executors.newSingleThreadExecutor().submit {
+        runOnUiWorkerThread {
             if (weatherData != null) {
                 try {
-                    openWeatherMap.unit =
-                            when ((context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit) {
-                                Temperature.Unit.Celsius -> OWM.Unit.METRIC
-                                Temperature.Unit.Fahrenheit -> OWM.Unit.IMPERIAL
-                                Temperature.Unit.Kelvin -> OWM.Unit.STANDARD
-                                Temperature.Unit.Rakine -> TODO()
-                                Temperature.Unit.Delisle -> TODO()
-                                Temperature.Unit.Newton -> TODO()
-                                Temperature.Unit.Reaumur -> TODO()
-                                Temperature.Unit.Romer -> TODO()
-                            }
                     forecast = context.forecastProvider
                             .getHourlyForecast(weatherData!!.coordLat!!, weatherData!!.coordLong!!)
                 } catch (e: APIException) {

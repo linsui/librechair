@@ -119,7 +119,7 @@ val Context.hasStoragePermission
 val Context.forecastProvider: ForecastProvider
     get() = run {
         if (forecastProviderNoCreate != null) {
-            return@run forecastProvider
+            return@run forecastProviderNoCreate!!
         } else {
             forecastProviderNoCreate = ForecastProvider.Controller
                     .inflateForecastProvider(this, this.lawnchairPrefs.weatherForecastProvider)
