@@ -53,8 +53,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                             .execute()
                             if (!geolocationResponse.isSuccessful) {
                                 d("getHourlyForecast: geolocation not successful")
-                                throw ForecastProvider.ForecastException(
-                                    Exception("geolocation couldn't be retrieved"))
+                                throw ForecastProvider.ForecastException("geolocation couldn't be retrieved")
                             } else {
                                 d("getHourlyForecast: retrieving AccuWeather forecast for location ${geolocationResponse.body()?.key}")
                                 responseResult =
@@ -64,6 +63,8 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                 cachedResponse = CachedResponse(
                                     System.currentTimeMillis() + (1000 * 60 * 10), responseResult!!)
                             }
+                        } else {
+                            responseResult = cachedResponse?.value
                         }
                     } catch (e: Throwable) {
                         throw ForecastProvider.ForecastException(e)
@@ -71,9 +72,8 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
 
                     d("getHourlyForecast: accuWeather response retrieved")
 
-                    if (!responseResult!!.isSuccessful) {
-                        throw ForecastProvider.ForecastException(
-                            Exception(responseResult.message()))
+                    if (responseResult?.isSuccessful != true) {
+                        throw ForecastProvider.ForecastException(responseResult?.message() ?: "unknown error")
                     } else {
                         val data: MutableList<ForecastProvider.ForecastData> = newList()
                         d("getHourlyForecast: converting AccuWeather data into OWM format")

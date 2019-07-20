@@ -46,8 +46,13 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
         runOnUiWorkerThread {
             if (weatherData != null) {
                 try {
-                    forecast = context.forecastProvider
-                            .getHourlyForecast(weatherData!!.coordLat!!, weatherData!!.coordLong!!)
+                    try {
+                        forecast = context.forecastProvider
+                                .getHourlyForecast(weatherData!!.coordLat!!,
+                                                   weatherData!!.coordLong!!)
+                    } catch (e: ForecastProvider.ForecastException) {
+                        e.printStackTrace()
+                    }
                 } catch (e: APIException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {
