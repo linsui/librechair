@@ -57,8 +57,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun updateData() {
-        // TODO: Add support for location based info with AccuWeather
-        if (false && prefs.weatherCity == "##Auto") {
+        if (prefs.weatherCity == "##Auto") {
             if (!locationAccess) {
                 Utilities.requestLocationPermission(context.lawnchairApp.activityHandler.foregroundActivity)
                 return
@@ -66,6 +65,20 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
             val locationProvider = locationManager?.getBestProvider(Criteria(), true)
             val location = locationManager?.getLastKnownLocation(locationProvider)
             if (location != null) {
+                AccuRetrofitServiceFactory.accuSearchRetrofitService.getGeoPosition("${location.latitude},${location.longitude}", context.locale.language).enqueue(object : Callback<AccuLocationGSon> {
+                    override fun onFailure(call: Call<AccuLocationGSon>, t: Throwable) {
+                        updateData(null, null)
+                    }
+
+                    override fun onResponse(call: Call<AccuLocationGSon>,
+                                            response: Response<AccuLocationGSon>) {
+                         response.body()?.key?.let {
+                             keyCache = "##auto@current" to it
+                             loadWeather()
+                         }
+                    }
+
+                })
             }
         } else {
             if (keyCache.first != prefs.weatherCity) {
