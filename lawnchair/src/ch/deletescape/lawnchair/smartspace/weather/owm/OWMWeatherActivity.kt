@@ -152,7 +152,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
                     } */
                     v?.parent?.parent?.requestDisallowInterceptTouchEvent(true);
-                    return true
+                    return false
                 }
 
             })
@@ -192,7 +192,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
                     } */
                     v?.parent?.requestDisallowInterceptTouchEvent(true);
-                    return true
+                    return false
                 }
             })
             val currentWeather = dailyWeatherForcast.dailyForecastData[position]
