@@ -41,9 +41,8 @@ import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.smartspace.BlankDataProvider
-import ch.deletescape.lawnchair.smartspace.BuiltInCalendarProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
+import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.util.buildEntries
 import com.android.launcher3.Utilities
 
@@ -51,7 +50,6 @@ class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
         ListPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
 
     private val prefs = Utilities.getLawnchairPrefs(context)
-    private val forWeather by lazy { key == "pref_forecast_provider" }
 
     init {
         buildEntries {
@@ -92,8 +90,7 @@ class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
         return getPersistedValue()
     }
 
-    private fun getPersistedValue() = prefs.sharedPrefs.getString(key,
-                                                                  if (forWeather) OWMWeatherDataProvider::class.java.name else BuiltInCalendarProvider::class.java.name)
+    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, OWMForecastProvider::class.java.name)
 
     override fun persistString(value: String?): Boolean {
         prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
