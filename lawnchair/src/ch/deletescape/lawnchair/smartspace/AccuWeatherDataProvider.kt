@@ -76,7 +76,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
 
                     override fun onResponse(call: Call<List<AccuLocationGSon>>, response: Response<List<AccuLocationGSon>>) {
                         response.body()?.firstOrNull()?.key?.let {
-                            keyCache = Pair(prefs.weatherCity, it)
+                            keyCache = prefs.weatherCity to it
                             loadWeather()
                         }
                     }
@@ -97,12 +97,13 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
                 val conditions = response.body()?.currentConditions
                 if (conditions != null) {
                     updateData(LawnchairSmartspaceController.WeatherData(
-                            getIcon(context, conditions.weatherIcon, conditions.isDayTime),
-                            Temperature(conditions.temperature.value.toFloat().roundToInt(), Temperature.Unit.Celsius),
-                            // TODO add support for intents to open the AccuWeather app if available
-                            forecastUrl = conditions.mobileLink,
-                            iconType = (conditions.weatherIcon.toString() + if (conditions.isDayTime) "d" else "n")
-                    ), null)
+                        getIcon(context, conditions.weatherIcon, conditions.isDayTime),
+                        Temperature(conditions.temperature.value.toFloat().roundToInt(), Temperature.Unit.Celsius),
+                        // TODO add support for intents to open the AccuWeather app if available
+                        forecastUrl = conditions.mobileLink,
+                        iconType = (conditions.weatherIcon.toString() + if (conditions.isDayTime) "d" else "n"),
+                        coordLat = response.body()?.location?.geoPosition?.latitude?.toDouble(),
+                        coordLong = response.body()?.location?.geoPosition?.longitude?.toDouble()), null)
                 }
             }
 
