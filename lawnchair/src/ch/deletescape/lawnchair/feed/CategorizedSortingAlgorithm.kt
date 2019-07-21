@@ -63,10 +63,10 @@ class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
             result.add(Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
                     d("inflate: inflating category header view")
-                    val v =  LayoutInflater.from(parent.context)
-                            .inflate(R.layout.category_header, parent, false)
-                    v.findViewById<TextView>(R.id.category_header_category_name).text = it
-                    return v
+                    return LayoutInflater.from(parent.context)
+                            .inflate(R.layout.category_header, parent, false).also { it2 ->
+                        it2.findViewById<TextView>(R.id.category_header_category_name).text = it
+                    }
                 }
 
             }, Card.NO_HEADER, ""))
