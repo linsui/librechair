@@ -40,7 +40,6 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun updateData() {
-        super.updateData()
         runOnNewThread {
             if (lat != null && lon != null) {
                 val lat = lat!!
@@ -50,7 +49,7 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                     if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
                         val data = CardData(null, listOf(
                             Line(context.getString(R.string.title_card_incoming_snow),
-                                 TextUtils.TruncateAt.MARQUEE)), true)
+                                 TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 600..699 }) {
                             runOnMainThread {
@@ -60,7 +59,7 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
                         val data = CardData(null, listOf(
                             Line(context.getString(R.string.title_card_incoming_thunder),
-                                 TextUtils.TruncateAt.MARQUEE)), true)
+                                 TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 200..299 }) {
                             runOnMainThread {
@@ -70,7 +69,7 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
                         val data = CardData(null, listOf(
                             Line(context.getString(R.string.title_card_upcoming_rain),
-                                 TextUtils.TruncateAt.MARQUEE)), true)
+                                 TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 300..599 }) {
                             runOnMainThread {
@@ -89,7 +88,7 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
         if (data.weather?.coordLat != null && data.weather.coordLon != null) {
             lon = data.weather.coordLat
             lat = data.weather.coordLon
-            forceUpdate()
+            updateData()
         }
     }
 }
