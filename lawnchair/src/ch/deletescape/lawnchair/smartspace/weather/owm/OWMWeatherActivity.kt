@@ -161,8 +161,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
             holder.icon.setImageBitmap(currentWeather.data.icon)
             holder.time.text = formatTime(zonedDateTime, context)
-            holder.temperature.text =
-                    "${currentWeather.data.getTitle(weatherUnit)}"
+            holder.temperature.text = currentWeather.data.getTitle(weatherUnit)
             if (whiteText) {
                 holder.time.setTextColor(Color.WHITE)
                 holder.temperature.setTextColor(Color.WHITE)
@@ -173,7 +172,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
     @Suppress("IMPLICIT_CAST_TO_ANY")
     class DailyForecastAdapter(val dailyWeatherForcast: ForecastProvider.DailyForecast, val context: Context,
-                               val weatherUnit: Temperature.Unit) :
+                               val weatherUnit: Temperature.Unit, val whiteText: Boolean = false) :
             RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
@@ -188,20 +187,21 @@ class OWMWeatherActivity : SettingsBaseActivity() {
             holder: ThreeHourForecastViewHolder, position: Int) {
             holder.itemView.setOnTouchListener(object : View.OnTouchListener {
                 override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                    /* if (event?.action == MotionEvent.ACTION_SCROLL) {
-
-                    } */
                     v?.parent?.requestDisallowInterceptTouchEvent(true);
                     return false
                 }
             })
             val currentWeather = dailyWeatherForcast.dailyForecastData[position]
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather.date.time / 1000), ZoneId.of("UTC"))
+            if (whiteText) {
+                holder.time.setTextColor(Color.WHITE)
+                holder.temperature.setTextColor(Color.WHITE)
+            }
             zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneId.ofOffset("UTC", ZoneOffset.ofTotalSeconds(TimeZone.getDefault().rawOffset / 1000)))
             holder.icon.setImageBitmap(currentWeather.icon)
             holder.time.text = "${zonedDateTime.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())} ${zonedDateTime.month.value}/${zonedDateTime.dayOfMonth}"
             holder.temperature.text =
-                    "${currentWeather.low.inUnit(weatherUnit)} ${weatherUnit.suffix}, ${currentWeather.high.inUnit(weatherUnit)} ${weatherUnit.suffix}"
+                    "${currentWeather.low.inUnit(weatherUnit)} ${weatherUnit.suffix} – ${currentWeather.high.inUnit(weatherUnit)} ${weatherUnit.suffix}"
         }
     }
 }

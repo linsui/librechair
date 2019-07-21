@@ -473,5 +473,6 @@
     <string name="title_smartspace_provider_forecast">Hourly forecast</string>
     <string name="placeholder_category_card_title"><![CDATA[Music & Entertainment]]></string>
     <string name="title_sorting_provider_categorized">Categorized</string>
+    <string name="title_feed_provider_daily_forecast">Forecast (daily)</string>
 
 </resources>
