@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     Copyright (c) 2017-2019 the Lawnchair team
+  ~     Copyright (c)  2019 oldosfan (would)
+  ~     This file is part of Lawnchair Launcher.
+  ~
+  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/dimen_margin_category_divisor"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/category_header_category_name"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_category_card_title"
+        android:textColor="?attr/colorAccent" />
+    <View
+        android:layout_width="@dimen/dimen_width_category_divisor"
+        android:layout_height="@dimen/dimen_height_category_divisor"
+        android:layout_marginTop="@dimen/dimen_margin_category_divisor"
+        android:background="?attr/colorAccent" />
+</LinearLayout>

@@ -310,4 +310,7 @@
     <dimen name="card_narrow_height">120dp</dimen>
     <dimen name="dimen_calendar_feed_event_description">15sp</dimen>
     <dimen name="weather_view_title_size">25sp</dimen>
+    <dimen name="dimen_width_category_divisor">320dp</dimen>
+    <dimen name="dimen_height_category_divisor">4dp</dimen>
+    <dimen name="dimen_margin_category_divisor">8dp</dimen>
 </resources>

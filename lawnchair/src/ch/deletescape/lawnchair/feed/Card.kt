@@ -32,9 +32,17 @@ import android.view.ViewGroup
 
 data class Card(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper, val type: Int, val algoFlags: String? = null, val identifier: Int = title.hashCode()) {
     var canHide = false
+    private var internalCategory: List<String>? = null
+    val categories: List<String>?
+        get() = internalCategory
 
     constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
         this.canHide = canHide
+    }
+
+    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean, category: List<String>) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
+        this.canHide = canHide
+        this.internalCategory = category
     }
 
     companion object {

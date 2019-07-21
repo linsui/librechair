@@ -471,5 +471,7 @@
     <string name="title_card_incoming_thunder">Incoming thunderstorms</string>
     <string name="title_card_upcoming_rain">Upcoming rain</string>
     <string name="title_smartspace_provider_forecast">Hourly forecast</string>
+    <string name="placeholder_category_card_title"><![CDATA[Music & Entertainment]]></string>
+    <string name="title_sorting_provider_categorized">Categorized</string>
 
 </resources>

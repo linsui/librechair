@@ -24,7 +24,8 @@ import com.android.launcher3.R
 
 fun getFeedSortingAlgorithms(): List<String> {
     return listOf(OrderedSortingAlgorithm::class.java.name,
-                  MixerSortingAlgorithm::class.java.name);
+                  MixerSortingAlgorithm::class.java.name,
+                  CategorizedSortingAlgorithm::class.java.name)
 }
 
 fun getFeedSortingAlgorithmName(algorithm: String, context: Context): String {
@@ -32,6 +33,8 @@ fun getFeedSortingAlgorithmName(algorithm: String, context: Context): String {
         OrderedSortingAlgorithm::class.java.name -> context.getString(R.string.title_sorting_algorithm_ordered)
         MixerSortingAlgorithm::class.java.name -> context.getString(
                     R.string.title_sorting_algorithm_mixer)
+        CategorizedSortingAlgorithm::class.java.name -> context.getString(
+                    R.string.title_sorting_provider_categorized)
 
         else -> error("No such sorting algorithm ${algorithm}")
     }
