@@ -15,6 +15,8 @@
  *
  *     You should have received a copy of the GNU General Public License
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *     Powered by OpenWeatherMap <openweathermap.org>
  */
 
 package ch.deletescape.lawnchair.smartspace.weather.forecast;
@@ -36,6 +38,7 @@ import net.aksingh.owmjapis.core.OWMPro;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
 import net.aksingh.owmjapis.model.HourlyWeatherForecast;
 import net.aksingh.owmjapis.model.param.Weather;
+import org.jetbrains.annotations.NotNull;
 
 public class OWMForecastProvider implements ForecastProvider {
 
@@ -64,7 +67,8 @@ public class OWMForecastProvider implements ForecastProvider {
                         .getIcon(weather.getWeatherList().get(0).getIconCode()),
                         new Temperature(weather.getMainData().getTemp().intValue(), Unit.Kelvin),
                         null, null, null, lat, lon, weather.getWeatherList().get(0).getIconCode()),
-                        weather.getDateTime(), Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class)));
+                        weather.getDateTime(),
+                        Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class)));
             }
             return new Forecast(dataList);
         } catch (APIException | NullPointerException e) {
@@ -81,13 +85,36 @@ public class OWMForecastProvider implements ForecastProvider {
                     .dailyWeatherForecastByCoords(lat, lon);
             List<DailyForecastData> dataList = LawnchairUtilsKt.newList();
             for (net.aksingh.owmjapis.model.param.ForecastData weather : forecast.getDataList()) {
-                dataList.add(new DailyForecastData(new Temperature(weather.getTempData().getTempMax().intValue(), Unit.Kelvin),
-                        new Temperature(weather.getTempData().getTempMin().intValue(), Unit.Kelvin), weather.getDateTime(),
-                        new WeatherIconProvider(context).getIcon(weather.getWeatherList().get(0).getIconCode()), null));
+                dataList.add(new DailyForecastData(
+                        new Temperature(weather.getTempData().getTempMax().intValue(), Unit.Kelvin),
+                        new Temperature(weather.getTempData().getTempMin().intValue(), Unit.Kelvin),
+                        weather.getDateTime(),
+                        new WeatherIconProvider(context)
+                                .getIcon(weather.getWeatherList().get(0).getIconCode()), null));
             }
             return new DailyForecast(dataList);
         } catch (APIException | NullPointerException e) {
             throw new ForecastException(e);
         }
+    }
+
+    @NotNull
+    @Override
+    public CurrentWeather getCurrentWeather(double lat, double lon) throws ForecastException {
+        try {
+            net.aksingh.owmjapis.model.CurrentWeather weather = owm
+                    .currentWeatherByCoords(lat, lon);
+            List<Integer> integers = LawnchairUtilsKt.newList();
+            for (Weather weather1 : weather.getWeatherList()) {
+                integers.add(weather1.getConditionId());
+            }
+            return new CurrentWeather(
+                    Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class),
+                    weather.getDateTime(), new Temperature(
+                    weather.getMainData().getTemp().intValue(), Unit.Kelvin));
+        } catch (APIException | NullPointerException e) {
+            throw new ForecastException(e);
+        }
+
     }
 }

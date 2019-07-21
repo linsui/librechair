@@ -116,7 +116,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
                         forecastUrl = conditions.mobileLink,
                         iconType = (conditions.weatherIcon.toString() + if (conditions.isDayTime) "d" else "n"),
                         coordLat = response.body()?.location?.geoPosition?.latitude?.toDouble(),
-                        coordLong = response.body()?.location?.geoPosition?.longitude?.toDouble()), null)
+                        coordLon = response.body()?.location?.geoPosition?.longitude?.toDouble()), null)
                 }
             }
 

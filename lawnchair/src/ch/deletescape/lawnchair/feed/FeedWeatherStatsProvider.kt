@@ -107,14 +107,14 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
     override fun onDataUpdated(data: DataContainer) {
         weatherData = data.weather;
-        if (data.weather?.coordLat != null && data.weather.coordLong != null) {
+        if (data.weather?.coordLat != null && data.weather.coordLon != null) {
             refreshExecutor.submit {
                 d("onDataUpdated: updating forcast HUD")
 
                 try {
                     d("onDataUpdated: fetching weather data")
                     hourlyWeatherForecast = context.forecastProvider.getHourlyForecast(data.weather.coordLat,
-                                                                                       data.weather.coordLong)
+                                                                                       data.weather.coordLon)
                     d("onDataUpdated: data retrieved")
 
                     val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {

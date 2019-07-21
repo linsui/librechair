@@ -467,5 +467,9 @@
     <string name="title_context_menu_feed_dont_show">Don\'t show this again</string>
     <string name="title_text_feed_empty">Your feed is empty</string>
     <string name="caption_text_feed_empty">You can add more feed providers or come back later</string>
+    <string name="title_card_incoming_snow">Incoming snow</string>
+    <string name="title_card_incoming_thunder">Incoming thunderstorms</string>
+    <string name="title_card_upcoming_rain">Upcoming rain</string>
+    <string name="title_smartspace_provider_forecast">Hourly forecast</string>
 
 </resources>

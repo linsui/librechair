@@ -31,12 +31,43 @@ interface ForecastProvider {
 
     @Throws(ForecastException::class) fun getHourlyForecast(lat: Double, lon: Double): Forecast
     @Throws(ForecastException::class) fun getDailyForecast(lat: Double, lon: Double): DailyForecast
+    @Throws(ForecastException::class) fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather
 
     class Forecast(val data: Array<ForecastData>) {
         constructor(dataList: List<ForecastData>) : this(
             Arrays.copyOf<ForecastData, Any>(dataList.toTypedArray(), dataList.size,
                                              Array<ForecastData>::class.java)) {
         }
+    }
+
+    data class CurrentWeather(val condCodes: Array<Int>, val date: Date, val temperature: Temperature) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            } else if (javaClass != other?.javaClass) {
+                return false
+            }
+
+            other as CurrentWeather
+
+            if (!condCodes.contentEquals(other.condCodes)){
+                return false
+            } else if (date != other.date) {
+                return false
+            } else if (temperature != other.temperature) {
+                return false
+            }
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = condCodes.contentHashCode()
+            result = 31 * result + date.hashCode()
+            result = 31 * result + temperature.hashCode()
+            return result
+        }
+
     }
 
     data class DailyForecast(val dailyForecastData: List<DailyForecastData>)

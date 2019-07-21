@@ -49,7 +49,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                     try {
                         forecast = context.forecastProvider
                                 .getHourlyForecast(weatherData!!.coordLat!!,
-                                                   weatherData!!.coordLong!!)
+                                                   weatherData!!.coordLon!!)
                     } catch (e: ForecastProvider.ForecastException) {
                         e.printStackTrace()
                     }
