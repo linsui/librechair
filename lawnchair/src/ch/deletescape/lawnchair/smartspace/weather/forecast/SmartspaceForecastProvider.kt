@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit
 
 class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
         PeriodicDataProvider(controller), Listener {
-    private var lat: Double = 0.toDouble()
-    private var lon: Double = 0.toDouble()
+    private var lat: Double? = null
+    private var lon: Double? = null
     override val timeout: Long
         get() = TimeUnit.MINUTES.toMillis(5)
 
@@ -42,41 +42,45 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
     override fun updateData() {
         super.updateData()
         runOnNewThread {
-            try {
-                val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
-                if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
-                    val data = CardData(null, listOf(
-                        Line(context.getString(R.string.title_card_incoming_snow),
-                             TextUtils.TruncateAt.MARQUEE)), true)
-                    val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                    if (current.condCodes.any { it in 600..699 }) {
-                        runOnMainThread {
-                            updateData(null, data)
+            if (lat != null && lon != null) {
+                val lat = lat!!
+                val lon = lon!!
+                try {
+                    val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
+                    if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
+                        val data = CardData(null, listOf(
+                            Line(context.getString(R.string.title_card_incoming_snow),
+                                 TextUtils.TruncateAt.MARQUEE)), true)
+                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                        if (current.condCodes.any { it in 600..699 }) {
+                            runOnMainThread {
+                                updateData(null, data)
+                            }
+                        }
+                    } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
+                        val data = CardData(null, listOf(
+                            Line(context.getString(R.string.title_card_incoming_thunder),
+                                 TextUtils.TruncateAt.MARQUEE)), true)
+                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                        if (current.condCodes.any { it in 200..299 }) {
+                            runOnMainThread {
+                                updateData(null, data)
+                            }
+                        }
+                    } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
+                        val data = CardData(null, listOf(
+                            Line(context.getString(R.string.title_card_upcoming_rain),
+                                 TextUtils.TruncateAt.MARQUEE)), true)
+                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                        if (current.condCodes.any { it in 300..599 }) {
+                            runOnMainThread {
+                                updateData(null, data)
+                            }
                         }
                     }
-                } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
-                    val data = CardData(null, listOf(
-                        Line(context.getString(R.string.title_card_incoming_thunder),
-                             TextUtils.TruncateAt.MARQUEE)), true)
-                    val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                    if (current.condCodes.any { it in 200..299 }) {
-                        runOnMainThread {
-                            updateData(null, data)
-                        }
-                    }
-                } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
-                    val data = CardData(null, listOf(
-                        Line(context.getString(R.string.title_card_upcoming_rain),
-                             TextUtils.TruncateAt.MARQUEE)), true)
-                    val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                    if (current.condCodes.any { it in 300..599 }) {
-                        runOnMainThread {
-                            updateData(null, data)
-                        }
-                    }
+                } catch (e: ForecastProvider.ForecastException) {
+                    e.printStackTrace()
                 }
-            } catch (e: ForecastProvider.ForecastException) {
-                e.printStackTrace()
             }
         }
     }
