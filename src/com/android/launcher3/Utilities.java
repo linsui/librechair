@@ -882,6 +882,9 @@ public final class Utilities {
 
     public static void openURLinBrowser(Context context, String url, Rect sourceBounds,
             Bundle options) {
+        if (url == null) {
+            return;
+        }
         Intent intent = new Intent(context, BrowserBoxActivity.class);
         intent.setData(Uri.parse(url));
         intent.setSourceBounds(sourceBounds);
