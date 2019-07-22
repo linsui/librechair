@@ -53,10 +53,10 @@ public class SunV1HourlyForecastResponse extends BaseModel {
         public String propertyClass = "fod_long_range_daily";
 
         @SerializedName("expire_time_gmt")
-        public BigDecimal expireTimeGmt ;
+        public Long expireTimeGmt ;
 
         @SerializedName("fcst_valid")
-        public BigDecimal fcstValid ;
+        public Long fcstValid ;
 
         @SerializedName("fcst_valid_local")
         public LocalDate fcstValidLocal ;

@@ -36,7 +36,6 @@
 
 package ch.deletescape.lawnchair.smartspace.weathercom
 
-import android.text.TextUtils
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
 import com.android.launcher3.LauncherAppState
 import okhttp3.OkHttpClient
@@ -49,6 +48,7 @@ object WeatherComRetrofitServiceFactory {
     private var API_KEY_FORECAST: Pair<String, String> = Pair("apiKey", Constants.WeatherComConstants.WEATHER_COM_FORECAST_KEY)
     private val BASE_URL = "https://api.weather.com"
     private var okHttpClient: OkHttpClient? = null
+    private var okHttpClientForForecast: OkHttpClient? = null
 
     val weatherComWeatherRetrofitService by lazy {
         getRetrofitService(WeatherComWeatherRetrofitService::class.java)
@@ -57,13 +57,6 @@ object WeatherComRetrofitServiceFactory {
     val weatherComWeatherRetrofitServiceForForecast by lazy {
         getRetrofitServiceForForecast(WeatherComWeatherRetrofitService::class.java)
     }
-
-    fun setApiKey(apiKey: String) {
-        if (!TextUtils.isEmpty(apiKey)) {
-            API_KEY = Pair("apiKey", apiKey)
-        }
-    }
-
     private fun <T> getRetrofitService(serviceClass: Class<T>): T {
         val client = buildOkHttpClient()
         return Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(client).build().create(serviceClass)
@@ -75,13 +68,23 @@ object WeatherComRetrofitServiceFactory {
     }
 
     private fun buildOkHttpClient(forForecast: Boolean = false): OkHttpClient? {
-        if (okHttpClient == null) {
-            synchronized(WeatherComRetrofitServiceFactory::class.java) {
-                if (okHttpClient == null) {
-                    okHttpClient = OkHttpClientBuilder().addQueryParam(if (forForecast) API_KEY_FORECAST else API_KEY).build(LauncherAppState.getInstanceNoCreate()?.context)
+        if (!forForecast) {
+            if (okHttpClient == null) {
+                synchronized(WeatherComRetrofitServiceFactory::class.java) {
+                    if (okHttpClient == null) {
+                        okHttpClient = OkHttpClientBuilder().addQueryParam(API_KEY).build(LauncherAppState.getInstanceNoCreate()?.context)
+                    }
+                }
+            }
+        } else {
+            if (okHttpClientForForecast == null) {
+                synchronized(WeatherComRetrofitServiceFactory::class.java) {
+                    if (okHttpClientForForecast == null) {
+                        okHttpClientForForecast = OkHttpClientBuilder().addQueryParam(API_KEY_FORECAST).build(LauncherAppState.getInstanceNoCreate()?.context)
+                    }
                 }
             }
         }
-        return okHttpClient
+        return if (forForecast) okHttpClientForForecast else okHttpClient
     }
 }

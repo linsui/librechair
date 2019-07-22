@@ -46,8 +46,8 @@ class WeatherChannelWeatherProvider(controller: LawnchairSmartspaceController) :
                     d("updateData: position $position")
                     val currentConditions =
                             WeatherComRetrofitServiceFactory.weatherComWeatherRetrofitService.getCurrentConditions(
-                                position.body()!!.location.latitude.get(0),
-                                position.body()!!.location.longitude.get(0)).execute().body()!!
+                                position.body()!!.location.latitude[0],
+                                position.body()!!.location.longitude[0]).execute().body()!!
                     val icon: Bitmap
                     if (currentConditions.observation.dayInd == "D") {
                         icon = WeatherIconProvider(context).getIcon(
@@ -63,8 +63,8 @@ class WeatherChannelWeatherProvider(controller: LawnchairSmartspaceController) :
                         updateData(LawnchairSmartspaceController.WeatherData(icon, Temperature(
                             currentConditions.observation.temp, Temperature.Unit.Fahrenheit), null,
                                                                              null, null,
-                                                                             currentConditions.metadata.latitude,
-                                                                             currentConditions.metadata.longitude,
+                                                                             position.body()!!.location.latitude[0],
+                                                                             position.body()!!.location.longitude[0],
                                                                              if (currentConditions.observation.dayInd == "D") {
                                                                                  Constants.WeatherComConstants.WEATHER_ICONS_DAY[currentConditions.observation.wxIcon]
                                                                                          .second

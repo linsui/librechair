@@ -34,10 +34,7 @@ interface ForecastProvider {
     @Throws(ForecastException::class) fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather
 
     class Forecast(val data: Array<ForecastData>) {
-        constructor(dataList: List<ForecastData>) : this(
-            Arrays.copyOf<ForecastData, Any>(dataList.toTypedArray(), dataList.size,
-                                             Array<ForecastData>::class.java)) {
-        }
+        constructor(dataList: List<ForecastData>) : this(dataList.toTypedArray())
     }
 
     data class CurrentWeather(val condCodes: Array<Int>, val date: Date, val temperature: Temperature) {
