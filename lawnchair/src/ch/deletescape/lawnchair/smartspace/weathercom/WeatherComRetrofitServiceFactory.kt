@@ -46,11 +46,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object WeatherComRetrofitServiceFactory {
     private var API_KEY: Pair<String, String> = Pair("apiKey", Constants.WeatherComConstants.WEATHER_COM_API_KEY)
+    private var API_KEY_FORECAST: Pair<String, String> = Pair("apiKey", Constants.WeatherComConstants.WEATHER_COM_FORECAST_KEY)
     private val BASE_URL = "https://api.weather.com"
     private var okHttpClient: OkHttpClient? = null
 
     val weatherComWeatherRetrofitService by lazy {
         getRetrofitService(WeatherComWeatherRetrofitService::class.java)
+    }
+
+    val weatherComWeatherRetrofitServiceForForecast by lazy {
+        getRetrofitServiceForForecast(WeatherComWeatherRetrofitService::class.java)
     }
 
     fun setApiKey(apiKey: String) {
@@ -64,11 +69,16 @@ object WeatherComRetrofitServiceFactory {
         return Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(client).build().create(serviceClass)
     }
 
-    private fun buildOkHttpClient(): OkHttpClient? {
+    private fun <T> getRetrofitServiceForForecast(serviceClass: Class<T>): T {
+        val client = buildOkHttpClient(true)
+        return Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(client).build().create(serviceClass)
+    }
+
+    private fun buildOkHttpClient(forForecast: Boolean = false): OkHttpClient? {
         if (okHttpClient == null) {
             synchronized(WeatherComRetrofitServiceFactory::class.java) {
                 if (okHttpClient == null) {
-                    okHttpClient = OkHttpClientBuilder().addQueryParam(API_KEY).build(LauncherAppState.getInstanceNoCreate()?.context)
+                    okHttpClient = OkHttpClientBuilder().addQueryParam(if (forForecast) API_KEY_FORECAST else API_KEY).build(LauncherAppState.getInstanceNoCreate()?.context)
                 }
             }
         }

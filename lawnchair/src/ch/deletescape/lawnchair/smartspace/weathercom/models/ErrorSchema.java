@@ -19,7 +19,7 @@
 
 package ch.deletescape.lawnchair.smartspace.weathercom.models;
 
-public class ErrorResponse extends BaseModel {
+public class ErrorSchema extends BaseModel {
     public String code;
     public String message;
 }

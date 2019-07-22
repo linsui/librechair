@@ -40,7 +40,7 @@ public class SunV1CurrentConditionsResponse extends BaseModel {
         public Double longitude, latitude;
 
         public boolean success;
-        public ErrorResponse error;
+        public ErrorSchema error;
     }
 
     public static class ObservationsSchema extends BaseModel {

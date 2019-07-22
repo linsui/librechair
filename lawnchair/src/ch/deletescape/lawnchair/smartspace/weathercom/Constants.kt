@@ -26,6 +26,7 @@ object Constants {
 
     object WeatherComConstants {
         val WEATHER_COM_API_KEY = "8de2d8b3a93542c9a2d8b3a935a2c909"
+        val WEATHER_COM_FORECAST_KEY = "d522aa97197fd864d36b418f39ebb323"
         private val WEATHER_ICONS = mapOf(0 to WeatherIconProvider.CONDITION_STORM,
                                           1 to WeatherIconProvider.CONDITION_STORM,
                                           2 to WeatherIconProvider.CONDITION_STORM,
@@ -78,5 +79,14 @@ object Constants {
                                           47 to WeatherIconProvider.CONDITION_STORM)
         val WEATHER_ICONS_DAY = WEATHER_ICONS.map { it.key to it.value + "d" }
         val WEATHER_ICONS_NIGHT = WEATHER_ICONS.map { it.key to it.value + "n" }
+        val WEATHER_COND_MAP =
+                mapOf(0 to 210, 1 to 210, 2 to 210, 3 to 210, 4 to 210, 5 to 602, 6 to 602,
+                      7 to 602, 8 to 303, 9 to 303, 10 to 602, 11 to 602, 12 to 602, 13 to 602,
+                      14 to 602, 15 to 602, 16 to 602, 17 to 602, 18 to 602, 19 to 701, 21 to 701,
+                      22 to 701, 23 to 808, 24 to 808, 25 to 808, 23 to 808, 24 to 808, 25 to 808,
+                      26 to 803, 27 to 803, 28 to 808, 29 to 808, 30 to 808, 31 to 800, 32 to 800,
+                      33 to 803, 34 to 803, 35 to 602, 36 to 800, 37 to 210, 38 to 210, 39 to 303,
+                      40 to 602, 41 to 602, 42 to 602, 43 to 602, 44 to 0, 45 to 303, 46 to 602,
+                      47 to 210)
     }
 }
