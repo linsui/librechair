@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.adaptive
 
 import android.graphics.Path
 import ch.deletescape.lawnchair.util.extensions.e
+import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 open class IconShape(private val topLeft: Corner,
@@ -40,8 +41,15 @@ open class IconShape(private val topLeft: Corner,
                                                 Corner(bottomLeftShape, bottomLeftScale),
                                                 Corner(bottomRightShape, bottomRightScale))
 
+    open val qsbEdgeRadius = 0
+
     fun getMaskPath(): Path {
         return Path().also { addToPath(it, 0f, 0f, 100f, 100f, 50f) }
+    }
+
+    open fun addShape(path: Path, x: Float, y: Float, radius: Float) {
+        val size = radius * 2
+        addToPath(path, x, y, x + size, y + size, radius)
     }
 
     @JvmOverloads
@@ -125,6 +133,10 @@ open class IconShape(private val topLeft: Corner,
                               IconCornerShape.arc,
                               1f, 1f, 1f, 1f) {
 
+        override fun addShape(path: Path, x: Float, y: Float, radius: Float) {
+            path.addCircle(x + radius, y + radius, radius, Path.Direction.CW)
+        }
+
         override fun toString(): String {
             return "circle"
         }
@@ -135,6 +147,8 @@ open class IconShape(private val topLeft: Corner,
                               IconCornerShape.arc,
                               IconCornerShape.arc,
                               .16f, .16f, .16f, .16f) {
+
+        override val qsbEdgeRadius = R.dimen.qsb_radius_square
 
         override fun toString(): String {
             return "square"
@@ -147,16 +161,20 @@ open class IconShape(private val topLeft: Corner,
                                      IconCornerShape.arc,
                                      .6f, .6f, .6f, .6f) {
 
+        override val qsbEdgeRadius = R.dimen.qsb_radius_square
+
         override fun toString(): String {
             return "roundedSquare"
         }
     }
 
-    object Squircle : IconShape(IconCornerShape.cubic,
-                                IconCornerShape.cubic,
-                                IconCornerShape.cubic,
-                                IconCornerShape.cubic,
-                                1f, 1f, 1f, 1f){
+    object Squircle : IconShape(IconCornerShape.squircle,
+                                IconCornerShape.squircle,
+                                IconCornerShape.squircle,
+                                IconCornerShape.squircle,
+                                1f, 1f, 1f, 1f) {
+
+        override val qsbEdgeRadius = R.dimen.qsb_radius_squircle
 
         override fun toString(): String {
             return "squircle"
@@ -167,7 +185,7 @@ open class IconShape(private val topLeft: Corner,
                                 IconCornerShape.arc,
                                 IconCornerShape.arc,
                                 IconCornerShape.arc,
-                                1f, 1f, 1f, .3f){
+                                1f, 1f, 1f, .3f) {
 
         override fun toString(): String {
             return "teardrop"
