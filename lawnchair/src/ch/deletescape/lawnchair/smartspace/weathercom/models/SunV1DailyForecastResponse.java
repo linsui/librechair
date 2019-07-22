@@ -62,10 +62,10 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public Integer num;
 
         @SerializedName("max_temp")
-        public Integer maxTemp;
+        public Double maxTemp;
 
         @SerializedName("min_temp")
-        public Integer minTemp;
+        public Double minTemp;
 
         @SerializedName("torcon")
         public Integer torcon;
