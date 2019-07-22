@@ -97,7 +97,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (cards.isEmpty()) {
             cards.add(Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
-                    return LayoutInflater.from(ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(R.layout.empty_feed, parent, false)
+                    return LayoutInflater.from(ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor, parent.context)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(R.layout.empty_feed, parent, false)
                 }
 
             }, Card.NO_HEADER, "nosort,top"))
@@ -214,7 +214,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
         d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
             backgroundColor)}")
 
-        if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor)) {
+        if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor, viewHolder.context)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
         }
     }

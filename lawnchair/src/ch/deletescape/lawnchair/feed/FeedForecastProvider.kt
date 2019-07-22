@@ -92,7 +92,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                             recyclerView.adapter = OWMWeatherActivity
                                     .HourlyForecastAdapter(forecast!!, context,
                                                            (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit,
-                                                           useWhiteText(backgroundColor))
+                                                           useWhiteText(backgroundColor, parent.context))
                         }
                         recyclerView.layoutParams = ViewGroup
                                 .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,

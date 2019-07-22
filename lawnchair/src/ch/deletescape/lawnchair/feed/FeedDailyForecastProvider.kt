@@ -93,7 +93,7 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
                             recyclerView.adapter = OWMWeatherActivity
                                     .DailyForecastAdapter(forecast!!, context,
                                                            (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit,
-                                                           useWhiteText(backgroundColor))
+                                                           useWhiteText(backgroundColor, parent.context))
                         }
                         recyclerView.layoutParams = ViewGroup
                                 .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,

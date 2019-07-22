@@ -62,6 +62,7 @@ import android.widget.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.*
@@ -998,9 +999,9 @@ fun <T> newList(): MutableList<T> {
     return ArrayList()
 }
 
-fun useWhiteText(color: Int): Boolean {
+fun useWhiteText(color: Int, c: Context): Boolean {
     if (ColorUtils.calculateLuminance(color) < 0.8) {
-        return true;
+        return !ThemeManager.getInstance(c).supportsDarkText
     } else {
         return alpha(color) < 50
     }

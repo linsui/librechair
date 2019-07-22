@@ -91,7 +91,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                          highLow.text =
                                  "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                          information.text = context.getString(weatherTypeResource!!)
-                         if (useWhiteText(backgroundColor)) {
+                         if (useWhiteText(backgroundColor, parent.context)) {
                              highLow.setTextColor(
                                  context.resources.getColor(R.color.textColorPrimary))
                              information.setTextColor(
