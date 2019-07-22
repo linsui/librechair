@@ -41,6 +41,7 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.TITLE
 import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
+import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.Launcher
@@ -534,7 +535,8 @@ class LawnchairSmartspaceController(val context: Context) {
                       FakeDataProvider::class.java.name to R.string.weather_provider_testing,
                       PersonalityProvider::class.java.name to R.string.personality_provider,
                       OnboardingProvider::class.java.name to R.string.onbording,
-                      SmartspaceForecastProvider::class.java.name to R.string.title_smartspace_provider_forecast)
+                      SmartspaceForecastProvider::class.java.name to R.string.title_smartspace_provider_forecast,
+                      WeatherChannelWeatherProvider::class.java.name to R.string.title_weather_provider_weather_com)
 
         fun getDisplayName(providerName: String): Int {
             return displayNames[providerName] ?: error("No display name for provider $providerName")

@@ -23,6 +23,7 @@ import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
+import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
 import ch.deletescape.lawnchair.util.buildEntries
 import com.android.launcher3.Utilities
 
@@ -54,6 +55,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
         list.add(BlankDataProvider::class.java.name)
         list.add(AccuWeatherDataProvider::class.java.name)
         list.add(OWMWeatherDataProvider::class.java.name)
+        list.add(WeatherChannelWeatherProvider::class.java.name)
         if (prefs.showDebugInfo) list.add(FakeDataProvider::class.java.name)
         return list
     }
