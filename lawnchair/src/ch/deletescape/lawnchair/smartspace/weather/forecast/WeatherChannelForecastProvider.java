@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.smartspace.weather.forecast;
 
+import android.content.Context;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants.WeatherComConstants;
 import ch.deletescape.lawnchair.smartspace.weathercom.WeatherComRetrofitServiceFactory;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1CurrentConditionsResponse;
@@ -31,6 +32,13 @@ import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
 public class WeatherChannelForecastProvider implements ForecastProvider {
+
+    private final Context c;
+
+    public WeatherChannelForecastProvider(Context c) {
+
+        this.c = c;
+    }
 
     @NotNull
     @Override

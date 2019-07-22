@@ -76,7 +76,38 @@ interface ForecastProvider {
     data class DailyForecastData(val high: Temperature, val low: Temperature, val date: Date,
                                  val icon: Bitmap, val forecast: Forecast?)
 
-    data class ForecastData(val data: WeatherData, val date: Date, val condCode: Array<Int>?)
+    data class ForecastData(val data: WeatherData, val date: Date, val condCode: Array<Int>?) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as ForecastData
+
+            if (data != other.data) {
+                return false
+            }
+            if (date != other.date) {
+                return false
+            }
+            if (condCode != null) {
+                if (other.condCode == null) {
+                    return false
+                }
+                if (!condCode.contentEquals(other.condCode)) {
+                    return false
+                }
+            } else if (other.condCode != null) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = data.hashCode()
+            result = 31 * result + date.hashCode()
+            result = 31 * result + (condCode?.contentHashCode() ?: 0)
+            return result
+        }
+    }
 
     class ForecastException : RuntimeException {
         constructor(s: String) : super(s)
