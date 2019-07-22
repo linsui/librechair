@@ -25,6 +25,7 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Weather
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import java.io.IOException
 import java.util.*
 
 interface ForecastProvider {
@@ -106,7 +107,7 @@ interface ForecastProvider {
         }
     }
 
-    class ForecastException : RuntimeException {
+    class ForecastException : IOException {
         constructor(s: String) : super(s)
         constructor(e: Throwable) : super(e)
     }

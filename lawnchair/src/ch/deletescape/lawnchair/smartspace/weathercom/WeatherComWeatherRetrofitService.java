@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.smartspace.weathercom;
 
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1CurrentConditionsResponse;
+import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV3LocationSearchResponse;
 import retrofit2.Call;
@@ -38,5 +39,8 @@ public interface WeatherComWeatherRetrofitService {
 
     @GET("v1/geocode/{latitude}/{longitude}/forecast/hourly/{hours}hour.json")
     Call<SunV1HourlyForecastResponse> getHourlyForecast(@Path(value = "latitude") double latitude, @Path(value = "longitude") double longitude, @Path(value = "hours") int hours, @Query(value = "language") String locale, @Query(value = "units") String units);
+
+    @GET("v1/geocode/{latitude}/{longitude}/forecast/daily/{days}day.json")
+    Call<SunV1DailyForecastResponse> getDailyForecast(@Path(value = "latitude") double latitude, @Path(value = "longitude") double longitude, @Path(value = "days") int days, @Query(value = "language") String locale, @Query(value = "units") String units);
 
 }

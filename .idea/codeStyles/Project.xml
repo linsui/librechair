@@ -37,10 +37,6 @@
       <option name="JD_KEEP_EMPTY_EXCEPTION" value="false" />
       <option name="JD_KEEP_EMPTY_RETURN" value="false" />
     </JavaCodeStyleSettings>
-    <JetCodeStyleSettings>
-      <option name="CONTINUATION_INDENT_IN_PARAMETER_LISTS" value="false" />
-      <option name="CONTINUATION_INDENT_IN_ARGUMENT_LISTS" value="false" />
-    </JetCodeStyleSettings>
     <Objective-C>
       <option name="INDENT_NAMESPACE_MEMBERS" value="0" />
       <option name="INDENT_C_STRUCT_MEMBERS" value="2" />
@@ -70,9 +66,6 @@
     <XML>
       <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
     </XML>
-    <editorconfig>
-      <option name="ENABLED" value="false" />
-    </editorconfig>
     <codeStyleSettings language="CSS">
       <indentOptions>
         <option name="INDENT_SIZE" value="2" />
@@ -106,6 +99,7 @@
       </indentOptions>
     </codeStyleSettings>
     <codeStyleSettings language="JAVA">
+      <option name="KEEP_CONTROL_STATEMENT_IN_ONE_LINE" value="false" />
       <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />
       <option name="BLANK_LINES_AFTER_CLASS_HEADER" value="1" />
       <option name="ALIGN_MULTILINE_PARAMETERS" value="false" />
@@ -120,11 +114,6 @@
       <option name="BINARY_OPERATION_SIGN_ON_NEXT_LINE" value="true" />
       <option name="TERNARY_OPERATION_WRAP" value="1" />
       <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="true" />
-      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
-      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
-      <option name="KEEP_SIMPLE_LAMBDAS_IN_ONE_LINE" value="true" />
-      <option name="KEEP_SIMPLE_CLASSES_IN_ONE_LINE" value="true" />
-      <option name="KEEP_MULTIPLE_EXPRESSIONS_IN_ONE_LINE" value="true" />
       <option name="FOR_STATEMENT_WRAP" value="1" />
       <option name="ARRAY_INITIALIZER_WRAP" value="1" />
       <option name="WRAP_COMMENTS" value="true" />
@@ -535,7 +524,6 @@
       </arrangement>
     </codeStyleSettings>
     <codeStyleSettings language="kotlin">
-      <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
@@ -547,9 +535,6 @@
       <option name="METHOD_CALL_CHAIN_WRAP" value="1" />
       <option name="WRAP_FIRST_METHOD_IN_CALL_CHAIN" value="true" />
       <option name="ASSIGNMENT_WRAP" value="1" />
-      <option name="METHOD_ANNOTATION_WRAP" value="1" />
-      <option name="CLASS_ANNOTATION_WRAP" value="1" />
-      <option name="FIELD_ANNOTATION_WRAP" value="1" />
       <option name="PARAMETER_ANNOTATION_WRAP" value="1" />
       <option name="VARIABLE_ANNOTATION_WRAP" value="1" />
     </codeStyleSettings>

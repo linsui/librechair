@@ -26,12 +26,16 @@ import org.apache.commons.lang3.SerializationException;
 public abstract class BaseModel {
 
     public BaseModel() {
-       try {
-           //noinspection ResultOfMethodCallIgnored
-           toString();
-       } catch (Exception e) {
-           throw new SerializationException("the class " + getClass().getName() + " is not serializable", e);
-       }
+        /*
+         * This ostensibly useless constructor actually checks whether this class is serializable
+         */
+        try {
+            //noinspection ResultOfMethodCallIgnored
+            toString();
+        } catch (Exception e) {
+            throw new SerializationException(
+                    "the class " + getClass().getName() + " is not serializable", e);
+        }
     }
 
     @NonNull

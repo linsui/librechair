@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
 import com.android.launcher3.R
 import net.aksingh.owmjapis.api.APIException
+import java.io.IOException
 
 class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
 
@@ -53,7 +54,7 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
                     } catch (e: ForecastProvider.ForecastException) {
                         e.printStackTrace()
                     }
-                } catch (e: APIException) {
+                } catch (e: IOException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {
                     e.printStackTrace()

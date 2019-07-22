@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Weather
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class OWMForecastProvider implements ForecastProvider {
 
     @NonNull
     @Override
-    public Forecast getHourlyForecast(double lat, double lon) {
+    public Forecast getHourlyForecast(double lat, double lon) throws ForecastException {
         try {
             Log.d(getClass().getName(), "getHourlyForecast(double, double): retrieving forecasts");
             HourlyWeatherForecast forecast = owm.hourlyWeatherForecastByCoords(lat, lon);
@@ -71,7 +72,7 @@ public class OWMForecastProvider implements ForecastProvider {
                         Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class)));
             }
             return new Forecast(dataList);
-        } catch (APIException | NullPointerException e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             throw new ForecastException(e);
         }
@@ -93,7 +94,7 @@ public class OWMForecastProvider implements ForecastProvider {
                                 .getIcon(weather.getWeatherList().get(0).getIconCode()), null));
             }
             return new DailyForecast(dataList);
-        } catch (APIException | NullPointerException e) {
+        } catch (Throwable e) {
             throw new ForecastException(e);
         }
     }
@@ -112,7 +113,7 @@ public class OWMForecastProvider implements ForecastProvider {
                     Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class),
                     weather.getDateTime(), new Temperature(
                     weather.getMainData().getTemp().intValue(), Unit.Kelvin));
-        } catch (APIException | NullPointerException e) {
+        } catch (Throwable e) {
             throw new ForecastException(e);
         }
 
