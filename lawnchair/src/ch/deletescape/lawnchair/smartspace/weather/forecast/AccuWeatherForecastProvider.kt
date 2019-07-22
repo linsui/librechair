@@ -57,7 +57,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                             throw ForecastProvider.ForecastException(
                                 "geolocation couldn't be retrieved")
                         } else {
-                            d("getHourlyForecast: retrieving AccuWeather forecast for location ${geolocationResponse.body()?.key}")
+                            d("getHourlyForecast: retrieving AccuWeather forecasts for location ${geolocationResponse.body()?.key}")
                             responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
                                     .getHourly(geolocationResponse.body()!!.key, c.locale.language)
                                     .execute()
@@ -147,7 +147,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                         throw ForecastProvider.ForecastException(
                             "geolocation couldn't be retrieved")
                     } else {
-                        d("getDailyForecast: retrieving AccuWeather forecast for location ${geolocationResponse.body()?.key}")
+                        d("getDailyForecast: retrieving AccuWeather forecasts for location ${geolocationResponse.body()?.key}")
                         responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
                                 .getDaily10Day(geolocationResponse.body()!!.key, c.locale.language)
                                 .execute()

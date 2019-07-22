@@ -59,15 +59,15 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             }
             SunV1HourlyForecastResponse forecast = response.body();
             List<ForecastData> dataList = LawnchairUtilsKt.newList();
-            for (ForecastSchema schema : forecast.forecast) {
+            for (ForecastSchema schema : forecast.forecasts) {
                 dataList.add(
                         new ForecastData(new WeatherData(new WeatherIconProvider(c).getIcon(
                                 schema.dayInd.equals("D") ? WeatherComConstants.INSTANCE
                                         .getWEATHER_ICONS_DAY().get(schema.iconCode).getSecond()
                                         : WeatherComConstants.INSTANCE.getWEATHER_ICONS_NIGHT()
                                                 .get(schema.iconCode).getSecond()),
-                                new Temperature(schema.temp, Unit.Celsius), null, null, null, lon,
-                                lat,
+                                new Temperature(schema.temp, Unit.Celsius), null, null, null, lat,
+                                lon,
                                 (schema.dayInd.equals("D") ? WeatherComConstants.INSTANCE
                                         .getWEATHER_ICONS_DAY().get(schema.iconCode).getSecond()
                                         : WeatherComConstants.INSTANCE.getWEATHER_ICONS_NIGHT()
@@ -77,7 +77,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
                                         schema.iconCode)}));
             }
             return new Forecast(dataList);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new ForecastException(e);
         }
     }

@@ -54,9 +54,9 @@ public class OWMForecastProvider implements ForecastProvider {
     @Override
     public Forecast getHourlyForecast(double lat, double lon) {
         try {
-            Log.d(getClass().getName(), "getHourlyForecast(double, double): retrieving forecast");
+            Log.d(getClass().getName(), "getHourlyForecast(double, double): retrieving forecasts");
             HourlyWeatherForecast forecast = owm.hourlyWeatherForecastByCoords(lat, lon);
-            Log.d(getClass().getName(), "getHourlyForecast(double, double): forecast: " + forecast);
+            Log.d(getClass().getName(), "getHourlyForecast(double, double): forecasts: " + forecast);
             List<ForecastData> dataList = LawnchairUtilsKt.newList();
             for (net.aksingh.owmjapis.model.param.WeatherData weather : forecast.getDataList()) {
                 ArrayList<Integer> integers = new ArrayList<>();

@@ -22,12 +22,11 @@ package ch.deletescape.lawnchair.smartspace.weathercom.models;
 import com.google.gson.annotations.SerializedName;
 import java.math.BigDecimal;
 import java.util.List;
-import org.threeten.bp.LocalDate;
 
 public class SunV1HourlyForecastResponse extends BaseModel {
 
     public SuccessMetadataSchema metadata;
-    public List<ForecastSchema> forecast;
+    public List<ForecastSchema> forecasts;
     public List<ErrorWrapper> errors;
 
 
@@ -59,7 +58,7 @@ public class SunV1HourlyForecastResponse extends BaseModel {
         public Long fcstValid ;
 
         @SerializedName("fcst_valid_local")
-        public LocalDate fcstValidLocal ;
+        public String fcstValidLocal ;
 
         @SerializedName("temp")
         public Integer temp ;
