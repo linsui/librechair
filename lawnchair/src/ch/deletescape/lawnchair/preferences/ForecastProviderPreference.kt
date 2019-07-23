@@ -52,6 +52,7 @@ class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
     private val prefs = Utilities.getLawnchairPrefs(context)
 
     init {
+        setDefaultValue(OWMForecastProvider::class.java.name)
         buildEntries {
             ForecastProvider.Controller.getProviderList().forEach {
                 addEntry(ForecastProvider.Controller.getProviderName(context, it), it)
