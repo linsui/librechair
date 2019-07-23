@@ -69,7 +69,7 @@ class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
                     }
                 }
 
-            }, Card.RAISE or Card.NO_HEADER, ""))
+            }, Card.NO_HEADER, ""))
             result.addAll(map.get(it) ?: emptyList())
         }
         result.addAll(map.get(CATEGORY_NONE)?.filter { it.algoFlags?.contains("top") == false } ?: newList())
