@@ -20,7 +20,6 @@
 package ch.deletescape.lawnchair.smartspace.weathercom.models;
 
 import com.google.gson.annotations.SerializedName;
-import java.math.BigDecimal;
 import java.util.List;
 
 public class SunV1DailyForecastResponse extends BaseModel {
@@ -31,12 +30,16 @@ public class SunV1DailyForecastResponse extends BaseModel {
 
     public static class SuccessMetadataSchema extends BaseModel {
         public String version;
-        public String transaction_id;
+
+        @SerializedName("transaction_id")
+        public String transactionId;
         public String language;
         public String units;
 
-        public Long expire_time_gmt;
-        public Integer status_code;
+        @SerializedName("expire_time_gmt")
+        public Long expireTimeGmt;
+        @SerializedName("status_code")
+        public Integer statusCode;
 
         public Double longitude;
         public Double latitude;
@@ -113,10 +116,10 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public String narrative;
 
         @SerializedName("qpf")
-        public BigDecimal qpf;
+        public Double qpf;
 
         @SerializedName("snow_qpf")
-        public BigDecimal snowQpf;
+        public Double snowQpf;
 
         @SerializedName("snow_range")
         public String snowRange;
@@ -145,13 +148,13 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public String daypartName;
 
         @SerializedName("expire_time_gmt")
-        public BigDecimal expireTimeGmt;
+        public Double expireTimeGmt;
 
         @SerializedName("fcst_valid")
-        public BigDecimal fcstValid;
+        public Double fcstValid;
 
         @SerializedName("fcst_valid_local")
-        public BigDecimal fcstValidLocal;
+        public Double fcstValidLocal;
 
         @SerializedName("golf_category")
         public String golfCategory;
@@ -196,7 +199,7 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public String precipType;
 
         @SerializedName("qpf")
-        public BigDecimal qpf;
+        public Double qpf;
 
         @SerializedName("qualifier")
         public String qualifier;
@@ -217,10 +220,10 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public String snowPhrase;
 
         @SerializedName("snow_qpf")
-        public BigDecimal snowQpf;
+        public Double snowQpf;
 
         @SerializedName("snow_range")
-        public BigDecimal snowRange;
+        public Double snowRange;
 
         @SerializedName("subphrase_pt1")
         public String subphrasePt1;
@@ -250,7 +253,7 @@ public class SunV1DailyForecastResponse extends BaseModel {
         public Integer uvIndex;
 
         @SerializedName("uv_index_raw")
-        public BigDecimal uvIndexRaw;
+        public Double uvIndexRaw;
 
         @SerializedName("uv_warning")
         public Integer uvWarning;
