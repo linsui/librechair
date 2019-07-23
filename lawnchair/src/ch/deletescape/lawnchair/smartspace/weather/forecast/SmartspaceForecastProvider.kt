@@ -25,6 +25,8 @@ import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
+import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager
 import com.android.launcher3.R
 import java.util.concurrent.TimeUnit
 
@@ -47,7 +49,8 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                 try {
                     val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
                     if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
-                        val data = CardData(null, listOf(
+                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                WeatherIconManager.Icon.SNOW, false), listOf(
                             Line(context.getString(R.string.title_card_incoming_snow),
                                  TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
@@ -57,7 +60,8 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                             }
                         }
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
-                        val data = CardData(null, listOf(
+                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(
                             Line(context.getString(R.string.title_card_incoming_thunder),
                                  TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
@@ -67,7 +71,8 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                             }
                         }
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
-                        val data = CardData(null, listOf(
+                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                WeatherIconManager.Icon.RAIN, false), listOf(
                             Line(context.getString(R.string.title_card_upcoming_rain),
                                  TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
