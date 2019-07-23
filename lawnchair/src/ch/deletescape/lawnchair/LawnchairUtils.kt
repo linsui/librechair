@@ -19,9 +19,11 @@ package ch.deletescape.lawnchair
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ComponentInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
 import android.content.pm.PackageManager
@@ -325,6 +327,10 @@ fun runOnNewThread(r: () -> Unit) {
     Executors.newSingleThreadExecutor().submit {
         r()
     }
+}
+
+fun isChromiumCompatiblePackage(pakage: String, context: Context): Boolean {
+    return Intent().setComponent(ComponentName(pakage, "org.chromium.chrome.browser.searchwidget.SearchActivity")).resolveActivityInfo(context.packageManager, 0) != null
 }
 
 fun runOnMainThread(r: () -> Unit) {

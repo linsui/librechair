@@ -29,7 +29,7 @@ public class TrebuchetUtil {
     public static List<ApplicationInfo> availableQuickstepProviders(Context context) {
         List<ApplicationInfo> infos = new ArrayList<>();
         for (ApplicationInfo packageInfo : context.getPackageManager().getInstalledApplications(0)) {
-            if (isQuickstepProvider(packageInfo.packageName, context)) {
+            if (isQuickstepProvider(packageInfo.packageName, context) && packageInfo.enabled) {
                 infos.add(packageInfo);
             }
         }

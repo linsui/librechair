@@ -378,7 +378,7 @@
     <string name="subtitle_smartspace_in_minute">In %d minute</string>
     <string name="chromium">Chromium</string>
     <string name="bromite">Bromite</string>
-    <string name="title_pref_chromium_package_name">Chromium package name</string>
+    <string name="title_pref_chromium_package_name">Chromium-derivative browser</string>
     <string name="summary_pref_chromium_package_name">You can specify an alternate Chromium-family browser</string>
     <string name="chromium_default_package">org.chromium.chrome</string>
     <string name="placeholder_raised_card_text">Partly cloudy • Weather • 24°C</string>

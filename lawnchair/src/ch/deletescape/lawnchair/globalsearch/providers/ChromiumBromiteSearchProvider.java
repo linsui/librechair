@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,6 +31,8 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import com.android.launcher3.R;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
@@ -100,7 +103,8 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                          * These tricks are needed for certain root methods that do not allow root to call su,
                          * which can happen when Librechair is installed as a system priv_app/signature app
                          */
-                        ComponentName info = new ComponentName("org.bromite.bromite", "org.chromium.chrome.browser.searchwidget.SearchActivity");
+                        ComponentName info = new ComponentName("org.bromite.bromite",
+                                "org.chromium.chrome.browser.searchwidget.SearchActivity");
                         startActivity(new Intent().setComponent(info));
                     } catch (SecurityException se) {
                         e.printStackTrace();
@@ -111,14 +115,17 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
                     Runtime.getRuntime().exec(new String[]{"su", "-c",
                             String.format(
                                     "am start %s/org.chromium.chrome.browser.searchwidget.SearchActivity",
-                                    LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName())});
+                                    LawnchairUtilsKt.getLawnchairPrefs(this)
+                                            .getChromiumPackageName())});
                 } catch (IOException e) {
                     try {
                         /*
                          * These tricks are needed for certain root methods that do not allow root to call su,
                          * which can happen when Librechair is installed as a system priv_app/signature app
                          */
-                        ComponentName info = new ComponentName(LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName(), "org.chromium.chrome.browser.searchwidget.SearchActivity");
+                        ComponentName info = new ComponentName(
+                                LawnchairUtilsKt.getLawnchairPrefs(this).getChromiumPackageName(),
+                                "org.chromium.chrome.browser.searchwidget.SearchActivity");
                         startActivity(new Intent().setComponent(info));
                     } catch (SecurityException se) {
                         e.printStackTrace();
@@ -145,6 +152,21 @@ public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
 
         public ChromiumSearchProvider(Context context) {
             super(ProviderType.CHROMIUM, context);
+        }
+    }
+
+    public static final class ChromiumHelper {
+
+        private ChromiumHelper() {
+
+        }
+
+        public static List<ApplicationInfo> getChromiumPackages(Context context) {
+            return context.getPackageManager().getInstalledApplications(0).stream()
+                    .filter(o -> o.enabled && LawnchairUtilsKt
+                            .isChromiumCompatiblePackage(o.packageName, context)).collect(
+                            Collectors.toList());
+
         }
     }
 }

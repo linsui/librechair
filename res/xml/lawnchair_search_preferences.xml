@@ -72,10 +72,10 @@
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:key="prefCat_otherSearchProviders"
         android:title="@string/pref_category_misc">
-        <EditTextPreference
+        <ch.deletescape.lawnchair.preferences.ChromiumPackagePreference
             android:key="pref_chromiumPackageName"
             android:defaultValue="@string/chromium_default_package"
             android:title="@string/title_pref_chromium_package_name"
-            android:summary="@string/summary_pref_chromium_package_name" />
+            android:summary="%s" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>
