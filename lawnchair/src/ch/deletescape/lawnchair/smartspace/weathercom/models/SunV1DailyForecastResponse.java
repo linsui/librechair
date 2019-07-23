@@ -130,7 +130,7 @@ public class SunV1DailyForecastResponse extends BaseModel {
         @SerializedName("snow_code")
         public String snowCode;
     }
-    
+
     public static class ForecastDay extends BaseModel {
         @SerializedName("accumulation_phrase")
         public String accumulationPhrase;

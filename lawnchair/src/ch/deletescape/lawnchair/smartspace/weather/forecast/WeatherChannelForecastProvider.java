@@ -23,12 +23,14 @@ import android.content.Context;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
+import ch.deletescape.lawnchair.smartspace.weathercom.Constants;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants.WeatherComConstants;
 import ch.deletescape.lawnchair.smartspace.weathercom.WeatherComRetrofitServiceFactory;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1CurrentConditionsResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse.ForecastSchema;
+import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV3DailyForecastResponse;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
 import java.io.IOException;
@@ -87,23 +89,23 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     @Override
     public DailyForecast getDailyForecast(double lat, double lon) throws ForecastException {
         try {
-            Response<SunV1DailyForecastResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
+            Response<SunV3DailyForecastResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
                     .getWeatherComWeatherRetrofitServiceForForecast()
-                    .getDailyForecast(lat, lon, 7, LawnchairUtilsKt.getLocale(c).getLanguage(), "m")
+                    .getDailyForecastWithApiV3(7, lat + "," + lon, LawnchairUtilsKt.getLocale(c).getLanguage(), "m")
                     .execute();
 
             if (!response.isSuccessful()) {
                 throw new ForecastException(response.message());
             }
-            SunV1DailyForecastResponse forecast = response.body();
+            SunV3DailyForecastResponse forecast = response.body();
             if (forecast == null) {
                 throw new ForecastException("forecast was null!");
             }
             List<DailyForecastData> dailyForecastData = LawnchairUtilsKt.newList();
-            for (SunV1DailyForecastResponse.Forecast forecast1 : forecast.forecasts) {
-                dailyForecastData.add(new DailyForecastData(new Temperature(forecast1.maxTemp.intValue(), Unit.Celsius), new Temperature(forecast1.minTemp.intValue(), Unit.Celsius),
-                        Date.from(Instant.ofEpochSecond(forecast1.fcstValid)),
-                        new WeatherIconProvider(c).getIcon("-1"), null));
+            for (int i = 0; i < forecast.temperatureMax.size(); ++i) {
+                dailyForecastData.add(new DailyForecastData(new Temperature((forecast.temperatureMax.get(i) == null ? 0 : forecast.temperatureMax.get(i).intValue()), Unit.Celsius), new Temperature(forecast.temperatureMin.get(i).intValue(), Unit.Celsius),
+                        Date.from(Instant.ofEpochSecond(forecast.validTimeUtc.get(i))),
+                        new WeatherIconProvider(c).getIcon(WeatherComConstants.INSTANCE.getWEATHER_ICONS_DAY().get(forecast.daypart.get(0).iconCode.get(i * 2) == null ? forecast.daypart.get(0).iconCode.get(i * 2 + 1) : forecast.daypart.get(0).iconCode.get(i * 2)).getSecond()), null));
             }
             return new DailyForecast(dailyForecastData);
 
