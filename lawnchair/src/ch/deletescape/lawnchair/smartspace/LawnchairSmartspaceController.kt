@@ -39,6 +39,7 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.NOTIFICATION_BADGING
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.CONTENT_RES_ID
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.TITLE
+import ch.deletescape.lawnchair.smartspace.weather.WeatherbitDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
@@ -153,8 +154,8 @@ class LawnchairSmartspaceController(val context: Context) {
 
             runOnMainThread {
                 if (eventProvidersPref.contains(
-                            BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(
-                            android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                                BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(
+                                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
                     BlankActivity
                             .requestPermission(context, android.Manifest.permission.READ_CALENDAR,
                                                LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
@@ -215,7 +216,7 @@ class LawnchairSmartspaceController(val context: Context) {
     private fun createDataProvider(className: String): DataProvider {
         return try {
             (Class.forName(className).getConstructor(
-                LawnchairSmartspaceController::class.java).newInstance(this) as DataProvider)
+                    LawnchairSmartspaceController::class.java).newInstance(this) as DataProvider)
                     .apply {
                         runOnMainThread(::performSetup)
                         waitForSetup()
@@ -245,7 +246,8 @@ class LawnchairSmartspaceController(val context: Context) {
             waiter?.release()
         }
 
-        @Synchronized open fun waitForSetup() {
+        @Synchronized
+        open fun waitForSetup() {
             waiter?.run {
                 acquireUninterruptibly()
                 release()
@@ -274,7 +276,7 @@ class LawnchairSmartspaceController(val context: Context) {
             val pm = controller.context.packageManager
             try {
                 return pm.getApplicationLabel(
-                    pm.getApplicationInfo(name, PackageManager.GET_META_DATA))
+                        pm.getApplicationInfo(name, PackageManager.GET_META_DATA))
             } catch (ignored: PackageManager.NameNotFoundException) {
             }
 
@@ -381,8 +383,8 @@ class LawnchairSmartspaceController(val context: Context) {
                                         context.getString(providerName),
                                         context.getString(R.string.derived_app_name))
                 BlankActivity.startActivityWithDialog(context, intent, 1030, context.getString(
-                    R.string.title_missing_notification_access), msg, context.getString(
-                    R.string.title_change_settings)) {
+                        R.string.title_missing_notification_access), msg, context.getString(
+                        R.string.title_change_settings)) {
                     onSetupComplete()
                 }
             }
@@ -395,7 +397,7 @@ class LawnchairSmartspaceController(val context: Context) {
             val myListener = ComponentName(context, NotificationListener::class.java)
             val listenerEnabled = enabledListeners?.let {
                 it.contains(myListener.flattenToString()) || it.contains(
-                    myListener.flattenToString())
+                        myListener.flattenToString())
             } ?: false
             val badgingEnabled =
                     Settings.Secure.getInt(context.contentResolver, NOTIFICATION_BADGING, 1) == 1
@@ -536,7 +538,8 @@ class LawnchairSmartspaceController(val context: Context) {
                       PersonalityProvider::class.java.name to R.string.personality_provider,
                       OnboardingProvider::class.java.name to R.string.onbording,
                       SmartspaceForecastProvider::class.java.name to R.string.title_smartspace_provider_forecast,
-                      WeatherChannelWeatherProvider::class.java.name to R.string.title_weather_provider_weather_com)
+                      WeatherChannelWeatherProvider::class.java.name to R.string.title_weather_provider_weather_com,
+                      WeatherbitDataProvider::class.java.name to R.string.title_weather_provider_weatherbit_data)
 
         fun getDisplayName(providerName: String): Int {
             return displayNames[providerName] ?: error("No display name for provider $providerName")
@@ -548,7 +551,8 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 }
 
-@Keep class BlankDataProvider(controller: LawnchairSmartspaceController) :
+@Keep
+class BlankDataProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
 
     override fun performSetup() {

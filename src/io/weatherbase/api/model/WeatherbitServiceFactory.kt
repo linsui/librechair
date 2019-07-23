@@ -28,17 +28,18 @@ import com.android.launcher3.LauncherAppState
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.reflect.KClass
 
 object WeatherbitServiceFactory {
     private var API_KEY: Pair<String, String> = "key" to "570a97170b604eebb9630a679b7234e8"
-    private val WEATHERBIT_BASE_URL = "https://api.weatherbit.io/v2.0"
+    private val WEATHERBIT_BASE_URL = "https://api.weatherbit.io/v2.0/"
     private var okHttpClient: OkHttpClient? = null
 
 
-    private fun <T> getRetrofitService(serviceClass: Class<T>): T {
+    fun <T : Any> getRetrofitService(serviceClass: KClass<T>): T {
         val client = buildOkHttpClient()
         return Retrofit.Builder().baseUrl(WEATHERBIT_BASE_URL).addConverterFactory(
-                GsonConverterFactory.create()).client(client).build().create(serviceClass)
+                GsonConverterFactory.create()).client(client).build().create(serviceClass.java)
     }
 
     private fun buildOkHttpClient(): OkHttpClient? {

@@ -63,16 +63,16 @@ public class CurrentObs {
   private String station = null;
 
   @SerializedName("vis")
-  private Integer vis = null;
+  private Double vis = null;
 
   @SerializedName("rh")
-  private Integer rh = null;
+  private Double rh = null;
 
   @SerializedName("dewpt")
   private BigDecimal dewpt = null;
 
   @SerializedName("wind_dir")
-  private Integer windDir = null;
+  private Double windDir = null;
 
   @SerializedName("wind_cdir")
   private String windCdir = null;
@@ -90,10 +90,10 @@ public class CurrentObs {
   private BigDecimal appTemp = null;
 
   @SerializedName("clouds")
-  private Integer clouds = null;
+  private Double clouds = null;
 
   @SerializedName("weather")
-  private Object weather = null;
+  private Weather weather = null;
 
   @SerializedName("datetime")
   private String datetime = null;
@@ -275,7 +275,7 @@ public class CurrentObs {
     this.station = station;
   }
 
-  public CurrentObs vis(Integer vis) {
+  public CurrentObs vis(Double vis) {
     this.vis = vis;
     return this;
   }
@@ -285,15 +285,15 @@ public class CurrentObs {
    * @return vis
   **/
   @Schema(example = "10000", description = "Visibility - default (M)")
-  public Integer getVis() {
+  public Double getVis() {
     return vis;
   }
 
-  public void setVis(Integer vis) {
+  public void setVis(Double vis) {
     this.vis = vis;
   }
 
-  public CurrentObs rh(Integer rh) {
+  public CurrentObs rh(Double rh) {
     this.rh = rh;
     return this;
   }
@@ -303,11 +303,11 @@ public class CurrentObs {
    * @return rh
   **/
   @Schema(example = "75", description = "Relative humidity (%)")
-  public Integer getRh() {
+  public Double getRh() {
     return rh;
   }
 
-  public void setRh(Integer rh) {
+  public void setRh(Double rh) {
     this.rh = rh;
   }
 
@@ -329,7 +329,7 @@ public class CurrentObs {
     this.dewpt = dewpt;
   }
 
-  public CurrentObs windDir(Integer windDir) {
+  public CurrentObs windDir(Double windDir) {
     this.windDir = windDir;
     return this;
   }
@@ -339,11 +339,11 @@ public class CurrentObs {
    * @return windDir
   **/
   @Schema(example = "125", description = "Wind direction (degrees)")
-  public Integer getWindDir() {
+  public Double getWindDir() {
     return windDir;
   }
 
-  public void setWindDir(Integer windDir) {
+  public void setWindDir(Double windDir) {
     this.windDir = windDir;
   }
 
@@ -437,7 +437,7 @@ public class CurrentObs {
     this.appTemp = appTemp;
   }
 
-  public CurrentObs clouds(Integer clouds) {
+  public CurrentObs clouds(Double clouds) {
     this.clouds = clouds;
     return this;
   }
@@ -447,15 +447,15 @@ public class CurrentObs {
    * @return clouds
   **/
   @Schema(example = "42", description = "Cloud cover (%)")
-  public Integer getClouds() {
+  public Double getClouds() {
     return clouds;
   }
 
-  public void setClouds(Integer clouds) {
+  public void setClouds(Double clouds) {
     this.clouds = clouds;
   }
 
-  public CurrentObs weather(Object weather) {
+  public CurrentObs weather(Weather weather) {
     this.weather = weather;
     return this;
   }
@@ -465,11 +465,11 @@ public class CurrentObs {
    * @return weather
   **/
   @Schema(description = "")
-  public Object getWeather() {
+  public Weather getWeather() {
     return weather;
   }
 
-  public void setWeather(Object weather) {
+  public void setWeather(Weather weather) {
     this.weather = weather;
   }
 
@@ -905,6 +905,10 @@ public class CurrentObs {
       return "null";
     }
     return o.toString().replace("\n", "\n    ");
+  }
+
+  public static class Weather {
+    public String icon, code, description;
   }
 
 }
