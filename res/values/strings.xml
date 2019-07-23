@@ -464,6 +464,8 @@
     <string name="hud_weather_information_thunder_occasional_sun">Periodic thunder with clear sky</string>
     <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
     <string name="hud_weather_information_thunder_occasional_snow">Thunder with snow</string>
+
+
     <string name="title_context_menu_feed_dont_show">Don\'t show this again</string>
     <string name="title_text_feed_empty">Your feed is empty</string>
     <string name="caption_text_feed_empty">You can add more feed providers or come back later</string>
@@ -476,5 +478,15 @@
     <string name="title_feed_provider_daily_forecast">Forecast (daily)</string>
     <string name="title_weather_provider_weather_com">Weather.com</string>
     <string name="title_weather_provider_weatherbit_data">Weatherbit.io</string>
+
+    <!--
+    - Wanted to decompile this from Nova
+    - but their code (or the decompiler)
+    - is crap, so I ended up implementin
+    - g this on my own
+     -->
+
+    <string name="title_preference_immersive_desktop">Immersive desktop</string>
+    <string name="description_preference_immersive_desktop">This will hide the status bar from your home screen</string>
 
 </resources>

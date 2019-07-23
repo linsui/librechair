@@ -112,6 +112,11 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         if (!lawnchairPrefs.swipeForFeed) {
             setLauncherOverlay(null)
         }
+
+        if (lawnchairPrefs.immersiveDesktop) {
+            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {
