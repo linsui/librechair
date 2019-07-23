@@ -23,6 +23,7 @@ import android.content.Context;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
+import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants.WeatherComConstants;
 import ch.deletescape.lawnchair.smartspace.weathercom.WeatherComRetrofitServiceFactory;
@@ -64,17 +65,11 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             List<ForecastData> dataList = LawnchairUtilsKt.newList();
             for (ForecastSchema schema : forecast.forecasts) {
                 dataList.add(
-                        new ForecastData(new WeatherData(new WeatherIconProvider(c).getIcon(
-                                schema.dayInd.equals("D") ? WeatherComConstants.INSTANCE
-                                        .getWEATHER_ICONS_DAY().get(schema.iconCode).getSecond()
-                                        : WeatherComConstants.INSTANCE.getWEATHER_ICONS_NIGHT()
-                                                .get(schema.iconCode).getSecond()),
+                        new ForecastData(new WeatherData(WeatherIconManager.Companion.getInstance(c).getIcon(
+                                WeatherComConstants.INSTANCE.getWEATHER_ICONS().get(schema.iconCode), !schema.dayInd.equals("D")),
                                 new Temperature(schema.temp, Unit.Celsius), null, null, null, lat,
                                 lon,
-                                (schema.dayInd.equals("D") ? WeatherComConstants.INSTANCE
-                                        .getWEATHER_ICONS_DAY().get(schema.iconCode).getSecond()
-                                        : WeatherComConstants.INSTANCE.getWEATHER_ICONS_NIGHT()
-                                                .get(schema.iconCode).getSecond())),
+                                "-1d"),
                                 Date.from(Instant.ofEpochSecond(schema.fcstValid)), new Integer[]{
                                 WeatherComConstants.INSTANCE.getWEATHER_COND_MAP().get(
                                         schema.iconCode)}));
@@ -105,7 +100,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             for (int i = 0; i < forecast.temperatureMax.size(); ++i) {
                 dailyForecastData.add(new DailyForecastData(new Temperature((forecast.temperatureMax.get(i) == null ? 0 : forecast.temperatureMax.get(i).intValue()), Unit.Celsius), new Temperature(forecast.temperatureMin.get(i).intValue(), Unit.Celsius),
                         Date.from(Instant.ofEpochSecond(forecast.validTimeUtc.get(i))),
-                        new WeatherIconProvider(c).getIcon(WeatherComConstants.INSTANCE.getWEATHER_ICONS_DAY().get(forecast.daypart.get(0).iconCode.get(i * 2) == null ? forecast.daypart.get(0).iconCode.get(i * 2 + 1) : forecast.daypart.get(0).iconCode.get(i * 2)).getSecond()), null));
+                        WeatherIconManager.Companion.getInstance(c).getIcon(WeatherComConstants.INSTANCE.getWEATHER_ICONS().get(forecast.daypart.get(0).iconCode.get(i * 2) == null ? forecast.daypart.get(0).iconCode.get(i * 2 + 1) : forecast.daypart.get(0).iconCode.get(i * 2)), false), null));
             }
             return new DailyForecast(dailyForecastData);
 
