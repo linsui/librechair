@@ -1542,4 +1542,8 @@ public class Folder extends AbstractFloatingView implements DragSource,
     public boolean isInAppDrawer() {
         return mInfo.container == ItemInfo.NO_ID;
     }
+
+    public static String getDefaultFolderName() {
+        return sDefaultFolderName;
+    }
 }
