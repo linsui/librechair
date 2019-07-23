@@ -20,16 +20,13 @@
 package ch.deletescape.lawnchair.smartspace.weather.forecast;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
-import ch.deletescape.lawnchair.smartspace.weathercom.Constants;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants.WeatherComConstants;
 import ch.deletescape.lawnchair.smartspace.weathercom.WeatherComRetrofitServiceFactory;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1CurrentConditionsResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastResponse;
-import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastResponse.Forecast;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse.ForecastSchema;
 import ch.deletescape.lawnchair.util.Temperature;
@@ -103,7 +100,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
                 throw new ForecastException("forecast was null!");
             }
             List<DailyForecastData> dailyForecastData = LawnchairUtilsKt.newList();
-            for (SunV1DailyForecastResponse.Forecast forecast1 : forecast.forecastList) {
+            for (SunV1DailyForecastResponse.Forecast forecast1 : forecast.forecasts) {
                 dailyForecastData.add(new DailyForecastData(new Temperature(forecast1.maxTemp.intValue(), Unit.Celsius), new Temperature(forecast1.minTemp.intValue(), Unit.Celsius),
                         Date.from(Instant.ofEpochSecond(forecast1.fcstValid)),
                         new WeatherIconProvider(c).getIcon("-1"), null));

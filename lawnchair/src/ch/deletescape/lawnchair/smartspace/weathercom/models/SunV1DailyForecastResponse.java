@@ -25,7 +25,7 @@ import java.util.List;
 
 public class SunV1DailyForecastResponse extends BaseModel {
     public SuccessMetadataSchema metadata;
-    public List<Forecast> forecastList;
+    public List<Forecast> forecasts;
     public List<ErrorSchema> errors;
     public Boolean success;
 
