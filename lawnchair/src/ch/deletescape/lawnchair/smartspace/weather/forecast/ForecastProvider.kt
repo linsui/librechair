@@ -117,7 +117,8 @@ interface ForecastProvider {
             fun getProviderList(): List<String> {
                 return listOf(OWMForecastProvider::class.java.name,
                               AccuWeatherForecastProvider::class.java.name,
-                              WeatherChannelForecastProvider::class.java.name)
+                              WeatherChannelForecastProvider::class.java.name,
+                              WeatherbitForecastProvider::class.java.name)
             }
 
             fun getProviderName(c: Context, provider: String): String {
@@ -126,6 +127,7 @@ interface ForecastProvider {
                         R.string.weather_provider_owm)
                     AccuWeatherForecastProvider::class.java.name -> c.getString(R.string.weather_provider_accu)
                     WeatherChannelForecastProvider::class.java.name -> c.getString(R.string.title_weather_provider_weather_com)
+                    WeatherbitForecastProvider::class.java.name -> c.getString(R.string.title_weather_provider_weatherbit_data)
 
                     else -> error("no such provider $provider")
                 }

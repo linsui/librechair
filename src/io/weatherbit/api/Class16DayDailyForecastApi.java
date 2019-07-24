@@ -23,7 +23,6 @@ import io.weatherbase.api.model.ForecastDay;
 import java.math.BigDecimal;
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface Class16DayDailyForecastApi {
@@ -34,7 +33,7 @@ public interface Class16DayDailyForecastApi {
      * \&quot;YYYY-MM-DD\&quot;. One day begins at 00:00 UTC, and ends at 23:59 UTC.
      *
      * @param cityId City ID. Example: 4487042 (required)
-     * @param key Your registered API key. (required)
+     
      * @param days Number of days to return. Default 16. (optional)
      * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27;
      * href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
@@ -43,10 +42,10 @@ public interface Class16DayDailyForecastApi {
      * @param paramCallback Wraps return in jsonp callback. Example: callback&#x3D;func (optional)
      * @return Call&lt;ForecastDay&gt;
      */
-    @GET("forecast/daily?city_id={city_id}")
+    @GET("forecast/daily")
     Call<ForecastDay> forecastDailycityIdcityIdGet(
 
-            @Path("city_id") Integer cityId, @Query("key") String key
+            @Query("city_id") Integer cityId
             , @Query("days") BigDecimal days
             , @Query("units") String units
             , @Query("lang") String lang
@@ -64,7 +63,7 @@ public interface Class16DayDailyForecastApi {
      * @param city City search.. Example - &amp;city&#x3D;Raleigh,NC or &amp;city&#x3D;Berlin,DE or
      * city&#x3D;Paris&amp;country&#x3D;FR (required)
      * @param country Country Code (2 letter). (required)
-     * @param key Your registered API key. (required)
+     
      * @param state Full name of state. (optional)
      * @param days Number of days to return. Default 16. (optional)
      * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27;
@@ -74,11 +73,11 @@ public interface Class16DayDailyForecastApi {
      * @param paramCallback Wraps return in jsonp callback. Example - callback&#x3D;func (optional)
      * @return Call&lt;ForecastDay&gt;
      */
-    @GET("forecast/daily?city={city}&country={country}")
+    @GET("forecast/daily")
     Call<ForecastDay> forecastDailycitycitycountrycountryGet(
 
-            @Path("city") String city,
-            @Path("country") String country, @Query("key") String key
+            @Query("city") String city,
+            @Query("country") String country
             , @Query("state") String state
             , @Query("days") BigDecimal days
             , @Query("units") String units
@@ -94,7 +93,7 @@ public interface Class16DayDailyForecastApi {
      * ends at 23:59 UTC.
      *
      * @param ip IP address, or auto. Example: ip&#x3D;auto (required)
-     * @param key Your registered API key. (required)
+     
      * @param days Number of days to return. Default 16. (optional)
      * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27;
      * href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
@@ -103,10 +102,10 @@ public interface Class16DayDailyForecastApi {
      * @param paramCallback Wraps return in jsonp callback. Example: callback&#x3D;func (optional)
      * @return Call&lt;ForecastDay&gt;
      */
-    @GET("forecast/daily?ip={ip}")
+    @GET("forecast/daily")
     Call<ForecastDay> forecastDailyipipGet(
 
-            @Path("ip") String ip, @Query("key") String key
+            @Query("ip") String ip
             , @Query("days") BigDecimal days
             , @Query("units") String units
             , @Query("lang") String lang
@@ -121,7 +120,7 @@ public interface Class16DayDailyForecastApi {
      *
      * @param lat Latitude component of location. (required)
      * @param lon Longitude component of location. (required)
-     * @param key Your registered API key. (required)
+     
      * @param days Number of days to return. Default 16. (optional)
      * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27;
      * href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
@@ -130,11 +129,11 @@ public interface Class16DayDailyForecastApi {
      * @param paramCallback Wraps return in jsonp callback. Example: callback&#x3D;func (optional)
      * @return Call&lt;ForecastDay&gt;
      */
-    @GET("forecast/daily?lat={lat}&lon={lon}")
+    @GET("forecast/daily")
     Call<ForecastDay> forecastDailylatlatlonlonGet(
 
-            @Path("lat") Double lat,
-            @Path("lon") Double lon, @Query("key") String key
+            @Query("lat") Double lat,
+            @Query("lon") Double lon
             , @Query("days") BigDecimal days
             , @Query("units") String units
             , @Query("lang") String lang
@@ -148,7 +147,7 @@ public interface Class16DayDailyForecastApi {
      * \&quot;YYYY-MM-DD\&quot;. One day begins at 00:00 UTC, and ends at 23:59 UTC.
      *
      * @param postalCode Postal Code. Example: 28546 (required)
-     * @param key Your registered API key. (required)
+     
      * @param country Country Code (2 letter). (optional)
      * @param days Number of days to return. Default 16. (optional)
      * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27;
@@ -158,10 +157,10 @@ public interface Class16DayDailyForecastApi {
      * @param paramCallback Wraps return in jsonp callback. Example: callback&#x3D;func (optional)
      * @return Call&lt;ForecastDay&gt;
      */
-    @GET("forecast/daily?postal_code={postal_code}")
+    @GET("forecast/daily")
     Call<ForecastDay> forecastDailypostalCodepostalCodeGet(
 
-            @Path("postal_code") Integer postalCode, @Query("key") String key
+            @Query("postal_code") Integer postalCode
             , @Query("country") String country
             , @Query("days") BigDecimal days
             , @Query("units") String units

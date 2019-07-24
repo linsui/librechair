@@ -31,17 +31,17 @@ public interface Class120HourHourlyForecastApi {
    * Returns a 120 hour (hourly) forecast - Given a City ID.
    *  Returns an hourly forecast, where each point represents a one hour   period. Every point has a datetime string in the format \&quot;YYYY-MM-DD:HH\&quot;. Time is UTC.  
    * @param cityId City ID. Example: 4487042 (required)
-   * @param key Your registered API key. (required)
+
    * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
    * @param lang Language (Default: English) See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;language field description&lt;/a&gt; (optional)
    * @param paramCallback Wraps return in jsonp callback. Example - callback&#x3D;func (optional)
    * @param hours Number of hours to return. (optional)
    * @return Call&lt;ForecastHourly&gt;
    */
-  @GET("forecast/hourly?city_id={city_id}")
+  @GET("forecast/hourly")
   Call<ForecastHourly> forecastHourlycityIdcityIdGet(
 
-          @Path("city_id") Integer cityId, @Query("key") String key
+          @Query("city_id") Integer cityId
           , @Query("units") String units
           , @Query("lang") String lang
           , @Query("callback") String paramCallback
@@ -54,7 +54,7 @@ public interface Class120HourHourlyForecastApi {
    *  Returns an hourly forecast, where each point represents a one hour   period. Every point has a datetime string in the format \&quot;YYYY-MM-DD:HH\&quot;. Time is UTC. Accepts a city in the format of City,ST or City. The state, and country parameters can be provided to make the search more accurate. 
    * @param city City search.. Example - &amp;city&#x3D;Raleigh,NC or &amp;city&#x3D;Berlin,DE or city&#x3D;Paris&amp;country&#x3D;FR (required)
    * @param country Country Code (2 letter). (required)
-   * @param key Your registered API key. (required)
+
    * @param state Full name of state. (optional)
    * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
    * @param lang Language (Default: English) See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;language field description&lt;/a&gt; (optional)
@@ -62,11 +62,11 @@ public interface Class120HourHourlyForecastApi {
    * @param hours Number of hours to return. (optional)
    * @return Call&lt;ForecastHourly&gt;
    */
-  @GET("forecast/hourly?city={city}&country={country}")
+  @GET("forecast/hourly")
   Call<ForecastHourly> forecastHourlycitycitycountrycountryGet(
 
-          @Path("city") String city,
-          @Path("country") String country, @Query("key") String key
+          @Query("city") String city,
+          @Query("country") String country
           , @Query("state") String state
           , @Query("units") String units
           , @Query("lang") String lang
@@ -79,7 +79,7 @@ public interface Class120HourHourlyForecastApi {
    * Returns a hourly forecast - Given an IP Address, or ip&#x3D;auto for automatic IP lookup.
    *  Returns an hourly forecast, where each point represents a one hour period. Every point has a datetime string in the format \&quot;YYYY-MM-DD:HH\&quot;. Time is UTC.  
    * @param ip IP address, or auto. Example: ip&#x3D;auto (required)
-   * @param key Your registered API key. (required)
+
    * @param days Number of days to return. Default 16. (optional)
    * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
    * @param lang Language (Default: English) See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;language field description&lt;/a&gt; (optional)
@@ -90,7 +90,7 @@ public interface Class120HourHourlyForecastApi {
   @GET("forecast/hourly?ip={ip}")
   Call<ForecastHourly> forecastHourlyipipGet(
 
-          @Path("ip") String ip, @Query("key") String key
+          @Query("ip") String ip
           , @Query("days") BigDecimal days
           , @Query("units") String units
           , @Query("lang") String lang
@@ -104,18 +104,18 @@ public interface Class120HourHourlyForecastApi {
    * Returns an hourly forecast, where each point represents a one hour period. Every point has a datetime string in the format \&quot;YYYY-MM-DD:HH\&quot;. Time is UTC.  
    * @param lat Latitude component of location. (required)
    * @param lon Longitude component of location. (required)
-   * @param key Your registered API key. (required)
+
    * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
    * @param lang Language (Default: English) See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;language field description&lt;/a&gt; (optional)
    * @param paramCallback Wraps return in jsonp callback. Example - callback&#x3D;func (optional)
    * @param hours Number of hours to return. (optional)
    * @return Call&lt;ForecastHourly&gt;
    */
-  @GET("forecast/hourly?lat={lat}&lon={lon}")
+  @GET("forecast/hourly")
   Call<ForecastHourly> forecastHourlylatlatlonlonGet(
 
-          @Path("lat") Double lat,
-          @Path("lon") Double lon, @Query("key") String key
+          @Query("lat") Double lat,
+          @Query("lon") Double lon
           , @Query("units") String units
           , @Query("lang") String lang
           , @Query("callback") String paramCallback
@@ -127,7 +127,7 @@ public interface Class120HourHourlyForecastApi {
    * Returns a 120 hour (hourly) forecast - Given a Postal Code.
    *  Returns an hourly forecast, where each point represents a one hour   period. Every point has a datetime string in the format \&quot;YYYY-MM-DD:HH\&quot;. Time is UTC.  
    * @param postalCode Postal Code. Example: 28546 (required)
-   * @param key Your registered API key. (required)
+
    * @param country Country Code (2 letter). (optional)
    * @param units Convert to units. Default Metric See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;units field description&lt;/a&gt; (optional)
    * @param lang Language (Default: English) See &lt;a target&#x3D;&#x27;blank&#x27; href&#x3D;&#x27;/api/requests&#x27;&gt;language field description&lt;/a&gt; (optional)
@@ -135,10 +135,10 @@ public interface Class120HourHourlyForecastApi {
    * @param hours Number of hours to return. (optional)
    * @return Call&lt;ForecastHourly&gt;
    */
-  @GET("forecast/hourly?postal_code={postal_code}")
+  @GET("forecast/hourly")
   Call<ForecastHourly> forecastHourlypostalCodepostalCodeGet(
 
-          @Path("postal_code") Integer postalCode, @Query("key") String key
+          @Query("postal_code") Integer postalCode
           , @Query("country") String country
           , @Query("units") String units
           , @Query("lang") String lang
