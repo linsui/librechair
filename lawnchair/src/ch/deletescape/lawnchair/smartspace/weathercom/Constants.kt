@@ -46,7 +46,7 @@ object Constants {
                                           8 to WeatherIconManager.Icon.FREEZING_RAIN,
                                           9 to WeatherIconManager.Icon.RAIN,
                                           10 to WeatherIconManager.Icon.RAIN,
-                                          11 to WeatherIconManager.Icon.MOSTLY_CLOUDY_W_FLURRIES,
+                                          11 to WeatherIconManager.Icon.RAIN,
                                           12 to WeatherIconManager.Icon.SNOW,
                                           13 to WeatherIconManager.Icon.SNOWSTORM,
                                           14 to WeatherIconManager.Icon.SNOW,
