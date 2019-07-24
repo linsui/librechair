@@ -58,11 +58,11 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     }
 
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw ForecastProvider.ForecastException("Not implemented")
     }
 
     override fun getCurrentWeather(lat: Double, lon: Double): ForecastProvider.CurrentWeather {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw ForecastProvider.ForecastException("Not implemented")
     }
 
 }
