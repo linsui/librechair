@@ -46,6 +46,7 @@ import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.override.CustomInfoProvider
+import ch.deletescape.lawnchair.root.RootHelper
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
@@ -57,6 +58,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity
+import eu.chainfire.librootjava.RootJava
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Semaphore
@@ -111,11 +113,6 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         if (!lawnchairPrefs.swipeForFeed) {
             setLauncherOverlay(null)
-        }
-
-        if (lawnchairPrefs.immersiveDesktop) {
-            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
     }
 
