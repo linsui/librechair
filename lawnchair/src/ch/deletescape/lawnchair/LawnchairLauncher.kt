@@ -41,15 +41,16 @@ import android.view.WindowManager
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
+import ch.deletescape.lawnchair.clockhide.IconBlacklistHelper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.override.CustomInfoProvider
-import ch.deletescape.lawnchair.root.RootHelper
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -58,7 +59,6 @@ import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity
-import eu.chainfire.librootjava.RootJava
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Semaphore
@@ -81,14 +81,14 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     private val customLayoutInflater by lazy {
         LawnchairLayoutInflater(
-            super.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, this)
+                super.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, this)
     }
 
     private val colorsToWatch = arrayOf(ColorEngine.Resolvers.WORKSPACE_ICON_LABEL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !Utilities.hasStoragePermission(
-                    this)) {
+                        this)) {
             Utilities.requestStoragePermission(this)
         }
 
@@ -113,6 +113,23 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
         if (!lawnchairPrefs.swipeForFeed) {
             setLauncherOverlay(null)
+        }
+
+        if (lawnchairPrefs.immersiveDesktop) {
+            runOnNewThread {
+                if (!isPrivilegedApp(applicationInfo)) {
+                    if (RootHelperManager.isAvailable) {
+                        RootHelperManager(this).run {
+                            it.iconBlacklistPreference = it.iconBlacklistPreference.remove("clock")
+                        }
+                    }
+                } else {
+                    d("onCreate: icon blacklist ${IconBlacklistHelper.setCurrentPreference(
+                            IconBlacklistHelper.getCurrentPreference().add(
+                                    "clock"))} ${IconBlacklistHelper.getCurrentPreference().add(
+                            "clock")}")
+                }
+            }
         }
     }
 
@@ -211,7 +228,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     override fun onBackPressed() {
         if (isInState(
-                    LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
+                        LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
             // Handled
             return
         }
@@ -220,6 +237,23 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     override fun onResume() {
         super.onResume()
+
+        if (lawnchairPrefs.immersiveDesktop) {
+            runOnNewThread {
+                if (!isPrivilegedApp(applicationInfo)) {
+                    if (RootHelperManager.isAvailable) {
+                        RootHelperManager(this).run {
+                            it.iconBlacklistPreference = it.iconBlacklistPreference.add("clock")
+                        }
+                    }
+                } else {
+                    d("onResume: icon blacklist ${IconBlacklistHelper.setCurrentPreference(
+                            IconBlacklistHelper.getCurrentPreference().add(
+                                    "clock"))} ${IconBlacklistHelper.getCurrentPreference().add(
+                            "clock")}")
+                }
+            }
+        }
 
         restartIfPending()
         // lawnchairPrefs.checkFools()
@@ -234,6 +268,21 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         super.onPause()
 
         BrightnessManager.getInstance(this).stopListening()
+
+        if (lawnchairPrefs.immersiveDesktop) {
+            runOnNewThread {
+                if (!isPrivilegedApp(applicationInfo)) {
+                    if (RootHelperManager.isAvailable) {
+                        RootHelperManager(this).run {
+                            it.iconBlacklistPreference = it.iconBlacklistPreference.remove("clock")
+                        }
+                    }
+                } else {
+                    IconBlacklistHelper.setCurrentPreference(
+                            IconBlacklistHelper.getCurrentPreference().remove("clock"));
+                }
+            }
+        }
 
         paused = true
     }
@@ -278,7 +327,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         }
         currentEditIcon = when (itemInfo) {
             is AppInfo -> IconPackManager.getInstance(this).getEntryForComponent(
-                component!!)?.drawable
+                    component!!)?.drawable
             is ShortcutInfo -> BitmapDrawable(resources, itemInfo.iconBitmap)
             is FolderInfo -> itemInfo.getDefaultIcon(this)
             else -> null
@@ -420,7 +469,8 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         var currentEditInfo: ItemInfo? = null
         var currentEditIcon: Drawable? = null
 
-        @JvmStatic fun getLauncher(context: Context): LawnchairLauncher {
+        @JvmStatic
+        fun getLauncher(context: Context): LawnchairLauncher {
             return context as? LawnchairLauncher
                    ?: (context as ContextWrapper).baseContext as? LawnchairLauncher
                    ?: LauncherAppState.getInstance(context).launcher as LawnchairLauncher

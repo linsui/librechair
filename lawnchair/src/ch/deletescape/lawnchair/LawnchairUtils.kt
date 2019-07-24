@@ -23,6 +23,7 @@ import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.ComponentInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
@@ -84,6 +85,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import java.lang.reflect.Field
+import java.lang.reflect.Method
 import java.security.MessageDigest
 import java.time.ZonedDateTime
 import java.util.*
@@ -295,6 +297,11 @@ fun Float.clamp(min: Float, max: Float): Float {
     if (this <= min) return min
     if (this >= max) return max
     return this
+}
+
+fun isPrivilegedApp(ai: ApplicationInfo): Boolean {
+    val method = ApplicationInfo::class.java.getDeclaredMethod("isPrivilegedApp")
+    return method.invoke(ai) as Boolean
 }
 
 fun Float.round() = roundToInt().toFloat()

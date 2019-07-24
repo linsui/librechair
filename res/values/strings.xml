@@ -486,7 +486,7 @@
     - g this on my own
      -->
 
-    <string name="title_preference_immersive_desktop">Immersive desktop</string>
-    <string name="description_preference_immersive_desktop">This will hide the status bar from your home screen</string>
+    <string name="title_preference_immersive_desktop">Hide clock on home screen</string>
+    <string name="description_preference_immersive_desktop">This will hide the status bar clock from your home screen and recents menu</string>
 
 </resources>
