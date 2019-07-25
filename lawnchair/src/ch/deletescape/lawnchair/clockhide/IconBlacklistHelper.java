@@ -28,6 +28,7 @@ import com.hoko.blur.api.IBlurProcessor;
 import eu.chainfire.librootjava.RootJava;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 
 public class IconBlacklistHelper {
@@ -37,23 +38,9 @@ public class IconBlacklistHelper {
     }
 
     public static synchronized IconBlacklistPreference getCurrentPreference()
-            throws IOException, InterruptedException {
-        try {
-            if (Binder.getCallingPid() != 0) {
-                if (RootJava.getPackageContext(BuildConfig.APPLICATION_ID).checkSelfPermission(
-                        "android.permission.ACCESS_CONTENT_PROVIDERS_EXTERNALLY")
-                        != PackageManager.PERMISSION_GRANTED) {
-                    throw new IOException("permission not granted: android.permission.ACCESS_CONTENT_PROVIDERS_EXTERNALLY");
-                }
-            }
-        } catch (NameNotFoundException e) {
-            throw new IOException(e);
-        }
+            throws IOException {
         Process process = Runtime.getRuntime()
                 .exec(new String[]{"settings", "get", "secure", "icon_blacklist"});
-        if (process.waitFor() != 0) {
-            throw new IOException("settings call failed");
-        }
         String output = IOUtils.toString(process.getInputStream(), Charset.defaultCharset());
         return new IconBlacklistPreference(output);
     }

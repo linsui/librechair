@@ -41,7 +41,9 @@
             android:exported="true"
             android:name="com.android.quickstep.TouchInteractionService"
             android:permission="android.permission.STATUS_BAR_SERVICE" >
-
+            <intent-filter>
+                <action android:name="android.intent.action.QUICKSTEP_SERVICE" />
+            </intent-filter>
         </service>
 
         <!-- STOPSHIP: Change exported to false once all the integration is complete.

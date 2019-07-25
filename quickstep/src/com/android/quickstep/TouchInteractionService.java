@@ -98,6 +98,7 @@ public class TouchInteractionService extends Service {
 
         @Override
         public void onBind(ISystemUiProxy iSystemUiProxy) {
+            Log.d(getClass().getName(), "onBind: binding to system UI proxy " + iSystemUiProxy);
             mISystemUiProxy = iSystemUiProxy;
             mRecentsModel.setSystemUiProxy(mISystemUiProxy);
             mOverviewInteractionState.setSystemUiProxy(mISystemUiProxy);

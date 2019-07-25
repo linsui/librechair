@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.IntDef;
 
+import android.util.Log;
 import com.android.launcher3.anim.AnimationSuccessListener;
 import com.android.launcher3.anim.AnimatorPlaybackController;
 import com.android.launcher3.anim.AnimatorSetBuilder;
@@ -155,6 +156,7 @@ public class LauncherStateManager {
      * @see #goToState(LauncherState, boolean, Runnable)
      */
     public void goToState(LauncherState state) {
+        Log.d(getClass().getName(), "goToState: changing state to " + state);
         goToState(state, !mLauncher.isForceInvisible() && mLauncher.isStarted() /* animated */);
     }
 
@@ -207,6 +209,7 @@ public class LauncherStateManager {
 
     private void goToState(LauncherState state, boolean animated, long delay,
             final Runnable onCompleteRunnable) {
+        Log.d(getClass().getName(), "goToState: going to state " + state);
         if (mLauncher.isInState(state)) {
             if (mConfig.mCurrentAnimation == null) {
                 // Run any queued runnable

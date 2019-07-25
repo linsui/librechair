@@ -172,7 +172,9 @@ public class TaskSystemShortcut<T extends SystemShortcut> extends SystemShortcut
                         ActivityOptionsCompat.makeSplitScreenOptions(dockTopOrLeft))) {
                     ISystemUiProxy sysUiProxy = RecentsModel.getInstance(activity).getSystemUiProxy();
                     try {
-                        sysUiProxy.onSplitScreenInvoked();
+                        if (sysUiProxy != null) {
+                            sysUiProxy.onSplitScreenInvoked();
+                        }
                     } catch (RemoteException e) {
                         Log.w(TAG, "Failed to notify SysUI of split screen: ", e);
                         return;
