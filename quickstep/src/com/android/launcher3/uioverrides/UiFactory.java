@@ -143,8 +143,7 @@ public class UiFactory {
                             .isSwipeUpGestureEnabled() && TouchInteractionService.isConnected();
                     LauncherState prevState = launcher.getStateManager().getLastState();
 
-                    if (((swipeUpEnabled && finalState == OVERVIEW) || (!swipeUpEnabled
-                            && finalState == ALL_APPS && prevState == NORMAL))) {
+                    if (finalState == ALL_APPS) {
                         launcher.getSharedPrefs().edit().putBoolean(HOME_BOUNCE_SEEN, true).apply();
                         launcher.getStateManager().removeStateListener(this);
                     }
