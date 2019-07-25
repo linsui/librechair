@@ -338,7 +338,7 @@ class LawnchairPreferences(val context: Context) :
     val enableFools get() = forceEnableFools || is1stApril()
     val showFools get() = !noFools && enableFools
 
-    val immersiveDesktop by BooleanPref("pref_immersive_desktop", false, recreate)
+    val immersiveDesktop by BooleanPref("pref_immersive_desktop", false)
 
     private val was1stApril = is1stApril()
 
