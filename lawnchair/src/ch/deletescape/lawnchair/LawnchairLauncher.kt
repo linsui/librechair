@@ -41,8 +41,6 @@ import android.view.WindowManager
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
-import ch.deletescape.lawnchair.clockhide.ClockhideService
-import ch.deletescape.lawnchair.clockhide.IconBlacklistHelper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
@@ -124,8 +122,6 @@ open class LawnchairLauncher : NexusLauncherActivity(),
                 }
             }
         }
-
-        startService(Intent(this, ClockhideService::class.java));
     }
 
     override fun startActivitySafely(v: View?, intent: Intent, item: ItemInfo?): Boolean {
@@ -250,6 +246,28 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         BugReportClient.getInstance(this).rebindIfNeeded()
 
         paused = false
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus && RootHelperManager.isAvailable) {
+            RootHelperManager.getInstance(this.applicationContext).run {
+                try {
+                    it.iconBlacklistPreference =
+                            it.iconBlacklistPreference.remove("clock")
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+            }
+        } else if (RootHelperManager.isAvailable) {
+            RootHelperManager.getInstance(this.applicationContext).run {
+                try {
+                    it.iconBlacklistPreference = it.iconBlacklistPreference.add("clock")
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     override fun onPause() {
