@@ -370,5 +370,6 @@
     <uses-permission android:name="${applicationId}.permission.BROADCAST_BUGREPORT" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_CONTENT_PROVIDERS_EXTERNALLY" />
 
 </manifest>
