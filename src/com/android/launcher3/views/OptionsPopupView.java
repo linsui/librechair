@@ -156,7 +156,14 @@ public class OptionsPopupView extends ArrowPopup
                 OptionsPopupView::startOrganizer));
         options.add(new OptionItem(R.string.settings_button_text, R.drawable.ic_setting,
                 ControlType.SETTINGS_BUTTON, OptionsPopupView::startSettings));
-
+        if (Utilities.getLawnchairPrefs(launcher).getDeveloperOptionsEnabled()) {
+            options.add(
+                    new OptionItem(R.string.restart_lawnchair_pref_title, R.drawable.ic_restart, -1,
+                            v -> {
+                                Utilities.restartLauncher(launcher);
+                                return true;
+                            }));
+        }
         show(launcher, x, y, options);
     }
 
