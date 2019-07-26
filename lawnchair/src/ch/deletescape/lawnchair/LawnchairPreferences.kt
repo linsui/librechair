@@ -214,7 +214,7 @@ class LawnchairPreferences(val context: Context) :
                                        ::updateSmartspaceProvider,
                                        Temperature.Companion::unitFromString,
                                        Temperature.Companion::unitToString) { }
-    val weatherForecastProvider by StringPref("pref_forecast_provider", OWMForecastProvider::class.java.name, recreate)
+    val weatherForecastProvider by StringPref("pref_forecast_provider", OWMForecastProvider::class.java.name, updateSmartspace)
     var usePillQsb by BooleanPref("pref_use_pill_qsb", false, recreate)
     var weatherIconPack by StringPref("pref_weatherIcons", "", updateWeatherData)
 

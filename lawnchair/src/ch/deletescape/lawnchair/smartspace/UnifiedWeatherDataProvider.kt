@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.PeriodicDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.util.extensions.w
 import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 
@@ -56,7 +57,7 @@ class UnifiedWeatherDataProvider(
                 }
             }
         } catch (e: ForecastProvider.ForecastException) {
-            e.printStackTrace();
+            w("updateData: update failed", e)
         }
 
     }

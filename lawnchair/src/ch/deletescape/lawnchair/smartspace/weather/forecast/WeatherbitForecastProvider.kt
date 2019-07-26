@@ -27,6 +27,7 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.weather.WeatherbitDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager
 import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.util.extensions.d
 import io.weatherbase.api.model.WeatherbitServiceFactory
 import io.weatherbit.api.Class120HourHourlyForecastApi
 import io.weatherbit.api.Class5Day3HourForecastApi
@@ -65,14 +66,14 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
         response.body()!!.data!!.forEach {
             weatherData += ForecastProvider.ForecastData(
                     LawnchairSmartspaceController.WeatherData(WeatherIconManager(context).getIcon(WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.first, WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.second),
-                                                              Temperature(it.temp.intValueExact(), Temperature.Unit.Celsius),
+                                                              Temperature(it.temp.toInt(), Temperature.Unit.Celsius),
                                                               null,
                                                               null,
                                                               null,
                                                               lat,
                                                               lon,
                                                               it.weather.icon.toString())
-                    , Date(Date.parse(it.datetime)), arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]!!.first))
+                    , Date.from(Instant.ofEpochSecond(it.ts.toLong())), arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]!!.first))
         }
         return ForecastProvider.Forecast(weatherData)
     }
@@ -82,7 +83,22 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     }
 
     override fun getCurrentWeather(lat: Double, lon: Double): ForecastProvider.CurrentWeather {
-        throw ForecastProvider.ForecastException("Not implemented")
+        try {
+            d("getCurrentWeather: retrieving weather for $lat, $lon")
+            val response = WeatherbitServiceFactory.getRetrofitService(
+                    CurrentWeatherDataApi::class).currentlatlatlonlonGet(lat, lon, null, null, context.locale.language,
+                                                                         null).execute()
+                    .body()!!.data[0]!!
+            d("getCurrentWeather: response: $response")
+            val icon = WeatherIconManager.getInstance(context).getIcon(
+                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]!!.first,
+                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]!!.second)
+            val temperature = Temperature(response.temp.toInt(), Temperature.Unit.Celsius)
+            return ForecastProvider
+                    .CurrentWeather(arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]!!.first), Date.from(Instant.ofEpochSecond(response.ts.toLong())), temperature, icon);
+        } catch (e: Throwable) {
+            throw ForecastProvider.ForecastException(e)
+        }
     }
 
 }
