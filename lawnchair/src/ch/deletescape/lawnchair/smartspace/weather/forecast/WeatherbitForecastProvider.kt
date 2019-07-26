@@ -65,7 +65,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
         val weatherData: MutableList<ForecastProvider.ForecastData> = newList();
         response.body()!!.data!!.forEach {
             weatherData += ForecastProvider.ForecastData(
-                    LawnchairSmartspaceController.WeatherData(WeatherIconManager(context).getIcon(WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.first, WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.second),
+                    LawnchairSmartspaceController.WeatherData(WeatherIconManager(context).getIcon(WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.first ?: WeatherIconManager.Icon.NA, WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.second ?: false),
                                                               Temperature(it.temp.toInt(), Temperature.Unit.Celsius),
                                                               null,
                                                               null,
@@ -91,11 +91,11 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
                     .body()!!.data[0]!!
             d("getCurrentWeather: response: $response")
             val icon = WeatherIconManager.getInstance(context).getIcon(
-                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]!!.first,
-                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]!!.second)
+                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.first ?: WeatherIconManager.Icon.NA,
+                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.second ?: false)
             val temperature = Temperature(response.temp.toInt(), Temperature.Unit.Celsius)
             return ForecastProvider
-                    .CurrentWeather(arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]!!.first), Date.from(Instant.ofEpochSecond(response.ts.toLong())), temperature, icon);
+                    .CurrentWeather(arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]?.first ?: 0), Date.from(Instant.ofEpochSecond(response.ts.toLong())), temperature, icon);
         } catch (e: Throwable) {
             throw ForecastProvider.ForecastException(e)
         }
