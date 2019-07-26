@@ -547,9 +547,9 @@
 
     invoke-direct {v2}, Ljava/util/ArrayList;-><init>()V
 
-    new-instance v15, Lcom/google/android/apps/nexuslauncher/reflection/a;
+    new-instance v15, Lcom/google/android/apps/nexuslauncher/reflection/BootHelper;
 
-    invoke-direct {v15, v1}, Lcom/google/android/apps/nexuslauncher/reflection/a;-><init>(Landroid/content/Context;)V
+    invoke-direct {v15, v1}, Lcom/google/android/apps/nexuslauncher/reflection/BootHelper;-><init>(Landroid/content/Context;)V
 
     new-instance v14, Lcom/google/android/apps/nexuslauncher/reflection/a/b;
 

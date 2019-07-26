@@ -88,7 +88,7 @@
     .line 32
     new-instance v3, Ljava/util/ArrayList;
 
-    sget-object v4, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->aT:[Ljava/lang/String;
+    sget-object v4, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->PLACEHOLDERS:[Ljava/lang/String;
 
     array-length v4, v4
 
@@ -99,7 +99,7 @@
     const/4 v5, 0x0
 
     :goto_0
-    sget-object v6, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->aT:[Ljava/lang/String;
+    sget-object v6, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->PLACEHOLDERS:[Ljava/lang/String;
 
     array-length v6, v6
 
@@ -115,7 +115,7 @@
 
     if-ne v6, v7, :cond_4
 
-    sget-object v6, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->aT:[Ljava/lang/String;
+    sget-object v6, Lcom/google/android/apps/nexuslauncher/reflection/a/b;->PLACEHOLDERS:[Ljava/lang/String;
 
     aget-object v6, v6, v5
 

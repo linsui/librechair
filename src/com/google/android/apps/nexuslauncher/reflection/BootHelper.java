@@ -35,10 +35,10 @@ import java.util.Calendar;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class a implements b {
+public class BootHelper implements b {
     private final long T;
 
-    public a(Context var1) {
+    public BootHelper(Context var1) {
         this.T = this.initRecordedTime(var1, 1);
     }
 
