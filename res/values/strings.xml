@@ -479,16 +479,11 @@
     <string name="title_weather_provider_weather_com">Weather.com</string>
     <string name="title_weather_provider_weatherbit_data">Weatherbit.io</string>
 
-    <!--
-    - Wanted to decompile this from Nova
-    - but their code (or the decompiler)
-    - is crap, so I ended up implementin
-    - g this on my own
-     -->
-
     <string name="title_preference_immersive_desktop">Hide clock on home screen</string>
     <string name="description_preference_immersive_desktop">This will hide the status bar clock from your home screen and recents menu</string>
+
     <string name="title_weather_provider_unified">Unified (forecast provider)</string>
     <string name="placeholder_rss_item_categories">North Korea, DPRK, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
+    <string name="title_pref_integrated_browser">Use integrated browser</string>
 </resources>

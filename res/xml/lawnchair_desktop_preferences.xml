@@ -148,9 +148,8 @@
 
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="true"
-            android:key="pref_showTopShadow"
+            android:key="pref_use_integrated_browser"
             android:persistent="true"
-            android:summary="@string/show_top_shadow_pref_summary"
-            android:title="@string/show_top_shadow_pref_title" />
+            android:title="@string/title_pref_integrated_browser" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </android.support.v7.preference.PreferenceScreen>

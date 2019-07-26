@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -76,6 +77,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
+import android.widget.Toast;
 import ch.deletescape.lawnchair.HiddenApiCompat;
 import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairLauncher;
@@ -891,15 +893,30 @@ public final class Utilities {
         if (url == null) {
             return;
         }
-        Intent intent = new Intent(context, BrowserBoxActivity.class);
-        intent.setData(Uri.parse(url));
-        intent.setSourceBounds(sourceBounds);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (options == null) {
-            context.startActivity(intent);
+        if (LawnchairPreferences.Companion.getInstance(context).getUseBrowserBox()) {
+            Intent intent = new Intent(context, BrowserBoxActivity.class);
+            intent.setData(Uri.parse(url));
+            intent.setSourceBounds(sourceBounds);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (options == null) {
+                context.startActivity(intent);
+            } else {
+                context.startActivity(intent, options);
+            }
         } else {
-            context.startActivity(intent, options);
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setSourceBounds(sourceBounds);
+                if(options == null){
+                    context.startActivity(intent);
+                } else {
+                    context.startActivity(intent, options);
+                }
+            } catch (ActivityNotFoundException exc) {
+                Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
+            }
         }
+
     }
 
     /**

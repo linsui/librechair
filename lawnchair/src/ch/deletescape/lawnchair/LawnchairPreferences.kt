@@ -339,6 +339,7 @@ class LawnchairPreferences(val context: Context) :
     val showFools get() = !noFools && enableFools
 
     val immersiveDesktop by BooleanPref("pref_immersive_desktop", false)
+    var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
     private val was1stApril = is1stApril()
 
