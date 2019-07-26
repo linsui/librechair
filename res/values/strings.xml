@@ -486,4 +486,9 @@
     <string name="placeholder_rss_item_categories">North Korea, DPRK, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
     <string name="title_pref_integrated_browser">Use integrated browser</string>
+    <string name="daily_briefing_current_conditions_prefix">It is currently </string>
+    <string name="daily_breifing_today_prefix">Today will be </string>
+
+    <string name="title_pref_daily_briefing_time">Daily briefing time</string>
+    <string name="title_smartspace_provider_daily_briefing">Morning brief</string>
 </resources>

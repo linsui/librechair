@@ -89,6 +89,10 @@
             android:key="pref_weather_city"
             android:title="@string/pref_weather_city_title" />
 
+        <ch.deletescape.lawnchair.preferences.TimePickerPreference
+            android:title="@string/title_pref_daily_briefing_time"
+            android:key="pref_daily_brief" />
+
         <ListPreference
             android:defaultValue="metric"
             android:dependency="pref_smartspace_widget_provider"

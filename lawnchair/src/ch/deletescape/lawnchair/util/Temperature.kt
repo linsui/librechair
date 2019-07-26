@@ -40,6 +40,14 @@ class Temperature(val value: Int, val unit: Unit) {
         val range = boilingPoint - freezingPoint
     }
 
+    override fun toString(): String {
+        return "$value ${unit.suffix}"
+    }
+
+    fun toString(unit: Unit): String {
+        return "${inUnit(unit)} ${unit.suffix}"
+    }
+
     companion object {
 
         fun unitFromString(unit: String): Unit {

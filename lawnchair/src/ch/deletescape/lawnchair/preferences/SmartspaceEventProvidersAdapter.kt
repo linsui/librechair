@@ -289,6 +289,7 @@ class SmartspaceEventProvidersAdapter(private val context: Context)
             list.add(AlarmEventProvider::class.java.name)
             list.add(PersonalityProvider::class.java.name)
             list.add(SmartspaceForecastProvider::class.java.name)
+            list.add(DailyBriefingProvider::class.java.name)
             if (context.lawnchairPrefs.showDebugInfo)
                 list.add(FakeDataProvider::class.java.name)
             return list

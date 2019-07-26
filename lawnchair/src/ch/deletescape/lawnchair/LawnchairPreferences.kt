@@ -341,6 +341,8 @@ class LawnchairPreferences(val context: Context) :
     val immersiveDesktop by BooleanPref("pref_immersive_desktop", false)
     var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
+    var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
+
     private val was1stApril = is1stApril()
 
     fun checkFools() {

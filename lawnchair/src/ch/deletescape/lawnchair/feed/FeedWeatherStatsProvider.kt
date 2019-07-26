@@ -46,7 +46,8 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     private var forecastLow: Int? = null
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     private var dailyForecast: DailyWeatherForecast? = null
-    @StringRes private var weatherTypeResource: Int? = null
+    @StringRes
+    private var weatherTypeResource: Int? = null
 
     private val refreshExecutor = Executors.newSingleThreadExecutor()
 
@@ -73,35 +74,39 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     override fun getCards(): List<Card> {
         Log.d(javaClass.name, "getCards: " + weatherData!!)
         return if (weatherData != null && forecastHigh != null && forecastLow != null && weatherTypeResource != null) listOf(
-            Card(BitmapDrawable(context.resources, weatherData!!.icon),
-                 context.getString(R.string.title_card_weather_temperature,
-                                   weatherData!!.getTitle(context.lawnchairPrefs.weatherUnit)),
-                 object : Card.Companion.InflateHelper {
-                     @SuppressLint("SetTextI18n") override fun inflate(parent: ViewGroup): View {
-                         val v = LayoutInflater.from(parent.getContext())
-                                 .inflate(R.layout.weather_heads_up, parent, false)
-                         val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
-                         val information = v.findViewById(R.id.weather_hud_information) as TextView
-                         val currentInformation = v.findViewById(R.id.weather_hud_current_temp) as TextView
-                         val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
+                Card(BitmapDrawable(context.resources, weatherData!!.icon),
+                     context.getString(R.string.title_card_weather_temperature,
+                                       weatherData!!.getTitle(context.lawnchairPrefs.weatherUnit)),
+                     object : Card.Companion.InflateHelper {
+                         @SuppressLint("SetTextI18n")
+                         override fun inflate(parent: ViewGroup): View {
+                             val v = LayoutInflater.from(parent.getContext())
+                                     .inflate(R.layout.weather_heads_up, parent, false)
+                             val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
+                             val information =
+                                     v.findViewById(R.id.weather_hud_information) as TextView
+                             val currentInformation =
+                                     v.findViewById(R.id.weather_hud_current_temp) as TextView
+                             val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
 
-                         currentInformation.text = weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
-                         currentIcon.setImageBitmap(weatherData?.icon)
+                             currentInformation.text =
+                                     weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
+                             currentIcon.setImageBitmap(weatherData?.icon)
 
-                         highLow.text =
-                                 "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
-                         information.text = context.getString(weatherTypeResource!!)
-                         if (useWhiteText(backgroundColor, parent.context)) {
-                             highLow.setTextColor(
-                                 context.resources.getColor(R.color.textColorPrimary))
-                             information.setTextColor(
-                                 context.resources.getColor(R.color.textColorPrimary))
-                             currentInformation.setTextColor(
-                                 context.resources.getColor(R.color.textColorPrimary))
+                             highLow.text =
+                                     "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
+                             information.text = context.getString(weatherTypeResource!!)
+                             if (useWhiteText(backgroundColor, parent.context)) {
+                                 highLow.setTextColor(
+                                         context.resources.getColor(R.color.textColorPrimary))
+                                 information.setTextColor(
+                                         context.resources.getColor(R.color.textColorPrimary))
+                                 currentInformation.setTextColor(
+                                         context.resources.getColor(R.color.textColorPrimary))
+                             }
+                             return v;
                          }
-                         return v;
-                     }
-                 }, Card.NO_HEADER, "nosort,top"))
+                     }, Card.NO_HEADER, "nosort,top"))
         else emptyList()
     }
 
@@ -113,8 +118,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                 try {
                     d("onDataUpdated: fetching weather data")
-                    hourlyWeatherForecast = context.forecastProvider.getHourlyForecast(data.weather.coordLat,
-                                                                                       data.weather.coordLon)
+                    hourlyWeatherForecast =
+                            context.forecastProvider.getHourlyForecast(data.weather.coordLat,
+                                                                       data.weather.coordLon)
                     d("onDataUpdated: data retrieved")
 
                     val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
@@ -144,48 +150,18 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
                     d("onDataUpdated: hi: $forecastHigh lo: $forecastLow")
 
-                    var thunder = 0
-                    var rain = 0
-                    var snow = 0
-                    var clouds = 0
-                    var clear = 0
+                    val condCodes = run {
+                        val list = newList<Int>()
+                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                                .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                        list
+                    }
 
                     d("onDataUpdated: classifying weather")
 
-                    hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }.forEach {
-                            it.condCode?.forEach {
-                                val condId = it
-                                when {
-                                    condId in 200..299 -> {
-                                        thunder += if (condId - 200 < 10) 1 else if (condId - 200 < 20) 5 else 10
-                                        rain += 5
-                                    }
-                                    condId in 300..399 -> {
-                                        rain += 1
-                                    }
-                                    condId in 500..599 -> {
-                                        rain += if (condId - 400 < 10) 1 else if (condId - 400 < 20) 2 else 5
-                                    }
-                                    condId in 600..699 -> {
-                                        snow += if (condId - 600 < 10) 3 else if (condId - 600 < 20) 5 else 10
-                                    }
-                                    condId in 800..899 -> {
-                                        if (condId != 800) {
-                                            if (condId - 800 < 2) {
-                                                clear += 2
-                                            } else if (condId - 800 == 3) {
-                                                clear += 1
-                                            }
-                                            clouds += ((condId - 800) / 1.25).toInt()
-                                        } else {
-                                            clear += 5
-                                        }
-                                    }
-                                    else -> {
-                                    }
-                                }
-                        }
-                    }
+                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                            condCodes.toTypedArray())
+
 
                     d("onDataUpdated: sending classification statsitics to statistics function")
 

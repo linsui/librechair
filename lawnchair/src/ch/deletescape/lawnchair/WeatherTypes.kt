@@ -57,6 +57,46 @@ enum class WeatherTypes {
             }
         }
 
+        fun getStatistics(conditionCodes: Array<Int>): Array<Int> {
+            var thunder = 0
+            var rain = 0
+            var snow = 0
+            var clear = 0
+            var clouds = 0
+            conditionCodes.forEach {
+                when {
+                    it in 200..299 -> {
+                        thunder += if (it - 200 < 10) 1 else if (it - 200 < 20) 5 else 10
+                        rain += 5
+                    }
+                    it in 300..399 -> {
+                        rain += 1
+                    }
+                    it in 500..599 -> {
+                        rain += if (it - 400 < 10) 1 else if (it - 400 < 20) 2 else 5
+                    }
+                    it in 600..699 -> {
+                        snow += if (it - 600 < 10) 3 else if (it - 600 < 20) 5 else 10
+                    }
+                    it in 800..899 -> {
+                        if (it != 800) {
+                            if (it - 800 < 2) {
+                                clear += 2
+                            } else if (it - 800 == 3) {
+                                clear += 1
+                            }
+                            clouds += ((it - 800) / 1.25).toInt()
+                        } else {
+                            clear += 5
+                        }
+                    }
+                    else -> {
+                    }
+                }
+            }
+            return arrayOf(clear, clouds, rain, snow, thunder)
+        }
+
         fun getWeatherTypeFromStatistics(clear: Int, clouds: Int, rain: Int, snow: Int,
                                          thunder: Int): WeatherTypes {
             d("getWeatherTypeFromStatistics: concatenating data")

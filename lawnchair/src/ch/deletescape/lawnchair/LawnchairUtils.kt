@@ -24,7 +24,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.ComponentInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
 import android.content.pm.PackageManager
@@ -85,7 +84,6 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
 import java.lang.reflect.Field
-import java.lang.reflect.Method
 import java.security.MessageDigest
 import java.time.ZonedDateTime
 import java.util.*
@@ -1021,6 +1019,7 @@ fun useWhiteText(color: Int, c: Context): Boolean {
     }
 }
 
+inline val Calendar.minuteOfHour get() = get(Calendar.MINUTE)
 inline val Calendar.hourOfDay get() = get(Calendar.HOUR_OF_DAY)
 inline val Calendar.dayOfYear get() = get(Calendar.DAY_OF_YEAR)
 
@@ -1028,4 +1027,16 @@ inline val Int.red get() = Color.red(this)
 inline val Int.green get() = Color.green(this)
 inline val Int.blue get() = Color.blue(this)
 inline val Int.alpha get() = alpha(this)
+
+fun Int.fromStringRes(c: Context): String {
+    return c.getString(this)
+}
+
+fun Int.fromColorRes(c: Context): Int {
+    return c.getColor(this)
+}
+
+fun Int.fromDrawableRes(c: Context): Drawable {
+    return c.getDrawable(this)!!
+}
 
