@@ -83,6 +83,8 @@ import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersFragment;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersPreference;
+import ch.deletescape.lawnchair.preferences.TimePickerFragment;
+import ch.deletescape.lawnchair.preferences.TimePickerPreference;
 import ch.deletescape.lawnchair.settings.ui.search.SettingsSearchActivity;
 import ch.deletescape.lawnchair.smartspace.OnboardingProvider;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
@@ -729,6 +731,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = RSSSourcesFragment.newInstance(preference.getKey());
             } else if (preference instanceof WeatherIconPackPreference) {
                 f = WeatherIconPackDialogFragment.Companion.newInstance();
+            } else if (preference instanceof TimePickerPreference) {
+                f = TimePickerFragment.Companion.newInstance(preference.getKey());
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;

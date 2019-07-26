@@ -192,6 +192,11 @@
             android:key="pref_weatherIcons"
             android:summary="Enter a packagename of a chronus icon pack [TODO: Proper UI, support for more data providers]"
             android:title="Weather icon pack"/>
+
+        <ch.deletescape.lawnchair.preferences.TimePickerPreference
+            android:key="pref_time_picker_test"
+            android:title="Time picker test"
+            android:summary="This does nothing" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
