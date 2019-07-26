@@ -24,6 +24,7 @@ import android.support.annotation.Keep
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.settings.ui.PreferenceController
 import ch.deletescape.lawnchair.smartspace.AccuWeatherDataProvider
+import ch.deletescape.lawnchair.smartspace.UnifiedWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.WeatherbitDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
 
@@ -36,6 +37,7 @@ class WeatherIconPackController(context: Context) : PreferenceController(context
         private val SUPPORTED = listOf(
                 AccuWeatherDataProvider::class.java.name,
                 WeatherChannelWeatherProvider::class.java.name,
-                WeatherbitDataProvider::class.java.name)
+                WeatherbitDataProvider::class.java.name,
+                UnifiedWeatherDataProvider::class.java.name)
     }
 }
