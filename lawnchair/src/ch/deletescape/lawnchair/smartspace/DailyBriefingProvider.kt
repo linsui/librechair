@@ -80,6 +80,8 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                     e.printStackTrace()
                 }
             }
+        } else {
+            updateData(null, null)
         }
     }
 }
