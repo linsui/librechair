@@ -73,12 +73,14 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             val date: TextView
                             val icon: ImageView
                             val readMore: Button
+                            val categories: TextView
 
                             title = v.findViewById(R.id.rss_item_title)
                             description = v.findViewById(R.id.rss_item_description)
                             icon = v.findViewById(R.id.rss_item_icon)
                             date = v.findViewById(R.id.rss_item_date)
                             readMore = v.findViewById(R.id.rss_item_read_more)
+                            categories = v.findViewById(R.id.rss_item_categories)
 
                             d("inflate: Image URL is ${entry.image}")
 
@@ -90,6 +92,11 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                         .placeholder(R.mipmap.ic_launcher).into(icon)
                             }
 
+                            if (entry.categories.isEmpty()) {
+                                categories.text = ""
+                            } else {
+                                categories.text = entry.categories.joinToString(", ")
+                            }
 
                             title.text = entry.title
                             var spanned = Html.fromHtml(entry.description, 0).toString()

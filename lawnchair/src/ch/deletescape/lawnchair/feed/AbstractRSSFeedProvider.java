@@ -34,6 +34,7 @@ import com.prof.rssparser.Article;
 import com.squareup.picasso.Picasso.Builder;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -82,12 +83,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                     View v = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.rss_item, parent, false);
-                    TextView title, description, date;
+                    TextView title, description, date, categories;
                     ImageView icon;
                     Button readMore;
 
                     title = v.findViewById(R.id.rss_item_title);
                     description = v.findViewById(R.id.rss_item_description);
+                    categories = v.findViewById(R.id.rss_item_categories);
                     icon = v.findViewById(R.id.rss_item_icon);
                     date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
@@ -113,6 +115,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     readMore.setOnClickListener(v2 -> {
                         Utilities.openURLinBrowser(v2.getContext(), entry.getLink());
                     });
+
+                    if (entry.getCategories().isEmpty()) {
+                        categories.setText("");
+                    } else {
+                        categories.setText(String.join(", ", entry.getCategories()));
+                    }
 
                     date.setText(entry.getPubDate());
                     return v;
