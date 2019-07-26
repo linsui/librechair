@@ -41,8 +41,8 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     var cachedCurrent: CachedResponse<ForecastProvider.CurrentWeather>? = null
 
     override fun getGeolocation(query: String): Pair<Double, Double> {
-        val response = AccuRetrofitServiceFactory.accuSearchRetrofitService.getAutoComplete(query, c.locale.language).execute()
-        if (!response.isSuccessful || response.body() == null || response.body()?.isEmpty() != false) {
+        val response = AccuRetrofitServiceFactory.accuSearchRetrofitService.search(query, c.locale.language).execute()
+        if (!response.isSuccessful || response.body()?.isEmpty() == true) {
             throw ForecastProvider.ForecastException("request not successful or no location found")
         } else {
             return (response.body()!![0].geoPosition.latitude.toDoubleOrNull() ?: 0.toDouble()) to (response.body()!![0].geoPosition.longitude.toDoubleOrNull() ?: 0.toDouble())
