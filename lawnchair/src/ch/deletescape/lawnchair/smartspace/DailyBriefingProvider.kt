@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.smartspace
 
+import android.text.TextUtils
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
@@ -48,7 +49,8 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                     val lines = mutableListOf(LawnchairSmartspaceController.Line(
                             context.getString(
                                     R.string.daily_briefing_current_conditions_prefix) + " " + currentWeather.temperature.toString(
-                                    context.lawnchairPrefs.weatherUnit)),
+                                    context.lawnchairPrefs.weatherUnit),
+                            TextUtils.TruncateAt.MARQUEE),
                                               LawnchairSmartspaceController.Line(
                                                       context.getString(
                                                               R.string.daily_breifing_today_prefix) + " " + run {
@@ -57,12 +59,10 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                                                       val list = newList<Int>()
                                                                       hourlyForecast.data.filter {
                                                                           it.date.before(tomorrow())
+                                                                      }.forEach {
+                                                                          list += it.condCode?.toList()
+                                                                                  ?: listOf(1)
                                                                       }
-                                                                              .forEach {
-                                                                                  list += it.condCode?.toList()
-                                                                                          ?: listOf(
-                                                                                                  1)
-                                                                              }
                                                                       list.toTypedArray()
                                                                   })
                                                           WeatherTypes.getStringResource(
@@ -71,10 +71,10 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                                                           thunder))
                                                                   .fromStringRes(context)
                                                                   .toLowerCase()
-                                                      }))
+                                                      }, TextUtils.TruncateAt.MARQUEE))
                     runOnMainThread {
                         updateData(null, LawnchairSmartspaceController.CardData(null, lines,
-                                                                                forceSingleLine = true))
+                                                                                forceSingleLine = false))
                     }
                 } catch (e: ForecastProvider.ForecastException) {
                     e.printStackTrace()
