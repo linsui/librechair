@@ -21,9 +21,12 @@ package ch.deletescape.lawnchair.smartspace
 
 import ch.deletescape.lawnchair.forecastProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.PeriodicDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
+import ch.deletescape.lawnchair.util.extensions.d
+import com.google.gson.Gson
 import java.util.concurrent.TimeUnit
 
 class UnifiedWeatherDataProvider(
@@ -35,13 +38,21 @@ class UnifiedWeatherDataProvider(
     override fun updateData() {
         try {
             runOnNewThread {
-                val (lat, lon) =
-                        context.forecastProvider.getGeolocation(context.lawnchairPrefs.weatherCity)
-                context.forecastProvider.getCurrentWeather(lat, lon).also {
-                    updateData(
-                            LawnchairSmartspaceController.WeatherData(it.icon, it.temperature, null,
-                                                                      null, null, lat, lon, "-1d"),
-                            null)
+                if (context.lawnchairPrefs.weatherCity != "##Auto") {
+                    d("updateData: retrieving current geolocation")
+                    val (lat, lon) =
+                            context.forecastProvider.getGeolocation(context.lawnchairPrefs.weatherCity)
+                    d("updateData: geolocation is $lat, $lon")
+                    val currentWeather = context.forecastProvider.getCurrentWeather(lat, lon)
+                    d("updateData: current weather is ${Gson().toJson(currentWeather)}")
+                    runOnMainThread {
+                        updateData(
+                                LawnchairSmartspaceController.WeatherData(currentWeather.icon, currentWeather.temperature, null,
+                                                                          null, null, lat, lon, "-1d"),
+                                null)
+                    }
+                } else {
+                    // TODO automatic weather location
                 }
             }
         } catch (e: ForecastProvider.ForecastException) {
