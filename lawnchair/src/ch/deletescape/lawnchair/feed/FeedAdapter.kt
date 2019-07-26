@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Interpolator
 import android.graphics.Rect
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
@@ -33,6 +34,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.runOnNewThread
@@ -125,7 +127,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
 
             holder.itemView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
                 if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP) {
-                    holder.itemView.animate().scaleX(0f).scaleY(0f).duration = 500
+                    holder.itemView.animate().scaleX(0f).scaleY(0f).setInterpolator(Interpolators.ACCEL).duration = 500
                     (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(20)
                     val backupCards = cards.clone() as List<Card>
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
