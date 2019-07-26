@@ -539,7 +539,8 @@ class LawnchairSmartspaceController(val context: Context) {
                       OnboardingProvider::class.java.name to R.string.onbording,
                       SmartspaceForecastProvider::class.java.name to R.string.title_smartspace_provider_forecast,
                       WeatherChannelWeatherProvider::class.java.name to R.string.title_weather_provider_weather_com,
-                      WeatherbitDataProvider::class.java.name to R.string.title_weather_provider_weatherbit_data)
+                      WeatherbitDataProvider::class.java.name to R.string.title_weather_provider_weatherbit_data,
+                      UnifiedWeatherDataProvider::class.java.name to R.string.title_weather_provider_unified)
 
         fun getDisplayName(providerName: String): Int {
             return displayNames[providerName] ?: error("No display name for provider $providerName")

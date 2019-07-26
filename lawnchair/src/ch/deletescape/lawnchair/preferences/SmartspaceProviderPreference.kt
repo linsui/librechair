@@ -58,6 +58,7 @@ class SmartspaceProviderPreference(context: Context, attrs: AttributeSet?) :
         list.add(OWMWeatherDataProvider::class.java.name)
         list.add(WeatherChannelWeatherProvider::class.java.name)
         list.add(WeatherbitDataProvider::class.java.name)
+        list.add(UnifiedWeatherDataProvider::class.java.name)
         if (prefs.showDebugInfo) {
             list.add(FakeDataProvider::class.java.name)
         }

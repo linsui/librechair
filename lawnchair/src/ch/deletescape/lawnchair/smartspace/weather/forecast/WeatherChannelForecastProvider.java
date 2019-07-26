@@ -32,12 +32,15 @@ import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastR
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse.ForecastSchema;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV3DailyForecastResponse;
+import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV3LocationSearchResponse;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
@@ -66,7 +69,9 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             for (ForecastSchema schema : forecast.forecasts) {
                 dataList.add(
                         new ForecastData(new WeatherData(WeatherIconManager.Companion.getInstance(c).getIcon(
-                                WeatherComConstants.INSTANCE.getWEATHER_ICONS().get(schema.iconCode), !schema.dayInd.equals("D")),
+                                Objects.requireNonNull(
+                                        WeatherComConstants.INSTANCE.getWEATHER_ICONS()
+                                                .get(schema.iconCode)), !schema.dayInd.equals("D")),
                                 new Temperature(schema.temp, Unit.Celsius), null, null, null, lat,
                                 lon,
                                 "-1d"),
@@ -100,7 +105,11 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             for (int i = 0; i < forecast.temperatureMax.size(); ++i) {
                 dailyForecastData.add(new DailyForecastData(new Temperature((forecast.temperatureMax.get(i) == null ? 0 : forecast.temperatureMax.get(i).intValue()), Unit.Celsius), new Temperature(forecast.temperatureMin.get(i).intValue(), Unit.Celsius),
                         Date.from(Instant.ofEpochSecond(forecast.validTimeUtc.get(i))),
-                        WeatherIconManager.Companion.getInstance(c).getIcon(WeatherComConstants.INSTANCE.getWEATHER_ICONS().get(forecast.daypart.get(0).iconCode.get(i * 2) == null ? forecast.daypart.get(0).iconCode.get(i * 2 + 1) : forecast.daypart.get(0).iconCode.get(i * 2)), false), null));
+                        WeatherIconManager.Companion.getInstance(c).getIcon(Objects.requireNonNull(
+                                WeatherComConstants.INSTANCE.getWEATHER_ICONS()
+                                        .get(forecast.daypart.get(0).iconCode.get(i * 2) == null
+                                                ? forecast.daypart.get(0).iconCode.get(i * 2 + 1)
+                                                : forecast.daypart.get(0).iconCode.get(i * 2))), false), null));
             }
             return new DailyForecast(dailyForecastData);
 
@@ -122,9 +131,29 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
             SunV1CurrentConditionsResponse result = response.body();
             return new CurrentWeather(new Integer[]{
                     WeatherComConstants.INSTANCE.getWEATHER_COND_MAP().get(
-                            result.observation.wxIcon)},
+                            Objects.requireNonNull(result).observation.wxIcon)},
                     Date.from(Instant.ofEpochSecond(result.observation.validTimeGmt)),
-                    new Temperature(result.observation.temp, Unit.Fahrenheit));
+                    new Temperature(result.observation.temp, Unit.Fahrenheit),
+                    WeatherIconManager.Companion.getInstance(c).getIcon(Objects.requireNonNull(
+                            WeatherComConstants.INSTANCE.getWEATHER_ICONS()
+                                    .get(result.observation.wxIcon)),
+                            !result.observation.dayInd.equals("D")));
+        } catch (IOException e) {
+            throw new ForecastException(e);
+        }
+    }
+
+    @NotNull
+    @Override
+    public Pair<Double, Double> getGeolocation(@NotNull String query) throws ForecastException {
+        try {
+            Response<SunV3LocationSearchResponse> response = WeatherComRetrofitServiceFactory.INSTANCE.getWeatherComWeatherRetrofitService().searchLocationByName(query, "city", LawnchairUtilsKt.getLocale(c).getLanguage()).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("request failed");
+            } else if (response.body().location.latitude.size() < 1) {
+                throw new ForecastException("no such location found");
+            }
+            return new Pair<>(response.body().location.latitude.get(0), response.body().location.longitude.get(0));
         } catch (IOException e) {
             throw new ForecastException(e);
         }

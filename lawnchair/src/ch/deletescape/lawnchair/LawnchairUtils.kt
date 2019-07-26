@@ -123,7 +123,7 @@ val Context.hasStoragePermission
                                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
 val Context.forecastProvider: ForecastProvider
     get() = run {
-        if (forecastProviderNoCreate != null) {
+        if (forecastProviderNoCreate != null && forecastProviderNoCreate?.javaClass?.name == lawnchairPrefs.weatherForecastProvider) {
             return@run forecastProviderNoCreate!!
         } else {
             forecastProviderNoCreate = ForecastProvider.Controller

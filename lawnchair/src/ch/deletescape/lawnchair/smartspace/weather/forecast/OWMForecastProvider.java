@@ -29,10 +29,10 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Weather
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import kotlin.Pair;
 import net.aksingh.owmjapis.api.APIException;
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.core.OWMPro;
@@ -57,7 +57,8 @@ public class OWMForecastProvider implements ForecastProvider {
         try {
             Log.d(getClass().getName(), "getHourlyForecast(double, double): retrieving forecasts");
             HourlyWeatherForecast forecast = owm.hourlyWeatherForecastByCoords(lat, lon);
-            Log.d(getClass().getName(), "getHourlyForecast(double, double): forecasts: " + forecast);
+            Log.d(getClass().getName(),
+                    "getHourlyForecast(double, double): forecasts: " + forecast);
             List<ForecastData> dataList = LawnchairUtilsKt.newList();
             for (net.aksingh.owmjapis.model.param.WeatherData weather : forecast.getDataList()) {
                 ArrayList<Integer> integers = new ArrayList<>();
@@ -112,10 +113,24 @@ public class OWMForecastProvider implements ForecastProvider {
             return new CurrentWeather(
                     Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class),
                     weather.getDateTime(), new Temperature(
-                    weather.getMainData().getTemp().intValue(), Unit.Kelvin));
+                    weather.getMainData().getTemp().intValue(), Unit.Kelvin),
+                    new WeatherIconProvider(context)
+                            .getIcon(weather.getWeatherList().get(0).getIconCode()));
         } catch (Throwable e) {
             throw new ForecastException(e);
         }
 
+    }
+
+    @NotNull
+    @Override
+    public Pair<Double, Double> getGeolocation(@NotNull String query) throws ForecastException {
+        try {
+            net.aksingh.owmjapis.model.CurrentWeather weather = owm.currentWeatherByCityName(query);
+            return new Pair<>(weather.getCoordData().getLatitude(),
+                    weather.getCoordData().getLongitude());
+        } catch (APIException e) {
+            throw new ForecastException(e);
+        }
     }
 }

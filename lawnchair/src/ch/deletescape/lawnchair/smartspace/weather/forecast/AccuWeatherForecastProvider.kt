@@ -40,6 +40,15 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     var cachedDaily: CachedResponse<Response<AccuDailyForecastsGSon>>? = null
     var cachedCurrent: CachedResponse<ForecastProvider.CurrentWeather>? = null
 
+    override fun getGeolocation(query: String): Pair<Double, Double> {
+        val response = AccuRetrofitServiceFactory.accuSearchRetrofitService.getAutoComplete(query, c.locale.language).execute()
+        if (!response.isSuccessful || response.body() == null || response.body()?.isEmpty() != false) {
+            throw ForecastProvider.ForecastException("request not successful or no location found")
+        } else {
+            return (response.body()!![0].geoPosition.latitude.toDoubleOrNull() ?: 0.toDouble()) to (response.body()!![0].geoPosition.longitude.toDoubleOrNull() ?: 0.toDouble())
+        }
+    }
+
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
         synchronized(this) {
             try {
@@ -122,7 +131,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                         Date.from(Instant.ofEpochSecond(
                             weatherResponse.body()!!.currentConditions.epochTime)), Temperature(
                             weatherResponse.body()!!.currentConditions.temperature.value.toDouble().toInt(),
-                            Temperature.Unit.Celsius)))
+                            Temperature.Unit.Celsius), AccuWeatherDataProvider.getIcon(c, weatherResponse.body()!!.currentConditions.weatherIcon, weatherResponse.body()!!.currentConditions.isDayTime)))
                     return cachedCurrent!!.value
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)

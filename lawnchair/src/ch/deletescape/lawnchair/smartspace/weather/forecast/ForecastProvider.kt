@@ -33,12 +33,13 @@ interface ForecastProvider {
     @Throws(ForecastException::class) fun getHourlyForecast(lat: Double, lon: Double): Forecast
     @Throws(ForecastException::class) fun getDailyForecast(lat: Double, lon: Double): DailyForecast
     @Throws(ForecastException::class) fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather
+    @Throws(ForecastException::class) fun getGeolocation(query: String): Pair<Double, Double>
 
     class Forecast(val data: Array<ForecastData>) {
         constructor(dataList: List<ForecastData>) : this(dataList.toTypedArray())
     }
 
-    data class CurrentWeather(val condCodes: Array<Int>, val date: Date, val temperature: Temperature) {
+    data class CurrentWeather(val condCodes: Array<Int>, val date: Date, val temperature: Temperature, val icon: Bitmap) {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true

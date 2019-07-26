@@ -488,5 +488,6 @@
 
     <string name="title_preference_immersive_desktop">Hide clock on home screen</string>
     <string name="description_preference_immersive_desktop">This will hide the status bar clock from your home screen and recents menu</string>
+    <string name="title_weather_provider_unified">Unified (forecast provider)</string>
 
 </resources>
