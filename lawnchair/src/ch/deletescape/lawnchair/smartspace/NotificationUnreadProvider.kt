@@ -111,7 +111,7 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         }
         return CardData(
                 sbn.loadSmallIcon(context)?.toBitmap(), lines,
-                LawnchairSmartspaceController.NotificationClickListener(sbn))
+                LawnchairSmartspaceController.NotificationClickListener(sbn), true)
     }
 
     private fun splitTitle(title: String): Array<String> {
