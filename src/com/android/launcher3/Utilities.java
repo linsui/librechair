@@ -906,6 +906,7 @@ public final class Utilities {
         } else {
             try {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.setSourceBounds(sourceBounds);
                 if(options == null){
                     context.startActivity(intent);
