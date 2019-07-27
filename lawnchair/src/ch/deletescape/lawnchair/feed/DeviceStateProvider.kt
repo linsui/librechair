@@ -59,7 +59,7 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
         if (dnd != null) {
             cards += Card(R.drawable.ic_zen_mode.fromDrawableRes(context), dnd, {
                 View(context)
-            }, Card.NO_HEADER, "nosort,top", "feedDndIndicator".hashCode())
+            }, Card.TEXT_ONLY, "nosort,top", "feedDndIndicator".hashCode())
         }
         return cards;
     }
