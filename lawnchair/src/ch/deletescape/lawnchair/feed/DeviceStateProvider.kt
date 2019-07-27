@@ -19,7 +19,9 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
 import android.provider.Settings
 import android.view.View
 import ch.deletescape.lawnchair.*
@@ -42,6 +44,7 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
         // TODO
     }
 
+    @SuppressLint("MissingPermission")
     override fun getCards(): MutableList<Card> {
         val cards = mutableListOf<Card>()
         val dnd = when (Settings.Global.getInt(context.contentResolver, "zen_mode")) {
@@ -70,9 +73,20 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                                                                      context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
                     context)), R.string.title_card_airplane_mode_on.fromStringRes(context), {
                               View(context)
-                          }, Card.TEXT_ONLY, "nosort,top", "feedDndIndicator".hashCode())
+                          }, Card.TEXT_ONLY, "nosort,top", "feedAirplaneModeIndicator".hashCode())
         }
-        return cards;
+        if (!(context.getSystemService(
+                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo.isConnected) {
+            cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
+                                  .duplicateAndSetColour(
+                                          (if (useWhiteText(backgroundColor, context))
+                                              R.color.qsb_background else R.color.qsb_background_dark)
+                                                  .fromColorRes(context)),
+                          R.string.title_card_network_disconnected.fromStringRes(context), {
+                              View(context)
+                          }, Card.TEXT_ONLY, "nosort,top", "feedNetworkModeIndicator".hashCode())
+        }
+        return cards
     }
 
 }

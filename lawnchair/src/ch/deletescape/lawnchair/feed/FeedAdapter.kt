@@ -21,9 +21,10 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Interpolator
 import android.graphics.Rect
+import android.net.ConnectivityManager
 import android.os.Vibrator
+import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
@@ -33,13 +34,10 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.impl.Interpolators
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
-import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.theme.ThemeManager
-import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
@@ -95,14 +93,38 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         return cards.size
     }
 
+    @SuppressLint("MissingPermission")
     override fun getItemCount(): Int {
         if (cards.isEmpty()) {
-            cards.add(Card(null, null, object : Card.Companion.InflateHelper {
+            cards += Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
                     return LayoutInflater.from(ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor, parent.context)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(R.layout.empty_feed, parent, false)
                 }
 
-            }, Card.NO_HEADER, "nosort,top"))
+            }, Card.NO_HEADER, "nosort,top")
+            if (Settings.Global.getInt(context.contentResolver,
+                                       Settings.Global.AIRPLANE_MODE_ON,
+                                       0) != 0) {
+                cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
+                        context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
+                                                                         context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
+                        context)), R.string.title_card_airplane_mode_on.fromStringRes(context), {
+                                  View(context)
+                              }, Card.TEXT_ONLY, "nosort,top",
+                              "feedAirplaneModeIndicator".hashCode())
+            }
+            if ((context.getSystemService(
+                            Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected != true) {
+                cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
+                                      .duplicateAndSetColour(
+                                              (if (useWhiteText(backgroundColor, context))
+                                                  R.color.qsb_background else R.color.qsb_background_dark)
+                                                      .fromColorRes(context)),
+                              R.string.title_card_network_disconnected.fromStringRes(context), {
+                                  View(context)
+                              }, Card.TEXT_ONLY, "nosort,top",
+                              "feedNetworkModeIndicator".hashCode())
+            }
         }
         return cards.size;
     }
