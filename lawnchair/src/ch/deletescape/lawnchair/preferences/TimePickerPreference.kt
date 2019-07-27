@@ -30,8 +30,14 @@ import com.android.launcher3.R
 open class TimePickerPreference(context: Context, attributeSet: AttributeSet) :
         DialogPreference(context, attributeSet), LawnchairPreferences.OnPreferenceChangeListener {
 
-    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
+    init {
         if (key == "pref_daily_brief") {
+            isVisible = DailyBriefingController(context).isVisible
+        }
+    }
+
+    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
+        if (this.key == "pref_daily_brief") {
             isVisible = DailyBriefingController(context).isVisible
         }
     }
@@ -41,7 +47,8 @@ open class TimePickerPreference(context: Context, attributeSet: AttributeSet) :
     override fun onAttached() {
         super.onAttached()
         updateSummary()
-        context.lawnchairPrefs.addOnPreferenceChangeListener(this)
+        context.lawnchairPrefs
+                .addOnPreferenceChangeListener(this, "pref_smartspace_event_providers")
     }
 
     private fun updateSummary() {
@@ -64,6 +71,10 @@ open class TimePickerPreference(context: Context, attributeSet: AttributeSet) :
     override fun onDetached() {
         super.onDetached()
         context.lawnchairPrefs.removeOnPreferenceChangeListener(this)
+    }
+
+    override fun getPositiveButtonText(): CharSequence? {
+        return null
     }
 
     fun onDialogFinish(result: Boolean) {

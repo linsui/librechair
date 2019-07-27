@@ -23,10 +23,16 @@ import android.content.Context
 import android.support.annotation.Keep
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.settings.ui.PreferenceController
+import ch.deletescape.lawnchair.smartspace.DailyBriefingProvider
+import ch.deletescape.lawnchair.util.extensions.d
 
 @Keep
 class DailyBriefingController(context: Context) : PreferenceController(context) {
 
-    override val isVisible =
-            context.lawnchairPrefs.eventProviders.contains(DailyBriefingController::class.java.name)
+    override val isVisible
+        get() = context.lawnchairPrefs.eventProviders.also {
+            d("getIsVisible: event providers: ${it.getAll()}")
+        }.toList().any { it.contentEquals(DailyBriefingProvider::class.java.name) }.also {
+            d("getIsVisible: visibility: $it")
+        }
 }
