@@ -39,7 +39,8 @@ interface ForecastProvider {
         constructor(dataList: List<ForecastData>) : this(dataList.toTypedArray())
     }
 
-    data class CurrentWeather(val condCodes: Array<Int>, val date: Date, val temperature: Temperature, val icon: Bitmap) {
+    data class CurrentWeather(val condCodes: Array<Int>, val date: Date,
+                              val temperature: Temperature, val icon: Bitmap, val precip: Double?) {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true

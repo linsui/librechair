@@ -140,7 +140,8 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                                                    Temperature.Unit.Celsius),
                                                            AccuWeatherDataProvider.getIcon(c,
                                                                                            weatherResponse.body()!!.currentConditions.weatherIcon,
-                                                                                           weatherResponse.body()!!.currentConditions.isDayTime)))
+                                                                                           weatherResponse.body()!!.currentConditions.isDayTime),
+                                                           weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble()))
                     return cachedCurrent!!.value
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)

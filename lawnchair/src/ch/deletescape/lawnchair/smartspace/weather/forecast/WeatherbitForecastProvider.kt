@@ -20,7 +20,6 @@
 package ch.deletescape.lawnchair.smartspace.weather.forecast
 
 import android.content.Context
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
@@ -30,13 +29,9 @@ import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import io.weatherbase.api.model.WeatherbitServiceFactory
 import io.weatherbit.api.Class120HourHourlyForecastApi
-import io.weatherbit.api.Class5Day3HourForecastApi
 import io.weatherbit.api.CurrentWeatherDataApi
-import org.apache.commons.lang3.time.DateFormatUtils
 import java.io.IOException
-import java.text.DateFormat
 import java.time.Instant
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
@@ -95,7 +90,10 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
                     WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.second ?: false)
             val temperature = Temperature(response.temp.toInt(), Temperature.Unit.Celsius)
             return ForecastProvider
-                    .CurrentWeather(arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]?.first ?: 0), Date.from(Instant.ofEpochSecond(response.ts.toLong())), temperature, icon);
+                    .CurrentWeather(
+                            arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]?.first
+                                    ?: 0), Date.from(Instant.ofEpochSecond(response.ts.toLong())),
+                            temperature, icon, response.precip.toDouble());
         } catch (e: Throwable) {
             throw ForecastProvider.ForecastException(e)
         }

@@ -134,7 +134,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
                     WeatherIconManager.Companion.getInstance(c).getIcon(Objects.requireNonNull(
                             WeatherComConstants.INSTANCE.getWEATHER_ICONS()
                                     .get(result.observation.wxIcon)),
-                            !result.observation.dayInd.equals("D")));
+                            !result.observation.dayInd.equals("D")), result.observation.precipHrly);
         } catch (IOException e) {
             throw new ForecastException(e);
         }

@@ -115,7 +115,8 @@ public class OWMForecastProvider implements ForecastProvider {
                     weather.getDateTime(), new Temperature(
                     weather.getMainData().getTemp().intValue(), Unit.Kelvin),
                     new WeatherIconProvider(context)
-                            .getIcon(weather.getWeatherList().get(0).getIconCode()));
+                            .getIcon(weather.getWeatherList().get(0).getIconCode()),
+                    weather.getRainData().getPrecipVol3h());
         } catch (Throwable e) {
             throw new ForecastException(e);
         }
