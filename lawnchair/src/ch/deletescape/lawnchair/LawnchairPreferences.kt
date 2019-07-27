@@ -186,6 +186,7 @@ class LawnchairPreferences(val context: Context) :
     var feedProviders = StringListPref("pref_feed_providers", ::restart,
                                        listOf(FeedWeatherStatsProvider::class.java.name,
                                               FeedForecastProvider::class.java.name,
+                                              DeviceStateProvider::class.java.name,
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name,
                                               WikinewsFeedProvider::class.java.name))

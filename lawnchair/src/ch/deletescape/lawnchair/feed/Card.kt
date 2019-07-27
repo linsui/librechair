@@ -36,6 +36,18 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     val categories: List<String>?
         get() = internalCategory
 
+    constructor(icon: Drawable?, title: String?, inflateHelper: () -> View, type: Int,
+                algoFlags: String? = null, identifier: Int = title.hashCode()) : this(icon, title,
+                                                                                      object :
+                                                                                              InflateHelper {
+                                                                                          override fun inflate(
+                                                                                                  parent: ViewGroup): View {
+                                                                                              return inflateHelper()
+                                                                                          }
+                                                                                      }, type,
+                                                                                      algoFlags,
+                                                                                      identifier)
+
     constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
         this.canHide = canHide
     }

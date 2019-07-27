@@ -491,4 +491,8 @@
 
     <string name="title_pref_daily_briefing_time">Daily briefing time</string>
     <string name="title_smartspace_provider_daily_briefing">Morning brief</string>
+    <string name="title_card_dnd_priority_only">Do not Disturb –– Priority only</string>
+    <string name="title_card_dnd_alarms_only">Do not Disturb –– Alarms only</string>
+    <string name="title_card_dnd_nothing">Do not Disturb –– All events blocked</string>
+    <string name="title_feed_provider_device_state">Device state</string>
 </resources>
