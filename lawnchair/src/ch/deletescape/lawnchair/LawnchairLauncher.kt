@@ -250,21 +250,23 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        if (!hasFocus && RootHelperManager.isAvailable) {
-            RootHelperManager.getInstance(this.applicationContext).run {
-                try {
-                    it.iconBlacklistPreference =
-                            it.iconBlacklistPreference.remove("clock")
-                } catch (e: RemoteException) {
-                    e.printStackTrace()
+        if (lawnchairPrefs.immersiveDesktop) {
+            if (!hasFocus && RootHelperManager.isAvailable) {
+                RootHelperManager.getInstance(this.applicationContext).run {
+                    try {
+                        it.iconBlacklistPreference =
+                                it.iconBlacklistPreference.remove("clock")
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
                 }
-            }
-        } else if (RootHelperManager.isAvailable) {
-            RootHelperManager.getInstance(this.applicationContext).run {
-                try {
-                    it.iconBlacklistPreference = it.iconBlacklistPreference.add("clock")
-                } catch (e: RemoteException) {
-                    e.printStackTrace()
+            } else if (RootHelperManager.isAvailable) {
+                RootHelperManager.getInstance(this.applicationContext).run {
+                    try {
+                        it.iconBlacklistPreference = it.iconBlacklistPreference.add("clock")
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }

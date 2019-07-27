@@ -19,16 +19,8 @@
 
 package ch.deletescape.lawnchair.clockhide;
 
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Binder;
-import android.util.Log;
-import com.android.launcher3.BuildConfig;
-import com.hoko.blur.api.IBlurProcessor;
-import eu.chainfire.librootjava.RootJava;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 
 public class IconBlacklistHelper {
