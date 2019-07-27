@@ -132,7 +132,7 @@ public class SunV1CurrentConditionsResponse extends BaseModel {
         public Integer validTimeGmt;
 
         @SerializedName("vis")
-        public Integer vis;
+        public Double vis;
 
         @SerializedName("wc")
         public Integer wc;

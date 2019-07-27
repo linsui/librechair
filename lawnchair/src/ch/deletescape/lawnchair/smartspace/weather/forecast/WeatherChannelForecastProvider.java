@@ -22,13 +22,10 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast;
 import android.content.Context;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
-import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
 import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager;
-import ch.deletescape.lawnchair.smartspace.weathercom.Constants;
 import ch.deletescape.lawnchair.smartspace.weathercom.Constants.WeatherComConstants;
 import ch.deletescape.lawnchair.smartspace.weathercom.WeatherComRetrofitServiceFactory;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1CurrentConditionsResponse;
-import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1DailyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV1HourlyForecastResponse.ForecastSchema;
 import ch.deletescape.lawnchair.smartspace.weathercom.models.SunV3DailyForecastResponse;
@@ -62,7 +59,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
                     .getHourlyForecast(lat, lon, 24,
                             LawnchairUtilsKt.getLocale(c).getLanguage(), "m").execute();
             if (!response.isSuccessful()) {
-                throw new ForecastException(response.message());
+                throw new ForecastException(response.toString());
             }
             SunV1HourlyForecastResponse forecast = response.body();
             List<ForecastData> dataList = LawnchairUtilsKt.newList();

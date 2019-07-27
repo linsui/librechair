@@ -25,7 +25,6 @@ import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
-import ch.deletescape.lawnchair.smartspace.WeatherIconProvider
 import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager
 import com.android.launcher3.R
 import java.util.concurrent.TimeUnit
@@ -91,8 +90,8 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
 
     override fun onDataUpdated(data: DataContainer) {
         if (data.weather?.coordLat != null && data.weather.coordLon != null) {
-            lon = data.weather.coordLat
-            lat = data.weather.coordLon
+            lat = data.weather.coordLat
+            lon = data.weather.coordLon
             updateData()
         }
     }

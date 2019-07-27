@@ -139,7 +139,9 @@ fun nothing() {
 fun tomorrow(current: Date = Date()): Date {
     val date = current.clone() as Date
     val oneDayMillis = 1000 * 60 * 60 * 24
-    date.time += (oneDayMillis - ((date.time + oneDayMillis) % oneDayMillis))
+    date.time += oneDayMillis
+    date.minutes = 0
+    date.hours = 0
     return date
 }
 

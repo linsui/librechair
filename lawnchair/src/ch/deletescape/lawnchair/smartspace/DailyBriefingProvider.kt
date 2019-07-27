@@ -43,8 +43,9 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                             context.lawnchairPrefs.weatherCity)
                     d("updateData: retrieved location: $lat, $lon")
                     val currentWeather = context.forecastProvider.getCurrentWeather(lat, lon)
-                    val dailyForecast = context.forecastProvider.getDailyForecast(lat, lon)
+                    d("updateData: retrieved current weather $currentWeather")
                     val hourlyForecast = context.forecastProvider.getHourlyForecast(lat, lon)
+                    d("updateData: retrieved forecasts $currentWeather and $hourlyForecast")
 
                     val lines = mutableListOf(LawnchairSmartspaceController.Line(
                             context.getString(
@@ -72,6 +73,9 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                                                   .fromStringRes(context)
                                                                   .toLowerCase()
                                                       }, TextUtils.TruncateAt.MARQUEE))
+
+                    d("updateData: formatted information into $lines")
+
                     runOnMainThread {
                         updateData(null, LawnchairSmartspaceController.CardData(null, lines,
                                                                                 forceSingleLine = false))
