@@ -22,15 +22,26 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.support.v7.preference.DialogPreference
 import android.util.AttributeSet
+import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.settings.ui.controllers.DailyBriefingController
 import com.android.launcher3.R
 
 open class TimePickerPreference(context: Context, attributeSet: AttributeSet) :
-        DialogPreference(context, attributeSet) {
+        DialogPreference(context, attributeSet), LawnchairPreferences.OnPreferenceChangeListener {
+
+    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
+        if (key == "pref_daily_brief") {
+            isVisible = DailyBriefingController(context).isVisible
+        }
+    }
+
     open val defaultValue = 7 to 30
 
     override fun onAttached() {
         super.onAttached()
         updateSummary()
+        context.lawnchairPrefs.addOnPreferenceChangeListener(this)
     }
 
     private fun updateSummary() {
@@ -48,6 +59,11 @@ open class TimePickerPreference(context: Context, attributeSet: AttributeSet) :
 
     override fun getNegativeButtonText(): CharSequence? {
         return null
+    }
+
+    override fun onDetached() {
+        super.onDetached()
+        context.lawnchairPrefs.removeOnPreferenceChangeListener(this)
     }
 
     fun onDialogFinish(result: Boolean) {

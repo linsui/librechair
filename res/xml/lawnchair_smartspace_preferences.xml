@@ -91,6 +91,7 @@
 
         <ch.deletescape.lawnchair.preferences.TimePickerPreference
             android:title="@string/title_pref_daily_briefing_time"
+            app:controllerClass=".DailyBriefingController"
             android:key="pref_daily_brief" />
 
         <ListPreference
