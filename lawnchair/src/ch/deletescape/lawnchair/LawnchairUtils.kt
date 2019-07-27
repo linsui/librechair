@@ -1030,9 +1030,20 @@ inline val Int.green get() = Color.green(this)
 inline val Int.blue get() = Color.blue(this)
 inline val Int.alpha get() = alpha(this)
 
-fun Int.fromStringRes(c: Context): String {
-    return c.getString(this)
+fun Int.fromStringRes(c: Context, vararg formatObjects: Any): String {
+    return c.getString(this, formatObjects)
 }
+
+fun Int.fromPluralRes(c: Context, item: Int, vararg formatObjects: String = arrayOf(item).map {
+    it.toString()
+}.toTypedArray()): String {
+    return String.format(c.resources.getQuantityString(this, item), * formatObjects)
+}
+
+inline val Int.stringRes
+    get() = Launcher.getInstance().getString(this)
+inline val Int.dimenRes
+    get() = Launcher.getInstance().resources.getDimension(this)
 
 fun Int.fromColorRes(c: Context): Int {
     return c.getColor(this)

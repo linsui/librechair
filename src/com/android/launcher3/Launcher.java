@@ -259,8 +259,12 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     private final Handler mHandler = new Handler();
     private final Runnable mLogOnDelayedResume = this::logOnDelayedResume;
 
+    private static Launcher instance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        instance = this;
+
         if (DEBUG_STRICT_MODE && Utilities.ATLEAST_P) {
             // TODO: Revise policy and potentially change this to send bug reports too
             StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -2546,5 +2550,9 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     public interface OnResumeCallback {
 
         void onLauncherResume();
+    }
+
+    public static Launcher getInstance() {
+        return instance;
     }
 }

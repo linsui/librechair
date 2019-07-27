@@ -8,4 +8,8 @@
         <item quantity="other">%d hr</item>
         <item quantity="one">%d hr</item>
     </plurals>
+    <plurals name="title_daily_briefing_calendar_events">
+        <item quantity="one">You have %s event scheduled for today</item>
+        <item quantity="other">You have %s events scheduled for today</item>
+    </plurals>
 </resources>
