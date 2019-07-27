@@ -1044,6 +1044,8 @@ inline val Int.stringRes
     get() = Launcher.getInstance().getString(this)
 inline val Int.dimenRes
     get() = Launcher.getInstance().resources.getDimension(this)
+inline val Int.colourRes
+    get() = Launcher.getInstance().getColor(this)
 
 fun Int.fromColorRes(c: Context): Int {
     return c.getColor(this)
@@ -1053,3 +1055,6 @@ fun Int.fromDrawableRes(c: Context): Drawable {
     return c.getDrawable(this)!!
 }
 
+fun Drawable.duplicateAndSetColour(colour: Int): Drawable {
+    return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
+}

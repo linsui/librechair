@@ -19,11 +19,10 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.app.NotificationManager
 import android.content.Context
+import android.provider.Settings
 import android.view.View
-import ch.deletescape.lawnchair.fromDrawableRes
-import ch.deletescape.lawnchair.fromStringRes
+import ch.deletescape.lawnchair.*
 import com.android.launcher3.R
 
 class DeviceStateProvider(c: Context) : FeedProvider(c) {
@@ -45,21 +44,33 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
 
     override fun getCards(): MutableList<Card> {
         val cards = mutableListOf<Card>()
-        val dnd = when ((context.getSystemService(
-                Context.NOTIFICATION_SERVICE) as NotificationManager).currentInterruptionFilter) {
-            NotificationManager.INTERRUPTION_FILTER_PRIORITY -> R.string.title_card_dnd_priority_only.fromStringRes(
+        val dnd = when (Settings.Global.getInt(context.contentResolver, "zen_mode")) {
+            1 -> R.string.title_card_dnd_priority_only.fromStringRes(
                     context)
-            NotificationManager.INTERRUPTION_FILTER_ALARMS -> R.string.title_card_dnd_alarms_only.fromStringRes(
+            2 -> R.string.title_card_dnd_alarms_only.fromStringRes(
                     context)
-            NotificationManager.INTERRUPTION_FILTER_ALL -> R.string.title_card_dnd_nothing.fromStringRes(
+            3 -> R.string.title_card_dnd_nothing.fromStringRes(
                     context)
 
             else -> null
         }
         if (dnd != null) {
-            cards += Card(R.drawable.ic_zen_mode.fromDrawableRes(context), dnd, {
-                View(context)
-            }, Card.TEXT_ONLY, "nosort,top", "feedDndIndicator".hashCode())
+            cards += Card(R.drawable.ic_zen_mode.fromDrawableRes(context).duplicateAndSetColour(
+                    (if (useWhiteText(backgroundColor,
+                                      context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
+                            context)), dnd, {
+                              View(context)
+                          }, Card.TEXT_ONLY, "nosort,top", "feedDndIndicator".hashCode())
+        }
+        if (Settings.Global.getInt(context.contentResolver,
+                                   Settings.Global.AIRPLANE_MODE_ON,
+                                   0) != 0) {
+            cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
+                    context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
+                                                                     context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
+                    context)), R.string.title_card_airplane_mode_on.fromStringRes(context), {
+                              View(context)
+                          }, Card.TEXT_ONLY, "nosort,top", "feedDndIndicator".hashCode())
         }
         return cards;
     }
