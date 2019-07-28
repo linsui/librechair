@@ -30,8 +30,10 @@ import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.WindowManager
-import ch.deletescape.lawnchair.LawnchairPreferences
+import android.widget.Toolbar
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -49,7 +51,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private var backgroundColor: Int = ColorUtils
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
                                LawnchairPreferences.getInstance(
-                                   context).feedBackgroundOpacity.toInt() * (255 / 100)).also {
+                                       context).feedBackgroundOpacity.toInt() * (255 / 100)).also {
                 d("backgroundColor: ${it}")
             }
     private val adapter by lazy {
@@ -62,12 +64,23 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
-                it.setBackgroundColor(backgroundColor!!)
+                it.setBackgroundColor(backgroundColor)
                 d("feedController: background color value: ${LawnchairPreferences.getInstance(
-                    context).feedBackgroundOpacity.toInt()}")
-                adapter.backgroundColor = backgroundColor!!
+                        context).feedBackgroundOpacity.toInt()}")
+                adapter.backgroundColor = backgroundColor
             }
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+    private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+
+    init {
+        toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
+        toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
+                .duplicateAndSetColour(if (useWhiteText(backgroundColor, context))
+                                           R.color.textColorPrimary.fromColorRes(context)
+                                       else
+                                           R.color.textColorPrimaryInverse.fromColorRes(context))
+        toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    }
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
