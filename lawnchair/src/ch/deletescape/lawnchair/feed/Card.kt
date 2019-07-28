@@ -30,29 +30,33 @@ import android.view.ViewGroup
  * which will ensure that the card appears on the top of the screen, in user-defined order
  */
 
-data class Card(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper, val type: Int, val algoFlags: String? = null, val identifier: Int = title.hashCode()) {
+data class Card(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper,
+                val type: Int, val algoFlags: String? = null,
+                val identifier: Int = title.hashCode()) {
     var canHide = false
     private var internalCategory: List<String>? = null
     val categories: List<String>?
         get() = internalCategory
 
-    constructor(icon: Drawable?, title: String?, inflateHelper: () -> View, type: Int,
-                algoFlags: String? = null, identifier: Int = title.hashCode()) : this(icon, title,
-                                                                                      object :
-                                                                                              InflateHelper {
-                                                                                          override fun inflate(
-                                                                                                  parent: ViewGroup): View {
-                                                                                              return inflateHelper()
-                                                                                          }
-                                                                                      }, type,
-                                                                                      algoFlags,
-                                                                                      identifier)
+    constructor(icon: Drawable?, title: String?,
+                inflateHelper: (parent: View, _: Unit /* This is used to resolve ambiguities in Java and is unused */) -> View,
+                type: Int, algoFlags: String? = null, identifier: Int = title.hashCode()) : this(
+            icon, title, object : InflateHelper {
+        override fun inflate(parent: ViewGroup): View {
+            return inflateHelper(parent, Unit)
+        }
+    }, type, algoFlags, identifier)
 
-    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
+    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int,
+                algoFlags: String? = null, identifier: Int = title.hashCode(),
+                canHide: Boolean) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
         this.canHide = canHide
     }
 
-    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int, algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean, category: List<String>) : this(icon, title, inflateHelper, type, algoFlags, identifier) {
+    constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int,
+                algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean,
+                category: List<String>) : this(icon, title, inflateHelper, type, algoFlags,
+                                               identifier) {
         this.canHide = canHide
         this.internalCategory = category
     }

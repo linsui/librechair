@@ -80,10 +80,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     init {
         toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
         toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
-                .duplicateAndSetColour(if (useWhiteText(backgroundColor, context))
-                                           R.color.textColorPrimary.fromColorRes(context)
-                                       else
-                                           R.color.textColorPrimaryInverse.fromColorRes(context))
+                .duplicateAndSetColour(if (useWhiteText(backgroundColor,
+                                                        context)) R.color.textColorPrimary.fromColorRes(
+                        context)
+                                       else R.color.textColorPrimaryInverse.fromColorRes(context))
         toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         toolbar.menu.getItem(0).setOnMenuItemClickListener {
             context.bindService(Intent(context, WidgetSelectionService::class.java),
@@ -98,7 +98,18 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                 .pickWidget(object :
                                                                     WidgetSelectionCallback.Stub() {
                                                     override fun onWidgetSelected(i: Int) {
-                                                        // TODO add widget to feed
+                                                        context.lawnchairPrefs.feedWidgetList.add(i)
+                                                        Executors.newSingleThreadExecutor().submit {
+                                                            Thread.sleep(1000);
+                                                            d("refreshing adapter")
+                                                            adapter.refresh()
+                                                            d("adapter refreshed")
+                                                            handler.post {
+                                                                d("notifying adapter")
+                                                                adapter.notifyDataSetChanged()
+                                                                d("adapter notified")
+                                                            }
+                                                        }
                                                     }
                                                 })
                                     }

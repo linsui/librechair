@@ -222,8 +222,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     }
 
     override fun onBackPressed() {
-        if (isInState(
-                        LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
+        if (isInState(LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
             // Handled
             return
         }
@@ -258,8 +257,7 @@ open class LawnchairLauncher : NexusLauncherActivity(),
             if (!hasFocus && RootHelperManager.isAvailable) {
                 RootHelperManager.getInstance(this.applicationContext).run {
                     try {
-                        it.iconBlacklistPreference =
-                                it.iconBlacklistPreference.remove("clock")
+                        it.iconBlacklistPreference = it.iconBlacklistPreference.remove("clock")
                     } catch (e: RemoteException) {
                         e.printStackTrace()
                     }
@@ -504,11 +502,11 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     }
 
     fun pickWidget(callback: (i: Int) -> Unit) {
-        val id = appWidgetHost.allocateAppWidgetId()
+        val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
         startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
             it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+            queuedWidgetRequests += id shl 1 to callback
         }, id shl 1)
-        queuedWidgetRequests += id shl 1 to callback
     }
 
     fun pickWidget(callback: WidgetSelectionCallback) {

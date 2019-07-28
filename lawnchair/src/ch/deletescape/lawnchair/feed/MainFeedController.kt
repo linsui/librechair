@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.content.Context
 import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.newList
@@ -77,6 +78,8 @@ class MainFeedController(val context: Context) {
                                     R.string.title_feed_provider_customizable_rss)
                 DeviceStateProvider::class.java.name -> R.string.title_feed_provider_device_state.fromStringRes(
                         context)
+                FeedWidgetsProvider::class.java.name -> context.getString(
+                        R.string.title_feed_provider_widgets)
 
                 else -> error("No such provider ${provider}")
             }
@@ -95,7 +98,8 @@ class MainFeedController(val context: Context) {
                           BBCFeedProvider::class.java.name,
                           CustomizableRSSProvider::class.java.name,
                           GSyndicationFeedProvider::class.java.name,
-                          DeviceStateProvider::class.java.name)
+                          DeviceStateProvider::class.java.name,
+                          FeedWidgetsProvider::class.java.name)
         }
     }
 }

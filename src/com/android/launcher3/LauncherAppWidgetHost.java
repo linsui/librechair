@@ -26,14 +26,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.widget.DeferredAppWidgetHostView;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
-
 import java.util.ArrayList;
 
 
@@ -58,6 +56,11 @@ public class LauncherAppWidgetHost extends AppWidgetHost {
 
     public LauncherAppWidgetHost(Context context) {
         super(context, APPWIDGET_HOST_ID);
+        mContext = context;
+    }
+
+    public LauncherAppWidgetHost(Context context, int hostId) {
+        super(context, hostId);
         mContext = context;
     }
 

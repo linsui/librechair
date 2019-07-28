@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -48,6 +49,8 @@ class LawnchairApp : Application() {
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
     val feedController by lazy { getFeedController(this) }
+
+    lateinit var overlayWidgetHost: OverlayWidgetHost
 
     init {
         d("Hidden APIs allowed: ${Utilities.HIDDEN_APIS_ALLOWED}")
@@ -69,6 +72,8 @@ class LawnchairApp : Application() {
             }
             LeakCanary.install(this)
         }
+        overlayWidgetHost =
+                OverlayWidgetHost(this, "overlay".hashCode()).also { it.startListening() }
     }
 
     fun onLauncherAppStateCreated() {
@@ -99,7 +104,7 @@ class LawnchairApp : Application() {
             accessibilityService!!.performGlobalAction(action)
         } else {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK))
+                    Intent.FLAG_ACTIVITY_NEW_TASK))
             false
         }
     }
@@ -149,7 +154,8 @@ class LawnchairApp : Application() {
         }
     }
 
-    @Keep fun checkRecentsComponent(): Boolean {
+    @Keep
+    fun checkRecentsComponent(): Boolean {
         if (!Utilities.ATLEAST_P) {
             d("API < P, disabling recents")
             return false

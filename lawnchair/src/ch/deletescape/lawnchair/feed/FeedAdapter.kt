@@ -108,7 +108,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                 cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
                         context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
                                                                          context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
-                        context)), R.string.title_card_airplane_mode_on.fromStringRes(context), {
+                        context)), R.string.title_card_airplane_mode_on.fromStringRes(context),
+                              { _, _ ->
                                   View(context)
                               }, Card.TEXT_ONLY, "nosort,top",
                               "feedAirplaneModeIndicator".hashCode())
@@ -120,7 +121,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                                               (if (useWhiteText(backgroundColor, context))
                                                   R.color.qsb_background else R.color.qsb_background_dark)
                                                       .fromColorRes(context)),
-                              R.string.title_card_network_disconnected.fromStringRes(context), {
+                              R.string.title_card_network_disconnected.fromStringRes(context),
+                              { _, _ ->
                                   View(context)
                               }, Card.TEXT_ONLY, "nosort,top",
                               "feedNetworkModeIndicator".hashCode())
@@ -190,7 +192,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
             holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon)
         }
         holder.viewHolder.removeAllViewsInLayout()
-        holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(holder.viewHolder))
+        holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
+                holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
         if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
                     themeManager.getCurrentFlags())) {
             (holder.itemView as CardView).setCardBackgroundColor(

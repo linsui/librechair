@@ -80,8 +80,8 @@ class LawnchairPreferences(val context: Context) :
             oldFile.renameTo(newFile)
             oldFile.delete()
         }
-        return context.applicationContext
-                .getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
+        return context.applicationContext.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY,
+                                                               Context.MODE_MULTI_PROCESS)
                 .apply {
                     migrateConfig(this)
                 }
@@ -206,9 +206,9 @@ class LawnchairPreferences(val context: Context) :
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
     var feedWidgetList =
-            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", doNothing) {
+            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::nothing, listOf()) {
                 override fun unflattenValue(value: String): Int {
-                    return value.toInt();
+                    return Integer.valueOf(value)
                 }
             }
 
