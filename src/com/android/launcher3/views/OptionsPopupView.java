@@ -26,11 +26,13 @@ import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Toast;
+import ch.deletescape.lawnchair.LawnchairLauncher;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -43,6 +45,7 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import java.util.ArrayList;
 import java.util.List;
+import kotlin.Unit;
 
 /**
  * Popup shown on long pressing an empty space in launcher
@@ -157,12 +160,26 @@ public class OptionsPopupView extends ArrowPopup
         options.add(new OptionItem(R.string.settings_button_text, R.drawable.ic_setting,
                 ControlType.SETTINGS_BUTTON, OptionsPopupView::startSettings));
         if (Utilities.getLawnchairPrefs(launcher).getDeveloperOptionsEnabled()) {
-            options.add(
-                    new OptionItem(R.string.restart_lawnchair_pref_title, R.drawable.ic_restart, -1,
-                            v -> {
-                                Utilities.restartLauncher(launcher);
-                                return true;
-                            }));
+            options.add(new OptionItem(R.string.restart_lawnchair_pref_title,
+                    R.drawable.ic_restart,
+                    -1,
+                    v -> {
+                        Utilities.restartLauncher(launcher);
+                        return true;
+                    }));
+            options.add(new OptionItem(R.string.action_open_widgets,
+                    R.drawable.ic_settings_development,
+                    -1,
+                    v -> {
+                        if (Launcher.getInstance() instanceof LawnchairLauncher) {
+                            ((LawnchairLauncher) Launcher.getInstance()).pickWidget(i -> {
+                                Log.d(OptionsPopupView.class.getName(),
+                                        "(i: Int) -> Unit: widget selected " + i);
+                                return Unit.INSTANCE;
+                            });
+                        }
+                        return true;
+                    }));
         }
         show(launcher, x, y, options);
     }
@@ -196,8 +213,8 @@ public class OptionsPopupView extends ArrowPopup
     }
 
     /**
-     * Event handler for the wallpaper picker button that appears after a long press
-     * on the home screen.
+     * Event handler for the wallpaper picker button that appears after a long press on the home
+     * screen.
      */
     public static boolean startWallpaperPicker(View v) {
         Launcher launcher = Launcher.getLauncher(v.getContext());

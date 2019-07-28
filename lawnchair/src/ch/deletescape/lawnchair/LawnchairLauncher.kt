@@ -19,6 +19,7 @@ package ch.deletescape.lawnchair
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -49,6 +50,7 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -69,10 +71,12 @@ open class LawnchairLauncher : NexusLauncherActivity(),
     val background by lazy { findViewById<LawnchairBackgroundView>(R.id.lawnchair_background)!! }
     val dummyView by lazy { findViewById<View>(R.id.dummy_view)!! }
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
-    private val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
+    val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
     val feed by lazy { findViewById(R.id.feed_recycler) as RecyclerView }
     val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
+    val queuedWidgetRequests = mutableListOf<Pair<Int, (i: Int) -> Unit>>()
+    val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
@@ -496,6 +500,44 @@ open class LawnchairLauncher : NexusLauncherActivity(),
                     }
                 })
             })
+        }
+    }
+
+    fun pickWidget(callback: (i: Int) -> Unit) {
+        val id = appWidgetHost.allocateAppWidgetId()
+        startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
+            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+        }, id shl 1)
+        queuedWidgetRequests += id shl 1 to callback
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (queuedWidgetRequests.any { it.first == requestCode } && resultCode == Activity.RESULT_OK) {
+            queuedWidgetRequests.filter { it.first == requestCode }.forEach {
+                it.second.let {
+                    val id = requestCode shr 1
+                    val widgetInfo = appWidgetManager.getAppWidgetInfo(id)
+                    d("onActivityResult: requested widget info: $widgetInfo")
+                    if (widgetInfo?.configure != null) {
+                        startActivityForResult(Intent().setComponent(widgetInfo.configure).also {
+                            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+                        }, id);
+                    } else {
+                        it(id)
+                    }
+                }
+            }
+        } else if (queuedWidgetRequests.any { it.first == requestCode shl 1 }) {
+            queuedWidgetRequests.filter { it.first == requestCode shl 1 }.forEach {
+                it.second.let {
+                    if (resultCode == Activity.RESULT_OK) {
+                        it(requestCode)
+                    } else {
+                        it(-1)
+                    }
+                }
+            }
         }
     }
 }
