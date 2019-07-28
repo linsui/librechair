@@ -497,4 +497,6 @@
     <string name="title_feed_provider_device_state">Device state</string>
     <string name="title_card_airplane_mode_on">Airplane mode is on</string>
     <string name="title_card_network_disconnected">Network disconnected</string>
+    <string name="title_card_phone_muted">Phone muted</string>
+    <string name="title_card_phone_vibrate">Phone on vibrate</string>
 </resources>

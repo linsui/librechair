@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.media.AudioManager
 import android.net.ConnectivityManager
 import android.provider.Settings
 import android.view.View
@@ -83,6 +84,26 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                                               R.color.qsb_background else R.color.qsb_background_dark)
                                                   .fromColorRes(context)),
                           R.string.title_card_network_disconnected.fromStringRes(context), {
+                              View(context)
+                          }, Card.TEXT_ONLY, "nosort,top", "feedNetworkModeIndicator".hashCode())
+        }
+        if ((context.getSystemService(Context.AUDIO_SERVICE) as AudioManager)
+                        .ringerMode != AudioManager.RINGER_MODE_NORMAL) {
+            cards += Card(when ((context.getSystemService(
+                    Context.AUDIO_SERVICE) as AudioManager).ringerMode) {
+                              AudioManager.RINGER_MODE_SILENT -> R.drawable.ic_outline_volume_off_24px
+                              AudioManager.RINGER_MODE_VIBRATE -> R.drawable.ic_round_vibration_24dp
+                              else -> R.drawable.ic_round_vibration_24dp
+                          }.fromDrawableRes(context).duplicateAndSetColour(
+                    (if (useWhiteText(backgroundColor, context))
+                        R.color.qsb_background else R.color.qsb_background_dark)
+                            .fromColorRes(context)),
+                          when ((context.getSystemService(
+                                  Context.AUDIO_SERVICE) as AudioManager).ringerMode) {
+                              AudioManager.RINGER_MODE_SILENT -> R.string.title_card_phone_muted
+                              AudioManager.RINGER_MODE_VIBRATE -> R.string.title_card_phone_vibrate
+                              else -> R.string.title_card_phone_vibrate
+                          }.fromStringRes(context), {
                               View(context)
                           }, Card.TEXT_ONLY, "nosort,top", "feedNetworkModeIndicator".hashCode())
         }

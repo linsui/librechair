@@ -1034,9 +1034,9 @@ fun Int.fromStringRes(c: Context, vararg formatObjects: Any): String {
     return c.getString(this, formatObjects)
 }
 
-fun Int.fromPluralRes(c: Context, item: Int, vararg formatObjects: String = arrayOf(item).map {
-    it.toString()
-}.toTypedArray()): String {
+fun Int.fromPluralRes(c: Context, item: Int, vararg formatObjects: String = arrayOf(item)
+        .map { it.toString() }
+        .toTypedArray()): String {
     return String.format(c.resources.getQuantityString(this, item), * formatObjects)
 }
 
