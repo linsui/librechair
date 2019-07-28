@@ -28,8 +28,6 @@ import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuDailyForecastsGSon
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
 import ch.deletescape.lawnchair.util.Temperature
-import ch.deletescape.lawnchair.util.extensions.d
-import com.google.gson.Gson
 import retrofit2.Response
 import java.time.Instant
 import java.util.*
@@ -55,21 +53,16 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
         synchronized(this) {
             try {
-                d("getHourlyForecast: $lat, $lon")
                 val responseResult: Response<List<AccuHourlyForecastGSon>>?
-                d("getHourlyForecast: retrieving geolocation")
                 try {
                     if (cachedHourly == null || cachedHourly?.expired == true) {
-                        d("getHourlyForecast: re-retrieving geolocation")
                         val geolocationResponse =
                                 AccuRetrofitServiceFactory.accuSearchRetrofitService
                                         .getGeoPosition("$lat,$lon", c.locale.language).execute()
                         if (!geolocationResponse.isSuccessful) {
-                            d("getHourlyForecast: geolocation not successful")
                             throw ForecastProvider.ForecastException(
                                     "geolocation couldn't be retrieved")
                         } else {
-                            d("getHourlyForecast: retrieving AccuWeather forecasts for location ${geolocationResponse.body()?.key}")
                             responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
                                     .getHourly(geolocationResponse.body()!!.key, c.locale.language)
                                     .execute()
@@ -84,17 +77,13 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                     throw ForecastProvider.ForecastException(e)
                 }
 
-                d("getHourlyForecast: accuWeather response retrieved")
-
                 if (responseResult?.isSuccessful != true) {
                     throw ForecastProvider.ForecastException(
                             responseResult?.message() ?: "unknown error")
                 } else {
                     val data: MutableList<ForecastProvider.ForecastData> = newList()
-                    d("getHourlyForecast: converting AccuWeather data into OWM format")
+
                     responseResult.body()!!.forEach {
-                        d("getHourlyForecast: converting AccuWeather data ${Gson().toJson(
-                                it)} into OWM format")
                         val icon = AccuWeatherDataProvider.getIcon(c, it.weatherIcon, it.isDaylight)
                         val temperature = Temperature(
                                 java.lang.Float.valueOf(it.temperature.value).roundToInt(),
@@ -103,13 +92,12 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                         val date = Date.from(Instant.ofEpochSecond(it.epochDateTime))
                         val conds = arrayOf(COND_MAP[it.weatherIcon]!!)
 
-                        d("getHourlyForecast: converted AccuWeather data into OWM format $icon, $temperature, $iconRes, $date, $conds")
+
 
                         data += ForecastProvider.ForecastData(
                                 LawnchairSmartspaceController.WeatherData(icon, temperature, null,
-                                                                          null,
-                                                                          null, lat, lon, iconRes),
-                                date, conds)
+                                                                          null, null, lat, lon,
+                                                                          iconRes), date, conds)
                     }
                     return ForecastProvider.Forecast(data)
                 }
@@ -128,8 +116,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                     val locationInfo = AccuRetrofitServiceFactory.accuSearchRetrofitService
                             .getGeoPosition("$lat,$lon", c.locale.language).execute()
                     val weatherResponse = AccuRetrofitServiceFactory.accuWeatherRetrofitService
-                            .getLocalWeather(locationInfo.body()!!.key, c.locale.language)
-                            .execute()
+                            .getLocalWeather(locationInfo.body()!!.key, c.locale.language).execute()
                     cachedCurrent = CachedResponse(System.currentTimeMillis() + 2,
                                                    ForecastProvider.CurrentWeather(
                                                            arrayOf(COND_MAP[weatherResponse.body()!!.currentConditions.weatherIcon]!!),
@@ -152,21 +139,21 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
 
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
         synchronized(DAILY_LOCK) {
-            d("getDailyForecast: $lat, $lon")
+
             val responseResult: Response<AccuDailyForecastsGSon>?
 
             try {
                 if (cachedDaily == null || cachedDaily?.expired == true) {
 
-                    d("getDailyForecast: re-retrieving geolocation")
+
                     val geolocationResponse = AccuRetrofitServiceFactory.accuSearchRetrofitService
                             .getGeoPosition("$lat,$lon", c.locale.language).execute()
                     if (!geolocationResponse.isSuccessful) {
-                        d("getDailyForecast: geolocation not successful")
+
                         throw ForecastProvider.ForecastException(
                                 "geolocation couldn't be retrieved")
                     } else {
-                        d("getDailyForecast: retrieving AccuWeather forecasts for location ${geolocationResponse.body()?.key}")
+
                         responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
                                 .getDaily10Day(geolocationResponse.body()!!.key, c.locale.language)
                                 .execute()

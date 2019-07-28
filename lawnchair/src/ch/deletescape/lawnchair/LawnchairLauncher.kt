@@ -511,6 +511,12 @@ open class LawnchairLauncher : NexusLauncherActivity(),
         queuedWidgetRequests += id shl 1 to callback
     }
 
+    fun pickWidget(callback: WidgetSelectionCallback) {
+        pickWidget {
+            callback.onWidgetSelected(it)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (queuedWidgetRequests.any { it.first == requestCode } && resultCode == Activity.RESULT_OK) {

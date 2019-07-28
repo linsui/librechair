@@ -19,10 +19,14 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.os.Looper
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
@@ -36,6 +40,7 @@ import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -79,7 +84,27 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                            R.color.textColorPrimary.fromColorRes(context)
                                        else
                                            R.color.textColorPrimaryInverse.fromColorRes(context))
-        toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        toolbar.menu.getItem(0).setOnMenuItemClickListener {
+            context.bindService(Intent(context, WidgetSelectionService::class.java),
+                                object : ServiceConnection {
+                                    override fun onServiceDisconnected(name: ComponentName?) {
+
+                                    }
+
+                                    override fun onServiceConnected(name: ComponentName?,
+                                                                    service: IBinder?) {
+                                        IWidgetSelector.Stub.asInterface(service)
+                                                .pickWidget(object :
+                                                                    WidgetSelectionCallback.Stub() {
+                                                    override fun onWidgetSelected(i: Int) {
+                                                        // TODO add widget to feed
+                                                    }
+                                                })
+                                    }
+
+                                }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+        }
     }
 
     private var callback: ILauncherOverlayCallback? = null

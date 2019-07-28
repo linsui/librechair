@@ -205,6 +205,12 @@ class LawnchairPreferences(val context: Context) :
 
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
+    var feedWidgetList =
+            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", doNothing) {
+                override fun unflattenValue(value: String): Int {
+                    return value.toInt();
+                }
+            }
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
 
@@ -343,6 +349,7 @@ class LawnchairPreferences(val context: Context) :
     var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
     var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
+
 
     private val was1stApril = is1stApril()
 
