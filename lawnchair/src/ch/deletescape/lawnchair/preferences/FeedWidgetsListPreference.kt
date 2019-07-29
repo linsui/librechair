@@ -25,6 +25,7 @@ import android.support.v7.preference.DialogPreference
 import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,8 @@ import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
+import java.util.*
+
 
 class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         DialogPreference(context, attrs) {
@@ -73,6 +76,15 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         class FeedWidgetsPreferenceAdapter(
                 val preference: LawnchairPreferences.MutableListPref<Int>) :
                 RecyclerView.Adapter<ViewHolder>() {
+            val prefList = preference.getList().filter {
+                Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
+            }.toMutableList()
+
+
+            fun synchronizeWithPreference() {
+                preference.setAll(prefList)
+            }
+
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): ViewHolder = ViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.event_provider_dialog_item,
@@ -80,21 +92,56 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
                 d("onBindViewHolder: retrieving widget information for widget ${preference.getAll()[position]}")
-                val appWidgetInfo = holder.itemView.context.appWidgetManager.getAppWidgetInfo(
-                        preference.getAll().filter {
+                val appWidgetInfo = holder.itemView.context.appWidgetManager
+                        .getAppWidgetInfo(preference.getAll().filter {
                             Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
                         }[position])
                 holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
             }
 
+            override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+                super.onAttachedToRecyclerView(recyclerView)
+                ItemTouchHelper(object : ItemTouchHelper.Callback() {
+                    override fun getMovementFlags(recyclerView: RecyclerView,
+                                                  viewHolder: RecyclerView.ViewHolder): Int {
+                        return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+                                                 ItemTouchHelper.END)
+                    }
+
+                    override fun onMove(recyclerView: RecyclerView,
+                                        viewHolder: RecyclerView.ViewHolder,
+                                        target: RecyclerView.ViewHolder): Boolean {
+                        val fromPosition = target.adapterPosition
+                        val toPosition = viewHolder.adapterPosition
+
+                        if (fromPosition < toPosition) {
+                            for (i in fromPosition until toPosition) {
+                                Collections.swap(prefList, i, i + 1)
+                            }
+                        } else {
+                            for (i in fromPosition downTo toPosition + 1) {
+                                Collections.swap(prefList, i, i - 1)
+                            }
+                        }
+
+                        notifyItemMoved(fromPosition, toPosition)
+                        synchronizeWithPreference()
+                        return true
+                    }
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        //TODO implement removal
+                    }
+
+                    override fun isItemViewSwipeEnabled() = false
+                    override fun isLongPressDragEnabled() = true
+                }).apply {
+                    attachToRecyclerView(recyclerView)
+                }
+            }
+
             override fun getItemCount(): Int {
-                d("getItemCount: getItemCount called")
-                d("getItemCount: item count is ${preference.getList().filter {
-                    Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                }.size}")
-                return preference.getList().filter {
-                    Launcher.getInstance()?.appWidgetManager?.getAppWidgetInfo(it) != null
-                }.size
+                return prefList.size
             }
         }
 

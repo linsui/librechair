@@ -1062,3 +1062,15 @@ fun Int.fromDrawableRes(c: Context): Drawable {
 fun Drawable.duplicateAndSetColour(colour: Int): Drawable {
     return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
 }
+
+fun <T> alter(condition: Boolean, pos: T, neg: T): T {
+    return if (condition) pos else neg
+}
+
+fun <T> alter(condition: Boolean, pos: () -> Unit, neg: () -> Unit) {
+    if (condition) {
+        pos()
+    } else {
+        neg()
+    }
+}
