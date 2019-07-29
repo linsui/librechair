@@ -70,9 +70,9 @@ class LawnchairPreferences(val context: Context) :
     private val onChangeListeners: MutableMap<String, MutableSet<OnPreferenceChangeListener>> =
             HashMap()
     private var onChangeCallback: LawnchairPreferencesChangeCallback? = null
-    val sharedPrefs = migratePrefs()
+    var sharedPrefs = migratePrefs()
 
-    private fun migratePrefs(): SharedPreferences {
+    fun migratePrefs(): SharedPreferences {
         val dir = context.cacheDir.parent
         val oldFile = File(dir, "shared_prefs/" + LauncherFiles.OLD_SHARED_PREFERENCES_KEY + ".xml")
         val newFile = File(dir, "shared_prefs/" + LauncherFiles.SHARED_PREFERENCES_KEY + ".xml")
@@ -206,7 +206,7 @@ class LawnchairPreferences(val context: Context) :
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name, ::restart);
     var feedWidgetList =
-            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::nothing, listOf()) {
+            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restart, listOf()) {
                 override fun unflattenValue(value: String): Int {
                     return Integer.valueOf(value)
                 }

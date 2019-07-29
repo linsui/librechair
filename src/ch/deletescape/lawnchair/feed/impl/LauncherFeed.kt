@@ -89,7 +89,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             context.bindService(Intent(context, WidgetSelectionService::class.java),
                                 object : ServiceConnection {
                                     override fun onServiceDisconnected(name: ComponentName?) {
-
                                     }
 
                                     override fun onServiceConnected(name: ComponentName?,
@@ -99,8 +98,30 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                     WidgetSelectionCallback.Stub() {
                                                     override fun onWidgetSelected(i: Int) {
                                                         context.lawnchairPrefs.feedWidgetList.add(i)
+                                                        context.bindService(Intent(context,
+                                                                                   PreferenceSynchronizerService::class.java),
+                                                                            object :
+                                                                                    ServiceConnection {
+                                                                                override fun onServiceDisconnected(
+                                                                                        name: ComponentName?) {
+
+                                                                                }
+
+                                                                                override fun onServiceConnected(
+                                                                                        name: ComponentName?,
+                                                                                        service: IBinder?) {
+                                                                                    PreferenceSynchronizer
+                                                                                            .Stub
+                                                                                            .asInterface(
+                                                                                                    service)
+                                                                                            .requestSynchronization()
+                                                                                }
+
+                                                                            },
+                                                                            Context.BIND_AUTO_CREATE)
+
                                                         Executors.newSingleThreadExecutor().submit {
-                                                            Thread.sleep(1000);
+                                                            Thread.sleep(1000)
                                                             d("refreshing adapter")
                                                             adapter.refresh()
                                                             d("adapter refreshed")

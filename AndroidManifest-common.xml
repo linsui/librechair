@@ -129,6 +129,7 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+        <service android:name="ch.deletescape.lawnchair.PreferenceSynchronizerService" />
 
         <meta-data android:name="android.nfc.disable_beam_default"
             android:value="true" />

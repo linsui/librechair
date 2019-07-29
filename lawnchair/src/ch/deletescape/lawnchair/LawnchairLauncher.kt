@@ -253,6 +253,9 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            restartIfPending()
+        }
         if (lawnchairPrefs.immersiveDesktop) {
             if (!hasFocus && RootHelperManager.isAvailable) {
                 RootHelperManager.getInstance(this.applicationContext).run {
@@ -290,10 +293,14 @@ open class LawnchairLauncher : NexusLauncherActivity(),
 
     fun scheduleRestart() {
         if (paused) {
-            sRestart = true
+            scheduleRestartForLater()
         } else {
             Utilities.restartLauncher(this)
         }
+    }
+
+    fun scheduleRestartForLater() {
+        sRestart = true
     }
 
     fun refreshGrid() {
