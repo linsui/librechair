@@ -84,10 +84,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         preference.getAll().filter {
                             Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
                         }[position])
-                d("onBindViewHolder: setting widget text to ${appWidgetInfo.loadLabel(
-                        holder.itemView.context.packageManager)}")
-                holder.summary.text =
-                        appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
+                holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
             }
 
             override fun getItemCount(): Int {
