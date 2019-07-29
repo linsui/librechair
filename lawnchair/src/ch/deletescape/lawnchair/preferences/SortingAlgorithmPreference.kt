@@ -37,7 +37,6 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
-import android.content.pm.ApplicationInfo
 import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.feed.OrderedSortingAlgorithm
@@ -62,7 +61,6 @@ class SortingAlgorithmPreference(context: Context, attrs: AttributeSet?) :
         val entries = ArrayList<String>()
 
         getEntryList().forEach {
-            var applicationInfo: ApplicationInfo?
             entries += getFeedSortingAlgorithmName(it.toString(), context)
         }
         return entries.toTypedArray();
