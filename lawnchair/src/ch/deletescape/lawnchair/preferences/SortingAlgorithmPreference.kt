@@ -40,9 +40,9 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
+import ch.deletescape.lawnchair.feed.OrderedSortingAlgorithm
 import ch.deletescape.lawnchair.feed.getFeedSortingAlgorithmName
 import ch.deletescape.lawnchair.feed.getFeedSortingAlgorithms
-import com.android.launcher3.BuildConfig
 
 
 class SortingAlgorithmPreference(context: Context, attrs: AttributeSet?) :
@@ -51,7 +51,7 @@ class SortingAlgorithmPreference(context: Context, attrs: AttributeSet?) :
     init {
         entryValues = getEntryList();
         entries = getDisplayList();
-        setDefaultValue(BuildConfig.APPLICATION_ID)
+        setDefaultValue(OrderedSortingAlgorithm::class.java.name)
     }
 
     fun getEntryList(): Array<CharSequence> {
