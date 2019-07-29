@@ -501,4 +501,6 @@
     <string name="title_card_phone_vibrate">Phone on vibrate</string>
     <string name="title_feed_toolbar_add_widget">Add widget</string>
     <string name="title_feed_provider_widgets">Widgets</string>
+
+    <string name="title_preference_feed_widgets">Manage widgets</string>
 </resources>

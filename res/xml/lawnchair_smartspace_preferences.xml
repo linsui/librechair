@@ -147,6 +147,9 @@
             app:steps="1000"
             app:summaryFormat="%.0fdp"
             app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference
+            android:title="@string/title_preference_feed_widgets"
+            android:key="pref_feed_widgets" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_swipe_feed"
             android:summary="@string/summary_preference_swipe_feed"

@@ -19,6 +19,7 @@ package ch.deletescape.lawnchair
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.ContentResolver
 import android.content.Context
@@ -1046,6 +1047,9 @@ inline val Int.dimenRes
     get() = Launcher.getInstance().resources.getDimension(this)
 inline val Int.colourRes
     get() = Launcher.getInstance().getColor(this)
+inline val Context.appWidgetManager
+    get() = getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
+
 
 fun Int.fromColorRes(c: Context): Int {
     return c.getColor(this)

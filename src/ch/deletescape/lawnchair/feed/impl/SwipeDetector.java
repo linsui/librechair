@@ -26,9 +26,9 @@ import android.view.ViewConfiguration;
 /**
  * One dimensional scroll/drag/swipe gesture detector.
  *
- * Definition of swipe is different from android system in that this detector handles
- * 'swipe to dismiss', 'swiping up/down a container' but also keeps scrolling state before
- * swipe action happens
+ * Definition of swipe is different from android system in that this detector handles 'swipe to
+ * dismiss', 'swiping up/down a container' but also keeps scrolling state before swipe action
+ * happens
  */
 public class SwipeDetector {
 
@@ -125,7 +125,8 @@ public class SwipeDetector {
         float travelDistance = Math.max(0.2f, progressNeeded);
         long duration = (long) Math.max(100, ANIMATION_DURATION / velocityDivisor * travelDistance);
         if (DBG) {
-            Log.d(TAG, String.format("calculateDuration=%d, v=%f, d=%f", duration, velocity, progressNeeded));
+            Log.d(TAG, String.format("calculateDuration=%d, v=%f, d=%f", duration, velocity,
+                    progressNeeded));
         }
         return duration;
     }
@@ -335,6 +336,7 @@ public class SwipeDetector {
     }
 
     public interface Listener {
+
         void onDragStart(boolean start);
 
         boolean onDrag(float displacement, float velocity);

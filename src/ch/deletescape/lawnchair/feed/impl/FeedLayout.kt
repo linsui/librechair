@@ -32,11 +32,8 @@ class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     private var progress = 0f
 
-    private val detector = SwipeDetector(context, this,
-                                                                            SwipeDetector.HORIZONTAL)
-            .apply {
-        setDetectableScrollConditions(
-            SwipeDetector.DIRECTION_BOTH, true)
+    private val detector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL).apply {
+        setDetectableScrollConditions(SwipeDetector.DIRECTION_BOTH, true)
     }
     private val time get() = System.currentTimeMillis()
     private var downTime = 0L
@@ -66,19 +63,24 @@ class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
 
     fun startScroll() {
         downTime = time
-        detector.onTouchEvent(MotionEvent.obtain(downTime, time, MotionEvent.ACTION_DOWN, 0f, 0f, 0))
+        detector.onTouchEvent(
+                MotionEvent.obtain(downTime, time, MotionEvent.ACTION_DOWN, 0f, 0f, 0))
     }
 
     fun onScroll(progress: Float) {
         this.progress = progress
-        detector.onTouchEvent(MotionEvent.obtain(downTime, time, MotionEvent.ACTION_MOVE, progress * width, 0f, 0))
+        detector.onTouchEvent(
+                MotionEvent.obtain(downTime, time, MotionEvent.ACTION_MOVE, progress * width, 0f,
+                                   0))
     }
 
     fun endScroll() {
-        detector.onTouchEvent(MotionEvent.obtain(downTime, time, MotionEvent.ACTION_UP, progress * width, 0f, 0))
+        detector.onTouchEvent(
+                MotionEvent.obtain(downTime, time, MotionEvent.ACTION_UP, progress * width, 0f, 0))
     }
 
-    private fun reinitCurrentAnimation(reachedToState: Boolean, isDragTowardPositive: Boolean): Boolean {
+    private fun reinitCurrentAnimation(reachedToState: Boolean,
+                                       isDragTowardPositive: Boolean): Boolean {
         val newFromState = when {
             fromState == null -> currentState
             reachedToState -> toState
@@ -125,7 +127,8 @@ class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
         Log.d(TAG, "onDragEnd($velocity, $fling)")
         val targetState: Int
         if (fling) {
-            targetState = (if (Math.signum(velocity).compareTo(Math.signum(1f)) == 0) toState else fromState)!!
+            targetState = (if (Math.signum(velocity).compareTo(
+                            Math.signum(1f)) == 0) toState else fromState)!!
         }
     }
 
@@ -134,7 +137,6 @@ class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
         detector.finishedScrolling()
         detector.setDetectableScrollConditions(0, false)
     }
-
 
 
     companion object {

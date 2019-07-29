@@ -2552,6 +2552,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         void onLauncherResume();
     }
 
+    /*
+     * Extremely unsafe variable that should only be used when there are no other possibilities of getting the Launcher
+     */
+
     public static Launcher getInstance() {
         return instance;
     }

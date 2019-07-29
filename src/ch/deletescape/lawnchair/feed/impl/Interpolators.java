@@ -40,7 +40,8 @@ public class Interpolators {
 
     public static final Interpolator DEACCEL = new DecelerateInterpolator();
     public static final Interpolator DEACCEL_1_5 = new DecelerateInterpolator(1.5f);
-    public static final Interpolator DEACCEL_1_7 = new DecelerateInterpolator(1.7f); /* Did pap just decompile the Google app? */
+    public static final Interpolator DEACCEL_1_7 = new DecelerateInterpolator(
+            1.7f); /* Did pap just decompile the Google app? */
     public static final Interpolator DEACCEL_2 = new DecelerateInterpolator(2);
     public static final Interpolator DEACCEL_2_5 = new DecelerateInterpolator(2.5f);
     public static final Interpolator DEACCEL_3 = new DecelerateInterpolator(3f);
@@ -50,7 +51,8 @@ public class Interpolators {
     public static final Interpolator FAST_OUT_SLOW_IN = new PathInterpolator(0.4f, 0f, 0.2f, 1f);
 
     public static final Interpolator AGGRESSIVE_EASE = new PathInterpolator(0.2f, 0f, 0f, 1f);
-    public static final Interpolator AGGRESSIVE_EASE_IN_OUT = new PathInterpolator(0.6f,0, 0.4f, 1);
+    public static final Interpolator AGGRESSIVE_EASE_IN_OUT = new PathInterpolator(0.6f, 0, 0.4f,
+            1);
     public static final Interpolator OVERSHOOT_1_2 = new OvershootInterpolator(1.2f);
     public static final Interpolator TOUCH_RESPONSE_INTERPOLATOR =
             new PathInterpolator(0.3f, 0f, 0.1f, 1f);
@@ -87,14 +89,14 @@ public class Interpolators {
         @Override
         public float getInterpolation(float t) {
             t -= 1.0f;
-            return t*t*t*t*t + 1;
+            return t * t * t * t * t + 1;
         }
     };
     public static final Interpolator SCROLL_CUBIC = new Interpolator() {
         @Override
         public float getInterpolation(float t) {
             t -= 1.0f;
-            return t*t*t + 1;
+            return t * t * t + 1;
         }
     };
     private static final int MIN_SETTLE_DURATION = 200;
@@ -107,6 +109,7 @@ public class Interpolators {
 
     /**
      * Create an OvershootInterpolator with tension directly related to the velocity (in px/ms).
+     *
      * @param velocity The start velocity of the animation we want to overshoot.
      */
     public static Interpolator overshootInterpolatorForVelocity(float velocity) {
@@ -118,7 +121,7 @@ public class Interpolators {
      * That is, we set the interpolation to 0 until lowerBound and reach 1 by upperBound.
      */
     public static Interpolator clampToProgress(Interpolator interpolator, float lowerBound,
-                                               float upperBound) {
+            float upperBound) {
         if (upperBound <= lowerBound) {
             throw new IllegalArgumentException("lowerBound must be less than upperBound");
         }
@@ -135,11 +138,11 @@ public class Interpolators {
 
     /**
      * Runs the given interpolator such that the interpolated value is mapped to the given range.
-     * This is useful, for example, if we only use this interpolator for part of the animation,
-     * such as to take over a user-controlled animation when they let go.
+     * This is useful, for example, if we only use this interpolator for part of the animation, such
+     * as to take over a user-controlled animation when they let go.
      */
     public static Interpolator mapToProgress(Interpolator interpolator, float lowerBound,
-                                             float upperBound) {
+            float upperBound) {
         return t -> Utilities.mapRange(interpolator.getInterpolation(t), lowerBound, upperBound);
     }
 
@@ -151,6 +154,7 @@ public class Interpolators {
      * Computes parameters necessary for an overshoot effect.
      */
     public static class OvershootParams {
+
         public Interpolator interpolator;
         public float start;
         public float end;
@@ -158,16 +162,17 @@ public class Interpolators {
 
         /**
          * Given the input params, sets OvershootParams variables to be used by the caller.
+         *
          * @param startProgress The progress from 0 to 1 that the overshoot starts from.
          * @param overshootPastProgress The progress from 0 to 1 where we overshoot past (should
-         *        either be equal to startProgress or endProgress, depending on if we want to
-         *        overshoot immediately or only once we reach the end).
+         * either be equal to startProgress or endProgress, depending on if we want to overshoot
+         * immediately or only once we reach the end).
          * @param endProgress The final progress from 0 to 1 that we will settle to.
          * @param velocityPxPerMs The initial velocity that causes this overshoot.
          * @param totalDistancePx The distance against which progress is calculated.
          */
         public OvershootParams(float startProgress, float overshootPastProgress,
-                               float endProgress, float velocityPxPerMs, int totalDistancePx) {
+                float endProgress, float velocityPxPerMs, int totalDistancePx) {
             velocityPxPerMs = Math.abs(velocityPxPerMs);
             start = startProgress;
             int startPx = (int) (start * totalDistancePx);
@@ -176,7 +181,7 @@ public class Interpolators {
                     SINGLE_FRAME_MS / totalDistancePx / 2;
             overshootBy = Utilities.boundToRange(overshootBy, 0.02f, 0.15f);
             end = overshootPastProgress + overshootBy;
-            int endPx = (int) (end  * totalDistancePx);
+            int endPx = (int) (end * totalDistancePx);
             int overshootDistance = endPx - startPx;
             // Calculate deceleration necessary to reach overshoot distance.
             // Formula: velocityFinal^2 = velocityInitial^2 + 2 * acceleration * distance

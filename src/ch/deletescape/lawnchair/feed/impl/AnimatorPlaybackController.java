@@ -29,11 +29,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Helper class to control the playback of an {@link AnimatorSet}, with custom interpolators
- * and durations.
+ * Helper class to control the playback of an {@link AnimatorSet}, with custom interpolators and
+ * durations.
  *
- * Note: The implementation does not support start delays on child animations or
- * sequential playbacks.
+ * Note: The implementation does not support start delays on child animations or sequential
+ * playbacks.
  */
 public abstract class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateListener {
 
@@ -46,7 +46,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
     private Runnable mEndAction;
 
     protected AnimatorPlaybackController(AnimatorSet anim, long duration,
-                                         Runnable onCancelRunnable) {
+            Runnable onCancelRunnable) {
         mAnim = anim;
         mDuration = duration;
         mOnCancelRunnable = onCancelRunnable;
@@ -84,13 +84,13 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
     }
 
     /**
-     * Creates an animation controller for the provided animation.
-     * The actual duration does not matter as the animation is manually controlled. It just
-     * needs to be larger than the total number of pixels so that we don't have jittering due
-     * to float (animation-fraction * total duration) to int conversion.
+     * Creates an animation controller for the provided animation. The actual duration does not
+     * matter as the animation is manually controlled. It just needs to be larger than the total
+     * number of pixels so that we don't have jittering due to float (animation-fraction * total
+     * duration) to int conversion.
      */
     public static AnimatorPlaybackController wrap(AnimatorSet anim, long duration,
-                                                  Runnable onCancelRunnable) {
+            Runnable onCancelRunnable) {
 
         /**
          * TODO: use {@link AnimatorSet#setCurrentPlayTime(long)} once b/68382377 is fixed.
@@ -156,8 +156,8 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
     }
 
     /**
-     * Sets the action to be called when the animation is completed. Also clears any
-     * previously set action.
+     * Sets the action to be called when the animation is completed. Also clears any previously set
+     * action.
      */
     public void setEndAction(Runnable runnable) {
         mEndAction = runnable;
@@ -235,7 +235,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
         private final ValueAnimator[] mChildAnimations;
 
         private AnimatorPlaybackControllerVL(AnimatorSet anim, long duration,
-                                             Runnable onCancelRunnable) {
+                Runnable onCancelRunnable) {
             super(anim, duration, onCancelRunnable);
 
             // Build animation list
@@ -301,7 +301,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
 
             if (animator instanceof AnimatorSet) {
                 for (Animator anim : nonNullList(((AnimatorSet) animator).getChildAnimations())) {
-                   dispatchOnEndRecursively(anim);
+                    dispatchOnEndRecursively(anim);
                 }
             }
         }
