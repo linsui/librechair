@@ -42,7 +42,6 @@ import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
-import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
@@ -171,7 +170,7 @@ class LawnchairPreferences(val context: Context) :
     val smartspaceDate by BooleanPref("pref_smartspace_date", true, refreshGrid)
     var smartspaceWidgetId by IntPref("smartspace_widget_id", -1, doNothing)
     var weatherProvider by StringPref("pref_smartspace_widget_provider",
-                                      OWMWeatherDataProvider::class.java.name,
+                                      UnifiedWeatherDataProvider::class.java.name,
                                       ::updateSmartspaceProvider)
     var eventProvider by StringPref("pref_smartspace_event_provider",
                                     BuiltInCalendarProvider::class.java.name,
