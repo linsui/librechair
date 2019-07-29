@@ -105,7 +105,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     override fun getMovementFlags(recyclerView: RecyclerView,
                                                   viewHolder: RecyclerView.ViewHolder): Int {
                         return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-                                                 ItemTouchHelper.END)
+                                                 ItemTouchHelper.START)
                     }
 
                     override fun onMove(recyclerView: RecyclerView,
@@ -130,10 +130,12 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     }
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                        //TODO implement removal
+                        prefList.removeAt(viewHolder.adapterPosition)
+                        synchronizeWithPreference()
+                        notifyItemRemoved(viewHolder.adapterPosition)
                     }
 
-                    override fun isItemViewSwipeEnabled() = false
+                    override fun isItemViewSwipeEnabled() = true
                     override fun isLongPressDragEnabled() = true
                 }).apply {
                     attachToRecyclerView(recyclerView)
