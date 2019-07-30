@@ -29,14 +29,17 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.theme.ThemeManager;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
+import ch.deletescape.lawnchair.views.VerticalResizeView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -190,7 +193,22 @@ public class OptionsPopupView extends ArrowPopup
                         new ThemeOverride.AlertDialog()
                                 .getTheme(new ThemeManager(v.getContext()).getCurrentFlags()));
                 builder.setTitle("Resize widget");
-                builder.setView(R.layout.dialog_widget_resize);
+                View dialogView;
+                builder.setView(dialogView = LayoutInflater.from(builder.getContext())
+                        .inflate(R.layout.dialog_widget_resize, null, false));
+                VerticalResizeView resizeView = dialogView.findViewById(R.id.resize_view);
+                View widgetView = dialogView.findViewById(R.id.resize_target);
+                float originalSize = widgetView.getHeight();
+                resizeView.setOnResizeCallback(difference -> {
+                    Log.d(OptionsPopupView.class.getName(),
+                            "(difference: Float) -> Void: resize view was moved " + difference);
+                    if (widgetView.getHeight() > originalSize) {
+                        widgetView.setLayoutParams(
+                                new LinearLayout.LayoutParams(widgetView.getWidth(),
+                                        (int) (widgetView.getHeight() + difference)));
+                    }
+                    return null;
+                });
                 builder.show();
                 return true;
             }));

@@ -24,6 +24,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import androidx.annotation.Nullable;
+import com.android.launcher3.R;
 import kotlin.jvm.functions.Function1;
 
 public class VerticalResizeView extends View {
@@ -33,20 +34,33 @@ public class VerticalResizeView extends View {
 
     public VerticalResizeView(Context context) {
         super(context);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setBackgroundResource(R.drawable.ic_arrow_down_blue);
+        setBackgroundTintList(getResources().getColorStateList(R.color.colorAccent));
     }
 
     public VerticalResizeView(Context context,
             @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setBackgroundResource(R.drawable.ic_arrow_down_blue);
+        setBackgroundTintList(getResources().getColorStateList(R.color.colorAccent));
     }
 
     public VerticalResizeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setBackgroundResource(R.drawable.ic_arrow_down_blue);
+        setBackgroundTintList(getResources().getColorStateList(R.color.colorAccent));
     }
 
     public VerticalResizeView(Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        setBackgroundResource(R.drawable.ic_arrow_down_blue);
+        setRotationY(90);
+        setBackgroundTintList(getResources().getColorStateList(R.color.colorAccent));
     }
 
 
@@ -57,8 +71,10 @@ public class VerticalResizeView extends View {
             coordY = event.getY();
             return true;
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (coordY != null && onResizeCallback != null) {
+            if (coordY != null && onResizeCallback != null && (coordY - 100 < event.getY()
+                    && coordY + 100 > event.getY())) {
                 onResizeCallback.invoke(event.getY() - coordY);
+                coordY = event.getY();
                 return true;
             }
             return false;

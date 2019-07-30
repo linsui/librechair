@@ -20,8 +20,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="16dp"
     android:orientation="vertical">
-    <com.hoko.blur.view.BlurFrameLayout
+    <FrameLayout
         android:id="@+id/resize_target"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,12 +33,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_pref_lawnstep" />
-    </com.hoko.blur.view.BlurFrameLayout>
+    </FrameLayout>
     <ch.deletescape.lawnchair.views.VerticalResizeView
         android:id="@+id/resize_view"
         android:layout_marginTop="8dp"
         android:layout_width="32dp"
-        android:layout_height="8dp"
+        android:layout_height="32dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_qsb_pill"
         android:backgroundTint="?attr/colorAccent" />
