@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
@@ -33,6 +35,8 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Toast;
 import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.theme.ThemeManager;
+import ch.deletescape.lawnchair.theme.ThemeOverride;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -180,6 +184,16 @@ public class OptionsPopupView extends ArrowPopup
                         }
                         return true;
                     }));
+            options.add(new OptionItem(R.string.title_option_item_test_resize_view,
+                    R.drawable.ic_gestures, -1, v -> {
+                AlertDialog.Builder builder = new Builder(v.getContext(),
+                        new ThemeOverride.AlertDialog()
+                                .getTheme(new ThemeManager(v.getContext()).getCurrentFlags()));
+                builder.setTitle("Resize widget");
+                builder.setView(R.layout.dialog_widget_resize);
+                builder.show();
+                return true;
+            }));
         }
         show(launcher, x, y, options);
     }
