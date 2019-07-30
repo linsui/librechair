@@ -68,18 +68,26 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                                 appWidgetManager.getAppWidgetInfo(it).apply {
                                                     minWidth = parent.width
                                                 }).apply {
-                                setExecutor(inflateExecutor)
-                                layoutParams = ViewGroup
-                                        .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                      appWidgetInfo.minHeight)
-                                updateAppWidgetOptions(Bundle().apply {
-                                    putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
-                                    putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
-                                    putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, height)
-                                    putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, height)
-                                })
-                                invalidate()
-                            }.also { it2 -> hostViewCache += it to it2; it2.invalidate() }
+                                        setExecutor(inflateExecutor)
+                                        layoutParams = ViewGroup
+                                                .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                              (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                               ?: WidgetMetadata.DEFAULT).height
+                                                              ?: appWidgetInfo.minHeight)
+                                        updateAppWidgetOptions(Bundle().apply {
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                                   width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                                   width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                                   (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                    ?: WidgetMetadata.DEFAULT).height ?: height)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                                   (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                    ?: WidgetMetadata.DEFAULT).height ?: height)
+                                        })
+                                        invalidate()
+                                    }.also { it2 -> hostViewCache += it to it2; it2.invalidate() }
                         }
                     }, Card.NO_HEADER, "nosort, top", it shl 2)
                 }

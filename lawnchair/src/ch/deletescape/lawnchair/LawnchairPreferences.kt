@@ -27,9 +27,11 @@ import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Pair
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
+import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
@@ -49,9 +51,12 @@ import com.android.launcher3.*
 import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.lang.reflect.ParameterizedType
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -210,6 +215,24 @@ class LawnchairPreferences(val context: Context) :
                     return Integer.valueOf(value)
                 }
             }
+    var feedWidgetMetadata = object :
+            MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata",
+                                                       ::restart, listOf()) {
+        override fun flattenValue(value: Pair<Int, WidgetMetadata>) = Gson().toJson(value)
+
+        override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
+            val typeTokenInt = object : TypeToken<Int>() {}.type
+            val typeTokenWidgetMetadata = object : TypeToken<WidgetMetadata>() {}.type
+            val combinedType = object : ParameterizedType {
+                override fun getRawType() = Pair::class.java
+                override fun getOwnerType() = null
+                override fun getActualTypeArguments() = arrayOf(typeTokenInt,
+                                                                typeTokenWidgetMetadata)
+            }
+            return Gson().fromJson(value, combinedType)
+        }
+
+    }
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
 
