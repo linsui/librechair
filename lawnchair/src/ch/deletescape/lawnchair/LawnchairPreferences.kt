@@ -27,7 +27,6 @@ import android.net.Uri
 import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Pair
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
@@ -52,11 +51,9 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
-import java.lang.reflect.ParameterizedType
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
@@ -216,22 +213,19 @@ class LawnchairPreferences(val context: Context) :
                 }
             }
     var feedWidgetMetadata = object :
-            MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata",
+            MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata_2",
                                                        ::restart, listOf()) {
-        override fun flattenValue(value: Pair<Int, WidgetMetadata>) = Gson().toJson(value)
+        override fun flattenValue(
+                value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
 
         override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
-            val typeTokenInt = object : TypeToken<Int>() {}.type
-            val typeTokenWidgetMetadata = object : TypeToken<WidgetMetadata>() {}.type
-            val combinedType = object : ParameterizedType {
-                override fun getRawType() = Pair::class.java
-                override fun getOwnerType() = null
-                override fun getActualTypeArguments() = arrayOf(typeTokenInt,
-                                                                typeTokenWidgetMetadata)
-            }
-            return Gson().fromJson(value, combinedType)
+            return value.split("@")[0].toInt() to Gson().fromJson(value.split("@")[1],
+                                                                  WidgetMetadata::class.java)
         }
 
+        override fun customAdder(value: Pair<Int, WidgetMetadata>) {
+            setAll(getAll().filter { it.first != value.first } + value)
+        }
     }
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
@@ -510,6 +504,8 @@ class LawnchairPreferences(val context: Context) :
         fun toList() = ArrayList<T>(valueList)
 
         open fun flattenValue(value: T) = value.toString()
+        open fun customAdder(value: T): Unit = error("not implemented in base class")
+
         abstract fun unflattenValue(value: String): T
 
         operator fun get(position: Int): T {

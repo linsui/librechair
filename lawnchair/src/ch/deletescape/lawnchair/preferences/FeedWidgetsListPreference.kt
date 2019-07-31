@@ -29,7 +29,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
-import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -122,10 +121,10 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                     .createView(it.context, appWidgetId, appWidgetInfo)
                     dialogView.findViewById<FrameLayout>(R.id.resize_view_container)
                             .addView(widgetView)
-                    widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width,
-                                                                       (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                                        ?: WidgetMetadata.DEFAULT).height
-                                                                       ?: appWidgetInfo.minHeight)
+                    widgetView.layoutParams = FrameLayout.LayoutParams(
+                            dialogView.findViewById<FrameLayout>(R.id.resize_view_container).width,
+                            (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                             ?: WidgetMetadata.DEFAULT).height ?: appWidgetInfo.minHeight)
                     val originalSize = appWidgetInfo.minHeight
                     widgetView.apply {
                         setAppWidget(appWidgetId, appWidgetInfo)
@@ -149,11 +148,10 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         if (widgetView.height + difference > originalSize) {
                             val toSize = alter(widgetView.height + difference < 0, null,
                                                (widgetView.height + difference).toInt())
-                            it.context.lawnchairPrefs.feedWidgetMetadata.add(Pair(appWidgetId,
-                                                                                  WidgetMetadata().apply {
-                                                                                      height =
-                                                                                              toSize
-                                                                                  }))
+                            it.context.lawnchairPrefs.feedWidgetMetadata
+                                    .customAdder(appWidgetId to WidgetMetadata().apply {
+                                        height = toSize
+                                    })
                             widgetView.layoutParams =
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
                             widgetView.apply {
