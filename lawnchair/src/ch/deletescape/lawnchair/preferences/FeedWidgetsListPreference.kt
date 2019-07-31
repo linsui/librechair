@@ -30,6 +30,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -57,7 +58,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
     class ViewHolder(itemView: View,
                      val title: TextView = itemView.findViewById(android.R.id.title),
-                     val summary: TextView = itemView.findViewById(android.R.id.summary)) :
+                     val summary: TextView = itemView.findViewById(android.R.id.summary),
+                     val dragHandle: View = itemView.findViewById(R.id.drag_handle)) :
             RecyclerView.ViewHolder(itemView)
 
     class Fragment : PreferenceDialogFragmentCompat() {
@@ -84,6 +86,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
             val prefList = preference.getList().filter {
                 Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
             }.toMutableList()
+            var itemTouchHelper: ItemTouchHelper? = null
 
 
             fun synchronizeWithPreference() {
@@ -104,6 +107,14 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 val appWidgetId = preference.getAll().filter {
                     Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
                 }[position]
+                holder.dragHandle.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+                    if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                        itemTouchHelper?.startDrag(holder)
+                        true
+                    }
+                    false
+                }
+                holder.dragHandle.visibility = View.VISIBLE
 
                 holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
                 holder.itemView.setOnClickListener {
@@ -226,7 +237,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     override fun isLongPressDragEnabled() = true
                 }).apply {
                     attachToRecyclerView(recyclerView)
-                }
+                }.also { itemTouchHelper = it }
             }
 
             override fun getItemCount(): Int {
