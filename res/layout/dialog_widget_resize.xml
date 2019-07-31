@@ -25,15 +25,9 @@
     android:paddingBottom="16dp"
     android:orientation="vertical">
     <FrameLayout
-        android:id="@+id/resize_target"
+        android:id="@+id/resize_view_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_pref_lawnstep">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_pref_lawnstep" />
-    </FrameLayout>
+        android:layout_height="match_parent" />
     <ch.deletescape.lawnchair.views.VerticalResizeView
         android:id="@+id/resize_view"
         android:layout_marginTop="8dp"

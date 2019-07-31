@@ -71,8 +71,8 @@ public class VerticalResizeView extends View {
             coordY = event.getY();
             return true;
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            if (coordY != null && onResizeCallback != null && (coordY - 100 < event.getY()
-                    && coordY + 100 > event.getY())) {
+            if (coordY != null && onResizeCallback != null && (coordY - 100 > event.getY()
+                    || coordY + 100 < event.getY())) {
                 onResizeCallback.invoke(event.getY() - coordY);
                 coordY = event.getY();
                 return true;

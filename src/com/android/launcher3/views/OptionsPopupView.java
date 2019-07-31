@@ -23,23 +23,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AlertDialog.Builder;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.LawnchairLauncher;
-import ch.deletescape.lawnchair.theme.ThemeManager;
-import ch.deletescape.lawnchair.theme.ThemeOverride;
-import ch.deletescape.lawnchair.views.VerticalResizeView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
@@ -52,7 +43,6 @@ import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.widget.WidgetsFullSheet;
 import java.util.ArrayList;
 import java.util.List;
-import kotlin.Unit;
 
 /**
  * Popup shown on long pressing an empty space in launcher
@@ -174,44 +164,6 @@ public class OptionsPopupView extends ArrowPopup
                         Utilities.restartLauncher(launcher);
                         return true;
                     }));
-            options.add(new OptionItem(R.string.action_open_widgets,
-                    R.drawable.ic_settings_development,
-                    -1,
-                    v -> {
-                        if (Launcher.getInstance() instanceof LawnchairLauncher) {
-                            ((LawnchairLauncher) Launcher.getInstance()).pickWidget(i -> {
-                                Log.d(OptionsPopupView.class.getName(),
-                                        "(i: Int) -> Unit: widget selected " + i);
-                                return Unit.INSTANCE;
-                            });
-                        }
-                        return true;
-                    }));
-            options.add(new OptionItem(R.string.title_option_item_test_resize_view,
-                    R.drawable.ic_gestures, -1, v -> {
-                AlertDialog.Builder builder = new Builder(v.getContext(),
-                        new ThemeOverride.AlertDialog()
-                                .getTheme(new ThemeManager(v.getContext()).getCurrentFlags()));
-                builder.setTitle("Resize widget");
-                View dialogView;
-                builder.setView(dialogView = LayoutInflater.from(builder.getContext())
-                        .inflate(R.layout.dialog_widget_resize, null, false));
-                VerticalResizeView resizeView = dialogView.findViewById(R.id.resize_view);
-                View widgetView = dialogView.findViewById(R.id.resize_target);
-                float originalSize = widgetView.getHeight();
-                resizeView.setOnResizeCallback(difference -> {
-                    Log.d(OptionsPopupView.class.getName(),
-                            "(difference: Float) -> Void: resize view was moved " + difference);
-                    if (widgetView.getHeight() > originalSize) {
-                        widgetView.setLayoutParams(
-                                new LinearLayout.LayoutParams(widgetView.getWidth(),
-                                        (int) (widgetView.getHeight() + difference)));
-                    }
-                    return null;
-                });
-                builder.show();
-                return true;
-            }));
         }
         show(launcher, x, y, options);
     }

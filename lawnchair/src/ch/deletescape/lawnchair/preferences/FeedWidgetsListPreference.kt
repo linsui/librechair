@@ -19,22 +19,28 @@
 
 package ch.deletescape.lawnchair.preferences
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.preference.DialogPreference
 import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
-import ch.deletescape.lawnchair.LawnchairPreferences
-import ch.deletescape.lawnchair.appWidgetManager
-import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
+import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.views.VerticalResizeView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import java.util.*
@@ -96,7 +102,81 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         .getAppWidgetInfo(preference.getAll().filter {
                             Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
                         }[position])
+                val appWidgetId = preference.getAll().filter {
+                    Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
+                }[position]
+
                 holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
+                holder.itemView.setOnClickListener {
+                    val builder = AlertDialog.Builder(it.context,
+                                                      ThemeOverride.AlertDialog().getTheme(
+                                                              ThemeManager(
+                                                                      it.getContext()).getCurrentFlags()))
+                    builder.setTitle(R.string.title_preference_resize_widget)
+                    val dialogView: View = LayoutInflater.from(builder.context)
+                            .inflate(R.layout.dialog_widget_resize, null, false)
+                    builder.setView(dialogView)
+                    val resizeView = dialogView.findViewById<VerticalResizeView>(R.id.resize_view)
+                    val widgetView =
+                            (it.context.applicationContext as LawnchairApp).overlayWidgetHost
+                                    .createView(it.context, appWidgetId, appWidgetInfo)
+                    dialogView.findViewById<FrameLayout>(R.id.resize_view_container)
+                            .addView(widgetView)
+                    widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width,
+                                                                       (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                                        ?: WidgetMetadata.DEFAULT).height
+                                                                       ?: appWidgetInfo.minHeight)
+                    val originalSize = appWidgetInfo.minHeight
+                    widgetView.apply {
+                        setAppWidget(appWidgetId, appWidgetInfo)
+                        widgetView.updateAppWidgetOptions(Bundle().apply {
+                            Bundle().apply {
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                       (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                        ?: WidgetMetadata.DEFAULT).height
+                                       ?: appWidgetInfo.minHeight)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                       (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                        ?: WidgetMetadata.DEFAULT).height
+                                       ?: appWidgetInfo.minHeight)
+                            }
+                        })
+                    }
+                    resizeView.setOnResizeCallback { difference ->
+                        d("onBindViewHolder: resizing widget by $difference")
+                        if (widgetView.height + difference > originalSize) {
+                            val toSize = alter(widgetView.height + difference < 0, null,
+                                               (widgetView.height + difference).toInt())
+                            it.context.lawnchairPrefs.feedWidgetMetadata.add(Pair(appWidgetId,
+                                                                                  WidgetMetadata().apply {
+                                                                                      height =
+                                                                                              toSize
+                                                                                  }))
+                            widgetView.layoutParams =
+                                    FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
+                            widgetView.apply {
+                                widgetView.updateAppWidgetOptions(Bundle().apply {
+                                    Bundle().apply {
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                               ?: appWidgetInfo.minHeight)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                               ?: appWidgetInfo.minHeight)
+                                    }
+                                })
+                            }
+                        }
+                        null
+                    }
+                    builder.show()
+                }
             }
 
             override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
