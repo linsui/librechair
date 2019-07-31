@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.android.launcher3.config.FeatureFlags
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import java.util.concurrent.Executors
@@ -78,64 +79,70 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
 
     init {
-        toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
-        toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
-                .duplicateAndSetColour(if (useWhiteText(backgroundColor,
-                                                        context)) R.color.textColorPrimary.fromColorRes(
-                        context)
-                                       else R.color.textColorPrimaryInverse.fromColorRes(context))
-        toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        toolbar.menu.getItem(0).setOnMenuItemClickListener {
-            context.bindService(Intent(context, WidgetSelectionService::class.java),
-                                object : ServiceConnection {
-                                    override fun onServiceDisconnected(name: ComponentName?) {
-                                    }
+        if (!FeatureFlags.GO_DISABLE_WIDGETS) {
+            toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
+            toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
+                    .duplicateAndSetColour(if (useWhiteText(backgroundColor,
+                                                            context)) R.color.textColorPrimary.fromColorRes(
+                            context)
+                                           else R.color.textColorPrimaryInverse.fromColorRes(
+                            context))
+            toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            toolbar.menu.getItem(0).setOnMenuItemClickListener {
+                context.bindService(Intent(context, WidgetSelectionService::class.java),
+                                    object : ServiceConnection {
+                                        override fun onServiceDisconnected(name: ComponentName?) {
+                                        }
 
-                                    override fun onServiceConnected(name: ComponentName?,
-                                                                    service: IBinder?) {
-                                        IWidgetSelector.Stub.asInterface(service)
-                                                .pickWidget(object :
-                                                                    WidgetSelectionCallback.Stub() {
-                                                    override fun onWidgetSelected(i: Int) {
-                                                        context.lawnchairPrefs.feedWidgetList.add(i)
-                                                        context.bindService(Intent(context,
-                                                                                   PreferenceSynchronizerService::class.java),
-                                                                            object :
-                                                                                    ServiceConnection {
-                                                                                override fun onServiceDisconnected(
-                                                                                        name: ComponentName?) {
+                                        override fun onServiceConnected(name: ComponentName?,
+                                                                        service: IBinder?) {
+                                            IWidgetSelector.Stub.asInterface(service)
+                                                    .pickWidget(object :
+                                                                        WidgetSelectionCallback.Stub() {
+                                                        override fun onWidgetSelected(i: Int) {
+                                                            context.lawnchairPrefs.feedWidgetList
+                                                                    .add(i)
+                                                            context.bindService(Intent(context,
+                                                                                       PreferenceSynchronizerService::class.java),
+                                                                                object :
+                                                                                        ServiceConnection {
+                                                                                    override fun onServiceDisconnected(
+                                                                                            name: ComponentName?) {
 
-                                                                                }
+                                                                                    }
 
-                                                                                override fun onServiceConnected(
-                                                                                        name: ComponentName?,
-                                                                                        service: IBinder?) {
-                                                                                    PreferenceSynchronizer
-                                                                                            .Stub
-                                                                                            .asInterface(
-                                                                                                    service)
-                                                                                            .requestSynchronization()
-                                                                                }
+                                                                                    override fun onServiceConnected(
+                                                                                            name: ComponentName?,
+                                                                                            service: IBinder?) {
+                                                                                        PreferenceSynchronizer
+                                                                                                .Stub
+                                                                                                .asInterface(
+                                                                                                        service)
+                                                                                                .requestSynchronization()
+                                                                                    }
 
-                                                                            },
-                                                                            Context.BIND_AUTO_CREATE)
+                                                                                },
+                                                                                Context.BIND_AUTO_CREATE)
 
-                                                        Executors.newSingleThreadExecutor().submit {
-                                                            Thread.sleep(1000)
-                                                            d("refreshing adapter")
-                                                            adapter.refresh()
-                                                            d("adapter refreshed")
-                                                            handler.post {
-                                                                d("notifying adapter")
-                                                                adapter.notifyDataSetChanged()
-                                                                d("adapter notified")
-                                                            }
+                                                            Executors.newSingleThreadExecutor()
+                                                                    .submit {
+                                                                        Thread.sleep(1000)
+                                                                        d("refreshing adapter")
+                                                                        adapter.refresh()
+                                                                        d("adapter refreshed")
+                                                                        handler.post {
+                                                                            d("notifying adapter")
+                                                                            adapter
+                                                                                    .notifyDataSetChanged()
+                                                                            d("adapter notified")
+                                                                        }
+                                                                    }
                                                         }
-                                                    }
-                                                })
-                                    }
+                                                    })
+                                        }
 
-                                }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+                                    }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+            }
         }
     }
 
