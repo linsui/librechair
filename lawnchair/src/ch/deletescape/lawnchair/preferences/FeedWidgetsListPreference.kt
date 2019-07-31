@@ -188,6 +188,28 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                     }
                                 })
                             }
+                        } else {
+                            it.context.lawnchairPrefs.feedWidgetMetadata
+                                    .customAdder(appWidgetId to WidgetMetadata().apply {
+                                        height = null
+                                    })
+                            widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
+                            widgetView.apply {
+                                widgetView.updateAppWidgetOptions(Bundle().apply {
+                                    Bundle().apply {
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                               ?: resizedAppWidgetInfo.minHeight)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                               ?: resizedAppWidgetInfo.minHeight)
+                                    }
+                                })
+                            }
                         }
                         null
                     }
