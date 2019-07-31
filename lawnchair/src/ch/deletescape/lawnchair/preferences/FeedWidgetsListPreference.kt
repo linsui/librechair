@@ -107,27 +107,34 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
                 holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
                 holder.itemView.setOnClickListener {
-                    val builder = AlertDialog.Builder(it.context,
-                                                      ThemeOverride.AlertDialog().getTheme(
-                                                              ThemeManager(
-                                                                      it.getContext()).getCurrentFlags()))
+                    val builder = object : AlertDialog(it.context,
+                                                       ThemeOverride.AlertDialog().getTheme(
+                                                               ThemeManager(
+                                                                       it.getContext()).getCurrentFlags())) {}
                     builder.setTitle(R.string.title_preference_resize_widget)
                     val dialogView: View = LayoutInflater.from(builder.context)
                             .inflate(R.layout.dialog_widget_resize, null, false)
                     builder.setView(dialogView)
+                    builder.show()
+                    val resizedAppWidgetInfo = holder.itemView.context.appWidgetManager
+                            .getAppWidgetInfo(preference.getAll().filter {
+                                Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
+                            }[position]).apply {
+                                minWidth = (dialogView.parent as View).width
+                            }
                     val resizeView = dialogView.findViewById<VerticalResizeView>(R.id.resize_view)
                     val widgetView =
                             (it.context.applicationContext as LawnchairApp).overlayWidgetHost
-                                    .createView(it.context, appWidgetId, appWidgetInfo)
+                                    .createView(LawnchairLauncher.getLauncher(it.context),
+                                                appWidgetId, resizedAppWidgetInfo)
                     dialogView.findViewById<FrameLayout>(R.id.resize_view_container)
                             .addView(widgetView)
-                    widgetView.layoutParams = FrameLayout.LayoutParams(
-                            dialogView.findViewById<FrameLayout>(R.id.resize_view_container).width,
-                            (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                             ?: WidgetMetadata.DEFAULT).height ?: appWidgetInfo.minHeight)
-                    val originalSize = appWidgetInfo.minHeight
+                    widgetView.layoutParams = FrameLayout.LayoutParams(4600,
+                                                                       (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                                        ?: WidgetMetadata.DEFAULT).height
+                                                                       ?: resizedAppWidgetInfo.minHeight)
+                    val originalSize = resizedAppWidgetInfo.minHeight
                     widgetView.apply {
-                        setAppWidget(appWidgetId, appWidgetInfo)
                         widgetView.updateAppWidgetOptions(Bundle().apply {
                             Bundle().apply {
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
@@ -135,11 +142,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                         ?: WidgetMetadata.DEFAULT).height
-                                       ?: appWidgetInfo.minHeight)
+                                       ?: resizedAppWidgetInfo.minHeight)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                         ?: WidgetMetadata.DEFAULT).height
-                                       ?: appWidgetInfo.minHeight)
+                                       ?: resizedAppWidgetInfo.minHeight)
                             }
                         })
                     }
@@ -162,18 +169,17 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                                 ?: WidgetMetadata.DEFAULT).height
-                                               ?: appWidgetInfo.minHeight)
+                                               ?: resizedAppWidgetInfo.minHeight)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                                 ?: WidgetMetadata.DEFAULT).height
-                                               ?: appWidgetInfo.minHeight)
+                                               ?: resizedAppWidgetInfo.minHeight)
                                     }
                                 })
                             }
                         }
                         null
                     }
-                    builder.show()
                 }
             }
 
