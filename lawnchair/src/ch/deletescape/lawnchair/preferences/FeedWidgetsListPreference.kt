@@ -214,6 +214,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     }
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        (viewHolder.itemView.context.applicationContext as LawnchairApp)
+                                .overlayWidgetHost
+                                .deleteAppWidgetId(prefList[viewHolder.adapterPosition])
                         prefList.removeAt(viewHolder.adapterPosition)
                         synchronizeWithPreference()
                         notifyItemRemoved(viewHolder.adapterPosition)
