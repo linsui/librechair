@@ -33,6 +33,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
@@ -144,6 +145,20 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                                                        (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                                                         ?: WidgetMetadata.DEFAULT).height
                                                                        ?: resizedAppWidgetInfo.minHeight)
+                    val widgetBackgroundCheckbox =
+                            dialogView.findViewById<CheckBox>(R.id.add_widget_background);
+                    widgetBackgroundCheckbox.isChecked =
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                            ?: false
+                    widgetBackgroundCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                        it.context.lawnchairPrefs.feedWidgetMetadata
+                                .customAdder(appWidgetId to WidgetMetadata().apply {
+                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                            ?.height
+                                    raiseCard = isChecked
+                                })
+                    }
                     val originalSize = resizedAppWidgetInfo.minHeight
                     widgetView.apply {
                         widgetView.updateAppWidgetOptions(Bundle().apply {
@@ -169,6 +184,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             it.context.lawnchairPrefs.feedWidgetMetadata
                                     .customAdder(appWidgetId to WidgetMetadata().apply {
                                         height = toSize
+                                        raiseCard =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                                ?: false
                                     })
                             widgetView.layoutParams =
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
@@ -192,6 +210,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             it.context.lawnchairPrefs.feedWidgetMetadata
                                     .customAdder(appWidgetId to WidgetMetadata().apply {
                                         height = null
+                                        raiseCard =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                                ?: false
                                     })
                             widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
                             widgetView.apply {

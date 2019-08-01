@@ -36,4 +36,9 @@
         android:layout_gravity="center_horizontal"
         android:background="@drawable/bg_qsb_pill"
         android:backgroundTint="?attr/colorAccent" />
+    <CheckBox
+        android:id="@+id/add_widget_background"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_checkbox_widget_background" />
 </LinearLayout>
