@@ -89,7 +89,10 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                         invalidate()
                                     }.also { it2 -> hostViewCache += it to it2; it2.invalidate() }
                         }
-                    }, Card.NO_HEADER, "nosort, top", it shl 2)
+                    },
+                         if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                              ?: WidgetMetadata.DEFAULT).raiseCard) Card.NO_HEADER or Card.RAISE else Card.NO_HEADER,
+                         "nosort, top", it shl 2)
                 }
     }
 }

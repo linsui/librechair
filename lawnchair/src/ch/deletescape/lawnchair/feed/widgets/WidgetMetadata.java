@@ -19,7 +19,9 @@
 
 package ch.deletescape.lawnchair.feed.widgets;
 
+import androidx.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.NotNull;
 
 public class WidgetMetadata {
 
@@ -27,5 +29,10 @@ public class WidgetMetadata {
     public transient static WidgetMetadata DEFAULT = new WidgetMetadata();
 
     @SerializedName("h")
+    @Nullable
     public Integer height = DEFAULT_HEIGHT;
+
+    @SerializedName("b")
+    @NotNull
+    public Boolean raiseCard = false;
 }
