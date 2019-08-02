@@ -427,10 +427,10 @@
     <!-- HUD information for sunny weather -->
 
     <string name="hud_weather_information_sunny">Clear</string>
-    <string name="hud_weather_information_sunny_occasional_clouds">Mostly clear, with occasional clouds</string>
-    <string name="hud_weather_information_sunny_occasional_rain">Mostly clear, with occasional rain</string>
-    <string name="hud_weather_information_sunny_occasional_snow">Mostly clear, with occasional snow</string>
-    <string name="hud_weather_information_sunny_occasional_thunder">Mostly clear, with occasional thunder</string>
+    <string name="hud_weather_information_sunny_occasional_clouds">Mostly clear with occasional clouds</string>
+    <string name="hud_weather_information_sunny_occasional_rain">Mostly clear with occasional rain</string>
+    <string name="hud_weather_information_sunny_occasional_snow">Mostly clear with occasional snow</string>
+    <string name="hud_weather_information_sunny_occasional_thunder">Mostly clear with occasional thunder</string>
 
 
     <!-- HUD information for cloudy weather -->
@@ -438,21 +438,21 @@
     <string name="hud_weather_information_cloudy">Cloudy</string>
     <string name="hud_weather_information_cloudy_occasional_rain">Periodic showers, mostly clouds</string>
     <string name="hud_weather_information_cloudy_occasional_sun">Mostly cloudy</string>
-    <string name="hud_weather_information_cloudy_occasional_snow">Mostly cloudy, with snow</string>
-    <string name="hud_weather_information_cloudy_occasional_thunder">Mostly cloudy, with snow</string>
+    <string name="hud_weather_information_cloudy_occasional_snow">Mostly cloudy with snow</string>
+    <string name="hud_weather_information_cloudy_occasional_thunder">Mostly cloudy with snow</string>
 
     <!-- HUD information for rainy weather -->
 
     <string name="hud_weather_information_rainy">Rainy</string>
     <string name="hud_weather_information_rainy_occasional_clouds">Periodic showers, with clouds</string>
     <string name="hud_weather_information_rainy_occasional_sun">Periodic showers with clear sky</string>
-    <string name="hud_weather_information_rainy_occasional_snow">Rain, with bursts of snow</string>
+    <string name="hud_weather_information_rainy_occasional_snow">Rainy with bursts of snow</string>
     <string name="hud_weather_information_rainy_occasional_thunder">Rain with thunder</string>
 
     <!-- HUD information for snowy weather -->
 
     <string name="hud_weather_information_snowy">Snowy</string>
-    <string name="hud_weather_information_snowy_occasional_clouds">Periodic showers, with clouds</string>
+    <string name="hud_weather_information_snowy_occasional_clouds">Periodic showers with clouds</string>
     <string name="hud_weather_information_snowy_occasional_sun">Periodic snow with clear sky</string>
     <string name="hud_weather_information_snowy_occasional_rain">Snow with rain</string>
     <string name="hud_weather_information_snowy_occasional_thunder">Snow with thunder</string>
@@ -460,7 +460,7 @@
     <!-- HUD information for thundery weather -->
 
     <string name="hud_weather_information_thunder">Thunderstorms</string>
-    <string name="hud_weather_information_thunder_occasional_clouds">Thunderstorms, with clouds</string>
+    <string name="hud_weather_information_thunder_occasional_clouds">Thunderstorms with clouds</string>
     <string name="hud_weather_information_thunder_occasional_sun">Periodic thunder with clear sky</string>
     <string name="hud_weather_information_thunder_occasional_rain">Thunder with spurts or rain</string>
     <string name="hud_weather_information_thunder_occasional_snow">Thunder with snow</string>
@@ -483,7 +483,7 @@
     <string name="description_preference_immersive_desktop">This will hide the status bar clock from your home screen and recents menu</string>
 
     <string name="title_weather_provider_unified">Unified (forecast provider)</string>
-    <string name="placeholder_rss_item_categories">North Korea, DPRK, Great Leader, Great Leader, Great Leader, Great Leader</string>
+    <string name="placeholder_rss_item_categories">North Korea, DPRK, Miniluv, Minitrue, Miniplenty, Minipeace, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
     <string name="title_pref_integrated_browser">Use integrated browser</string>
     <string name="daily_briefing_current_conditions_prefix">It is currently </string>
