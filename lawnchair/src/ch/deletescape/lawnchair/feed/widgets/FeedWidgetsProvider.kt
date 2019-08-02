@@ -59,9 +59,9 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
         d("getCards: feed widgets list: ${context.lawnchairPrefs.feedWidgetList.getList()}")
         return context.lawnchairPrefs.feedWidgetList.getAll()
                 .filter { appWidgetManager.getAppWidgetInfo(it) != null }.map {
-                    Card(if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle == true)) null else appWidgetManager.getAppWidgetInfo(
+                    Card(if (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle != true) null else appWidgetManager.getAppWidgetInfo(
                             it).loadIcon(context, context.resources.displayMetrics.densityDpi),
-                         if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle == true)) null else appWidgetManager.getAppWidgetInfo(
+                         if (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle != true) null else appWidgetManager.getAppWidgetInfo(
                                  it).loadLabel(context.packageManager), { parent, _ ->
                              if (hostViewCache.containsKey(it)) {
                                  hostViewCache[it] ?: error("")
@@ -95,7 +95,9 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                              }
                          },
                          if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                              ?: WidgetMetadata.DEFAULT).raiseCard) Card.NO_HEADER or Card.RAISE else Card.NO_HEADER,
+                              ?: WidgetMetadata.DEFAULT).raiseCard) if (!(context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                                          ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER or Card.RAISE else Card.RAISE else if (!(context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                                                                                                                                            ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER else Card.DEFAULT,
                          "nosort, top", it shl 2)
                 }
     }
