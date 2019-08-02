@@ -35,4 +35,8 @@ public class WidgetMetadata {
     @SerializedName("b")
     @NotNull
     public Boolean raiseCard = false;
+
+    @SerializedName("l")
+    @NotNull
+    public Boolean showCardTitle = false;
 }

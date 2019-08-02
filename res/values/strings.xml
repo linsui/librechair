@@ -506,4 +506,5 @@
     <string name="title_option_item_test_resize_view">Test resize view</string>
     <string name="title_preference_resize_widget">Resize widget</string>
     <string name="title_checkbox_widget_background">Add background to widget</string>
+    <string name="title_checkbox_widget_display_card_title">Display card title</string>
 </resources>

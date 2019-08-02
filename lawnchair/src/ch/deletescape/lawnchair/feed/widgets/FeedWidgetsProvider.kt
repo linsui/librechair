@@ -59,37 +59,41 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
         d("getCards: feed widgets list: ${context.lawnchairPrefs.feedWidgetList.getList()}")
         return context.lawnchairPrefs.feedWidgetList.getAll()
                 .filter { appWidgetManager.getAppWidgetInfo(it) != null }.map {
-                    Card(null, null, { parent, _ ->
-                        if (hostViewCache.containsKey(it)) {
-                            hostViewCache[it] ?: error("")
-                        } else {
-                            (parent.context.applicationContext as LawnchairApp).overlayWidgetHost
-                                    .createView(parent.context, it,
-                                                appWidgetManager.getAppWidgetInfo(it).apply {
-                                                    minWidth = parent.width
-                                                }).apply {
-                                        setExecutor(inflateExecutor)
-                                        layoutParams = ViewGroup
-                                                .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                              (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                               ?: WidgetMetadata.DEFAULT).height
-                                                              ?: appWidgetInfo.minHeight)
-                                        updateAppWidgetOptions(Bundle().apply {
-                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
-                                                   width)
-                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
-                                                   width)
-                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                   (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                    ?: WidgetMetadata.DEFAULT).height ?: height)
-                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                   (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                    ?: WidgetMetadata.DEFAULT).height ?: height)
-                                        })
-                                        invalidate()
-                                    }.also { it2 -> hostViewCache += it to it2; it2.invalidate() }
-                        }
-                    },
+                    Card(if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle == true)) null else appWidgetManager.getAppWidgetInfo(
+                            it).loadIcon(context, context.resources.displayMetrics.densityDpi),
+                         if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle == true)) null else appWidgetManager.getAppWidgetInfo(
+                                 it).loadLabel(context.packageManager), { parent, _ ->
+                             if (hostViewCache.containsKey(it)) {
+                                 hostViewCache[it] ?: error("")
+                             } else {
+                                 (parent.context.applicationContext as LawnchairApp)
+                                         .overlayWidgetHost.createView(parent.context, it,
+                                                                       appWidgetManager.getAppWidgetInfo(
+                                                                               it).apply {
+                                                                           minWidth = parent.width
+                                                                       }).apply {
+                                     setExecutor(inflateExecutor)
+                                     layoutParams = ViewGroup
+                                             .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                           (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                            ?: WidgetMetadata.DEFAULT).height
+                                                           ?: appWidgetInfo.minHeight)
+                                     updateAppWidgetOptions(Bundle().apply {
+                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
+                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                                (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                 ?: WidgetMetadata.DEFAULT).height ?: height)
+                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                                (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                 ?: WidgetMetadata.DEFAULT).height ?: height)
+                                     })
+                                     invalidate()
+                                 }.also { it2 ->
+                                     hostViewCache += it to it2; it2.invalidate()
+                                 }
+                             }
+                         },
                          if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
                               ?: WidgetMetadata.DEFAULT).raiseCard) Card.NO_HEADER or Card.RAISE else Card.NO_HEADER,
                          "nosort, top", it shl 2)

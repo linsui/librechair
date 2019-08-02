@@ -41,4 +41,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_checkbox_widget_background" />
+    <CheckBox
+        android:id="@+id/display_card_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_checkbox_widget_display_card_title" />
 </LinearLayout>

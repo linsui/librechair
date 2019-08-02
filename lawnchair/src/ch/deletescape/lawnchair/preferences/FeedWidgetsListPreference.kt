@@ -146,7 +146,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                                                         ?: WidgetMetadata.DEFAULT).height
                                                                        ?: resizedAppWidgetInfo.minHeight)
                     val widgetBackgroundCheckbox =
-                            dialogView.findViewById<CheckBox>(R.id.add_widget_background);
+                            dialogView.findViewById<CheckBox>(R.id.add_widget_background)
+                    val cardTitleCheckbox =
+                            dialogView.findViewById<CheckBox>(R.id.display_card_title)
                     widgetBackgroundCheckbox.isChecked =
                             it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
                             ?: false
@@ -157,6 +159,25 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                             .firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                             ?.height
                                     raiseCard = isChecked
+
+                                    showCardTitle =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
+                                            ?: false
+                                })
+                    }
+                    cardTitleCheckbox.isChecked =
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
+                            ?: false
+                    cardTitleCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
+                        it.context.lawnchairPrefs.feedWidgetMetadata
+                                .customAdder(appWidgetId to WidgetMetadata().apply {
+                                    showCardTitle = isChecked
+                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                            ?.height
+                                    raiseCard =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                            ?: false
                                 })
                     }
                     val originalSize = resizedAppWidgetInfo.minHeight
@@ -187,6 +208,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         raiseCard =
                                                 it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
                                                 ?: false
+                                        showCardTitle =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
+                                                ?: false
                                     })
                             widgetView.layoutParams =
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
@@ -212,6 +236,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         height = null
                                         raiseCard =
                                                 it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                                ?: false
+                                        showCardTitle =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
                                                 ?: false
                                     })
                             widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
