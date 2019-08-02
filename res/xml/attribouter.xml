@@ -7,11 +7,6 @@
         playStoreUrl="https://play.google.com/store/apps/details?id=ch.deletescape.lawnchair.plah"
         websiteUrl="https://lawnchair.app">
         <me.jfenn.attribouter.wedges.link.LinkWedge
-            name="@string/about_twitter"
-            icon="@drawable/ic_twitter"
-            priority="-1"
-            url="https://twitter.com/lawnchairapp" />
-        <me.jfenn.attribouter.wedges.link.LinkWedge
             name="@string/about_translate"
             icon="@drawable/ic_translate"
             priority="-1"
@@ -31,10 +26,6 @@
             login="deletescape"
             position="1"
             task="^@string/about_role_lead">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/deletescape" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Special snowflake: chriskardas -->
@@ -46,10 +37,6 @@
             login="chriskardas"
             position="2"
             task="^@string/about_role_special_snowflake">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/chris_kardas" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Developer: paphonb -->
@@ -61,10 +48,6 @@
             login="paphonb"
             position="3"
             task="^@string/about_role_dev">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/paphonb" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Developer: fonix232 -->
@@ -88,10 +71,6 @@
             bio="^@string/about_bio_recoded"
             login="reC0D3D"
             task="^@string/about_role_dev_mod">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/colinrecoded" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Designer: joshuabaldassarre -->
@@ -102,10 +81,6 @@
             blog="https://joshuabaldassarre.github.io/"
             login="joshuabaldassarre"
             task="^@string/about_role_designer">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/JoshBaldassarre" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- UI/UX Designer: lumiqcreative -->
@@ -114,10 +89,6 @@
             avatar="https://avatars.githubusercontent.com/u/30959743"
             login="lumiqcreative"
             task="^@string/about_role_ui_ux_designer">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/lumiqcreative" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Supporter: rickkode -->
@@ -126,10 +97,6 @@
             avatar="https://avatars.githubusercontent.com/u/29402532"
             login="rickkode"
             task="^@string/about_role_mod_support">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/RickKode" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Supporter: bohrabhijeet -->
@@ -138,10 +105,6 @@
             avatar="https://avatars.githubusercontent.com/u/34155181"
             login="bohrabhijeet"
             task="^@string/about_role_mod_support">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/bohrabhijeet" />
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
         <!-- Magisk boi: Skittles9823 -->
@@ -150,10 +113,6 @@
             avatar="https://avatars.githubusercontent.com/u/7065700"
             login="Skittles9823"
             task="^@string/about_role_magisk_maintainer">
-            <me.jfenn.attribouter.wedges.link.LinkWedge
-                name="@string/about_twitter"
-                icon="@drawable/ic_twitter"
-                url="https://twitter.com/skittles9823"/>
         </me.jfenn.attribouter.wedges.ContributorWedge>
     </me.jfenn.attribouter.wedges.ContributorsWedge>
 
