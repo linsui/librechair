@@ -546,10 +546,15 @@ open class LawnchairLauncher : NexusLauncherActivity(),
                     if (resultCode == Activity.RESULT_OK) {
                         it(requestCode)
                     } else {
+                        (applicationContext as LawnchairApp).overlayWidgetHost
+                                .deleteAppWidgetId(requestCode)
                         it(-1)
                     }
                 }
             }
+        } else if (queuedWidgetRequests.any { it.first == requestCode }) {
+            (applicationContext as LawnchairApp).overlayWidgetHost
+                    .deleteAppWidgetId(requestCode shr 1)
         }
     }
 }
