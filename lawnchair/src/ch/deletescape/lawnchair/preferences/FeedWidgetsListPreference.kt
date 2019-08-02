@@ -100,14 +100,14 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                                                 parent, false))
 
             override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-                d("onBindViewHolder: retrieving widget information for widget ${preference.getAll()[position]}")
+                d("onBindViewHolder: retrieving widget information for widget ${preference.getAll()[holder.adapterPosition]}")
                 val appWidgetInfo = holder.itemView.context.appWidgetManager
                         .getAppWidgetInfo(preference.getAll().filter {
                             Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                        }[position])
+                        }[holder.adapterPosition])
                 val appWidgetId = preference.getAll().filter {
                     Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                }[position]
+                }[holder.adapterPosition]
                 holder.dragHandle.setOnTouchListener { view: View, motionEvent: MotionEvent ->
                     if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                         itemTouchHelper?.startDrag(holder)
@@ -131,7 +131,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     val resizedAppWidgetInfo = holder.itemView.context.appWidgetManager
                             .getAppWidgetInfo(preference.getAll().filter {
                                 Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                            }[position]).apply {
+                            }[holder.adapterPosition]).apply {
                                 minWidth = (dialogView.parent as View).width
                             }
                     val resizeView = dialogView.findViewById<VerticalResizeView>(R.id.resize_view)
