@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import io.weatherbase.api.model.WeatherbitServiceFactory
 import io.weatherbit.api.Class120HourHourlyForecastApi
+import io.weatherbit.api.Class16DayDailyForecastApi
 import io.weatherbit.api.CurrentWeatherDataApi
 import java.io.IOException
 import java.time.Instant
@@ -38,12 +39,13 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     override fun getGeolocation(query: String): Pair<Double, Double> {
         return {
             try {
-                val response = WeatherbitServiceFactory.getRetrofitService(
-                        CurrentWeatherDataApi::class)
-                        .currentcitycitycountrycountryGet(query.split(",")[0].trim(),
-                                                          query.split(",")[1].trim(), null, null,
-                                                          null, context.locale.language, null)
-                        .execute()
+                val response =
+                        WeatherbitServiceFactory.getRetrofitService(CurrentWeatherDataApi::class)
+                                .currentcitycitycountrycountryGet(query.split(",")[0].trim(),
+                                                                  query.split(",")[1].trim(), null,
+                                                                  null, null,
+                                                                  context.locale.language, null)
+                                .execute()
                 response.body()!!.data[0].lat.toDouble() to response.body()!!.data[0].lon.toDouble()
             } catch (e: IOException) {
                 throw ForecastProvider.ForecastException(e)
@@ -82,26 +84,44 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     }
 
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
-        throw ForecastProvider.ForecastException("Not implemented")
+        try {
+            val response =
+                    WeatherbitServiceFactory.getRetrofitService(Class16DayDailyForecastApi::class)
+                            .forecastDailylatlatlonlonGet(lat, lon, 5.toBigDecimal(), null,
+                                                          context.locale.language, null).execute()
+            val data = mutableListOf<ForecastProvider.DailyForecastData>()
+            response.body()!!.data!!.forEach {
+                data += ForecastProvider.DailyForecastData(
+                        Temperature(it.maxTemp.toInt(), Temperature.Unit.Celsius),
+                        Temperature(it.minTemp.toInt(), Temperature.Unit.Celsius),
+                        Date.from(Instant.ofEpochSecond(it.ts.toLong())),
+                        WeatherIconManager.getInstance(context).getIcon(
+                                WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.first,
+                                WeatherbitDataProvider.ICON_IDS[it.weather.icon]!!.second), null)
+            }
+            return ForecastProvider.DailyForecast(data)
+        } catch (e: Throwable) {
+            throw ForecastProvider.ForecastException(e)
+        }
     }
 
     override fun getCurrentWeather(lat: Double, lon: Double): ForecastProvider.CurrentWeather {
         try {
             d("getCurrentWeather: retrieving weather for $lat, $lon")
             val response = WeatherbitServiceFactory.getRetrofitService(
-                    CurrentWeatherDataApi::class).currentlatlatlonlonGet(lat, lon, null, null, context.locale.language,
-                                                                         null).execute()
-                    .body()!!.data[0]!!
+                    CurrentWeatherDataApi::class).currentlatlatlonlonGet(lat, lon, null, null,
+                                                                         context.locale.language,
+                                                                         null).execute().body()!!.data[0]!!
             d("getCurrentWeather: response: $response")
             val icon = WeatherIconManager.getInstance(context).getIcon(
-                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.first ?: WeatherIconManager.Icon.NA,
+                    WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.first
+                    ?: WeatherIconManager.Icon.NA,
                     WeatherbitDataProvider.ICON_IDS[response.weather.icon]?.second ?: false)
             val temperature = Temperature(response.temp.toInt(), Temperature.Unit.Celsius)
-            return ForecastProvider
-                    .CurrentWeather(
-                            arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]?.first
-                                    ?: 0), Date.from(Instant.ofEpochSecond(response.ts.toLong())),
-                            temperature, icon, response.precip.toDouble());
+            return ForecastProvider.CurrentWeather(
+                    arrayOf(WeatherbitDataProvider.COND_IDS[response.weather.icon]?.first ?: 0),
+                    Date.from(Instant.ofEpochSecond(response.ts.toLong())), temperature, icon,
+                    response.precip.toDouble());
         } catch (e: Throwable) {
             throw ForecastProvider.ForecastException(e)
         }

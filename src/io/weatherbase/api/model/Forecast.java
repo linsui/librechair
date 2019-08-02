@@ -33,6 +33,7 @@ package io.weatherbase.api.model;
 
 import com.google.gson.annotations.SerializedName;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.weatherbase.api.model.CurrentObs.Weather;
 import java.math.BigDecimal;
 import java.util.Objects;
 /**
@@ -87,7 +88,7 @@ public class Forecast {
   private Integer clouds = null;
 
   @SerializedName("weather")
-  private Object weather = null;
+  private Weather weather = null;
 
   @SerializedName("slp")
   private BigDecimal slp = null;
@@ -407,7 +408,7 @@ public class Forecast {
     this.clouds = clouds;
   }
 
-  public Forecast weather(Object weather) {
+  public Forecast weather(Weather weather) {
     this.weather = weather;
     return this;
   }
@@ -417,11 +418,11 @@ public class Forecast {
    * @return weather
   **/
   @Schema(description = "")
-  public Object getWeather() {
+  public Weather getWeather() {
     return weather;
   }
 
-  public void setWeather(Object weather) {
+  public void setWeather(Weather weather) {
     this.weather = weather;
   }
 
