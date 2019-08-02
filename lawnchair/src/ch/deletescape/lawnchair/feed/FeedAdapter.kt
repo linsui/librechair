@@ -21,7 +21,9 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Vibrator
 import android.provider.Settings
@@ -146,6 +148,13 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
             holder.itemView.setOnLongClickListener {
                 isDeleteActive = true
                 holder.itemView.animate().scaleX(0.7f).scaleY(0.7f).duration = 100
+                LayoutInflater.from(holder.itemView.context)
+                        .inflate(R.layout.card_remove_hint, holder.itemView as ViewGroup, false)
+                        .apply {
+                            background = ColorDrawable(Color.BLACK)
+                            alpha = 0f
+                            animate()?.alpha(.7f)?.duration = 500
+                        }.also { (holder.itemView).addView(it) }
                 true
             }
 
@@ -159,6 +168,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                     runOnNewThread {
                         cards.removeAt(holder.adapterPosition)
                         holder.itemView.post {
+                            (holder.itemView as ViewGroup).removeView(
+                                    holder.itemView.findViewById<View>(R.id.card_removal_hint));
                             notifyItemRemoved(holder.adapterPosition)
                             Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
                                     .setAction(R.string.undo) {
@@ -179,6 +190,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                 } else if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_CANCEL) {
                     isDeleteActive = false
                     holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
+                    (holder.itemView as ViewGroup)
+                            .removeView(holder.itemView.findViewById<View>(R.id.card_removal_hint));
                 }
 
                 return@setOnTouchListener false
