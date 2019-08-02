@@ -112,6 +112,7 @@ interface ForecastProvider {
     class ForecastException : IOException {
         constructor(s: String) : super(s)
         constructor(e: Throwable) : super(e)
+        constructor(message: String, e: Throwable) : super(message, e)
     }
 
     class Controller {

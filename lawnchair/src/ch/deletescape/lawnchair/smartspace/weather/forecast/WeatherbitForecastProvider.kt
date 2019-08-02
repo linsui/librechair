@@ -53,24 +53,32 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     }
 
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
-        val response = WeatherbitServiceFactory.getRetrofitService(Class120HourHourlyForecastApi::class).forecastHourlylatlatlonlonGet(lat, lon, null, context.locale.language, null, 120).execute();
-        if (!response.isSuccessful) {
-            throw ForecastProvider.ForecastException(response.toString())
+        try {
+            val response = WeatherbitServiceFactory
+                    .getRetrofitService(Class120HourHourlyForecastApi::class)
+                    .forecastHourlylatlatlonlonGet(lat, lon, null, context.locale.language, null,
+                                                   120).execute();
+            if (!response.isSuccessful) {
+                throw ForecastProvider.ForecastException(response.toString())
+            }
+            val weatherData: MutableList<ForecastProvider.ForecastData> = newList();
+            response.body()!!.data!!.forEach {
+                weatherData += ForecastProvider.ForecastData(
+                        LawnchairSmartspaceController.WeatherData(
+                                WeatherIconManager(context).getIcon(
+                                        WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.first
+                                        ?: WeatherIconManager.Icon.NA,
+                                        WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.second
+                                        ?: false),
+                                Temperature(it.temp.toInt(), Temperature.Unit.Celsius), null, null,
+                                null, lat, lon, it.weather.icon.toString()),
+                        Date.from(Instant.ofEpochSecond(it.ts.toLong())),
+                        arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]!!.first))
+            }
+            return ForecastProvider.Forecast(weatherData)
+        } catch (e: IOException) {
+            throw ForecastProvider.ForecastException(e)
         }
-        val weatherData: MutableList<ForecastProvider.ForecastData> = newList();
-        response.body()!!.data!!.forEach {
-            weatherData += ForecastProvider.ForecastData(
-                    LawnchairSmartspaceController.WeatherData(WeatherIconManager(context).getIcon(WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.first ?: WeatherIconManager.Icon.NA, WeatherbitDataProvider.ICON_IDS[it.weather.icon]?.second ?: false),
-                                                              Temperature(it.temp.toInt(), Temperature.Unit.Celsius),
-                                                              null,
-                                                              null,
-                                                              null,
-                                                              lat,
-                                                              lon,
-                                                              it.weather.icon.toString())
-                    , Date.from(Instant.ofEpochSecond(it.ts.toLong())), arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]!!.first))
-        }
-        return ForecastProvider.Forecast(weatherData)
     }
 
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
