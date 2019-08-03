@@ -24,6 +24,7 @@ import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetProviderInfo;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RemoteViews;
 import com.android.launcher3.R;
@@ -54,6 +55,15 @@ public class OverlayWidgetHost extends AppWidgetHost {
             protected View getErrorView() {
                 return LayoutInflater.from(this.getContext())
                         .inflate(R.layout.appwidget_error, this, false);
+            }
+
+            @Override
+            public boolean onInterceptTouchEvent(MotionEvent event) {
+                if (getParent() != null && getParent().getParent() != null) {
+                    getParent().requestDisallowInterceptTouchEvent(true);
+                    getParent().getParent().requestDisallowInterceptTouchEvent(true);
+                }
+                return super.onInterceptTouchEvent(event);
             }
         };
     }
