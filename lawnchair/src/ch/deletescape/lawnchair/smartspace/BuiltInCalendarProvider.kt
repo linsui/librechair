@@ -50,18 +50,21 @@ import android.support.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
+import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
 
 
-@Keep class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
+@Keep
+class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
 
     private var silentlyFail: Boolean = false
     private val iconProvider = WeatherIconProvider(controller.context)
     private val weather = LawnchairSmartspaceController
-            .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "", iconType = "01n")
+            .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "",
+                         iconType = "01n")
     private var card: LawnchairSmartspaceController.CardData? = null
     private val handlerThread by lazy { HandlerThread(javaClass.hashCode().toString()) }
     private val workerHandler by lazy { Handler(handlerThread.looper) }
@@ -77,7 +80,7 @@ import java.util.*
     private fun updateInformation() {
         Log.d(javaClass.name, "updateInformation: refreshing calendar")
         if (controller.context.checkSelfPermission(
-                    android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                        android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
             silentlyFail = true;
         } else {
@@ -104,8 +107,7 @@ import java.util.*
                 .query(CalendarContract.Events.CONTENT_URI,
                        arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
                                CalendarContract.Instances.DTEND,
-                               CalendarContract.Instances.DESCRIPTION,
-                               CalendarContract.Events._ID,
+                               CalendarContract.Instances.DESCRIPTION, CalendarContract.Events._ID,
                                CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
                        CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
@@ -134,23 +136,34 @@ import java.util.*
             val diffMinutes = diff / (60 * 1000)
             val diffHours = diff / (60 * 60 * 1000)
             val text = if (diffMinutes <= 0) controller.context.getString(
-                R.string.reusable_str_now) else controller.context.getString(
-                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                diffMinutes)
+                    R.string.reusable_str_now) else controller.context.getString(
+                    if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                    diffMinutes)
             val intent = Intent(Intent.ACTION_VIEW)
             if (eventCursor.getString(5) != null) {
-                if (controller.context.packageManager.getApplicationEnabledSetting(eventCursor.getString(5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+                if (controller.context.packageManager.getApplicationEnabledSetting(
+                                eventCursor.getString(
+                                        5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
                     intent.`package` = eventCursor.getString(5)!!
                 }
             }
-            intent.data = Uri
-                    .parse("content://com.android.calendar/events/" + eventCursor.getLong(4).toString())
+            intent.data = Uri.parse("content://com.android.calendar/events/" + eventCursor.getLong(
+                    4).toString())
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                controller.context.resources.getDrawable(R.drawable.ic_event_black_24dp)),
-                                                          if (title == null || title.trim().isEmpty()) controller.context.getString(
-                                                              R.string.placeholder_empty_title) else title,
-                                                          TextUtils.TruncateAt.MARQUEE, text,
-                                                          TextUtils.TruncateAt.END, PendingIntent.getActivity(controller.context, 0, intent, 0, null))
+                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!),
+                                                          listOf(LawnchairSmartspaceController.Line(
+                                                                  if (title == null || title.trim().isEmpty()) controller.context.getString(
+                                                                          R.string.placeholder_empty_title) else title,
+                                                                  TextUtils.TruncateAt.MARQUEE),
+                                                                 LawnchairSmartspaceController.Line(
+                                                                         text,
+                                                                         TextUtils.TruncateAt.END),
+                                                                 LawnchairSmartspaceController.Line(
+                                                                         formatTime(startTime,
+                                                                                    context))),
+                                                          PendingIntent.getActivity(
+                                                                  controller.context, 0, intent, 0,
+                                                                  null))
             eventCursor.close();
             updateData(weather, card)
         } catch (e: CursorIndexOutOfBoundsException) {
@@ -165,9 +178,8 @@ import java.util.*
                                    CalendarContract.Instances.DTSTART,
                                    CalendarContract.Instances.DTEND,
                                    CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Instances.ALL_DAY,
-                                   CalendarContract.Events._ID), query, null,
-                           CalendarContract.Instances.DTSTART + " ASC")
+                                   CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
+                           query, null, CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
                       "updateInformation: query is null, probably since there are no events that meet the specified criteria")
@@ -188,15 +200,16 @@ import java.util.*
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
                 val lines = listOf(LawnchairSmartspaceController.Line(
-                    if (title == null || title.trim().isEmpty()) controller.context.getString(
-                        R.string.placeholder_empty_title) else title, TextUtils.TruncateAt.MARQUEE),
-                                   LawnchairSmartspaceController.Line(controller.context.getString(
-                                       if (eventCursor.getInt(
-                                                   4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
-                                                                      TextUtils.TruncateAt.END))
+                        if (title == null || title.trim().isEmpty()) controller.context.getString(
+                                R.string.placeholder_empty_title) else title,
+                        TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
+                        controller.context.getString(if (eventCursor.getInt(
+                                        4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
+                        TextUtils.TruncateAt.END))
                 val description = eventCursor.getString(3);
                 card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
+                        controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines,
+                                                              true)
                 eventCursor.close();
                 updateData(weather, card)
             } catch (e: CursorIndexOutOfBoundsException) {
