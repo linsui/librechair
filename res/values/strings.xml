@@ -509,4 +509,6 @@
     <string name="title_checkbox_widget_display_card_title">Display card title</string>
     <string name="title_card_removal_hint">Let go to remove</string>
     <string name="subtitle_card_removal_hint">Slide finger away to cancel</string>
+    <string name="placeholder_title_card_daily_summary">Mon Jul 22</string>
+    <string name="title_feed_provider_daily_summary">Daily summary</string>
 </resources>

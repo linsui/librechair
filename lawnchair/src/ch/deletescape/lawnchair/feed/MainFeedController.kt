@@ -80,6 +80,8 @@ class MainFeedController(val context: Context) {
                         context)
                 FeedWidgetsProvider::class.java.name -> context.getString(
                         R.string.title_feed_provider_widgets)
+                DailySummaryFeedProvider::class.java.name -> R.string.title_feed_provider_daily_summary.fromStringRes(
+                        context)
 
                 else -> error("No such provider ${provider}")
             }
@@ -99,7 +101,8 @@ class MainFeedController(val context: Context) {
                           CustomizableRSSProvider::class.java.name,
                           GSyndicationFeedProvider::class.java.name,
                           DeviceStateProvider::class.java.name,
-                          FeedWidgetsProvider::class.java.name)
+                          FeedWidgetsProvider::class.java.name,
+                          DailySummaryFeedProvider::class.java.name)
         }
     }
 }
