@@ -1077,16 +1077,20 @@ fun <T> alter(condition: Boolean, pos: () -> Unit, neg: () -> Unit) {
 }
 
 inline val SyndEntry.thumbnailURL: String?
-    get() = {
+    get() = run {
         if (foreignMarkup.isEmpty()) {
             null
         }
         for (element in foreignMarkup) {
             if (element.namespace?.prefix == "media" || element.namespace?.prefix == "image") {
                 if (element.name == "image" || element.name == "thumbnail") {
-                    element.getAttribute("url")?.value
+                    return@run element.getAttribute("url")?.value
+                }
+            } else if (element.namespace?.prefix == "media" && element.name == "content") {
+                if (element.getAttribute("medium")?.value == "image") {
+                    return@run element.getAttribute("url")?.value
                 }
             }
         }
         null
-    }()
+    }
