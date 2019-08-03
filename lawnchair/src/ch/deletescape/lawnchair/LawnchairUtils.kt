@@ -1097,3 +1097,9 @@ inline val SyndEntry.thumbnailURL: String?
         }
         return@run null
     }.also { d("get: found thumbnail $it") }
+
+fun Resources.Theme.getColorAttrib(attrib: Int): Int {
+    val value = TypedValue()
+    resolveAttribute(R.attr.colorAccent, value, true)
+    return value.data
+}
