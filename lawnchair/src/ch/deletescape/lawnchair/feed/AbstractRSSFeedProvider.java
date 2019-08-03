@@ -30,7 +30,8 @@ import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
-import com.prof.rssparser.Article;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
-    private List<Article> articles;
+    private SyndFeed articles;
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
@@ -77,7 +78,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             List<Card> cards = LawnchairUtilsKt.newList();
             Log.d(getClass().getName(),
                     "getCards: iterating through entries: " + articles.toString());
-            for (Article entry : articles) {
+            for (SyndEntry entry : articles.getEntries()) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
                 cards.add(new Card(null, null, parent -> {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
@@ -94,20 +95,23 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
-                    Log.d(getClass().getSimpleName(), "inflate: Image URL is " + entry.getImage());
+                    Log.d(getClass().getSimpleName(),
+                            "inflate: Image URL is " + LawnchairUtilsKt.getThumbnailURL(entry));
 
-
-                    if (entry.getImage() != null && entry.getImage().startsWith("http")) {
-                        new Builder(parent.getContext()).build().load(entry.getImage())
+                    if (LawnchairUtilsKt.getThumbnailURL(entry) != null && LawnchairUtilsKt
+                            .getThumbnailURL(entry).startsWith("http")) {
+                        new Builder(parent.getContext()).build()
+                                .load(LawnchairUtilsKt.getThumbnailURL(entry))
                                 .placeholder(R.mipmap.ic_launcher).into(icon);
                     } else {
-                        new Builder(parent.getContext()).build().load("https:" + entry.getImage())
+                        new Builder(parent.getContext()).build()
+                                .load("https:" + LawnchairUtilsKt.getThumbnailURL(entry))
                                 .placeholder(R.mipmap.ic_launcher).into(icon);
                     }
 
                     title.setText(String.format("%s: %s", MainFeedController.Companion
                             .getDisplayName(getClass().getName(), getContext()), entry.getTitle()));
-                    String spanned = Html.fromHtml(entry.getDescription(), 0).toString();
+                    String spanned = Html.fromHtml(entry.getDescription().getValue(), 0).toString();
                     if (spanned.length() > 256) {
                         spanned = spanned.subSequence(0, 256).toString() + "...";
                     }
@@ -119,12 +123,18 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     if (entry.getCategories().isEmpty()) {
                         categories.setText("");
                     } else {
-                        categories.setText(String.join(", ", entry.getCategories()));
+                        categories.setText(String.join(", ",
+                                entry.getCategories().stream().map(entry2 -> entry2.getName())
+                                        .collect(
+                                                Collectors.toList())));
                     }
 
-                    date.setText(entry.getPubDate());
+                    date.setText(entry.getPublishedDate().toLocaleString());
                     return v;
-                }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null, entry.hashCode(), true, entry.getCategories()));
+                }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
+                        entry.hashCode(), true,
+                        entry.getCategories().stream().map(entry2 -> entry2.getName()).collect(
+                                Collectors.toList())));
             }
             return cards;
         }
@@ -134,6 +144,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     protected interface BindCallback {
 
-        void onBind(List<Article> feed);
+        void onBind(SyndFeed feed);
     }
 }

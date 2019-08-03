@@ -31,19 +31,20 @@ import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
-import com.prof.rssparser.Article
+import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
 
-    internal var feeds: List<List<Article>>? = null
+    internal var feeds: List<SyndFeed>? = null
 
     init {
-        bindFeeds(object : OnBindHandler {
-            override fun bindFeed(feeds2: List<List<Article>>) {
+        @Suppress("LeakingThis") bindFeeds(object : OnBindHandler {
+            override fun bindFeed(feeds2: List<SyndFeed>) {
                 feeds = feeds2;
             }
         })
@@ -61,7 +62,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
             for (articles in feeds!!) {
                 val temporary = newList<Card>()
                 Log.d(javaClass.name, "getCards: iterating through entries: $articles")
-                for (entry in articles) {
+                for (entry in articles.entries) {
                     Log.d(javaClass.name, "getCards: syndication entry: $entry")
                     temporary.add(Card(null, null, object : Card.Companion.InflateHelper {
                         override fun inflate(parent: ViewGroup): View {
@@ -82,24 +83,28 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             readMore = v.findViewById(R.id.rss_item_read_more)
                             categories = v.findViewById(R.id.rss_item_categories)
 
-                            d("inflate: Image URL is ${entry.image}")
+                            d("inflate: Image URL is ${entry.thumbnailURL}")
 
-                            if (entry.image != null && entry.image!!.startsWith("http")) {
-                                Picasso.Builder(parent.context).build().load(entry.image)
+                            if (entry.thumbnailURL != null && entry.thumbnailURL!!.startsWith(
+                                            "http")) {
+                                Picasso.Builder(parent.context).build().load(entry.thumbnailURL)
                                         .placeholder(R.mipmap.ic_launcher).into(icon)
                             } else {
-                                Picasso.Builder(parent.context).build().load("https://" + entry.image)
+                                Picasso.Builder(parent.context).build()
+                                        .load("https://" + entry.thumbnailURL)
                                         .placeholder(R.mipmap.ic_launcher).into(icon)
                             }
 
                             if (entry.categories.isEmpty()) {
                                 categories.text = ""
                             } else {
-                                categories.text = entry.categories.joinToString(", ")
+                                categories.text =
+                                        entry.categories.map { it.name }.joinToString(", ")
                             }
 
                             title.text = entry.title
-                            var spanned = Html.fromHtml(entry.description, 0).toString()
+                            var spanned =
+                                    Html.fromHtml(entry.description?.value ?: "", 0).toString()
                             if (spanned.length > 256) {
                                 spanned = spanned.subSequence(0, 256).toString() + "..."
                             }
@@ -108,17 +113,17 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                 Utilities.openURLinBrowser(v2.context, entry.link)
                             }
 
-                            date.text = entry.pubDate
+                            date.text = entry.publishedDate.toLocaleString()
                             return v
                         }
-                    }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true, entry.categories))
+                    }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true,
+                                       entry.categories.map { it.name }))
                 }
                 cards.add(temporary)
             }
 
-            val sorted = ReflectionUtils
-                    .inflateSortingAlgorithm(
-                LawnchairPreferences.getInstance(context).feedPresenterAlgorithm)
+            val sorted = ReflectionUtils.inflateSortingAlgorithm(
+                    LawnchairPreferences.getInstance(context).feedPresenterAlgorithm)
                     .sort(* cards.toTypedArray())
             return sorted
         }
@@ -127,6 +132,6 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
     protected abstract fun bindFeeds(handler: OnBindHandler)
 
     protected interface OnBindHandler {
-        fun bindFeed(feeds: List<List<Article>>)
+        fun bindFeed(feeds: List<SyndFeed>)
     }
 }

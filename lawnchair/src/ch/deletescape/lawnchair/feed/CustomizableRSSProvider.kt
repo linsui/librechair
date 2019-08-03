@@ -22,30 +22,36 @@ package ch.deletescape.lawnchair.feed
 import android.content.Context
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
-import com.prof.rssparser.Article
-import com.prof.rssparser.OnTaskCompleted
-import com.prof.rssparser.Parser
+import com.rometools.rome.feed.synd.SyndFeed
+import com.rometools.rome.io.FeedException
+import com.rometools.rome.io.SyndFeedInput
+import org.apache.commons.io.IOUtils
+import org.apache.commons.io.input.CharSequenceInputStream
+import org.xml.sax.InputSource
+import java.io.IOException
+import java.net.URL
+import java.nio.charset.Charset
 import java.util.concurrent.Executors
 
 class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(c) {
     override fun bindFeeds(handler: OnBindHandler) {
         Executors.newSingleThreadExecutor().submit {
             val rssProviders = LawnchairPreferences.getInstance(context).feedRSSSources.getAll()
-            var syndicationFeeds = newList<List<Article>>();
+            val syndicationFeeds = newList<SyndFeed>();
             rssProviders.forEach {
-                val parser = Parser()
-                parser.execute(it)
-                parser.onFinish(object : OnTaskCompleted {
-                    override fun onTaskCompleted(list: MutableList<Article>) {
-                        syndicationFeeds.add(list)
-                        handler.bindFeed(syndicationFeeds);
-                    }
-
-                    override fun onError(e: Exception) {
-                        e.printStackTrace()
-                    }
-
-                })
+                val feed: String
+                try {
+                    feed = IOUtils.toString(
+                            URL("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en").openConnection().getInputStream(),
+                            Charset.defaultCharset())
+                    syndicationFeeds += SyndFeedInput().build(InputSource(
+                            CharSequenceInputStream(feed, Charset.defaultCharset())))
+                    handler.bindFeed(syndicationFeeds)
+                } catch (e: FeedException) {
+                    e.printStackTrace()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
             }
         }
     }

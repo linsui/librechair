@@ -81,6 +81,7 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
+import com.rometools.rome.feed.synd.SyndEntry
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
@@ -1074,3 +1075,18 @@ fun <T> alter(condition: Boolean, pos: () -> Unit, neg: () -> Unit) {
         neg()
     }
 }
+
+inline val SyndEntry.thumbnailURL: String?
+    get() = {
+        if (foreignMarkup.isEmpty()) {
+            null
+        }
+        for (element in foreignMarkup) {
+            if (element.namespace?.prefix == "media" || element.namespace?.prefix == "image") {
+                if (element.name == "image" || element.name == "thumbnail") {
+                    element.getAttribute("url")?.value
+                }
+            }
+        }
+        null
+    }()

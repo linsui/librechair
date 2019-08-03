@@ -21,12 +21,15 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.util.Log;
-import com.prof.rssparser.Article;
-import com.prof.rssparser.OnTaskCompleted;
-import com.prof.rssparser.Parser;
-import java.util.List;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
-import org.jetbrains.annotations.NotNull;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CharSequenceInputStream;
+import org.xml.sax.InputSource;
 
 public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
 
@@ -38,18 +41,19 @@ public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
     public void bindFeed(BindCallback callback) {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
-            Parser parser = new Parser();
-            parser.execute("https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=15&ordermethod=categoryadd&stablepages=only");
-            parser.onFinish(new OnTaskCompleted() {
-                @Override
-                public void onTaskCompleted(@NotNull List<Article> list) {
-                    Log.d(getClass().getCanonicalName(), "bindFeed: update complete");
-                    callback.onBind(list);
-                }
-
-                @Override
-                public void onError(@NotNull Exception e) {
-                    Log.d(getClass().getCanonicalName(), "bindFeed: update failed", e);
+            Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
+            Executors.newSingleThreadExecutor().submit(() -> {
+                String feed;
+                try {
+                    feed = IOUtils.toString(
+                            new URL("https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only")
+                                    .openConnection()
+                                    .getInputStream(), Charset
+                                    .defaultCharset());
+                    callback.onBind(new SyndFeedInput().build(new InputSource(
+                            new CharSequenceInputStream(feed, Charset.defaultCharset()))));
+                } catch (FeedException | IOException e) {
+                    e.printStackTrace();
                 }
             });
         });

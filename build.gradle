@@ -339,7 +339,7 @@ dependencies {
     implementation 'info.bliki.wiki:bliki-core:3.1.0'
     implementation 'commons-io:commons-io:2.6'
 
-    implementation 'com.prof.rssparser:rssparser:2.0.4'
+    implementation 'com.rometools:rome:1.12.1'
     implementation 'com.googlecode:openbeans:1.0'
 
     implementation 'com.github.florent37:fiftyshadesof:1.0.0'
