@@ -67,6 +67,7 @@ import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.*
 import com.android.launcher3.compat.LauncherAppsCompat
@@ -1079,18 +1080,19 @@ fun <T> alter(condition: Boolean, pos: () -> Unit, neg: () -> Unit) {
 inline val SyndEntry.thumbnailURL: String?
     get() = run {
         if (foreignMarkup.isEmpty()) {
-            null
+            return@run null
         }
         for (element in foreignMarkup) {
-            if (element.namespace?.prefix == "media" || element.namespace?.prefix == "image") {
+            d("get: parsing foreign markup element $element for image url")
+            if (element.namespacePrefix == "media" || element.namespacePrefix == "image") {
                 if (element.name == "image" || element.name == "thumbnail") {
                     return@run element.getAttribute("url")?.value
                 }
-            } else if (element.namespace?.prefix == "media" && element.name == "content") {
+            } else if (element.namespacePrefix == "media" && element.namespacePrefix == "content") {
                 if (element.getAttribute("medium")?.value == "image") {
                     return@run element.getAttribute("url")?.value
                 }
             }
         }
-        null
+        return@run null
     }
