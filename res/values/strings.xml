@@ -415,8 +415,8 @@
     <string name="title_feed_provider_bbc">BBC</string>
     <string name="title_feed_provider_google_news">Google News</string>
     <string name="title_feed_provider_customizable_rss">Custom feeds</string>
-    <string name="title_pref_rss_sources">RSS sources</string>
-    <string name="title_dialog_add_new_rss_source">New RSS source</string>
+    <string name="title_pref_rss_sources">Syndication sources</string>
+    <string name="title_dialog_add_new_rss_source">Add syndication source</string>
     <string name="title_button_dialog_ok">OK</string>
     <string name="title_pref_feed_corner_rounding">Corner radius</string>
     <string name="title_pref_forecast_provider">Forecast provider</string>
