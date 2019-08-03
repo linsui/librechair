@@ -48,13 +48,28 @@ import java.util.*
 
 
 class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
-        DialogPreference(context, attrs) {
+        DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
+    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
+        updateSummary()
+    }
+
 
     override fun getNegativeButtonText(): CharSequence? {
         return null
     }
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
+
+    fun updateSummary() {
+        summary = context!!.lawnchairPrefs.feedWidgetList.getAll().mapNotNull {
+            context.appWidgetManager.getAppWidgetInfo(it)?.loadLabel(context.packageManager)
+        }.joinToString()
+    }
+
+    init {
+        updateSummary()
+        context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_widgets")
+    }
 
 
     class ViewHolder(itemView: View,
