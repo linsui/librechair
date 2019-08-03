@@ -1083,16 +1083,17 @@ inline val SyndEntry.thumbnailURL: String?
             return@run null
         }
         for (element in foreignMarkup) {
-            d("get: parsing foreign markup element $element for image url")
-            if (element.namespacePrefix == "media" || element.namespacePrefix == "image") {
-                if (element.name == "image" || element.name == "thumbnail") {
-                    return@run element.getAttribute("url")?.value
-                }
-            } else if (element.namespacePrefix == "media" && element.namespacePrefix == "content") {
-                if (element.getAttribute("medium")?.value == "image") {
-                    return@run element.getAttribute("url")?.value
-                }
+            d("get: parsing foreign markup element ${element.namespacePrefix} ${element.name} ${element.attributes} ${element.getAttribute(
+                    "url")} for image url")
+            if (element.getAttributeValue("url")?.contains(
+                            Regex("(img|image|png|jpeg|bmp)")) == true || element.getAttributeValue(
+                            "url")?.matches(
+                            Regex("https://.+\\.googleusercontent.com/proxy/.+")) == true) {
+                d("get: attribute \"url\" is a valid image URL. using that!")
+                return@run element.getAttributeValue("url")
+            } else if (element.getAttributeValue("url") != null) {
+                return element.getAttributeValue("url")
             }
         }
         return@run null
-    }
+    }.also { d("get: found thumbnail $it") }
