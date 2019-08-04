@@ -227,6 +227,7 @@ class LawnchairPreferences(val context: Context) :
             setAll(getAll().filter { it.first != value.first } + value)
         }
     }
+    var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, restart);
 
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
 

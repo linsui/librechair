@@ -53,7 +53,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     private val dark: Boolean = ThemeManager.getInstance(contex2t.applicationContext).isDark
     private val context = ContextThemeWrapper(contex2t,
-                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+                                              if (dark || contex2t.lawnchairPrefs.feedCardBlur) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
                                LawnchairPreferences.getInstance(

@@ -514,4 +514,7 @@
     <string name="placeholder_text_daily_summary">11 events scheduled for today</string>
     <string name="title_checkbox_sort_widget">Sort widget by sorting algorithm</string>
     <string name="hint_edit_text_card_title">Card title</string>
+
+    <string name="title_pref_blur_feed_cards">Blur cards</string>
+    <string name="description_pref_blur_feed_cards">Blur the background of cards and turn the text white</string>
 </resources>

@@ -34,6 +34,7 @@ import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -44,6 +45,7 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.github.mmin18.widget.RealtimeBlurView
 
 class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
                   backgroundColor: Int, private val context: Context) :
@@ -285,12 +287,15 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
 }
 
 class CardViewHolder : RecyclerView.ViewHolder {
-    val icon: ImageView? by lazy {
+    val icon by lazy {
         itemView.findViewById(R.id.card_provider_small_icon) as ImageView?
     }
-    val description: TextView? by lazy { itemView.findViewById(R.id.card_title) as TextView? }
+    val description by lazy { itemView.findViewById(R.id.card_title) as TextView? }
     val viewHolder: LinearLayout by lazy {
         itemView.findViewById(R.id.card_view_holder) as LinearLayout
+    }
+    private val backgroundBlurView by lazy {
+        itemView.findViewById(R.id.card_blur_view) as RealtimeBlurView?
     }
 
     constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(
@@ -318,6 +323,15 @@ class CardViewHolder : RecyclerView.ViewHolder {
         } else if (type and Card.RAISE == 0) {
             description?.setTextColor(
                     description?.context?.getColor(R.color.textColorPrimaryInverse) ?: 0)
+        }
+
+        if (viewHolder.context.lawnchairPrefs.feedCardBlur && type and Card.RAISE != 0) {
+            (itemView as CardView).setCardBackgroundColor(Color.TRANSPARENT)
+            itemView.background.setTint(Color.argb(64, 255, 255, 255))
+            backgroundBlurView!!.visibility = VISIBLE
+            backgroundBlurView!!.setBlurRadius(
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25f,
+                                              itemView.context.resources.displayMetrics))
         }
     }
 }

@@ -85,4 +85,6 @@
 
     <color name="all_apps_label_text">#61000000</color>
     <color name="all_apps_label_text_dark">#61ffffff</color>
+
+    <color name="frosted_blur_overlay_colour">@android:color/transparent</color>
 </resources>
