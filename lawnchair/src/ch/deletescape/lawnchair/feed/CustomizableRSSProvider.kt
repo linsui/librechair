@@ -41,9 +41,8 @@ class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(
             rssProviders.forEach {
                 val feed: String
                 try {
-                    feed = IOUtils.toString(
-                            URL("https://news.google.com/rss?hl=en-US&gl=US&ceid=US:en").openConnection().getInputStream(),
-                            Charset.defaultCharset())
+                    feed = IOUtils.toString(URL(it).openConnection().getInputStream(),
+                                            Charset.defaultCharset())
                     syndicationFeeds += SyndFeedInput().build(InputSource(
                             CharSequenceInputStream(feed, Charset.defaultCharset())))
                     handler.bindFeed(syndicationFeeds)
@@ -55,5 +54,4 @@ class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(
             }
         }
     }
-
 }
