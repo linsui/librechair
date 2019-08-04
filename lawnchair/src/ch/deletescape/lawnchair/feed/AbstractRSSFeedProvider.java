@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,6 +37,7 @@ import com.squareup.picasso.Picasso.Builder;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -80,7 +82,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     "getCards: iterating through entries: " + articles.toString());
             for (SyndEntry entry : articles.getEntries()) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
-                cards.add(new Card(null, null, parent -> {
+                Card card = new Card(null, null, parent -> {
                     Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                     View v = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.rss_item, parent, false);
@@ -134,7 +136,18 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
                         entry.hashCode(), true,
                         entry.getCategories().stream().map(entry2 -> entry2.getName()).collect(
-                                Collectors.toList())));
+                                Collectors.toList()));
+                cards.add(card);
+                card.setActionName(getContext().getString(getContext().getResources()
+                        .getIdentifier("whichSendApplicationLabel", "string", "android")));
+                card.setActionListener(context -> {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, entry.getUri());
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(i);
+                    return Unit.INSTANCE;
+                });
             }
             return cards;
         }

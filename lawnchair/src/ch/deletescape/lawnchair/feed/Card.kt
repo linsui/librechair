@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
@@ -37,6 +38,8 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     private var internalCategory: List<String>? = null
     val categories: List<String>?
         get() = internalCategory
+    var actionName: String? = null
+    var actionListener: ((c: Context) -> Unit)? = null
 
     constructor(icon: Drawable?, title: String?,
                 inflateHelper: (parent: View, _: Unit /* This is used to resolve ambiguities in Java and is unused */) -> View,

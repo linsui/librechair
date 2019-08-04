@@ -1103,3 +1103,16 @@ fun Resources.Theme.getColorAttrib(attrib: Int): Int {
     resolveAttribute(R.attr.colorAccent, value, true)
     return value.data
 }
+
+fun ViewGroup.findViewsByClass(clazz: Class<out View>, exact: Boolean): List<View> {
+    val results = mutableListOf<View>()
+    for (view in getAllChilds()) {
+        if (view.javaClass == clazz || (!exact && clazz.isInstance(view))) {
+            results += view
+        }
+        if (view is ViewGroup) {
+            results += view.findViewsByClass(clazz, exact)
+        }
+    }
+    return results
+}

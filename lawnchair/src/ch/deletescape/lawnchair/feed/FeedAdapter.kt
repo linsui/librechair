@@ -33,6 +33,8 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
 import android.view.*
+import android.view.View.GONE
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -44,10 +46,9 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
-                  backgroundColor: Int, private val context: Context) : RecyclerView.Adapter<CardViewHolder>() {
-
+                  backgroundColor: Int, private val context: Context) :
+        RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
-
     var backgroundColor: Int = 0
         set(value) {
             d("init: backgroundColor is now ${value}")
@@ -70,7 +71,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
-            recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
+                recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
         this.recyclerView = recyclerView
     }
 
@@ -89,9 +90,10 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
             toSort += it.cards
         }
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
-            LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
+                LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
         d("refresh: sorting algorithm is $algorithm")
-        cards += algorithm.sort(* toSort.toTypedArray()).filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
+        cards += algorithm.sort(* toSort.toTypedArray())
+                .filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
         return cards.size
     }
 
@@ -100,12 +102,13 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (cards.isEmpty()) {
             cards += Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
-                    return LayoutInflater.from(ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor, parent.context)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(R.layout.empty_feed, parent, false)
+                    return LayoutInflater.from(ContextThemeWrapper(parent.context,
+                                                                   if (useWhiteText(backgroundColor,
+                                                                                    parent.context)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2))
+                            .inflate(R.layout.empty_feed, parent, false)
                 }
-
             }, Card.NO_HEADER, "nosort,top")
-            if (Settings.Global.getInt(context.contentResolver,
-                                       Settings.Global.AIRPLANE_MODE_ON,
+            if (Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON,
                                        0) != 0) {
                 cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
                         context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
@@ -118,12 +121,10 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
             }
             if ((context.getSystemService(
                             Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected != true) {
-                cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
-                                      .duplicateAndSetColour(
-                                              (if (useWhiteText(backgroundColor, context))
-                                                  R.color.qsb_background else R.color.qsb_background_dark)
-                                                      .fromColorRes(context)),
-                              R.string.title_card_network_disconnected.fromStringRes(context),
+                cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(
+                        context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
+                                                                         context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
+                        context)), R.string.title_card_network_disconnected.fromStringRes(context),
                               { _, _ ->
                                   View(context)
                               }, Card.TEXT_ONLY, "nosort,top",
@@ -140,27 +141,86 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         }
     }
 
-    @SuppressLint("MissingPermission") override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
+    @SuppressLint("MissingPermission")
+    override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
         if (cards[holder.adapterPosition].canHide) {
+            val hasAction =
+                    cards[holder.adapterPosition].actionListener != null && cards[holder.adapterPosition].actionName != null
             holder.itemView.setOnLongClickListener {
+                if (isDeleteActive) {
+                    return@setOnLongClickListener false
+                }
                 isDeleteActive = true
-                holder.itemView.animate().scaleX(0.7f).scaleY(0.7f).duration = 100
-                LayoutInflater.from(holder.itemView.context)
-                        .inflate(R.layout.card_remove_hint, holder.itemView as ViewGroup, false)
-                        .apply {
-                            background = ColorDrawable(Color.BLACK)
-                            alpha = 0f
-                            animate()?.alpha(.7f)?.duration = 500
-                        }.also { (holder.itemView).addView(it) }
+                if (!hasAction) {
+                    holder.itemView.animate().scaleX(0.7f).scaleY(0.7f).duration = 100
+                } else {
+                    holder.itemView.animate().scaleX(0.9f).scaleY(0.9f).duration = 100
+                }
+                (LayoutInflater.from(holder.itemView.context).inflate(R.layout.card_remove_hint,
+                                                                      holder.itemView as ViewGroup,
+                                                                      false) as ViewGroup).apply {
+                    background = ColorDrawable(Color.BLACK)
+                    alpha = 0f
+                    if (hasAction) {
+                        findViewsByClass(TextView::class.java, true)
+                                .forEach { it.visibility = GONE }
+                        findViewById<Button>(R.id.delete_item_action).apply {
+                            text = cards[holder.adapterPosition].actionName
+                            setOnClickListener {
+                                cards[holder.adapterPosition].actionListener?.invoke(it.context)
+                                isDeleteActive = false
+                                holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
+                                holder.itemView.removeView(
+                                        holder.itemView.findViewById<View>(R.id.card_removal_hint));
+                            }
+                        }
+                        findViewById<Button>(R.id.remove_action).setOnClickListener {
+                            holder.itemView.animate().scaleX(0f).scaleY(0f)
+                                    .setInterpolator(Interpolators.ACCEL).duration = 500
+                            (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+                                    .vibrate(20)
+                            val backupCards = cards.clone() as List<Card>
+                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                    .add(cards[holder.adapterPosition].identifier)
+                            runOnNewThread {
+                                cards.removeAt(holder.adapterPosition)
+                                holder.itemView.post {
+                                    holder.itemView.removeView(holder.itemView.findViewById<View>(
+                                            R.id.card_removal_hint));
+                                    notifyItemRemoved(holder.adapterPosition)
+                                    Snackbar.make(holder.itemView, R.string.item_removed,
+                                                  Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
+                                        runOnNewThread {
+                                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                                    .remove(cards[holder.adapterPosition].identifier)
+                                            cards.clear()
+                                            cards.addAll(backupCards)
+                                            holder.itemView.post {
+                                                notifyItemInserted(holder.adapterPosition)
+                                                recyclerView
+                                                        .scrollToPosition(holder.adapterPosition)
+                                            }
+                                        }
+                                    }.show()
+                                }
+                            }
+                        }
+                    } else {
+                        findViewById<Button>(R.id.delete_item_action).visibility = GONE
+                        findViewById<Button>(R.id.remove_action).visibility = GONE
+                    }
+                    animate().alpha(.7f).duration = 500
+                }.also { (holder.itemView).addView(it) }
                 true
             }
 
             holder.itemView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
-                if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP) {
-                    holder.itemView.animate().scaleX(0f).scaleY(0f).setInterpolator(Interpolators.ACCEL).duration = 500
+                if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP && !hasAction) {
+                    holder.itemView.animate().scaleX(0f).scaleY(0f)
+                            .setInterpolator(Interpolators.ACCEL).duration = 500
                     (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(20)
                     val backupCards = cards.clone() as List<Card>
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
@@ -171,19 +231,19 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));
                             notifyItemRemoved(holder.adapterPosition)
-                            Snackbar.make(holder.itemView, R.string.item_removed, Snackbar.LENGTH_SHORT)
-                                    .setAction(R.string.undo) {
-                                        runOnNewThread {
-                                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                                    .remove(cards[holder.adapterPosition].identifier)
-                                            cards.clear()
-                                            cards.addAll(backupCards)
-                                            holder.itemView.post {
-                                                notifyItemInserted(holder.adapterPosition)
-                                                recyclerView.scrollToPosition(holder.adapterPosition)
-                                            }
-                                        }
-                                    }.show()
+                            Snackbar.make(holder.itemView, R.string.item_removed,
+                                          Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
+                                runOnNewThread {
+                                    holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                            .remove(cards[holder.adapterPosition].identifier)
+                                    cards.clear()
+                                    cards.addAll(backupCards)
+                                    holder.itemView.post {
+                                        notifyItemInserted(holder.adapterPosition)
+                                        recyclerView.scrollToPosition(holder.adapterPosition)
+                                    }
+                                }
+                            }.show()
                         }
                     }
                     return@setOnTouchListener true
@@ -208,21 +268,20 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
                 holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
         if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
-                    themeManager.getCurrentFlags())) {
+                        themeManager.getCurrentFlags())) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                holder.itemView.context.getColor(R.color.qsb_background_dark))
+                    holder.itemView.context.getColor(R.color.qsb_background_dark))
         } else if (holder.itemViewType and Card.RAISE != 0) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                holder.itemView.context.getColor(R.color.qsb_background))
+                    holder.itemView.context.getColor(R.color.qsb_background))
         }
         if (holder.itemView is CardView) {
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                                LawnchairPreferences.getInstance(
-                                                                   holder.itemView.context).feedCornerRounding,
+                                                                       holder.itemView.context).feedCornerRounding,
                                                                holder.itemView.context.resources.displayMetrics)
         }
     }
-
 }
 
 class CardViewHolder : RecyclerView.ViewHolder {
@@ -235,26 +294,26 @@ class CardViewHolder : RecyclerView.ViewHolder {
     }
 
     constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(
-        LayoutInflater.from(parent.context).inflate(when (type) {
-                                                        Card.DEFAULT -> R.layout.card_default
-                                                        Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
-                                                        Card.DEFAULT or Card.RAISE -> R.layout.card_raised
-                                                        Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
-                                                        Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
-                                                        Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
-                                                        Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
-                                                        Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
-
-                                                        else -> error("invalid bitmask")
-                                                    }, parent, false)) {
+            LayoutInflater.from(parent.context).inflate(when (type) {
+                                                            Card.DEFAULT -> R.layout.card_default
+                                                            Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
+                                                            Card.DEFAULT or Card.RAISE -> R.layout.card_raised
+                                                            Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
+                                                            Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
+                                                            Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
+                                                            Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
+                                                            Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
+                                                            else -> error("invalid bitmask")
+                                                        }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
-            viewHolder.visibility = View.GONE
+            viewHolder.visibility = GONE
         }
 
         d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
-            backgroundColor)}")
+                backgroundColor)}")
 
-        if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor, viewHolder.context)) {
+        if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor,
+                                                                            viewHolder.context)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
         } else if (type and Card.RAISE == 0) {
             description?.setTextColor(
