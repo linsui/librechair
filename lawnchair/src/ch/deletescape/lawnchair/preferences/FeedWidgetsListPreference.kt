@@ -28,6 +28,8 @@ import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -41,11 +43,11 @@ import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.views.FolderNameEditText
 import ch.deletescape.lawnchair.views.VerticalResizeView
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import java.util.*
-
 
 class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
@@ -53,13 +55,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         updateSummary()
     }
 
-
     override fun getNegativeButtonText(): CharSequence? {
         return null
     }
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
-
     fun updateSummary() {
         summary = context!!.lawnchairPrefs.feedWidgetList.getAll().mapNotNull {
             context.appWidgetManager.getAppWidgetInfo(it)?.loadLabel(context.packageManager)
@@ -71,7 +71,6 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_widgets")
     }
 
-
     class ViewHolder(itemView: View,
                      val title: TextView = itemView.findViewById(android.R.id.title),
                      val summary: TextView = itemView.findViewById(android.R.id.summary),
@@ -80,9 +79,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
     class Fragment : PreferenceDialogFragmentCompat() {
         val preference by lazy { context!!.lawnchairPrefs.feedWidgetList }
-
         override fun onDialogClosed(positiveResult: Boolean) {
-
         }
 
         override fun onBindDialogView(view: View) {
@@ -103,8 +100,6 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
             }.toMutableList()
             var itemTouchHelper: ItemTouchHelper? = null
-
-
             fun synchronizeWithPreference() {
                 preference.setAll(prefList)
             }
@@ -164,9 +159,64 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             dialogView.findViewById<CheckBox>(R.id.add_widget_background)
                     val cardTitleCheckbox =
                             dialogView.findViewById<CheckBox>(R.id.display_card_title)
+                    val sortCards = dialogView.findViewById<CheckBox>(R.id.sort_widget)
+                    val customTitle =
+                            dialogView.findViewById<FolderNameEditText>(R.id.custom_card_title)
+                    customTitle.setText(
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.customCardTitle)
+                    customTitle.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(s: Editable?) {
+                            it.context.lawnchairPrefs.feedWidgetMetadata
+                                    .customAdder(appWidgetId to WidgetMetadata().apply {
+                                        height = it.context.lawnchairPrefs.feedWidgetMetadata
+                                                .getAll()
+                                                .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                ?.second?.height
+                                        raiseCard =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                                ?: false
+                                        sortable =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                                ?: sortable
+                                        customCardTitle =
+                                                if (s?.isEmpty() != false) null else s.toString()
+                                        showCardTitle =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
+                                                ?: false
+                                    })
+                        }
+
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int,
+                                                       after: Int) {
+                        }
+
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int,
+                                                   count: Int) {
+                        }
+                    })
+                    sortCards.isChecked =
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable!!
+                    sortCards.setOnCheckedChangeListener { buttonView, isChecked ->
+                        it.context.lawnchairPrefs.feedWidgetMetadata
+                                .customAdder(appWidgetId to WidgetMetadata().apply {
+                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                            ?.height
+                                    raiseCard =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                                            ?: false
+                                    sortable = isChecked
+                                    customCardTitle =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                    ?.second?.customCardTitle
+                                    showCardTitle =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
+                                            ?: false
+                                })
+                    }
                     widgetBackgroundCheckbox.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                            ?: false
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard!!
                     widgetBackgroundCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                         it.context.lawnchairPrefs.feedWidgetMetadata
                                 .customAdder(appWidgetId to WidgetMetadata().apply {

@@ -512,4 +512,6 @@
     <string name="placeholder_title_card_daily_summary">Mon Jul 22</string>
     <string name="title_feed_provider_daily_summary">Daily summary</string>
     <string name="placeholder_text_daily_summary">11 events scheduled for today</string>
+    <string name="title_checkbox_sort_widget">Sort widget by sorting algorithm</string>
+    <string name="hint_edit_text_card_title">Card title</string>
 </resources>

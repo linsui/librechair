@@ -46,4 +46,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/title_checkbox_widget_display_card_title" />
+    <CheckBox
+        android:id="@+id/sort_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_checkbox_sort_widget" />
+    <ch.deletescape.lawnchair.views.FolderNameEditText
+        android:id="@+id/custom_card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_edit_text_card_title" />
 </LinearLayout>
