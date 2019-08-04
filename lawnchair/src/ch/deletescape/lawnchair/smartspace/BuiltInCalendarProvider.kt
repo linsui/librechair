@@ -16,7 +16,6 @@
  *     You should have received a copy of the GNU General Public License
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 /*
  *     This file is part of Lawnchair Launcher.
  *
@@ -42,65 +41,34 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
-import android.os.Handler
-import android.os.HandlerThread
-import android.os.SystemClock
 import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
-import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
-import ch.deletescape.lawnchair.util.Temperature
 import com.android.launcher3.R
 import java.util.*
-
+import java.util.concurrent.TimeUnit
 
 @Keep
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
-        LawnchairSmartspaceController.DataProvider(controller) {
-
+        LawnchairSmartspaceController.PeriodicDataProvider(controller) {
     private var silentlyFail: Boolean = false
-    private val iconProvider = WeatherIconProvider(controller.context)
-    private val weather = LawnchairSmartspaceController
-            .WeatherData(iconProvider.getIcon("-1"), Temperature(0, Temperature.Unit.Celsius), "",
-                         iconType = "01n")
     private var card: LawnchairSmartspaceController.CardData? = null
-    private val handlerThread by lazy { HandlerThread(javaClass.hashCode().toString()) }
-    private val workerHandler by lazy { Handler(handlerThread.looper) }
-    private val contentResolver = controller.context.contentResolver
-
-    init {
-        Log.d(javaClass.name, "class initializer: init")
-        handlerThread.start()
-        Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        workerHandler.postAtTime(this::forceUpdate, this, SystemClock.uptimeMillis() + 5000)
-    }
+    private val contentResolver
+        get() = context.contentResolver
+    override val timeout = TimeUnit.SECONDS.toMillis(5)
 
     private fun updateInformation() {
-        Log.d(javaClass.name, "updateInformation: refreshing calendar")
-        if (controller.context.checkSelfPermission(
-                        android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(javaClass.name, "updateInformation: calendar permissions *not* granted")
-            silentlyFail = true;
-        } else {
-            silentlyFail = false;
-        }
-        /*
-         * Right now this is the only place at which silentlyFail can change, but there
-         * will be more, which is why this is in a separate block
-         */
+        silentlyFail = controller.context.checkSelfPermission(
+                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED
         if (silentlyFail) {
-            Log.e(javaClass.name, "updateInformation: silent fail")
-            updateData(weather, null);
+            updateData(null, null);
             return;
         }
-
         val currentTime = GregorianCalendar();
         val endTime = GregorianCalendar();
         endTime.add(Calendar.MINUTE, 240);
-        Log.v(javaClass.name,
-              "updateInformation: searching for events between " + currentTime + " and " + endTime.toString())
         val query =
                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
         val eventCursorNullable: Cursor? = contentResolver
@@ -111,27 +79,20 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                                CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
                        CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
-            Log.v(javaClass.name,
-                  "updateInformation: query is null, probably since there are no events that meet the specified criteria")
             card = null
-            updateData(weather, card = null);
+            updateData(null, card = null);
             return;
         }
         try {
             val eventCursor = eventCursorNullable
             eventCursor.moveToFirst();
             val title = eventCursor.getString(0);
-            Log.v(javaClass.name, "updateInformation: query found event")
-            Log.v(javaClass.name, "updateInformation:     title: " + title)
             val startTime = GregorianCalendar()
             startTime.timeInMillis = eventCursor.getLong(1);
-            Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
             val eventEndTime = GregorianCalendar()
             eventEndTime.timeInMillis = eventCursor.getLong(2)
-            Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
             val description = eventCursor.getString(3);
             val diff = startTime.timeInMillis - currentTime.timeInMillis
-            Log.v(javaClass.name, "updateInformation: difference in milliseconds: " + diff)
             val diffSeconds = diff / 1000
             val diffMinutes = diff / (60 * 1000)
             val diffHours = diff / (60 * 60 * 1000)
@@ -165,11 +126,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                                                                   controller.context, 0, intent, 0,
                                                                   null))
             eventCursor.close();
-            updateData(weather, card)
+            updateData(null, card)
         } catch (e: CursorIndexOutOfBoundsException) {
             val currentTime = GregorianCalendar();
-            Log.v(javaClass.name,
-                  "updateInformation: searching for events that are active at ${currentTime}")
             val query =
                     "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
             val eventCursorNullable: Cursor? = contentResolver
@@ -181,24 +140,18 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                                    CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
                            query, null, CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
-                Log.v(javaClass.name,
-                      "updateInformation: query is null, probably since there are no events that meet the specified criteria")
                 card = null
-                updateData(weather, card = null);
+                updateData(null, card = null);
                 return;
             }
             try {
                 val eventCursor = eventCursorNullable
                 eventCursor.moveToFirst();
                 val title = eventCursor.getString(0);
-                Log.v(javaClass.name, "updateInformation: query found event")
-                Log.v(javaClass.name, "updateInformation:     title: " + title)
                 val startTime = GregorianCalendar()
                 startTime.timeInMillis = eventCursor.getLong(1);
-                Log.v(javaClass.name, "updateInformation:     startTime: " + startTime)
                 val eventEndTime = GregorianCalendar()
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
-                Log.v(javaClass.name, "updateInformation:     eventEndTime: " + eventEndTime)
                 val lines = listOf(LawnchairSmartspaceController.Line(
                         if (title == null || title.trim().isEmpty()) controller.context.getString(
                                 R.string.placeholder_empty_title) else title,
@@ -211,20 +164,18 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                         controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines,
                                                               true)
                 eventCursor.close();
-                updateData(weather, card)
+                updateData(null, card)
             } catch (e: CursorIndexOutOfBoundsException) {
-                updateData(weather, card = null)
+                updateData(null, card = null)
             }
         }
     }
 
-    override fun onDestroy() {
-        workerHandler.removeCallbacksAndMessages(this)
-        handlerThread.quitSafely()
+    override fun updateData() {
+        updateInformation()
     }
 
     override fun forceUpdate() {
-        workerHandler.postAtTime(this::forceUpdate, this, SystemClock.uptimeMillis() + 5000)
         updateInformation()
     }
 }

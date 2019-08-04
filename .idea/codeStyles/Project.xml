@@ -526,6 +526,9 @@
     <codeStyleSettings language="kotlin">
       <option name="KEEP_LINE_BREAKS" value="false" />
       <option name="KEEP_FIRST_COLUMN_COMMENT" value="false" />
+      <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="0" />
+      <option name="KEEP_BLANK_LINES_IN_CODE" value="0" />
+      <option name="KEEP_BLANK_LINES_BEFORE_RBRACE" value="0" />
       <option name="ALIGN_MULTILINE_PARAMETERS_IN_CALLS" value="true" />
       <option name="ALIGN_MULTILINE_BINARY_OPERATION" value="true" />
       <option name="ALIGN_MULTILINE_EXTENDS_LIST" value="true" />
