@@ -34,35 +34,35 @@ import java.util.concurrent.Executors
 class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
     val hostViewCache = mutableMapOf<Int, AppWidgetHostView>()
     val inflateExecutor = Executors.newFixedThreadPool(5)
-
     val appWidgetManager by lazy {
         context.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
     }
 
     override fun onFeedShown() {
-
     }
 
     override fun onFeedHidden() {
-
     }
 
     override fun onCreate() {
-
     }
 
     override fun onDestroy() {
-
     }
 
     override fun getCards(): List<Card> {
         d("getCards: feed widgets list: ${context.lawnchairPrefs.feedWidgetList.getList()}")
         return context.lawnchairPrefs.feedWidgetList.getAll()
                 .filter { appWidgetManager.getAppWidgetInfo(it) != null }.map {
-                    Card(if (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle != true) null else appWidgetManager.getAppWidgetInfo(
+                    val metadata = context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                            .firstOrNull { it2 -> it2.first == it }?.second
+                    Card(if (metadata?.showCardTitle != true) null else appWidgetManager.getAppWidgetInfo(
                             it).loadIcon(context, context.resources.displayMetrics.densityDpi),
-                         if (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second?.showCardTitle != true) null else appWidgetManager.getAppWidgetInfo(
-                                 it).loadLabel(context.packageManager), { parent, _ ->
+                         if (metadata?.showCardTitle != true) null else metadata.customCardTitle
+                                                                        ?: appWidgetManager.getAppWidgetInfo(
+                                                                                it).loadLabel(
+                                                                                context.packageManager),
+                         { parent, _ ->
                              if (hostViewCache.containsKey(it)) {
                                  hostViewCache[it] ?: error("")
                              } else {
@@ -75,30 +75,31 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                      setExecutor(inflateExecutor)
                                      layoutParams = ViewGroup
                                              .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                           (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
+                                                           (metadata
                                                             ?: WidgetMetadata.DEFAULT).height
                                                            ?: appWidgetInfo.minHeight)
                                      updateAppWidgetOptions(Bundle().apply {
                                          putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
                                          putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
                                          putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                 ?: WidgetMetadata.DEFAULT).height ?: height)
+                                                (metadata ?: WidgetMetadata.DEFAULT).height
+                                                ?: height)
                                          putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                (parent.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                 ?: WidgetMetadata.DEFAULT).height ?: height)
+                                                (metadata ?: WidgetMetadata.DEFAULT).height
+                                                ?: height)
                                      })
                                      invalidate()
                                  }.also { it2 ->
                                      hostViewCache += it to it2; it2.invalidate()
                                  }
                              }
-                         },
-                         if ((context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                              ?: WidgetMetadata.DEFAULT).raiseCard) if (!(context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                                          ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER or Card.RAISE else Card.RAISE else if (!(context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == it }?.second
-                                                                                                                                                                            ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER else Card.DEFAULT,
-                         "nosort, top", it shl 2)
+                         }, if ((metadata ?: WidgetMetadata.DEFAULT).raiseCard) if (!(metadata
+                                                                                      ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER or Card.RAISE
+                    else Card.RAISE
+                         else if (!(metadata
+                                    ?: WidgetMetadata.DEFAULT).showCardTitle) Card.NO_HEADER
+                    else Card.DEFAULT, if (metadata?.sortable == true) "" else "nosort, top",
+                         it shl 2)
                 }
     }
 }

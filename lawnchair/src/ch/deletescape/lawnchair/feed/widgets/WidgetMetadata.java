@@ -25,8 +25,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class WidgetMetadata {
 
-    public transient static Integer DEFAULT_HEIGHT = null;
-    public transient static WidgetMetadata DEFAULT = new WidgetMetadata();
+    public transient static final Integer DEFAULT_HEIGHT = null;
+    public transient static final String DEFAULT_TITLE = null;
+    public transient static final WidgetMetadata DEFAULT = new WidgetMetadata();
 
     @SerializedName("h")
     @Nullable
@@ -39,4 +40,12 @@ public class WidgetMetadata {
     @SerializedName("l")
     @NotNull
     public Boolean showCardTitle = false;
+
+    @SerializedName("s")
+    @NotNull
+    public Boolean sortable = false;
+
+    @SerializedName("t")
+    @Nullable
+    public String customCardTitle = DEFAULT_TITLE;
 }

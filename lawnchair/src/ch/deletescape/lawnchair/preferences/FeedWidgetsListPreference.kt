@@ -174,7 +174,13 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                             .firstOrNull { it2 -> it2.first == appWidgetId }?.second
                                             ?.height
                                     raiseCard = isChecked
-
+                                    sortable =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
+                                            ?: false
+                                    customCardTitle =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                    ?.second?.customCardTitle
                                     showCardTitle =
                                             it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
                                             ?: false
@@ -193,6 +199,13 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                     raiseCard =
                                             it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
                                             ?: false
+                                    sortable =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
+                                            ?: false
+                                    customCardTitle =
+                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
+                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                    ?.second?.customCardTitle
                                 })
                     }
                     val originalSize = resizedAppWidgetInfo.minHeight
@@ -226,6 +239,14 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         showCardTitle =
                                                 it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
                                                 ?: false
+                                        sortable =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
+                                                ?: false
+                                        customCardTitle =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata
+                                                        .getAll()
+                                                        .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                        ?.second?.customCardTitle
                                     })
                             widgetView.layoutParams =
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
@@ -255,6 +276,14 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         showCardTitle =
                                                 it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
                                                 ?: false
+                                        sortable =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
+                                                ?: false
+                                        customCardTitle =
+                                                it.context.lawnchairPrefs.feedWidgetMetadata
+                                                        .getAll()
+                                                        .firstOrNull { it2 -> it2.first == appWidgetId }
+                                                        ?.second?.customCardTitle
                                     })
                             widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
                             widgetView.apply {
