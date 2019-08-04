@@ -1,0 +1,32 @@
+<!--
+  ~     Copyright (c) 2017-2019 the Lawnchair team
+  ~     Copyright (c)  2019 oldosfan (would)
+  ~     This file is part of Lawnchair Launcher.
+  ~
+  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector android:autoMirrored="true"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24"
+    android:width="24dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path
+        android:fillAlpha="1"
+        android:fillColor="#000000"
+        android:fillType="nonZero"
+        android:pathData="M9.1836,3C8.6172,3 8.332,3.6875 8.7344,4.0898L11.3906,6.75C11.7305,7.0859 12.2734,7.0859 12.6094,6.75L15.2656,4.0898C15.668,3.6875 15.3828,3 14.8125,3ZM11.9844,8.9844C11.4336,8.9961 10.9922,9.4492 11,10L11,12C10.9961,12.3594 11.1836,12.6953 11.4961,12.8789C11.8086,13.0586 12.1914,13.0586 12.5039,12.8789C12.8164,12.6953 13.0039,12.3594 13,12L13,10C13.0039,9.7305 12.8984,9.4688 12.707,9.2773C12.5156,9.0859 12.2539,8.9805 11.9844,8.9844ZM4.918,11.918C4.5117,11.918 4.1445,12.1641 3.9922,12.543C3.8398,12.9219 3.9297,13.3516 4.2227,13.6367L5.6367,15.0508C5.8867,15.3125 6.2617,15.418 6.6094,15.3242C6.9609,15.2344 7.2344,14.9609 7.3242,14.6094C7.418,14.2617 7.3125,13.8867 7.0508,13.6367L5.6367,12.2227C5.4492,12.0273 5.1875,11.918 4.918,11.918ZM19.0508,11.9219C18.7891,11.9258 18.543,12.0352 18.3633,12.2227L16.9492,13.6367C16.6875,13.8867 16.582,14.2617 16.6758,14.6094C16.7656,14.9609 17.0391,15.2344 17.3906,15.3242C17.7383,15.418 18.1133,15.3125 18.3633,15.0508L19.7773,13.6367C20.0742,13.3477 20.1602,12.9102 20,12.5313C19.8398,12.1484 19.4648,11.9063 19.0508,11.9219ZM12,15C9.5938,15 7.5703,16.7266 7.1016,19L3,19C2.6406,18.9961 2.3047,19.1836 2.1211,19.4961C1.9414,19.8086 1.9414,20.1914 2.1211,20.5039C2.3047,20.8164 2.6406,21.0039 3,21L21,21C21.3594,21.0039 21.6953,20.8164 21.8789,20.5039C22.0586,20.1914 22.0586,19.8086 21.8789,19.4961C21.6953,19.1836 21.3594,18.9961 21,19L16.8984,19C16.4297,16.7266 14.4063,15 12,15ZM12,15"
+        android:strokeColor="#00000000" />
+</vector>

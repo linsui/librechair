@@ -19,32 +19,121 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider.ForecastException;
 import com.android.launcher3.R;
+import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
+import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import kotlin.Pair;
+import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
 
+    @Thunk
+    Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private final LocationManager manager;
+
+    @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
+        manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        Executors.newSingleThreadExecutor().submit(() -> {
+            while (sunriseSunset == null) {
+                Log.d(getClass().getName(), "init: retrieving sunrise and sunset times");
+                if (LawnchairUtilsKt.checkLocationAccess(getContext())) {
+                    Log.d(getClass().getName(),
+                            "init: retrieving sunrise and sunset times from current location");
+                    Location location = manager
+                            .getLastKnownLocation(manager.getBestProvider(new Criteria(), true));
+                    Log.d(getClass().getName(), "init: location retrieved: " + location);
+                    if (location != null) {
+                        Calendar sunrise = SunriseSunsetCalculator
+                                .getSunrise(location.getLatitude(), location.getLongitude(),
+                                        Calendar.getInstance().getTimeZone(),
+                                        new GregorianCalendar(), 6);
+                        Calendar sunset = SunriseSunsetCalculator
+                                .getSunset(location.getLatitude(), location.getLongitude(),
+                                        Calendar.getInstance().getTimeZone(),
+                                        new GregorianCalendar(), 6);
+                        Log.d(getClass().getName(),
+                                "init: sunrise and sunset times retrieved: " + sunrise + ", "
+                                        + sunset);
+                        sunriseSunset = new Pair<>(ZonedDateTime
+                                .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
+                                        ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
+                                ZonedDateTime.ofInstant(
+                                        Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
+                                        ZoneId
+                                                .of(Calendar.getInstance().getTimeZone().getID())));
+                    }
+                } else {
+                    try {
+                        Pair<Double, Double> location = LawnchairUtilsKt
+                                .getForecastProvider(getContext()).getGeolocation(
+                                        LawnchairPreferences.Companion.getInstance(getContext())
+                                                .getWeatherCity());
+                        Calendar sunrise = SunriseSunsetCalculator
+                                .getSunrise(location.getFirst(), location.getSecond(),
+                                        Calendar.getInstance().getTimeZone(),
+                                        new GregorianCalendar(), 6);
+                        Calendar sunset = SunriseSunsetCalculator
+                                .getSunset(location.getFirst(), location.getSecond(),
+                                        Calendar.getInstance().getTimeZone(),
+                                        new GregorianCalendar(), 6);
+                        sunriseSunset = new Pair<>(ZonedDateTime
+                                .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
+                                        ZoneId
+                                                .of(Calendar.getInstance().getTimeZone().getID())),
+                                ZonedDateTime.ofInstant(
+                                        Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
+                                        ZoneId
+                                                .of(Calendar.getInstance().getTimeZone().getID())));
+                        LawnchairUtilsKt.runOnMainThread(() -> {
+                            requestRefresh();
+                            return Unit.INSTANCE;
+                        });
+                    } catch (ForecastException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+            }
+        });
     }
 
     @Override
@@ -78,7 +167,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             IcuDateTextView.getDateFormat(getContext(), true, null, false)
                                     .format(System.currentTimeMillis()));
                     RecyclerView recyclerView = v.findViewById(R.id.daily_summary_information);
-                    Adapter adapter = new Adapter(parent.getContext());
+                    Adapter adapter = new Adapter(parent.getContext(), this);
                     recyclerView.setAdapter(adapter);
                     GridLayoutManager layoutManager;
                     recyclerView.setLayoutManager(
@@ -90,74 +179,98 @@ public class DailySummaryFeedProvider extends FeedProvider {
                 Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
                 "dailySummary".hashCode()));
     }
-}
 
-class Adapter extends RecyclerView.Adapter {
+    public static class Adapter extends RecyclerView.Adapter {
 
-    private final Context context;
-    private final List<DailySummaryItem> items = new ArrayList<>();
+        private final Context context;
+        private final DailySummaryFeedProvider feedProvider;
+        private final List<DailySummaryItem> items = new ArrayList<>();
 
-    public Adapter(Context context) {
-        this.context = context;
-    }
-
-    @Override
-    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
-    }
-
-    public void refresh() {
-        items.clear();
-        Date currentTime = new Date();
-        String query =
-                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTime()
-                        + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + LawnchairUtilsKt
-                        .tomorrow(currentTime).getTime() + " ))";
-        Cursor calendarEvents = context.getContentResolver()
-                .query(CalendarContract.Events.CONTENT_URI,
-                        new String[]{CalendarContract.Instances.TITLE,
-                                CalendarContract.Instances.DTSTART,
-                                CalendarContract.Instances.DTEND,
-                                CalendarContract.Instances.DESCRIPTION,
-                                CalendarContract.Events._ID,
-                                CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                CalendarContract.Events.EVENT_LOCATION}, query, null,
-                        CalendarContract.Instances.DTSTART + " ASC");
-        if (calendarEvents.getCount() > 0) {
-            items.add(new DailySummaryItem(LawnchairUtilsKt
-                    .duplicateAndSetColour(
-                            Objects.requireNonNull(
-                                    context.getDrawable(R.drawable.ic_event_black_24dp)),
-                            LawnchairUtilsKt
-                                    .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
-                    context.getResources()
-                            .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
-                                    calendarEvents.getCount(), calendarEvents.getCount())));
+        public Adapter(Context context, DailySummaryFeedProvider feedProvider) {
+            this.context = context;
+            this.feedProvider = feedProvider;
         }
-        notifyDataSetChanged();
+
+        @Override
+        public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+            super.onAttachedToRecyclerView(recyclerView);
+        }
+
+        public void refresh() {
+            items.clear();
+            Date currentTime = new Date();
+            String query =
+                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTime()
+                            + " ) AND ( " + CalendarContract.Events.DTSTART + " <= "
+                            + LawnchairUtilsKt
+                            .tomorrow(currentTime).getTime() + " ))";
+            Cursor calendarEvents = context.getContentResolver()
+                    .query(CalendarContract.Events.CONTENT_URI,
+                            new String[]{CalendarContract.Instances.TITLE,
+                                    CalendarContract.Instances.DTSTART,
+                                    CalendarContract.Instances.DTEND,
+                                    CalendarContract.Instances.DESCRIPTION,
+                                    CalendarContract.Events._ID,
+                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                    CalendarContract.Events.EVENT_LOCATION}, query, null,
+                            CalendarContract.Instances.DTSTART + " ASC");
+            if (calendarEvents.getCount() > 0) {
+                items.add(new DailySummaryItem(LawnchairUtilsKt
+                        .duplicateAndSetColour(
+                                Objects.requireNonNull(
+                                        context.getDrawable(R.drawable.ic_event_black_24dp)),
+                                LawnchairUtilsKt
+                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                        context.getResources()
+                                .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
+                                        calendarEvents.getCount(), calendarEvents.getCount())));
+            }
+            Log.d(getClass().getName(),
+                    "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
+            if (feedProvider.sunriseSunset != null) {
+                items.add(new DailySummaryItem(LawnchairUtilsKt
+                        .duplicateAndSetColour(
+                                Objects.requireNonNull(
+                                        context.getDrawable(R.drawable.ic_sunrise_24dp)),
+                                LawnchairUtilsKt
+                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                        LawnchairUtilsKt
+                                .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
+                items.add(new DailySummaryItem(LawnchairUtilsKt
+                        .duplicateAndSetColour(
+                                Objects.requireNonNull(
+                                        context.getDrawable(R.drawable.ic_sunset_24dp)),
+                                LawnchairUtilsKt
+                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                        LawnchairUtilsKt
+                                .formatTime(feedProvider.sunriseSunset.getSecond(), context)));
+            }
+            notifyDataSetChanged();
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return new ViewHolder(LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.daily_summary_item, parent, false)) {
+            };
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            DailySummaryItem item = items.get(position);
+            ImageView imageView = holder.itemView.findViewById(R.id.daily_summary_icon);
+            TextView title = holder.itemView.findViewById(R.id.daily_summary_information);
+            imageView.setImageDrawable(item.icon);
+            title.setText(item.text);
+        }
+
+        @Override
+        public int getItemCount() {
+            return items.size();
+        }
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.daily_summary_item, parent, false)) {
-        };
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        DailySummaryItem item = items.get(position);
-        ImageView imageView = holder.itemView.findViewById(R.id.daily_summary_icon);
-        TextView title = holder.itemView.findViewById(R.id.daily_summary_information);
-        imageView.setImageDrawable(item.icon);
-        title.setText(item.text);
-    }
-
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
 }
 
 class DailySummaryItem {
