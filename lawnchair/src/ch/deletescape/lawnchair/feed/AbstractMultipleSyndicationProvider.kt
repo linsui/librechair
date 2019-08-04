@@ -123,7 +123,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                         actionListener = { context ->
                             val i = Intent(Intent.ACTION_SEND)
                             i.type = "text/plain"
-                            i.putExtra(Intent.EXTRA_TEXT, entry.uri)
+                            i.putExtra(Intent.EXTRA_TEXT, entry.link)
                             i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                             context.startActivity(i)
                             Unit

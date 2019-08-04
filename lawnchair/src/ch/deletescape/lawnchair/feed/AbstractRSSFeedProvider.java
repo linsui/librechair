@@ -143,7 +143,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 card.setActionListener(context -> {
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_TEXT, entry.getUri());
+                    i.putExtra(Intent.EXTRA_TEXT, entry.getLink());
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(i);
                     return Unit.INSTANCE;
