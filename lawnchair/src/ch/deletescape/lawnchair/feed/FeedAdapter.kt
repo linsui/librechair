@@ -256,7 +256,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
 
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor, viewHolder.context)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
-        } else {
+        } else if (type and Card.RAISE == 0) {
             description?.setTextColor(
                     description?.context?.getColor(R.color.textColorPrimaryInverse) ?: 0)
         }
