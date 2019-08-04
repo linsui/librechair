@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import android.content.Intent
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,7 +40,6 @@ import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
-
     internal var feeds: List<SyndFeed>? = null
 
     init {
@@ -51,7 +51,6 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
     }
 
     override fun bindFeed(callback: BindCallback) {
-
     }
 
     override fun getCards(): List<Card> {
@@ -117,11 +116,22 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             return v
                         }
                     }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true,
-                                       entry.categories.map { it.name }))
+                                       entry.categories.map { it.name }).apply {
+                        actionName = context.getString(
+                                context.resources.getIdentifier("whichSendApplicationLabel",
+                                                                "string", "android"))
+                        actionListener = { context ->
+                            val i = Intent(Intent.ACTION_SEND)
+                            i.type = "text/plain"
+                            i.putExtra(Intent.EXTRA_TEXT, entry.uri)
+                            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            context.startActivity(i)
+                            Unit
+                        }
+                    })
                 }
                 cards.add(temporary)
             }
-
             val sorted = ReflectionUtils.inflateSortingAlgorithm(
                     LawnchairPreferences.getInstance(context).feedPresenterAlgorithm)
                     .sort(* cards.toTypedArray())
@@ -130,7 +140,6 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
     }
 
     protected abstract fun bindFeeds(handler: OnBindHandler)
-
     protected interface OnBindHandler {
         fun bindFeed(feeds: List<SyndFeed>)
     }
