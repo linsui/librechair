@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 private var theController: MainFeedController? = null
@@ -82,6 +83,8 @@ class MainFeedController(val context: Context) {
                         R.string.title_feed_provider_widgets)
                 DailySummaryFeedProvider::class.java.name -> R.string.title_feed_provider_daily_summary.fromStringRes(
                         context)
+                PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
+                        context)
 
                 else -> error("No such provider ${provider}")
             }
@@ -102,7 +105,9 @@ class MainFeedController(val context: Context) {
                           GSyndicationFeedProvider::class.java.name,
                           DeviceStateProvider::class.java.name,
                           FeedWidgetsProvider::class.java.name,
-                          DailySummaryFeedProvider::class.java.name)
+                          DailySummaryFeedProvider::class.java.name,
+                          PredictedAppsProvider::class.java.name)
+                    .also { d("getFeedProviders: feed providers are $it ") }
         }
     }
 }

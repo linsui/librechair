@@ -34,11 +34,13 @@ import android.text.StaticLayout.Builder;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Property;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
+import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.allapps.PredictionsDividerLayout;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.colors.ColorEngine.OnColorChangeListener;
@@ -104,9 +106,9 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
     private int mIconFullTextAlpha;
     private int mIconTextColor;
     private boolean mIsCollapsed;
-    private final Launcher mLauncher;
+    private Launcher mLauncher;
     private View mLoadingProgress;
-    private final int mNumPredictedAppsPerRow;
+    private int mNumPredictedAppsPerRow;
     private final AnimatedFloat mOverviewScrollFactor;
     private final Paint mPaint;
     private PredictionsFloatingHeader mParent;
@@ -150,9 +152,18 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
         mPaint.setStrokeWidth((float) getResources().getDimensionPixelSize(R.dimen.all_apps_divider_height));
         mStrokeColor = mPaint.getColor();
         mFocusHelper = new SimpleFocusIndicatorHelper(this);
-        mNumPredictedAppsPerRow = LauncherAppState.getIDP(context).numColsDrawer; // TODO: make UIUpdateHandler separated pref
-        mLauncher = Launcher.getLauncher(context);
-        mLauncher.addOnDeviceProfileChangeListener(this);
+        try {
+            mNumPredictedAppsPerRow = LauncherAppState
+                    .getIDP(context).numColsDrawer; // TODO: make UIUpdateHandler separated pref
+        } catch (RuntimeException e) {
+            mNumPredictedAppsPerRow = 6;
+        }
+        try {
+            mLauncher = Launcher.getLauncher(context);
+            mLauncher.addOnDeviceProfileChangeListener(this);
+        } catch (ClassCastException e) {
+            mLauncher = null;
+        }
 
         mIconCurrentTextAlpha = mIconFullTextAlpha;
         mAllAppsLabelTextPaint.setColor(ContextCompat.getColor(context, isMainColorDark ? R.color.all_apps_label_text_dark : R.color.all_apps_label_text));
@@ -179,7 +190,11 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
     }
 
     private AllAppsStore getAppsStore() {
-        return this.mLauncher.getAppsView().getAppsStore();
+        if (mLauncher != null) {
+            return this.mLauncher.getAppsView().getAppsStore();
+        } else {
+            return new AllAppsStore();
+        }
     }
 
     protected void onDetachedFromWindow() {
@@ -217,8 +232,14 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
         if (getVisibility() == View.GONE) {
             return 0;
         }
-        DeviceProfile dp = Launcher.getLauncher(getContext()).getDeviceProfile();
-        return dp.allAppsCellHeightPx + getPaddingBottom() + getPaddingTop();
+        try {
+            DeviceProfile dp = Launcher.getLauncher(getContext()).getDeviceProfile();
+            return dp.allAppsCellHeightPx + getPaddingBottom() + getPaddingTop();
+        } catch (ClassCastException e) {
+            return ((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 128,
+                    getContext().getResources().getDisplayMetrics()) + getPaddingBottom()
+                    + getPaddingTop());
+        }
     }
 
     public void setDividerType(DividerType dividerType, boolean force) {
@@ -296,7 +317,8 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
                 removeViewAt(0);
             }
             while (getChildCount() < mNumPredictedAppsPerRow) {
-                BubbleTextView bubbleTextView = (BubbleTextView) mLauncher.getLayoutInflater().inflate(R.layout.all_apps_icon, this, false);
+                BubbleTextView bubbleTextView = (BubbleTextView) getLayoutInflater()
+                        .inflate(R.layout.all_apps_icon, this, false);
                 bubbleTextView.setOnClickListener(ItemClickHandler.INSTANCE);
                 bubbleTextView.setOnLongClickListener(ItemLongClickListener.INSTANCE_ALL_APPS);
                 bubbleTextView.setLongPressTimeout(ViewConfiguration.getLongPressTimeout());
@@ -325,15 +347,22 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
                 bubbleTextView2.setVisibility(size == 0 ? View.GONE : View.VISIBLE);
             }
         }
-        if (size == 0) {
+        if (size == 0 && mLauncher != null) {
             if (mLoadingProgress == null) {
-                mLoadingProgress = LayoutInflater.from(getContext()).inflate(R.layout.prediction_load_progress, this, false);
+                try {
+                    mLoadingProgress = LayoutInflater.from(getContext())
+                            .inflate(R.layout.prediction_load_progress, this, false);
+                } catch (RuntimeException e) {
+                    mLoadingProgress = new View(getContext());
+                }
             }
             addView(mLoadingProgress);
         } else {
             mLoadingProgress = null;
         }
-        mParent.headerChanged();
+        if (mParent != null) {
+            mParent.headerChanged();
+        }
     }
 
     private List<ItemInfoWithIcon> processPredictedAppComponents(List<ComponentKeyMapper> list) {
@@ -351,6 +380,14 @@ public class PredictionRowView extends PredictionsDividerLayout implements LogCo
             }
         }
         return arrayList;
+    }
+
+    private LayoutInflater getLayoutInflater() {
+        if (mLauncher != null) {
+            return mLauncher.getLayoutInflater();
+        } else {
+            return LayoutInflater.from(getContext());
+        }
     }
 
     protected void onDraw(Canvas canvas) {
