@@ -131,7 +131,11 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                                 Collectors.toList())));
                     }
 
-                    date.setText(entry.getPublishedDate().toLocaleString());
+                    if (entry.getPublishedDate() != null) {
+                        date.setText(entry.getPublishedDate().toLocaleString());
+                    } else {
+                        date.setText(null);
+                    }
                     return v;
                 }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
                         entry.hashCode(), true,

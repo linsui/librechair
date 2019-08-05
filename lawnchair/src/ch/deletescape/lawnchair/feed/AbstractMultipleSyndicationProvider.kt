@@ -112,7 +112,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                 Utilities.openURLinBrowser(v2.context, entry.link)
                             }
 
-                            date.text = entry.publishedDate.toLocaleString()
+                            date.text = entry.publishedDate?.toLocaleString()
                             return v
                         }
                     }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true,
