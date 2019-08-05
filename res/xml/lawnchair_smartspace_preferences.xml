@@ -155,7 +155,7 @@
             app:maxValue="255"
             app:minValue="0"
             app:steps="255"
-            app:summaryFormat="%.0f%%"
+            app:summaryFormat="%.0f"
             app:summaryMultiplier="1" />
         <ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference
             android:title="@string/title_preference_feed_widgets"
