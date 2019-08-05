@@ -151,11 +151,11 @@
             android:key="pref_feed_card_opacity"
             android:persistent="true"
             android:title="@string/title_pref_feed_card_opacity"
-            app:defaultSeekbarValue="0"
+            app:defaultSeekbarValue="255"
             app:maxValue="255"
             app:minValue="0"
             app:steps="255"
-            app:summaryFormat="%f%%"
+            app:summaryFormat="%.0f%%"
             app:summaryMultiplier="1" />
         <ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference
             android:title="@string/title_preference_feed_widgets"
