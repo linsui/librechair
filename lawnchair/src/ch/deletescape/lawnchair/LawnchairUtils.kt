@@ -1116,3 +1116,7 @@ fun ViewGroup.findViewsByClass(clazz: Class<out View>, exact: Boolean): List<Vie
     }
     return results
 }
+
+fun atMost(number: Int, max: Int): Int {
+    return if (number < max) number else max
+}

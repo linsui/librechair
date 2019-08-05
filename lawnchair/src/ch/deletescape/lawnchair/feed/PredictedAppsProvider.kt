@@ -20,10 +20,12 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
 import ch.deletescape.lawnchair.util.extensions.currentStackTrace
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
@@ -32,12 +34,17 @@ import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.allapps.PredictionRowView
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
-    private val rowView: PredictionRowView = PredictionRowView(c)
-    private val customAppPredictor: CustomAppPredictor = CustomAppPredictor(c)
+    private val recyclerView = RecyclerView(context)
+    private val adapter = PredictedApplicationsAdapter()
+    private val customAppPredictor: CustomAppPredictor = CustomAppPredictor(c).also {
+        adapter.predictions = it.predictions
+    }
 
     init {
         customAppPredictor.updatePredictions()
-        rowView.setPredictedApps(true, customAppPredictor.predictions)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
+        adapter.notifyDataSetChanged()
     }
 
     override fun onFeedShown() {
@@ -55,7 +62,7 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         return listOf(
                 Card(null, R.string.title_card_suggested_apps.fromStringRes(context), { v, _ ->
-                    rowView
+                    recyclerView
                 }, Card.RAISE, "nosort, top", "predictedApps".hashCode()))
     }
 }
