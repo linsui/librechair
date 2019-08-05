@@ -20,10 +20,10 @@
 package ch.deletescape.lawnchair
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.Color
 import android.net.Uri
+import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
@@ -37,6 +37,8 @@ import ch.deletescape.lawnchair.globalsearch.SearchProviderController
 import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.DrawerTabs
 import ch.deletescape.lawnchair.iconpack.IconPackManager
+import ch.deletescape.lawnchair.overlay.ProcessController
+import ch.deletescape.lawnchair.overlay.ProcessControllerService
 import ch.deletescape.lawnchair.preferences.DockStyle
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
@@ -183,8 +185,7 @@ class LawnchairPreferences(val context: Context) :
                                   NowPlayingProvider::class.java.name,
                                   BatteryStatusProvider::class.java.name,
                                   PersonalityProvider::class.java.name))
-
-    var feedProviders = StringListPref("pref_feed_providers", ::restart,
+    var feedProviders = StringListPref("pref_feed_providers", ::restartOverlay,
                                        listOf(FeedWeatherStatsProvider::class.java.name,
                                               FeedForecastProvider::class.java.name,
                                               DeviceStateProvider::class.java.name,
@@ -197,24 +198,23 @@ class LawnchairPreferences(val context: Context) :
             return Integer.valueOf(value)
         }
     }
-
-    var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restart);
-
-    var feedRSSSources = StringListPref("pref_rss_sources", ::restart, emptyList())
-
-    var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restart)
+    var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restartOverlay);
+    var feedRSSSources = StringListPref("pref_rss_sources", ::restartOverlay, emptyList())
+    var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restartOverlay)
+    var feedCardOpacity by IntPref("pref_card_opacity", 255, ::restartOverlay)
 
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
-                                             MixerSortingAlgorithm::class.java.name, ::restart);
-    var feedWidgetList =
-            object : MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restart, listOf()) {
+                                             MixerSortingAlgorithm::class.java.name,
+                                             ::restartOverlay)
+    var feedWidgetList = object :
+            MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restartOverlay, listOf()) {
                 override fun unflattenValue(value: String): Int {
                     return Integer.valueOf(value)
                 }
             }
     var feedWidgetMetadata = object :
             MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata_2",
-                                                       ::restart, listOf()) {
+                                                       ::restartOverlay, listOf()) {
         override fun flattenValue(
                 value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
 
@@ -227,9 +227,8 @@ class LawnchairPreferences(val context: Context) :
             setAll(getAll().filter { it.first != value.first } + value)
         }
     }
-    var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, restart);
-
-    var swipeForFeed by BooleanPref("pref_swipe_feed", false, restart);
+    var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, ::restartOverlay);
+    var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restartOverlay);
 
     var weatherApiKey by StringPref("pref_weatherApiKey",
                                     context.getString(R.string.default_owm_key))
@@ -428,6 +427,20 @@ class LawnchairPreferences(val context: Context) :
 
     fun restart() {
         onChangeCallback?.restart()
+    }
+
+    fun restartOverlay() {
+        context.bindService(Intent(context, ProcessControllerService::class.java),
+                            object : ServiceConnection {
+                                override fun onServiceDisconnected(name: ComponentName?) {
+                                }
+
+                                override fun onServiceConnected(name: ComponentName?,
+                                                                service: IBinder?) {
+                                    ProcessController.Stub.asInterface(service)
+                                            .killOverlayProcess();
+                                }
+                            }, Context.BIND_AUTO_CREATE)
     }
 
     fun refreshGrid() {

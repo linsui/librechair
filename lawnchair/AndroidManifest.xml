@@ -249,6 +249,11 @@
             android:exported="true"
             android:name="ch.deletescape.lawnchair.clockhide.ClockhideService" />
         <service
+            android:enabled="true"
+            android:exported="true"
+            android:process=":overlay"
+            android:name="ch.deletescape.lawnchair.overlay.ProcessControllerService" />
+        <service
             android:exported="true"
             android:name="ch.deletescape.lawnchair.feed.impl.OverlayService"
             android:process=":overlay">
