@@ -201,7 +201,7 @@ class LawnchairPreferences(val context: Context) :
     var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restartOverlay);
     var feedRSSSources = StringListPref("pref_rss_sources", ::restartOverlay, emptyList())
     var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restartOverlay)
-    var feedCardOpacity by IntPref("pref_card_opacity", 255, ::restartOverlay)
+    var feedCardOpacity by FloatPref("pref_card_opacity", 255f, ::restartOverlay)
 
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name,

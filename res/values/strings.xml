@@ -517,4 +517,6 @@
 
     <string name="title_pref_blur_feed_cards">Blur cards</string>
     <string name="description_pref_blur_feed_cards">Blur the background of cards and turn the text white</string>
+
+    <string name="title_pref_feed_card_opacity">Card opacity</string>
 </resources>

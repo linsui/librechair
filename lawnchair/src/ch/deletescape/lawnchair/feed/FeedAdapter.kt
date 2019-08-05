@@ -310,6 +310,11 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                             Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
                                                             else -> error("invalid bitmask")
                                                         }, parent, false)) {
+        if (type and Card.RAISE != 0) {
+            (itemView as CardView).background.alpha =
+                    itemView.context.lawnchairPrefs.feedCardOpacity.toInt()
+        }
+
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = GONE
         }
