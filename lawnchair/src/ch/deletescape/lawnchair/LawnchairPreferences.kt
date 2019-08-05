@@ -495,7 +495,13 @@ class LawnchairPreferences(val context: Context) :
                 Collections.newSetFromMap(WeakHashMap())
 
         init {
-            val arr = JSONArray(prefs.getString(prefKey, getJsonString(default)))
+            var arr: JSONArray
+            try {
+                arr = JSONArray(prefs.getString(prefKey, getJsonString(default)))
+            } catch (e: ClassCastException) {
+                e.printStackTrace()
+                arr = JSONArray()
+            }
             (0 until arr.length()).mapTo(valueList) { unflattenValue(arr.getString(it)) }
             if (onChange != doNothing) {
                 onChangeMap[prefKey] = onChange
