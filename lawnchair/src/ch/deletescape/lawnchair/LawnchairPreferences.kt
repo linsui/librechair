@@ -219,7 +219,7 @@ class LawnchairPreferences(val context: Context) :
                 value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
 
         override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
-            return value.split("@")[0].toInt() to Gson().fromJson(value.split("@")[1],
+            return value.split("@")[0].toInt() to Gson().fromJson(value.split("@", limit = 2)[1],
                                                                   WidgetMetadata::class.java)
         }
 
