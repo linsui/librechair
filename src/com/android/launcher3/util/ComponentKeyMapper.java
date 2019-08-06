@@ -57,8 +57,8 @@ public class ComponentKeyMapper<T> {
         TODO: implement this
         if (getComponentClass().equals(InstantAppResolverImpl.COMPONENT_CLASS_MARKER)) {
             allAppsStore = b.b(this.mContext);
-            return (a) allAppsStore.J.get(this.di.componentName.getPackageName());
-        } else if ((this.di instanceof ShortcutKey) == null) {
+            return (a) allAppsStore.J.get(this.componentKey.componentName.getPackageName());
+        } else if ((this.componentKey instanceof ShortcutKey) == null) {
             return null;
         } else {
             return (ShortcutInfo) com.google.android.apps.nexuslauncher.a.a.a(this.mContext).d.get((ShortcutKey) mComponentKey);

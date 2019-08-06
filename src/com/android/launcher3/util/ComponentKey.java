@@ -18,6 +18,8 @@ package com.android.launcher3.util;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.Process;
 import android.os.UserHandle;
 
@@ -26,7 +28,7 @@ import com.android.launcher3.compat.UserManagerCompat;
 
 import java.util.Arrays;
 
-public class ComponentKey {
+public class ComponentKey implements Parcelable {
 
     public final ComponentName componentName;
     public final UserHandle user;
@@ -64,6 +66,36 @@ public class ComponentKey {
         Preconditions.assertNotNull(user);
         mHashCode = Arrays.hashCode(new Object[] {componentName, user});
     }
+
+    protected ComponentKey(Parcel in) {
+        componentName = in.readParcelable(ComponentName.class.getClassLoader());
+        user = in.readParcelable(UserHandle.class.getClassLoader());
+        mHashCode = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(componentName, flags);
+        dest.writeParcelable(user, flags);
+        dest.writeInt(mHashCode);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<ComponentKey> CREATOR = new Creator<ComponentKey>() {
+        @Override
+        public ComponentKey createFromParcel(Parcel in) {
+            return new ComponentKey(in);
+        }
+
+        @Override
+        public ComponentKey[] newArray(int size) {
+            return new ComponentKey[size];
+        }
+    };
 
     @Override
     public int hashCode() {
