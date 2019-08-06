@@ -55,7 +55,9 @@ public class RemoteFeedProvider extends FeedProvider {
                 infos.add(new ComponentName(service.packageName, service.name));
             }
         }
-        return infos;
+        return infos.stream().filter(it -> !LawnchairPreferences.Companion.getInstance(context)
+                .getDisabledRemoteFeedProviders().contains(it.flattenToString())).collect(
+                Collectors.toList());
     }
 
     public static ServiceInfo resolveFeedProvider(String packageName, Context context) {
