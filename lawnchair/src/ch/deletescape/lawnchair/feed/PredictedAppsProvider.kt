@@ -25,8 +25,10 @@ import android.support.v7.widget.RecyclerView
 import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.predictions.LawnchairEventPredictor
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
 import ch.deletescape.lawnchair.util.extensions.currentStackTrace
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.logging.UserEventDispatcher
@@ -36,12 +38,13 @@ import com.google.android.apps.nexuslauncher.allapps.PredictionRowView
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     private val recyclerView = RecyclerView(context)
     private val adapter = PredictedApplicationsAdapter()
-    private val customAppPredictor: CustomAppPredictor = CustomAppPredictor(c).also {
+    private val customAppPredictor: CustomAppPredictor = LawnchairEventPredictor(c).also {
+        it.updatePredictions()
         adapter.predictions = it.predictions
+        d("init: predictions are ${it.predictions}")
     }
 
     init {
-        customAppPredictor.updatePredictions()
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
         adapter.notifyDataSetChanged()
