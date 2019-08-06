@@ -76,3 +76,4 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
         }
     }
 }
+
