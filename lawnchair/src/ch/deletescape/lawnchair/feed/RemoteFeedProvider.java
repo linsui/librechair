@@ -31,10 +31,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.reflection.ReflectionUtils;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,8 +170,12 @@ public class RemoteFeedProvider extends FeedProvider {
                     toSort.add(providerMap.get(name).getCards().stream()
                             .map(remoteCard -> remoteCard.toCard(getContext())).collect(
                                     Collectors.toList()));
-                } catch (RemoteException e) {
-                    e.printStackTrace();
+                } catch (RemoteException | RuntimeException e) {
+                    Log.w(getClass().getName(),
+                            "getCards: remote card failed to load and the provider has been disabled",
+                            e);
+                    LawnchairUtilsKt.getLawnchairPrefs(getContext())
+                            .getDisabledRemoteFeedProviders().add(name.flattenToString());
                 }
             }
         }
@@ -179,7 +185,7 @@ public class RemoteFeedProvider extends FeedProvider {
                             .getFeedPresenterAlgorithm()).sort(
                     Arrays.copyOf(toSort.toArray(), toSort.size(), List[].class));
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 }
