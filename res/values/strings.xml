@@ -520,4 +520,5 @@
 
     <string name="title_pref_feed_card_opacity">Card opacity</string>
     <string name="title_card_suggested_apps">Suggested apps</string>
+    <string name="title_feed_provider_remote_feeds">Third-party feeds</string>
 </resources>

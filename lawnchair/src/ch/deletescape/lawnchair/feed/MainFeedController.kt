@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.annotation.SuppressLint
 import android.content.Context
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -29,6 +30,7 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
+@SuppressLint("StaticFieldLeak")
 private var theController: MainFeedController? = null
 
 fun getFeedController(c: Context): MainFeedController {
@@ -63,6 +65,8 @@ class MainFeedController(val context: Context) {
                     R.string.title_feed_provider_forecast)
                 FeedDailyForecastProvider::class.java.name -> context.getString(
                                     R.string.title_feed_provider_daily_forecast)
+                RemoteFeedProvider::class.java.name -> context.getString(
+                        R.string.title_feed_provider_remote_feeds)
                 WikipediaNewsProvider::class.java.name -> context.getString(
                     R.string.title_feed_provider_wikipedia_news)
                 WikipediaFunFactsProvider::class.java.name -> context.getString(
@@ -96,6 +100,7 @@ class MainFeedController(val context: Context) {
                           FeedWeatherStatsProvider::class.java.name,
                           FeedDailyForecastProvider::class.java.name,
                           FeedForecastProvider::class.java.name,
+                          RemoteFeedProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
                           WikipediaFunFactsProvider::class.java.name,
                           WikinewsFeedProvider::class.java.name,
