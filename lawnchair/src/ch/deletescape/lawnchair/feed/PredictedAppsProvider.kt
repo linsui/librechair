@@ -57,27 +57,32 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
 
     fun refreshPredictions() {
         d("refreshPredictions: refreshing predictions")
-        context.bindService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
-                                                                PredictionsProviderService::class.java.name)),
-                            object : ServiceConnection {
-                                override fun onServiceDisconnected(name: ComponentName?) {
-                                }
+        runOnNewThread {
+            context.startService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
+                                                                     PredictionsProviderService::class.java.name)))
+            context.bindService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
+                                                                    PredictionsProviderService::class.java.name)),
+                                object : ServiceConnection {
+                                    override fun onServiceDisconnected(name: ComponentName) {
+                                        d("onServiceDisconnected: predictions service disconnected")
+                                    }
 
-                                override fun onServiceConnected(name: ComponentName?,
-                                                                service: IBinder?) {
-                                    d("onServiceConnected: connected to prediction service")
-                                    predictions = PredictionsProvider.Stub.asInterface(service)
-                                            .predictions
-                                            .map { ComponentKeyMapper(context, it.componentKey) }
-                                            .also {
-                                                it.forEach {
-                                                    d("refreshPredictions: got prediction $it")
-                                                }
+                                    override fun onServiceConnected(name: ComponentName,
+                                                                    service: IBinder) {
+                                        d("onServiceConnected: connected to prediction service")
+                                        predictions = PredictionsProvider.Stub.asInterface(service)
+                                                .predictions.map {
+                                            ComponentKeyMapper(context, it.componentKey)
+                                        }.also {
+                                            it.forEach {
+                                                d("refreshPredictions: got prediction $it")
                                             }
-                                    adapter.predictions = predictions
-                                    adapter.notifyDataSetChanged()
-                                }
-                            }, Context.BIND_AUTO_CREATE)
+                                        }
+                                        adapter.predictions = predictions
+                                        adapter.notifyDataSetChanged()
+                                    }
+                                }, Context.BIND_AUTO_CREATE)
+        }
     }
 
     override fun onFeedShown() {

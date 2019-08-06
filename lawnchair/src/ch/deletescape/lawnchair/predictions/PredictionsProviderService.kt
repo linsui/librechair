@@ -31,19 +31,22 @@ import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity
 
 class PredictionsProviderService : Service() {
-    private val service by lazy {
-        object : PredictionsProvider.Stub() {
-            override fun getPredictions(): List<ContextFreeComponentKeyMapper> {
-                d("getPredictions: retrieving predictions")
-                return (LawnchairLauncher.getLauncher(
-                        applicationContext).userEventDispatcher as CustomAppPredictor).predictions
-                        .map { ContextFreeComponentKeyMapper(it) }
-                        .also { d("getPredictions: returning $it ") }
-            }
+    private val service = object : PredictionsProvider.Stub() {
+        override fun getPredictions(): List<ContextFreeComponentKeyMapper> {
+            d("getPredictions: retrieving predictions")
+            return (LawnchairLauncher.getLauncher(
+                    applicationContext).userEventDispatcher as CustomAppPredictor).predictions
+                    .map { ContextFreeComponentKeyMapper(it) }
+                    .also { d("getPredictions: returning $it ") }
         }
     }
 
+    init {
+        d("init: predictions initialized")
+    }
+
     override fun onBind(intent: Intent): IBinder {
+        d("onBind: returning service $service")
         return service
     }
 }
