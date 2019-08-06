@@ -19,9 +19,13 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Parcel
 import android.os.Parcelable
+import android.view.ViewGroup
+import ch.deletescape.lawnchair.theme.ThemeManager
 
 data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: RemoteInflateHelper,
                       val type: Int, val algoFlags: String? = null,
@@ -82,6 +86,16 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
 
         override fun newArray(size: Int): Array<RemoteCard?> {
             return arrayOfNulls(size)
+        }
+    }
+
+    fun toCard(c: Context): Card {
+        return Card(BitmapDrawable(c.resources, icon), title, { v, _ ->
+            inflateHelper.inflate(!ThemeManager.getInstance(c).isDark)
+                    .apply(v.context, v as ViewGroup)
+        }, type, algoFlags, identifier).apply {
+            canHide = canHide
+            internalCategory = categories
         }
     }
 }
