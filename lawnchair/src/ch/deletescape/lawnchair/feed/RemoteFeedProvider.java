@@ -156,7 +156,9 @@ public class RemoteFeedProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         List<List<Card>> toSort = new ArrayList<>();
+        Log.d(getClass().getName(), "getCards: retrieving cards");
         for (ComponentName name : availableProviders(getContext())) {
+            Log.d(getClass().getName(), "getCards: found provider " + name);
             if (!providerMap.containsKey(name) || !providerMap.get(name).asBinder().pingBinder()) {
                 refreshIPCBindings(name);
             } else {
