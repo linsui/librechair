@@ -41,46 +41,48 @@ fun getFeedController(c: Context): MainFeedController {
 }
 
 class MainFeedController(val context: Context) {
-
     fun getProviders(): List<FeedProvider> {
-        val providers = newList<FeedProvider>()
-        (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
-                .iterator().forEach {
-                    providers.add(
-                        ReflectionUtils.inflateFeedProvider(it, context))
+        context.lawnchairPrefs.beginBlockingEdit()
+        context.lawnchairPrefs.feedProviders
+                .setAll(context.lawnchairPrefs.feedProviders.getAll().map {
+                    substitutions[it] ?: it
+                }.distinct())
+
+        return (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
+                .map {
+                    ReflectionUtils.inflateFeedProvider(it, context)
                 }
-        return providers
     }
 
     companion object {
+        val substitutions =
+                mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to FeedWeatherStatsProvider::class.java.name)
         fun getDisplayName(provider: String, context: Context): String {
             return when (provider) {
                 CalendarEventProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_calendar)
-                FeedWeatherProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_weather)
+                        R.string.title_feed_provider_calendar)
                 FeedWeatherStatsProvider::class.java.name -> context.getString(
-                                    R.string.title_feed_provider_weather_stats)
+                        R.string.title_feed_provider_weather_stats)
                 FeedForecastProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_forecast)
+                        R.string.title_feed_provider_forecast)
                 FeedDailyForecastProvider::class.java.name -> context.getString(
-                                    R.string.title_feed_provider_daily_forecast)
+                        R.string.title_feed_provider_daily_forecast)
                 RemoteFeedProvider::class.java.name -> context.getString(
                         R.string.title_feed_provider_remote_feeds)
                 WikipediaNewsProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_wikipedia_news)
+                        R.string.title_feed_provider_wikipedia_news)
                 WikipediaFunFactsProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_wikipedia_fun_facts)
+                        R.string.title_feed_provider_wikipedia_fun_facts)
                 WikinewsFeedProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_wikinews)
+                        R.string.title_feed_provider_wikinews)
                 TheGuardianFeedProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_the_guardian)
+                        R.string.title_feed_provider_the_guardian)
                 BBCFeedProvider::class.java.name -> context.getString(
-                                    R.string.title_feed_provider_bbc)
+                        R.string.title_feed_provider_bbc)
                 GSyndicationFeedProvider::class.java.name -> context.getString(
-                    R.string.title_feed_provider_google_news)
+                        R.string.title_feed_provider_google_news)
                 CustomizableRSSProvider::class.java.name -> context.getString(
-                                    R.string.title_feed_provider_customizable_rss)
+                        R.string.title_feed_provider_customizable_rss)
                 DeviceStateProvider::class.java.name -> R.string.title_feed_provider_device_state.fromStringRes(
                         context)
                 FeedWidgetsProvider::class.java.name -> context.getString(
@@ -89,14 +91,12 @@ class MainFeedController(val context: Context) {
                         context)
                 PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
                         context)
-
                 else -> error("No such provider ${provider}")
             }
         }
 
         fun getFeedProviders(): List<String> {
             return listOf(CalendarEventProvider::class.java.name,
-                          FeedWeatherProvider::class.java.name,
                           FeedWeatherStatsProvider::class.java.name,
                           FeedDailyForecastProvider::class.java.name,
                           FeedForecastProvider::class.java.name,
