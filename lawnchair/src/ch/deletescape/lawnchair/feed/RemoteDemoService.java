@@ -24,8 +24,10 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
 import ch.deletescape.lawnchair.feed.RemoteCard.Types;
+import com.android.launcher3.BuildConfig;
 import com.android.launcher3.R;
 import java.util.Collections;
 import java.util.List;
@@ -42,14 +44,25 @@ public class RemoteDemoService extends Service {
         return binder != null ? binder : (binder = new Stub() {
             @Override
             public List<RemoteCard> getCards() throws RemoteException {
-                return Collections.singletonList(new RemoteCard(null, "feed provider demo",
+                RemoteCard demoCard = new RemoteCard(null, "feed provider demo",
                         new RemoteInflateHelper.Stub() {
                             @Override
                             public RemoteViews inflate(boolean darkText) throws RemoteException {
                                 return new RemoteViews(getApplicationContext().getPackageName(),
                                         R.layout.appwidget_error);
                             }
-                        }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode()));
+                        }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode());
+                demoCard.setActionOnCardActionSelectedListener(
+                        new RemoteOnCardActionSelectedListener.Stub() {
+                            @Override
+                            public void onAction() throws RemoteException {
+                                Toast.makeText(getApplicationContext(),
+                                        "demonstration action clicked", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                demoCard.setActionName("Action demo");
+                demoCard.setCanHide(true);
+                return Collections.singletonList(demoCard);
             }
         });
     }

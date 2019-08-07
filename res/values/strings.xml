@@ -522,5 +522,5 @@
     <string name="title_card_suggested_apps">Suggested apps</string>
     <string name="title_feed_provider_remote_feeds">Third-party feeds</string>
 
-    <string name="title_pref_disabled_remote_feed_providers">Disabled third-party feed providers</string>
+    <string name="title_pref_remote_feed_providers">Third-party feed providers</string>
 </resources>

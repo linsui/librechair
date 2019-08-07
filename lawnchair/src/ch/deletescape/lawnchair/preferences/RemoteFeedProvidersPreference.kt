@@ -31,10 +31,10 @@ class RemoteFeedProvidersPreference(c: Context, attributes: AttributeSet) :
         MultiSelectListPreference(c, attributes) {
     init {
         setDefaultValue(setOf<String>())
-        entries = RemoteFeedProvider.availableProviders(context).map {
+        entries = RemoteFeedProvider.allProviders(context).map {
             context.packageManager.getServiceInfo(it, 0).loadLabel(context.packageManager)
         }.toTypedArray()
-        entryValues =
-                RemoteFeedProvider.availableProviders(context).map { it.toString() }.toTypedArray();
+        entryValues = RemoteFeedProvider.allProviders(context).map { it.flattenToString() }
+                .toTypedArray();
     }
 }

@@ -34,12 +34,17 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     private var internalCategory: List<String>? = null
     val categories: List<String>?
         get() = internalCategory
+    var actionName: String? = null
+    var actionOnCardActionSelectedListener: RemoteOnCardActionSelectedListener? = null
 
     constructor(parcel: Parcel) : this(parcel.readParcelable(Bitmap::class.java.classLoader),
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
             parcel.readStrongBinder()), parcel.readInt(), parcel.readString(), parcel.readInt()) {
         canHide = parcel.readByte() != 0.toByte()
         internalCategory = parcel.createStringArrayList()
+        actionName = parcel.readString()
+        actionOnCardActionSelectedListener =
+                RemoteOnCardActionSelectedListener.Stub.asInterface(parcel.readStrongBinder())
     }
 
     constructor(icon: Bitmap?, title: String?, inflateHelper: RemoteInflateHelper, type: Int,
@@ -73,6 +78,8 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeInt(identifier)
         parcel.writeByte(if (canHide) 1 else 0)
         parcel.writeStringList(internalCategory)
+        parcel.writeString(actionName)
+        parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
     }
 
     override fun describeContents(): Int {
@@ -94,8 +101,12 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
             inflateHelper.inflate(!ThemeManager.getInstance(c).isDark)
                     .apply(v.context, v as ViewGroup)
         }, type, algoFlags, identifier).apply {
-            canHide = canHide
+            canHide = this@RemoteCard.canHide
             internalCategory = categories
+            if (actionOnCardActionSelectedListener != null && this@RemoteCard.actionName != null) {
+                actionListener = { actionOnCardActionSelectedListener?.onAction() }
+                actionName = this@RemoteCard.actionName
+            }
         }
     }
 }

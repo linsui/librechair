@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.ComponentInfo;
 import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -57,9 +56,22 @@ public class RemoteFeedProvider extends FeedProvider {
                 infos.add(new ComponentName(service.packageName, service.name));
             }
         }
-        return infos.stream().filter(it -> !LawnchairPreferences.Companion.getInstance(context)
-                .getDisabledRemoteFeedProviders().contains(it.flattenToString())).collect(
+        return infos.stream().filter(it -> LawnchairPreferences.Companion.getInstance(context)
+                .getRemoteFeedProviders().contains(it.flattenToString())).collect(
                 Collectors.toList());
+    }
+
+    public static List<ComponentName> allProviders(Context context) {
+        List<ComponentName> infos = new ArrayList<>();
+        for (ApplicationInfo packageInfo : context.getPackageManager()
+                .getInstalledApplications(0)) {
+            if (resolveFeedProvider(packageInfo.packageName, context) != null
+                    && packageInfo.enabled) {
+                ServiceInfo service = resolveFeedProvider(packageInfo.packageName, context);
+                infos.add(new ComponentName(service.packageName, service.name));
+            }
+        }
+        return infos;
     }
 
     public static ServiceInfo resolveFeedProvider(String packageName, Context context) {
@@ -90,9 +102,7 @@ public class RemoteFeedProvider extends FeedProvider {
 
                             @Override
                             public void onServiceDisconnected(ComponentName name) {
-                                if (providerMap.containsKey(name)) {
-                                    providerMap.remove(name);
-                                }
+                                providerMap.remove(name);
                                 Log.d(getClass().getName(),
                                         "onServiceDisconnected: disconnected from service. re-establishing connection");
                                 refreshIPCBindings(name);
@@ -121,9 +131,7 @@ public class RemoteFeedProvider extends FeedProvider {
 
                                 @Override
                                 public void onServiceDisconnected(ComponentName name) {
-                                    if (providerMap.containsKey(name)) {
-                                        providerMap.remove(name);
-                                    }
+                                    providerMap.remove(name);
                                     Log.d(getClass().getName(),
                                             "onServiceDisconnected: disconnected from service. re-establishing connection");
                                     refreshIPCBindings(name);
@@ -175,7 +183,7 @@ public class RemoteFeedProvider extends FeedProvider {
                             "getCards: remote card failed to load and the provider has been disabled",
                             e);
                     LawnchairUtilsKt.getLawnchairPrefs(getContext())
-                            .getDisabledRemoteFeedProviders().add(name.flattenToString());
+                            .getRemoteFeedProviders().remove(name.flattenToString());
                 }
             }
         }

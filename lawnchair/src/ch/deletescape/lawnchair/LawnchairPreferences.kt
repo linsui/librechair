@@ -227,8 +227,8 @@ class LawnchairPreferences(val context: Context) :
             setAll(getAll().filter { it.first != value.first } + value)
         }
     }
-    var disabledRemoteFeedProviders by StringSetPref("pref_disabled_remote_feed_providers", setOf(),
-                                                     ::restartOverlay);
+    var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),
+                                             ::restartOverlay);
 
     var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, ::restartOverlay);
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restartOverlay);
