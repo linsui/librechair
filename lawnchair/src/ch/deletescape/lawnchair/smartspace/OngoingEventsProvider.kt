@@ -52,14 +52,13 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Keep
-class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
+class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.PeriodicDataProvider(controller) {
     private var silentlyFail: Boolean = false
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
     override val timeout = TimeUnit.SECONDS.toMillis(5)
-
     private fun updateInformation() {
         silentlyFail = controller.context.checkSelfPermission(
                 android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED
@@ -68,17 +67,15 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             return;
         }
         val currentTime = GregorianCalendar();
-        val endTime = GregorianCalendar();
-        endTime.add(Calendar.MINUTE, 240);
         val query =
-                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
+                "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
         val eventCursorNullable: Cursor? = contentResolver
                 .query(CalendarContract.Events.CONTENT_URI,
                        arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
                                CalendarContract.Instances.DTEND,
-                               CalendarContract.Instances.DESCRIPTION, CalendarContract.Events._ID,
-                               CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
-                       CalendarContract.Instances.DTSTART + " ASC")
+                               CalendarContract.Instances.DESCRIPTION,
+                               CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
+                       query, null, CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
             card = null
             updateData(null, card = null);
@@ -92,44 +89,20 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             startTime.timeInMillis = eventCursor.getLong(1);
             val eventEndTime = GregorianCalendar()
             eventEndTime.timeInMillis = eventCursor.getLong(2)
+            val lines = listOf(LawnchairSmartspaceController.Line(
+                    if (title == null || title.trim().isEmpty()) controller.context.getString(
+                            R.string.placeholder_empty_title) else title,
+                    TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
+                    controller.context.getString(if (eventCursor.getInt(
+                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
+                    TextUtils.TruncateAt.END))
             val description = eventCursor.getString(3);
-            val diff = startTime.timeInMillis - currentTime.timeInMillis
-            val diffSeconds = diff / 1000
-            val diffMinutes = diff / (60 * 1000)
-            val diffHours = diff / (60 * 60 * 1000)
-            val text = if (diffMinutes <= 0) controller.context.getString(
-                    R.string.reusable_str_now) else controller.context.getString(
-                    if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                    diffMinutes)
-            val intent = Intent(Intent.ACTION_VIEW)
-            if (eventCursor.getString(5) != null) {
-                if (controller.context.packageManager.getApplicationEnabledSetting(
-                                eventCursor.getString(
-                                        5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                    intent.`package` = eventCursor.getString(5)!!
-                }
-            }
-            intent.data = Uri.parse("content://com.android.calendar/events/" + eventCursor.getLong(
-                    4).toString())
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!),
-                                                          listOf(LawnchairSmartspaceController.Line(
-                                                                  if (title == null || title.trim().isEmpty()) controller.context.getString(
-                                                                          R.string.placeholder_empty_title) else title,
-                                                                  TextUtils.TruncateAt.MARQUEE),
-                                                                 LawnchairSmartspaceController.Line(
-                                                                         text,
-                                                                         TextUtils.TruncateAt.END),
-                                                                 LawnchairSmartspaceController.Line(
-                                                                         formatTime(startTime,
-                                                                                    context))),
-                                                          PendingIntent.getActivity(
-                                                                  controller.context, 0, intent, 0,
-                                                                  null))
+                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
             eventCursor.close();
             updateData(null, card)
         } catch (e: CursorIndexOutOfBoundsException) {
-            updateData(null, null)
+            updateData(null, card = null)
         }
     }
 

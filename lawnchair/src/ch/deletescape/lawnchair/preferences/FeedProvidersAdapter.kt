@@ -275,22 +275,8 @@ class FeedProvidersAdapter(private val context: Context)
     }
 
     companion object {
-
         const val TYPE_HEADER = 0
         const val TYPE_ITEM = 1
         const val TYPE_DIVIDER = 2
-
-        fun getEventProviders(context: Context): List<String> {
-            val list = ArrayList<String>()
-            list.add(NowPlayingProvider::class.java.name)
-            list.add(NotificationUnreadProvider::class.java.name)
-            list.add(BatteryStatusProvider::class.java.name)
-            list.add(BuiltInCalendarProvider::class.java.name)
-            list.add(AlarmEventProvider::class.java.name)
-            list.add(PersonalityProvider::class.java.name)
-            if (context.lawnchairPrefs.showDebugInfo)
-                list.add(FakeDataProvider::class.java.name)
-            return list
-        }
     }
 }
