@@ -368,6 +368,7 @@ class LawnchairPreferences(val context: Context) :
     var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
     var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
+    var displayOngoingEvents by BooleanPref("pref_smartspace_display_ongoing_events", true)
 
 
     private val was1stApril = is1stApril()

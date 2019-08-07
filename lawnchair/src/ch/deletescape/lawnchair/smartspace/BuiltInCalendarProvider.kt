@@ -46,6 +46,7 @@ import android.support.annotation.Keep
 import android.text.TextUtils
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -128,45 +129,50 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             eventCursor.close();
             updateData(null, card)
         } catch (e: CursorIndexOutOfBoundsException) {
-            val currentTime = GregorianCalendar();
-            val query =
-                    "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
-            val eventCursorNullable: Cursor? = contentResolver
-                    .query(CalendarContract.Events.CONTENT_URI,
-                           arrayOf(CalendarContract.Instances.TITLE,
-                                   CalendarContract.Instances.DTSTART,
-                                   CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
-                           query, null, CalendarContract.Instances.DTSTART + " ASC")
-            if (eventCursorNullable == null) {
-                card = null
-                updateData(null, card = null);
-                return;
-            }
-            try {
-                val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst();
-                val title = eventCursor.getString(0);
-                val startTime = GregorianCalendar()
-                startTime.timeInMillis = eventCursor.getLong(1);
-                val eventEndTime = GregorianCalendar()
-                eventEndTime.timeInMillis = eventCursor.getLong(2)
-                val lines = listOf(LawnchairSmartspaceController.Line(
-                        if (title == null || title.trim().isEmpty()) controller.context.getString(
-                                R.string.placeholder_empty_title) else title,
-                        TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
-                        controller.context.getString(if (eventCursor.getInt(
-                                        4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
-                        TextUtils.TruncateAt.END))
-                val description = eventCursor.getString(3);
-                card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                        controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines,
-                                                              true)
-                eventCursor.close();
-                updateData(null, card)
-            } catch (e: CursorIndexOutOfBoundsException) {
-                updateData(null, card = null)
+            if (context.lawnchairPrefs.displayOngoingEvents) {
+                val currentTime = GregorianCalendar();
+                val query =
+                        "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
+                val eventCursorNullable: Cursor? = contentResolver
+                        .query(CalendarContract.Events.CONTENT_URI,
+                               arrayOf(CalendarContract.Instances.TITLE,
+                                       CalendarContract.Instances.DTSTART,
+                                       CalendarContract.Instances.DTEND,
+                                       CalendarContract.Instances.DESCRIPTION,
+                                       CalendarContract.Instances.ALL_DAY,
+                                       CalendarContract.Events._ID), query, null,
+                               CalendarContract.Instances.DTSTART + " ASC")
+                if (eventCursorNullable == null) {
+                    card = null
+                    updateData(null, card = null);
+                    return;
+                }
+                try {
+                    val eventCursor = eventCursorNullable
+                    eventCursor.moveToFirst();
+                    val title = eventCursor.getString(0);
+                    val startTime = GregorianCalendar()
+                    startTime.timeInMillis = eventCursor.getLong(1);
+                    val eventEndTime = GregorianCalendar()
+                    eventEndTime.timeInMillis = eventCursor.getLong(2)
+                    val lines = listOf(LawnchairSmartspaceController.Line(
+                            if (title == null || title.trim().isEmpty()) controller.context.getString(
+                                    R.string.placeholder_empty_title) else title,
+                            TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
+                            controller.context.getString(if (eventCursor.getInt(
+                                            4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
+                            TextUtils.TruncateAt.END))
+                    val description = eventCursor.getString(3);
+                    card = LawnchairSmartspaceController.CardData(drawableToBitmap(
+                            controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines,
+                                                                  true)
+                    eventCursor.close();
+                    updateData(null, card)
+                } catch (e: CursorIndexOutOfBoundsException) {
+                    updateData(null, card = null)
+                }
+            } else {
+                updateData(null, null)
             }
         }
     }
