@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.preferences
 
+import android.content.ComponentName
 import android.content.Context
 import android.support.v14.preference.MultiSelectListPreference
 import android.util.AttributeSet
@@ -30,8 +31,9 @@ class RemoteFeedProvidersPreference(c: Context, attributes: AttributeSet) :
         MultiSelectListPreference(c, attributes) {
     init {
         setDefaultValue(setOf<String>())
-        entries =
-                RemoteFeedProvider.availableProviders(context).map { it.toString() }.toTypedArray()
+        entries = RemoteFeedProvider.availableProviders(context).map {
+            context.packageManager.getServiceInfo(it, 0).loadLabel(context.packageManager)
+        }.toTypedArray()
         entryValues =
                 RemoteFeedProvider.availableProviders(context).map { it.toString() }.toTypedArray();
     }
