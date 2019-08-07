@@ -523,4 +523,6 @@
     <string name="title_feed_provider_remote_feeds">Third-party feeds</string>
 
     <string name="title_pref_remote_feed_providers">Third-party feed providers</string>
+    <string name="title_pref_smartspace_ongoing_events">Display ongoing events</string>
+    <string name="summary_pref_smartspace_ongoing_events">When enabled, ongoing events will be shown in the system calendar provider</string>
 </resources>

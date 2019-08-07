@@ -93,6 +93,12 @@
             android:title="@string/title_pref_daily_briefing_time"
             android:key="pref_daily_brief" />
 
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_smartspace_display_ongoing_events"
+            android:title="@string/title_pref_smartspace_ongoing_events"
+            android:summary="@string/summary_pref_smartspace_ongoing_events" />
+
         <ListPreference
             android:defaultValue="metric"
             android:dependency="pref_smartspace_widget_provider"
