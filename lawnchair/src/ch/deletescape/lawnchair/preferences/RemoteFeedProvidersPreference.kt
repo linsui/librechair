@@ -29,7 +29,7 @@ import java.util.jar.Attributes
 class RemoteFeedProvidersPreference(c: Context, attributes: AttributeSet) :
         MultiSelectListPreference(c, attributes) {
     init {
-        setDefaultValue(arrayOf<String>())
+        setDefaultValue(setOf<String>())
         entries =
                 RemoteFeedProvider.availableProviders(context).map { it.toString() }.toTypedArray()
         entryValues =
