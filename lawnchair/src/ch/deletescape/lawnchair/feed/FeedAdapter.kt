@@ -103,38 +103,6 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
 
     @SuppressLint("MissingPermission")
     override fun getItemCount(): Int {
-        if (cards.isEmpty()) {
-            cards += Card(null, null, object : Card.Companion.InflateHelper {
-                override fun inflate(parent: ViewGroup): View {
-                    return LayoutInflater.from(ContextThemeWrapper(parent.context,
-                                                                   if (useWhiteText(backgroundColor,
-                                                                                    parent.context)) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2))
-                            .inflate(R.layout.empty_feed, parent, false)
-                }
-            }, Card.NO_HEADER, "nosort,top")
-            if (Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON,
-                                       0) != 0) {
-                cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
-                        context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
-                                                                         context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
-                        context)), R.string.title_card_airplane_mode_on.fromStringRes(context),
-                              { _, _ ->
-                                  View(context)
-                              }, Card.TEXT_ONLY, "nosort,top",
-                              "feedAirplaneModeIndicator".hashCode())
-            }
-            if ((context.getSystemService(
-                            Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected != true) {
-                cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(
-                        context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
-                                                                         context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
-                        context)), R.string.title_card_network_disconnected.fromStringRes(context),
-                              { _, _ ->
-                                  View(context)
-                              }, Card.TEXT_ONLY, "nosort,top",
-                              "feedNetworkModeIndicator".hashCode())
-            }
-        }
         return cards.size;
     }
 

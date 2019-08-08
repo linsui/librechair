@@ -526,4 +526,5 @@
     <string name="title_pref_smartspace_ongoing_events">Display ongoing events</string>
     <string name="summary_pref_smartspace_ongoing_events">When enabled, ongoing events will be shown in the system calendar provider</string>
     <string name="title_smartspace_provider_ongoing_events">Ongoing calendar events</string>
+    <string name="title_feed_refreshing">Refreshing the feed</string>
 </resources>

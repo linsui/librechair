@@ -52,17 +52,17 @@ import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import java.util.concurrent.Executors
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
-    private val dark: Boolean = ThemeManager.getInstance(contex2t.applicationContext).isDark
+    private val dark: Boolean = ThemeManager.getInstance(
+            contex2t.applicationContext).isDark || contex2t.lawnchairPrefs.feedCardBlur
     private val context = ContextThemeWrapper(contex2t,
-                                              if (dark || contex2t.lawnchairPrefs.feedCardBlur) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
                                LawnchairPreferences.getInstance(
                                        context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
-    private val adapter by lazy {
+    private val adapter =
         FeedAdapter(getFeedController(context.applicationContext).getProviders(),
                     ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
-    }
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private val feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
@@ -76,6 +76,26 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
 
     init {
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                runOnMainThread {
+                    if (adapter.itemCount == 0) {
+                        toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
+                                                                   context)) Color.WHITE else Color.DKGRAY)
+                        toolbar.title = context.getString(R.string.title_feed_refreshing)
+                    } else {
+                        toolbar.title = ""
+                    }
+                }
+            }
+        })
+        if (adapter.itemCount == 0) {
+            toolbar.setTitleTextColor(
+                    if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
+            toolbar.title = context.getString(R.string.title_feed_refreshing)
+        } else {
+            toolbar.title = ""
+        }
         if (!FeatureFlags.GO_DISABLE_WIDGETS) {
             toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
             toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
@@ -153,6 +173,20 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                 recyclerView
                                                                                         .isLayoutFrozen =
                                                                                         false
+                                                                                if (adapter.itemCount == 0) {
+                                                                                    toolbar
+                                                                                            .setTitleTextColor(
+                                                                                                    if (useWhiteText(
+                                                                                                                    backgroundColor,
+                                                                                                                    context)) Color.WHITE else Color.DKGRAY)
+                                                                                    toolbar.title =
+                                                                                            context
+                                                                                                    .getString(
+                                                                                                            R.string.title_feed_refreshing)
+                                                                                } else {
+                                                                                    toolbar.title =
+                                                                                            ""
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
@@ -197,6 +231,13 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                 }
                             }
                             recyclerView.isLayoutFrozen = false
+                            if (adapter.itemCount == 0) {
+                                toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
+                                                                           context)) Color.WHITE else Color.DKGRAY)
+                                toolbar.title = context.getString(R.string.title_feed_refreshing)
+                            } else {
+                                toolbar.title = ""
+                            }
                         }
                     }
                     windowService.addView(feedController, layoutParams)
