@@ -122,11 +122,14 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
                                                             Executors.newSingleThreadExecutor()
                                                                     .submit {
-                                                                        val oldCards = adapter
-                                                                                .immutableCards
+                                                                        recyclerView.post {
+                                                                            recyclerView
+                                                                                    .isLayoutFrozen =
+                                                                                    true
+                                                                        }
+                                                                        val oldCards = adapter.immutableCards
                                                                         adapter.refresh()
-                                                                        val cards = adapter
-                                                                                .immutableCards
+                                                                        val cards = adapter.immutableCards
                                                                         val patch = DiffUtils
                                                                                 .diff(oldCards,
                                                                                       cards)
@@ -146,6 +149,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                     DeltaType.EQUAL -> {
                                                                                     }
                                                                                 }
+                                                                            }
+                                                                            recyclerView.post {
+                                                                                recyclerView
+                                                                                        .isLayoutFrozen =
+                                                                                        false
                                                                             }
                                                                         }
                                                                     }
@@ -170,6 +178,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     }
                     Executors.newSingleThreadExecutor().submit {
                         Thread.sleep(1000)
+                        recyclerView.post { recyclerView.isLayoutFrozen = true }
                         val oldCards = adapter.immutableCards
                         adapter.refresh()
                         val cards = adapter.immutableCards
@@ -188,6 +197,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                     }
                                 }
                             }
+                            recyclerView.isLayoutFrozen = false
                         }
                     }
                     windowService.addView(feedController, layoutParams)
