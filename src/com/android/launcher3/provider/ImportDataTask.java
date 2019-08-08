@@ -378,6 +378,49 @@ public class ImportDataTask {
         return false;
     }
 
+    public static boolean performImportIfPossible(Context context, String sourcePackage)
+            throws Exception {
+        SharedPreferences devicePrefs = getDevicePrefs(context);
+        String sourceAuthority = devicePrefs.getString(KEY_DATA_IMPORT_SRC_AUTHORITY, "");
+
+        if (TextUtils.isEmpty(sourcePackage) || TextUtils.isEmpty(sourceAuthority)) {
+            return false;
+        }
+
+        // Synchronously clear the migration flags. This ensures that we do not try migration
+        // again and thus prevents potential crash loops due to migration failure.
+        devicePrefs.edit().remove(KEY_DATA_IMPORT_SRC_PKG).remove(KEY_DATA_IMPORT_SRC_AUTHORITY)
+                .commit();
+
+        if (!Settings.call(context.getContentResolver(), Settings.METHOD_WAS_EMPTY_DB_CREATED)
+                .getBoolean(Settings.EXTRA_VALUE, false)) {
+            // Only migration if a new DB was created.
+            return false;
+        }
+
+        for (ProviderInfo info : context.getPackageManager().queryContentProviders(
+                null, context.getApplicationInfo().uid, 0)) {
+
+            if (sourcePackage.equals(info.packageName)) {
+                if ((info.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                    // Only migrate if the source launcher is also on system image.
+                    return false;
+                }
+
+                // Wait until we found a provider with matching authority.
+                if (sourceAuthority.equals(info.authority)) {
+                    if (TextUtils.isEmpty(info.readPermission) ||
+                            context.checkPermission(info.readPermission, Process.myPid(),
+                                    Process.myUid()) == PackageManager.PERMISSION_GRANTED) {
+                        // All checks passed, run the import task.
+                        return new ImportDataTask(context, sourceAuthority).importWorkspace();
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private static int getMyHotseatLayoutId(Context context) {
         return LauncherAppState.getIDP(context).numHotseatIcons <= 5
                 ? R.xml.dw_phone_hotseat
