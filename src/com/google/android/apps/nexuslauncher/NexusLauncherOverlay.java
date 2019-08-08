@@ -10,12 +10,11 @@ public class NexusLauncherOverlay implements Launcher.LauncherOverlay, ISerializ
     final static String PREF_PERSIST_FLAGS = "pref_persistent_flags";
 
     private LauncherClient mClient;
-    final Launcher mLauncher;
+    protected Launcher mLauncher;
     private Launcher.LauncherOverlayCallbacks mOverlayCallbacks;
     boolean mFlagsChanged = false;
     private int mFlags;
     boolean mAttached = false;
-    private int mScrollLevel = 0;
 
     public NexusLauncherOverlay(Launcher launcher) {
         mLauncher = launcher;
