@@ -37,19 +37,19 @@ import com.android.launcher3.util.PackageManagerHelper;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class HotseatQsbWidget extends AbstractQsbLayout implements o,
+public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeListener,
         LawnchairPreferences.OnPreferenceChangeListener, ColorEngine.OnColorChangeListener {
 
     public static final String KEY_DOCK_COLORED_GOOGLE = "pref_dockColoredGoogle";
     public static final String KEY_DOCK_SEARCHBAR = "pref_dockSearchBar";
     public static final String KEY_DOCK_HIDE = "pref_hideHotseat";
     private boolean mIsGoogleColored;
-    private final k Ds;
+    private final QsbConfiguration Ds;
 
     static /* synthetic */ void a(HotseatQsbWidget hotseatQsbWidget) {
         if (hotseatQsbWidget.mIsGoogleColored != hotseatQsbWidget.isGoogleColored()) {
             hotseatQsbWidget.mIsGoogleColored = !hotseatQsbWidget.mIsGoogleColored;
-            hotseatQsbWidget.dM();
+            hotseatQsbWidget.onChange();
         }
     }
 
@@ -63,7 +63,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements o,
 
     public HotseatQsbWidget(Context context, AttributeSet attributeSet, int i) {
         super(context, attributeSet, i);
-        this.Ds = k.getInstance(context);
+        this.Ds = QsbConfiguration.getInstance(context);
         setOnClickListener(this);
     }
 
@@ -74,7 +74,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements o,
                 .addColorChangeListeners(this, Resolvers.HOTSEAT_QSB_BG);
         dW();
         super.onAttachedToWindow();
-        this.Ds.a((o) this);
+        this.Ds.a((QsbChangeListener) this);
         dH();
         setOnFocusChangeListener(this.mActivity.mFocusHandler);
     }
@@ -102,7 +102,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements o,
             boolean force) {
         if (key.equals(KEY_DOCK_COLORED_GOOGLE)) {
             mIsGoogleColored = isGoogleColored();
-            dM();
+            onChange();
         } else if (key.equals(KEY_DOCK_SEARCHBAR) || key.equals(KEY_DOCK_HIDE)) {
             boolean visible = prefs.getDockSearchBar() && !prefs.getDockHide();
             setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -119,7 +119,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements o,
         return getMicIcon(mIsGoogleColored);
     }
 
-    public final void dM() {
+    public final void onChange() {
         removeAllViews();
         setColors();
         dW();

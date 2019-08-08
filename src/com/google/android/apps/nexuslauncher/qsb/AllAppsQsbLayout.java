@@ -30,10 +30,11 @@ import com.android.launcher3.allapps.SearchUiManager;
 import com.google.android.apps.nexuslauncher.search.SearchThread;
 import org.jetbrains.annotations.NotNull;
 
-public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager, o,
+public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager,
+        QsbChangeListener,
         ColorEngine.OnColorChangeListener {
 
-    private final k Ds;
+    private final QsbConfiguration qsbConfiguration;
     private final int Dt;
     private int mShadowAlpha;
     private Bitmap Dv;
@@ -58,7 +59,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         super(context, attributeSet, i);
         this.mShadowAlpha = 0;
         setOnClickListener(this);
-        this.Ds = k.getInstance(context);
+        this.qsbConfiguration = QsbConfiguration.getInstance(context);
         this.Dt = getResources().getDimensionPixelSize(R.dimen.qsb_margin_top_adjusting);
         this.Dy = getResources().getDimensionPixelSize(R.dimen.all_apps_search_vertical_offset);
         setClipToPadding(false);
@@ -104,7 +105,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         ColorEngine.getInstance(getContext())
                 .addColorChangeListeners(this, Resolvers.ALLAPPS_QSB_BG);
         dN();
-        Ds.a(this);
+        qsbConfiguration.a(this);
     }
 
     @Override
@@ -153,7 +154,7 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         ColorEngine.getInstance(getContext())
                 .removeColorChangeListeners(this, Resolvers.ALLAPPS_QSB_BG);
         super.onDetachedFromWindow();
-        Ds.b(this);
+        qsbConfiguration.b(this);
     }
 
     protected final int aA(int i) {
@@ -177,17 +178,17 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         mAppsView.setRecyclerViewVerticalFadingEdgeEnabled(true);
     }
 
-    public final void dM() {
+    public final void onChange() {
         dN();
         invalidate();
     }
 
     private void dN() {
         az(this.Dc);
-        h(this.Ds.micStrokeWidth());
-        this.Dh = this.Ds.hintIsForAssistant();
+        h(this.qsbConfiguration.micStrokeWidth());
+        this.Dh = this.qsbConfiguration.hintIsForAssistant();
         mUseTwoBubbles = useTwoBubbles();
-        setHintText(this.Ds.hintTextValue(), this.mHint);
+        setHintText(this.qsbConfiguration.hintTextValue(), this.mHint);
         dH();
     }
 

@@ -8,25 +8,25 @@ import android.graphics.Color;
 import java.util.ArrayList;
 
 @TargetApi(26)
-public class k {
-    private static k INSTANCE;
-    Bitmap DX;
-    private final ArrayList<o> mListeners = new ArrayList<>(2);
+public class QsbConfiguration {
 
-    public static k getInstance(Context context) {
+    private static QsbConfiguration INSTANCE;
+    private final ArrayList<QsbChangeListener> mListeners = new ArrayList<>(2);
+
+    public static QsbConfiguration getInstance(Context context) {
         if (INSTANCE == null) {
-            INSTANCE = new k(context.getApplicationContext());
+            INSTANCE = new QsbConfiguration(context.getApplicationContext());
         }
         return INSTANCE;
     }
 
-    private k(Context context) {
+    private QsbConfiguration(Context context) {
 
     }
 
     private void notifyListeners() {
-        for (o listener : mListeners) {
-            listener.dM();
+        for (QsbChangeListener listener : mListeners) {
+            listener.onChange();
         }
     }
 
@@ -55,7 +55,7 @@ public class k {
         return false;
     }
 
-    public final boolean eg() {
+    public final boolean colourGoogleLogo() {
         // pixel_2017_qsb_use_colored_g
         return false;
     }
@@ -65,11 +65,11 @@ public class k {
         return false;
     }
 
-    public final void a(o oVar) {
-        this.mListeners.add(oVar);
+    public final void a(QsbChangeListener qsbChangeListener) {
+        this.mListeners.add(qsbChangeListener);
     }
 
-    public final void b(o oVar) {
-        this.mListeners.remove(oVar);
+    public final void b(QsbChangeListener qsbChangeListener) {
+        this.mListeners.remove(qsbChangeListener);
     }
 }
