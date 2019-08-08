@@ -92,7 +92,6 @@ sendReleaseTelegram:
   stage: deploy
   script:
     - apt-get install curl
-    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=CI build completed. A new release is on it's way!"
     - curl -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
   dependencies:
     - signRelease
@@ -101,7 +100,7 @@ sendReleaseTelegramGo:
   stage: deploy
   script:
     - apt-get install curl
-    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=CI build completed. A new release is on it's way!"
-    - curl -F document=@"outputs/librechair-ci-signed-go-aligned.apk" -F text="These are Lawnchair Go builds intended for devices with little resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
+    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=These are Librechair Go builds intended for devices low on resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead"
+    - curl -F document=@"outputs/librechair-ci-signed-go-aligned.apk" -F text="These are Lawnchair Go builds intended for devices low on resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
   dependencies:
     - signReleaseGo
