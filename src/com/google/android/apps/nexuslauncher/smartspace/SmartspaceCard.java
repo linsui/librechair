@@ -209,7 +209,7 @@ public class SmartspaceCard {
         final Bitmap ci = a.getBitmap(context);
         Bitmap cp;
         if (ci != null && i.dc) {
-            if (a.dj) {
+            if (a.forWeather) {
                 cp = cP(ci, -1);
             } else {
                 cp = ci;

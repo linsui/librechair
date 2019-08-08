@@ -16,14 +16,14 @@ import com.google.android.apps.nexuslauncher.smartspace.nano.SmartspaceProto.*;
 
 public class NewCardInfo {
     public final b di;
-    public final boolean dj;
+    public final boolean forWeather;
     public final PackageInfo dk;
     public final long dl;
     public final Intent intent;
 
-    public NewCardInfo(b di, Intent intent, boolean dj, long dl, PackageInfo dk) {
+    public NewCardInfo(b di, Intent intent, boolean forWeather, long dl, PackageInfo dk) {
         this.di = di;
-        this.dj = dj;
+        this.forWeather = forWeather;
         this.intent = intent;
         this.dl = dl;
         this.dk = dk;

@@ -672,7 +672,7 @@
     move-result-object v0
 
     .line 422
-    .local v0, "cr":Landroid/content/ContentResolver;
+    .local v0, "postUpdate":Landroid/content/ContentResolver;
     const-string v1, "lock_to_app_enabled"
 
     const/4 v2, 0x0

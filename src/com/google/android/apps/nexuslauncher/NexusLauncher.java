@@ -112,7 +112,7 @@ public class NexusLauncher {
 
         public void dump(final String s, final FileDescriptor fileDescriptor,
                 final PrintWriter printWriter, final String[] array) {
-            SmartspaceController.get(mLauncher).cX(s, printWriter);
+            SmartspaceController.get(mLauncher).dumpInfo(s, printWriter);
         }
 
         public void finishBindingItems(final boolean b) {

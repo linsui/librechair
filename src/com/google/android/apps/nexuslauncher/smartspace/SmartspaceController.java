@@ -27,10 +27,10 @@ public class SmartspaceController implements Handler.Callback {
         }
     }
 
-    private static SmartspaceController dU;
-    private final SmartspaceDataContainer dQ;
-    private final Alarm dR;
-    private ISmartspace dS;
+    private static SmartspaceController INSTANCE;
+    private final SmartspaceDataContainer dataContainer;
+    private final Alarm refreshAlarm;
+    private ISmartspace mSmartspace;
     private final ProtoStore dT;
     private final Context mAppContext;
     private final Handler mUiHandler;
@@ -40,14 +40,14 @@ public class SmartspaceController implements Handler.Callback {
         this.mWorker = new Handler(LauncherModel.getWorkerLooper(), this);
         this.mUiHandler = new Handler(Looper.getMainLooper(), this);
         this.mAppContext = mAppContext;
-        this.dQ = new SmartspaceDataContainer();
+        this.dataContainer = new SmartspaceDataContainer();
         this.dT = new ProtoStore(mAppContext);
-        (this.dR = new Alarm()).setOnAlarmListener(alarm -> dc());
-        this.dd();
+        (this.refreshAlarm = new Alarm()).setOnAlarmListener(alarm -> dc());
+        this.updateGsa();
         mAppContext.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                dd();
+                updateGsa();
             }
         }, ActionIntentFilter.googleInstance(
                 Intent.ACTION_PACKAGE_ADDED,
@@ -61,55 +61,55 @@ public class SmartspaceController implements Handler.Callback {
     }
 
     private void dc() {
-        final boolean cr = this.dQ.isWeatherAvailable();
-        final boolean cs = this.dQ.cS();
-        this.dQ.cU();
-        if (cr && !this.dQ.isWeatherAvailable()) {
-            this.df(null, SmartspaceController.Store.WEATHER);
+        boolean weatherAvailable = this.dataContainer.isWeatherAvailable();
+        boolean dataAvailable = this.dataContainer.isDataAvailable();
+        this.dataContainer.clearAll();
+        if (weatherAvailable && !this.dataContainer.isWeatherAvailable()) {
+            this.updateSmartspaceStore(null, SmartspaceController.Store.WEATHER);
         }
-        if (cs && !this.dQ.cS()) {
-            this.df(null, SmartspaceController.Store.CURRENT);
+        if (dataAvailable && !this.dataContainer.isDataAvailable()) {
+            this.updateSmartspaceStore(null, SmartspaceController.Store.CURRENT);
         }
     }
 
-    private void dd() {
-        if (this.dS != null) {
-            this.dS.onGsaChanged();
+    private void updateGsa() {
+        if (this.mSmartspace != null) {
+            this.mSmartspace.onGsaChanged();
         }
-        this.de();
+        this.onPostGsaUpdate();
     }
 
-    private void de() {
+    private void onPostGsaUpdate() {
     }
 
-    private void df(final NewCardInfo a,
+    private void updateSmartspaceStore(final NewCardInfo a,
             final SmartspaceController.Store SmartspaceControllerStore) {
         Message.obtain(this.mWorker, 2, SmartspaceControllerStore.ordinal(), 0, a).sendToTarget();
     }
 
     public static SmartspaceController get(final Context context) {
-        if (SmartspaceController.dU == null) {
-            SmartspaceController.dU = new SmartspaceController(context.getApplicationContext());
+        if (SmartspaceController.INSTANCE == null) {
+            SmartspaceController.INSTANCE = new SmartspaceController(
+                    context.getApplicationContext());
         }
-        return SmartspaceController.dU;
+        return SmartspaceController.INSTANCE;
     }
 
     private void update() {
-        this.dR.cancelAlarm();
-        final long ct = this.dQ.cT();
-        if (ct > 0L) {
-            this.dR.setAlarm(ct);
+        this.refreshAlarm.cancelAlarm();
+        if (this.dataContainer.timeRemainingTillExpiry() > 0L) {
+            this.refreshAlarm.setAlarm(this.dataContainer.timeRemainingTillExpiry());
         }
-        if (this.dS != null) {
-            this.dS.cr(this.dQ);
+        if (this.mSmartspace != null) {
+            this.mSmartspace.postUpdate(this.dataContainer);
         }
     }
 
-    public void cV(final NewCardInfo a) {
-        if (a != null && !a.dj) {
-            this.df(a, SmartspaceController.Store.WEATHER);
+    public void updateData(NewCardInfo cardInfo) {
+        if (cardInfo != null && !cardInfo.forWeather) {
+            this.updateSmartspaceStore(cardInfo, SmartspaceController.Store.WEATHER);
         } else {
-            this.df(a, SmartspaceController.Store.CURRENT);
+            this.updateSmartspaceStore(cardInfo, SmartspaceController.Store.CURRENT);
         }
     }
 
@@ -117,11 +117,11 @@ public class SmartspaceController implements Handler.Callback {
         Message.obtain(this.mWorker, 1).sendToTarget();
     }
 
-    public void cX(final String s, final PrintWriter printWriter) {
+    public void dumpInfo(final String s, final PrintWriter printWriter) {
         printWriter.println();
         printWriter.println(s + "SmartspaceController");
-        printWriter.println(s + "  weather " + this.dQ.dO);
-        printWriter.println(s + "  current " + this.dQ.dP);
+        printWriter.println(s + "  weather " + this.dataContainer.weatherCard);
+        printWriter.println(s + "  current " + this.dataContainer.dataCard);
     }
 
     public boolean cY() {
@@ -135,10 +135,10 @@ public class SmartspaceController implements Handler.Callback {
     }
 
     public void da(final ISmartspace ds) {
-        this.dS = ds;
-        if (this.dS != null && this.dQ != null) {
-            this.dS.cr(this.dQ);
-            this.dS.onGsaChanged();
+        this.mSmartspace = ds;
+        if (this.mSmartspace != null && this.dataContainer != null) {
+            this.mSmartspace.postUpdate(this.dataContainer);
+            this.mSmartspace.onGsaChanged();
         }
     }
 
@@ -169,18 +169,18 @@ public class SmartspaceController implements Handler.Callback {
             case 101:
                 SmartspaceCard[] dVarArr = (SmartspaceCard[]) message.obj;
                 if (dVarArr != null) {
-                    this.dQ.dO = dVarArr.length > 0 ?
+                    this.dataContainer.weatherCard = dVarArr.length > 0 ?
                             dVarArr[0] :
                             null;
 
-                    SmartspaceDataContainer eVar = this.dQ;
+                    SmartspaceDataContainer eVar = this.dataContainer;
                     if (dVarArr.length > 1) {
                         dVar = dVarArr[1];
                     }
 
-                    eVar.dP = dVar;
+                    eVar.dataCard = dVar;
                 }
-                this.dQ.cU();
+                this.dataContainer.clearAll();
                 update();
                 break;
         }

@@ -1,51 +1,50 @@
 package com.google.android.apps.nexuslauncher.smartspace;
 
 public class SmartspaceDataContainer {
-    public SmartspaceCard dO;
-    public SmartspaceCard dP;
+
+    public SmartspaceCard weatherCard;
+    public SmartspaceCard dataCard;
 
     public SmartspaceDataContainer() {
-        dO = null;
-        dP = null;
+        weatherCard = null;
+        dataCard = null;
     }
 
     public boolean isWeatherAvailable() {
-        return dO != null;
+        return weatherCard != null;
     }
 
-    public boolean cS() {
-        return dP != null;
+    public boolean isDataAvailable() {
+        return dataCard != null;
     }
 
-    public long cT() {
+    public long timeRemainingTillExpiry() {
         final long currentTimeMillis = System.currentTimeMillis();
-        if (cS() && isWeatherAvailable()) {
-            return Math.min(dP.cF(), dO.cF()) - currentTimeMillis;
+        if (isDataAvailable() && isWeatherAvailable()) {
+            return Math.min(dataCard.cF(), weatherCard.cF()) - currentTimeMillis;
         }
-        if (cS()) {
-            return dP.cF() - currentTimeMillis;
+        if (isDataAvailable()) {
+            return dataCard.cF() - currentTimeMillis;
         }
         if (isWeatherAvailable()) {
-            return dO.cF() - currentTimeMillis;
+            return weatherCard.cF() - currentTimeMillis;
         }
         return 0L;
     }
 
-    public boolean cU() {
-        final boolean b = true;
-        boolean b2 = false;
-        if (isWeatherAvailable() && dO.cM()) {
-            dO = null;
-            b2 = b;
+    public boolean clearAll() {
+        if (isWeatherAvailable() && weatherCard.cM()) {
+            weatherCard = null;
+            return true;
         }
-        if (cS() && dP.cM()) {
-            dP = null;
-            b2 = b;
+        if (isDataAvailable() && dataCard.cM()) {
+            dataCard = null;
+            return true;
         }
-        return b2;
+        return false;
     }
 
     public String toString() {
-        return "{" + dP + "," + dO + "}";
+        return "{" + dataCard + "," + weatherCard + "}";
     }
 }
