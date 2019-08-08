@@ -164,7 +164,7 @@ public class OWMForecastProvider implements ForecastProvider {
             net.aksingh.owmjapis.model.CurrentWeather weather = owm.currentWeatherByCityName(query);
             return new Pair<>(weather.getCoordData().getLatitude(),
                     weather.getCoordData().getLongitude());
-        } catch (APIException e) {
+        } catch (APIException | RuntimeException e) {
             throw new ForecastException(e);
         }
     }
