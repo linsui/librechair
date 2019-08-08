@@ -15,7 +15,7 @@ public class SmartspacePreferencesShortcut extends OptionsPopupView.OptionItem {
                 SmartspacePreferencesShortcut::startSmartspacePreferences);
     }
 
-    private static boolean startSmartspacePreferences(View view) {
+    public static boolean startSmartspacePreferences(View view) {
         Launcher launcher = Launcher.getLauncher(view.getContext());
         launcher.startActivitySafely(view, new Intent(launcher, SettingsActivity.class)
                 .putExtra(SettingsActivity.SubSettingsFragment.TITLE, launcher.getString(R.string.home_widget))

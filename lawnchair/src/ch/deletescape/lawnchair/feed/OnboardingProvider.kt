@@ -20,8 +20,11 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Button
+import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import com.android.launcher3.R
 
 class OnboardingProvider(c: Context) : FeedProvider(c) {
@@ -40,7 +43,18 @@ class OnboardingProvider(c: Context) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         return listOf(Card(null, null, { v, _ ->
             LayoutInflater.from(v.context)
-                    .inflate(R.layout.card_welcome_feed, v as ViewGroup, false)
+                    .inflate(R.layout.card_welcome_feed, v as ViewGroup, false).also {
+                        it.findViewById<Button>(R.id.customize_feed).setOnClickListener {
+                            Intent(v.context, SettingsActivity::class.java)
+                                    .putExtra(SettingsActivity.SubSettingsFragment.TITLE,
+                                              v.context.getString(R.string.home_widget))
+                                    .putExtra(SettingsActivity.SubSettingsFragment.CONTENT_RES_ID,
+                                              R.xml.lawnchair_smartspace_preferences)
+                                    .putExtra(SettingsActivity.SubSettingsFragment.HAS_PREVIEW,
+                                              true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .also { v.context.startActivity(it) }
+                        }
+                    }
         }, Card.RAISE or Card.NO_HEADER, "nosort,top", "feedWelcome".hashCode()))
     }
 }
