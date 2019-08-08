@@ -247,6 +247,7 @@ class LawnchairPreferences(val context: Context) :
     val weatherForecastProvider by StringPref("pref_forecast_provider", OWMForecastProvider::class.java.name, updateSmartspace)
     var usePillQsb by BooleanPref("pref_use_pill_qsb", false, recreate)
     var weatherIconPack by StringPref("pref_weatherIcons", "", updateWeatherData)
+    var feedOnboardingShown by BooleanPref("pref_feed_onboarding_shown", false)
 
     // Dock
     val dockStyles = DockStyle.StyleManager(this, reloadDockStyle, resetAllApps)

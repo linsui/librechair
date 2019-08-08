@@ -60,6 +60,13 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
     init {
         d("init: backgroundColor is ${backgroundColor}")
         this.backgroundColor = backgroundColor
+        if (!context.lawnchairPrefs.feedOnboardingShown) {
+            providers += OnboardingProvider(context)
+        } else {
+            if (providers.any { it.javaClass == OnboardingProvider::class.java }) {
+                providers = providers.filter { it.javaClass != OnboardingProvider::class.java }
+            }
+        }
     }
 
     private val cards = ArrayList<Card>()

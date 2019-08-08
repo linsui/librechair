@@ -527,4 +527,7 @@
     <string name="summary_pref_smartspace_ongoing_events">When enabled, ongoing events will be shown in the system calendar provider</string>
     <string name="title_smartspace_provider_ongoing_events">Ongoing calendar events</string>
     <string name="title_feed_refreshing">Refreshing the feed</string>
+    <string name="headline_card_feed_welcome">Welcome to your feed</string>
+    <string name="headline2_card_welcome_feed">Your feed will inform you throughout the day</string>
+    <string name="body_card_welcome_feed">Your feed is the place where you can find the information that you need, when you need it most. The feed will display upcoming calender events, news and more.</string>
 </resources>
