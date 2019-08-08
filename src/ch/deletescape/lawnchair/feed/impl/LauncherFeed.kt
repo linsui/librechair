@@ -49,7 +49,6 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
-import org.eclipse.jgit.diff.DiffAlgorithm
 import java.util.concurrent.Executors
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
@@ -99,7 +98,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                         WidgetSelectionCallback.Stub() {
                                                         override fun onWidgetSelected(i: Int) {
                                                             context.lawnchairPrefs.feedWidgetList
-                                                                    .add(i)
+                                                                    .customAdder(i)
                                                             context.bindService(Intent(context,
                                                                                        PreferenceSynchronizerService::class.java),
                                                                                 object :

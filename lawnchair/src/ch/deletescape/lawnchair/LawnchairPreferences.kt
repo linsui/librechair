@@ -208,6 +208,10 @@ class LawnchairPreferences(val context: Context) :
                                              ::restartOverlay)
     var feedWidgetList = object :
             MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restartOverlay, listOf()) {
+        override fun customAdder(value: Int) {
+            setAll(getAll().filter { it != value } + value)
+        }
+
                 override fun unflattenValue(value: String): Int {
                     return Integer.valueOf(value)
                 }
