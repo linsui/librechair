@@ -45,21 +45,21 @@ import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
+import com.github.difflib.DiffUtils
+import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import org.eclipse.jgit.diff.DiffAlgorithm
 import java.util.concurrent.Executors
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
-
     private val dark: Boolean = ThemeManager.getInstance(contex2t.applicationContext).isDark
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark || contex2t.lawnchairPrefs.feedCardBlur) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
                                LawnchairPreferences.getInstance(
-                                       context).feedBackgroundOpacity.toInt() * (255 / 100)).also {
-                d("backgroundColor: ${it}")
-            }
+                                       context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
     private val adapter by lazy {
         FeedAdapter(getFeedController(context.applicationContext).getProviders(),
                     ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
@@ -71,8 +71,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             .also {
                 it.setLauncherFeed(this)
                 it.setBackgroundColor(backgroundColor)
-                d("feedController: background color value: ${LawnchairPreferences.getInstance(
-                        context).feedBackgroundOpacity.toInt()}")
                 adapter.backgroundColor = backgroundColor
             }
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
@@ -108,7 +106,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                         ServiceConnection {
                                                                                     override fun onServiceDisconnected(
                                                                                             name: ComponentName?) {
-
                                                                                     }
 
                                                                                     override fun onServiceConnected(
@@ -120,27 +117,41 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                                         service)
                                                                                                 .requestSynchronization()
                                                                                     }
-
                                                                                 },
                                                                                 Context.BIND_AUTO_CREATE)
 
                                                             Executors.newSingleThreadExecutor()
                                                                     .submit {
-                                                                        Thread.sleep(1000)
-                                                                        d("refreshing adapter")
+                                                                        val oldCards = adapter
+                                                                                .immutableCards
                                                                         adapter.refresh()
-                                                                        d("adapter refreshed")
+                                                                        val cards = adapter
+                                                                                .immutableCards
+                                                                        val patch = DiffUtils
+                                                                                .diff(oldCards,
+                                                                                      cards)
+
                                                                         handler.post {
-                                                                            d("notifying adapter")
-                                                                            adapter
-                                                                                    .notifyDataSetChanged()
-                                                                            d("adapter notified")
+                                                                            patch.deltas.forEach {
+                                                                                when (it.type) {
+                                                                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
+                                                                                            it.source.position,
+                                                                                            it.source.lines.size)
+                                                                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
+                                                                                            it.source.position,
+                                                                                            it.source.lines.size)
+                                                                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
+                                                                                            it.source.position,
+                                                                                            it.source.lines.size)
+                                                                                    DeltaType.EQUAL -> {
+                                                                                    }
+                                                                                }
+                                                                            }
                                                                         }
                                                                     }
                                                         }
                                                     })
                                         }
-
                                     }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
         }
@@ -148,7 +159,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
-
     private var feedAttached = false
         set(value) {
             if (field != value) {
@@ -159,14 +169,25 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                         recyclerView.layoutManager = LinearLayoutManager(context)
                     }
                     Executors.newSingleThreadExecutor().submit {
-                        Thread.sleep(1000);
-                        d("refreshing adapter")
+                        Thread.sleep(1000)
+                        val oldCards = adapter.immutableCards
                         adapter.refresh()
-                        d("adapter refreshed")
+                        val cards = adapter.immutableCards
+                        val patch = DiffUtils.diff(oldCards, cards)
+
                         handler.post {
-                            d("notifying adapter")
-                            adapter.notifyDataSetChanged()
-                            d("adapter notified")
+                            patch.deltas.forEach {
+                                when (it.type) {
+                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.EQUAL -> {
+                                    }
+                                }
+                            }
                         }
                     }
                     windowService.addView(feedController, layoutParams)
@@ -213,46 +234,36 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause")
     }
 
     override fun onResume() {
-        Log.d(TAG, "onResume")
     }
 
     override fun openOverlay(flags: Int) {
-        Log.d(TAG, "openOverlay($flags)")
     }
 
     override fun requestVoiceDetection(start: Boolean) {
-        Log.d(TAG, "requestVoiceDetection")
     }
 
     override fun getVoiceSearchLanguage(): String {
-        Log.d(TAG, "getVoiceSearchLanguage")
         return "en"
     }
 
     override fun isVoiceDetectionRunning(): Boolean {
-        Log.d(TAG, "isVoiceDetectionRunning")
         return false
     }
 
     override fun hasOverlayContent(): Boolean {
-        Log.d(TAG, "hasOverlayContent")
         return true
     }
 
     override fun unusedMethod() {
-        Log.d(TAG, "unusedMethod")
     }
 
     override fun setActivityState(flags: Int) {
-        Log.d(TAG, "setActivityState($flags)")
     }
 
     override fun startSearch(data: ByteArray?, bundle: Bundle?): Boolean {
-        Log.d(TAG, "startSearch")
         return false
     }
 
@@ -265,7 +276,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     companion object {
-
         private const val TAG = "LauncherFeed"
     }
 }

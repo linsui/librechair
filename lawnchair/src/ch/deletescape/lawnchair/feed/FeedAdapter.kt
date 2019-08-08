@@ -63,6 +63,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
     }
 
     private val cards = ArrayList<Card>()
+    val immutableCards
+        get() = cards.clone() as List<Card>
 
     init {
         providers.forEach {
