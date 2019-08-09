@@ -24,17 +24,18 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
-import android.net.ConnectivityManager
 import android.os.Vibrator
-import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -62,6 +63,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         this.backgroundColor = backgroundColor
         if (!context.lawnchairPrefs.feedOnboardingShown) {
             providers += OnboardingProvider(context)
+            context.lawnchairPrefs.feedOnboardingShown = true
         } else {
             if (providers.any { it.javaClass == OnboardingProvider::class.java }) {
                 providers = providers.filter { it.javaClass != OnboardingProvider::class.java }
