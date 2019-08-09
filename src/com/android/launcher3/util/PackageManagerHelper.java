@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
@@ -32,14 +33,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.ItemInfo;
-import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppWidgetInfo;
 import com.android.launcher3.PendingAddItemInfo;
 import com.android.launcher3.PromiseAppInfo;
@@ -47,7 +45,6 @@ import com.android.launcher3.R;
 import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
-
 import java.net.URISyntaxException;
 import java.util.List;
 
@@ -94,6 +91,15 @@ public class PackageManagerHelper {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    public String getPackageVersion(final String packageName) {
+        try {
+            PackageInfo info = mPm.getPackageInfo(packageName, 0);
+            return info.versionName;
+        } catch (PackageManager.NameNotFoundException ignored) {
+        }
+        return "";
     }
 
     /**

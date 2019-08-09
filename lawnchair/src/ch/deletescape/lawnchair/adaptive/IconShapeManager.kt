@@ -21,7 +21,10 @@ package ch.deletescape.lawnchair.adaptive
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.*
+import android.graphics.Path
+import android.graphics.Rect
+import android.graphics.Region
+import android.graphics.RegionIterator
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Handler
 import android.support.v4.graphics.PathParser
@@ -35,7 +38,6 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherModel
 import com.android.launcher3.Utilities
 import com.android.launcher3.graphics.IconShapeOverride
-import java.lang.RuntimeException
 
 class IconShapeManager(private val context: Context) {
 
@@ -71,18 +73,8 @@ class IconShapeManager(private val context: Context) {
         val systemShape = findNearestShape(iconMask)
         return object : IconShape(systemShape) {
 
-            private val isCircle = systemShape is Circle
-
             override fun getMaskPath(): Path {
                 return Path(iconMask)
-            }
-
-            override fun addShape(path: Path, x: Float, y: Float, radius: Float) {
-                if (isCircle) {
-                    path.addCircle(x + radius, y + radius, radius, Path.Direction.CW)
-                } else {
-                    super.addShape(path, x, y, radius)
-                }
             }
 
             override fun toString() = ""

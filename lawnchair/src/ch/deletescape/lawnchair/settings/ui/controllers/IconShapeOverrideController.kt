@@ -19,26 +19,11 @@ package ch.deletescape.lawnchair.settings.ui.controllers
 
 import android.content.Context
 import android.support.annotation.Keep
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.Preference
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.settings.ui.PreferenceController
-import com.android.launcher3.R
 import com.android.launcher3.graphics.IconShapeOverride
 
 @Keep
 class IconShapeOverrideController(context: Context) : PreferenceController(context) {
 
     override val isVisible = IconShapeOverride.isSupported(context)
-
-    override fun onPreferenceAdded(preference: Preference): Boolean {
-        if (!super.onPreferenceAdded(preference)) return false
-        if (preference is ListPreference) {
-            if (context.lawnchairPrefs.developerOptionsEnabled) {
-                preference.setEntries(R.array.alt_icon_shape_names)
-                preference.setEntryValues(R.array.alt_icon_shape_values)
-            }
-        }
-        return true
-    }
 }

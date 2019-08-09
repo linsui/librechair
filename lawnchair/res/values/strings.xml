@@ -16,7 +16,7 @@
     <string name="action_open_notifications_class" translatable="false">ch.deletescape.lawnchair.gestures.handlers.NotificationsOpenGestureHandler</string>
     <string name="action_open_drawer_class" translatable="false">ch.deletescape.lawnchair.gestures.handlers.OpenDrawerGestureHandler</string>
 
-    <string name="action_open_overview_class" translatable="false">ch.deletescape.lawnchair.gestures.handlers.OpenOverviewGestureHandler</string>
+    <string name="action_open_overview_class" translatable="false">ch.deletescape.lawnchfair.gestures.handlers.OpenOverviewGestureHandler</string>
     <string name="action_do_nothing_class" translatable="false">ch.deletescape.lawnchair.gestures.BlankGestureHandler</string>
 
     <!--Marker A-->
@@ -679,6 +679,17 @@
         <item>Have a great day!</item>
     </string-array>
     <string name="title_preference_feed_sorting_algorithm">Feed sorting algorithm</string>
+    <string-array name="greetings_evening">
+        <item>How was your day?</item>
+        <item>What did you do today?</item>
+    </string-array>
+    <string-array name="greetings_night">
+        <item>Good night!</item>
+        <item>Sleep well!</item>
+        <item>See you tomorrow!</item>
+        <item>Sweet dreams!</item>
+        <item>Don\'t stay up too long</item>
+    </string-array>
 
     <string name="onbording">Onboarding</string>
     <string name="onbording_settings_title">Set-up %s</string>
@@ -706,18 +717,18 @@
     <string name="lawnchair_settings">Librechair Settings</string>
     <string name="librechair_settings">Librechair Settings</string>
     <string name="description_pref_feed_algorithm">The feed will be displayed in the selected algorithm</string>
-    <string-array name="greetings_evening">
-        <item>Good night!</item>
-        <item>Sleep well!</item>
-        <item>See you tomorrow!</item>
-        <item>Sweet dreams!</item>
-        <item>Don\'t stay up too long</item>
-        <item>How was your day?</item>
-        <item>I know what they did today… Confusing, isn\'t it?</item>
-    </string-array>
 
     <string name="customnavbar">Custom Navigation Bar</string>
     <string name="customnavbar_install">Tap to install Custom Navigation Bar</string>
     <string name="customnavbar_back_hiding">Back button hiding</string>
     <string name="customnavbar_back_hiding_desc">Hide the back button when not needed</string>
+    <string name="icon_shape_top_left">Top left</string>
+    <string name="icon_shape_top_right">Top right</string>
+    <string name="icon_shape_bottom_left">Bottom left</string>
+    <string name="icon_shape_bottom_right">Bottom right</string>
+    <string name="icon_shape_corner_round">Round</string>
+    <string name="icon_shape_corner_squircle">Squircle</string>
+    <string name="icon_shape_corner_cut">Cut</string>
+
+    <string name="smartspace_add_to_home">Add to homescreen</string>
 </resources>
