@@ -195,7 +195,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         }
                     })
                     sortCards.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable!!
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
+                            ?: false
                     sortCards.setOnCheckedChangeListener { buttonView, isChecked ->
                         it.context.lawnchairPrefs.feedWidgetMetadata
                                 .customAdder(appWidgetId to WidgetMetadata().apply {
