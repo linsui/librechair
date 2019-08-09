@@ -19,4 +19,8 @@
 
 package ch.deletescape.lawnchair.feed
 
-abstract class AbstractFeedSortingAlgorithm : SortingAlgorithm<Card>
+abstract class AbstractFeedSortingAlgorithm : SortingAlgorithm<Card>, ISortingAlgorithm {
+    override fun sort(cards: SortingAlgorithmArgumentWrapper?): List<RemoteCard> {
+        TODO("not implemented")
+    }
+}
