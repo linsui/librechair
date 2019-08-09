@@ -40,6 +40,7 @@ import android.os.Process;
 import android.os.UserHandle;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.NonAdaptiveIconDrawable;
 import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
 import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
@@ -217,7 +218,7 @@ public class LauncherIcons implements AutoCloseable {
             mCanvas.setBitmap(null);
         }
 
-        final Bitmap result;
+        Bitmap result;
         if (user != null && !Process.myUserHandle().equals(user)) {
             BitmapDrawable drawable = new FixedSizeBitmapDrawable(bitmap);
             Drawable badged = mPm.getUserBadgedIcon(drawable, user);
@@ -232,6 +233,8 @@ public class LauncherIcons implements AutoCloseable {
         } else {
             result = bitmap;
         }
+        result = LawnchairUtilsKt.withContrastAndBrightness(result,
+                Utilities.getLawnchairPrefs(mContext).getIconContrast(), null);
         return BitmapInfo.fromBitmap(result);
     }
 

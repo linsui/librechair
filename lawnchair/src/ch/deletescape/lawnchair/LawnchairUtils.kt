@@ -31,11 +31,8 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.*
 import android.graphics.Color.alpha
-import android.graphics.RectF
 import android.graphics.drawable.*
 import android.net.Uri
 import android.os.Handler
@@ -1124,3 +1121,19 @@ fun atMost(number: Int, max: Int): Int {
 fun <T> also(t: T, runnable: (t: T) -> Unit): T {
     return t.also { runnable(it) }
 }
+
+fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float? = null): Bitmap {
+    val matrix = ColorMatrix(
+            floatArrayOf(contrast, 0f, 0f, 0f, brightness ?: 1f, 0f, contrast, 0f, 0f,
+                         brightness ?: 1f, 0f, 0f, contrast, 0f, brightness ?: 1f, 0f, 0f, 0f, 1f,
+                         0f))
+    val duplicate = Bitmap.createBitmap(width, height, config)
+    val canvas = Canvas(duplicate)
+    val paint = Paint()
+    paint.setColorFilter(ColorMatrixColorFilter(matrix))
+    canvas.drawBitmap(this, 0f, 0f, paint)
+    return duplicate
+}
+
+fun Bitmap.toDrawable(c: Context? = null) = if (c == null) BitmapDrawable(this) else BitmapDrawable(
+        c.resources, this)
