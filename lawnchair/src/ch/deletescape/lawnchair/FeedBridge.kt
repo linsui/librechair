@@ -31,7 +31,7 @@ class FeedBridge(private val context: Context) {
     }
 
     fun resolveBridge(): BridgeInfo? {
-        return bridgePackages.firstOrNull { it.isAvailable() }
+        return BridgeInfo(context.lawnchairPrefs.feedProviderPackage, 0)
     }
 
     fun isInstalled(): Boolean {

@@ -377,7 +377,8 @@ class LawnchairPreferences(val context: Context) :
     var displayOngoingEvents by BooleanPref("pref_smartspace_display_ongoing_events", true)
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
-    var feedProviderPackage by StringPref("pref_feed_provider_package", 1f, restart)
+    var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
+                                          restart)
 
     private val was1stApril = is1stApril()
 
