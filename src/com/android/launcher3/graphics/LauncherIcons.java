@@ -234,7 +234,8 @@ public class LauncherIcons implements AutoCloseable {
             result = bitmap;
         }
         result = LawnchairUtilsKt.withContrastAndBrightness(result,
-                Utilities.getLawnchairPrefs(mContext).getIconContrast(), null);
+                Utilities.getLawnchairPrefs(mContext).getIconContrast(),
+                Utilities.getLawnchairPrefs(mContext).getIconBrightness());
         return BitmapInfo.fromBitmap(result);
     }
 
