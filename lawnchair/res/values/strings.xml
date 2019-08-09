@@ -731,4 +731,6 @@
     <string name="icon_shape_corner_cut">Cut</string>
 
     <string name="smartspace_add_to_home">Add to homescreen</string>
+
+    <string name="title_pref_icon_contrast">Icon contrast</string>
 </resources>

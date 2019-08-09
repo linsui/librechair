@@ -32,6 +32,15 @@
             android:key="pref_resetCustomIcons"
             android:title="@string/reset_custom_icons" />
 
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            app:defaultSeekbarValue="1"
+            android:title="@string/title_pref_icon_contrast"
+            android:key="pref_icon_contrast"
+            app:minValue="0"
+            app:maxValue="2"
+            app:summaryMultiplier="100"
+            app:summaryFormat="%.0f%%" />
+
         <ch.deletescape.lawnchair.preferences.AdvancedPreferencesGroup
             app:topic="@string/adaptive_icon"
             app:controllerClass=".IconShapeOverrideController">
