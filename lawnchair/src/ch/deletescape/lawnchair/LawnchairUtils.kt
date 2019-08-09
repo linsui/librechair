@@ -1122,10 +1122,10 @@ fun <T> also(t: T, runnable: (t: T) -> Unit): T {
     return t.also { runnable(it) }
 }
 
-fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float? = null): Bitmap {
+fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float): Bitmap {
     val matrix = ColorMatrix(
-            floatArrayOf(contrast, 0f, 0f, 0f, brightness ?: 1f, 0f, contrast, 0f, 0f,
-                         brightness ?: 1f, 0f, 0f, contrast, 0f, brightness ?: 1f, 0f, 0f, 0f, 1f,
+            floatArrayOf(contrast, 0f, 0f, 0f, brightness, 0f, contrast, 0f, 0f, brightness, 0f, 0f,
+                         contrast, 0f, brightness, 0f, 0f, 0f, 1f,
                          0f))
     val duplicate = Bitmap.createBitmap(width, height, config)
     val canvas = Canvas(duplicate)

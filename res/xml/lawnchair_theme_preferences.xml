@@ -40,6 +40,14 @@
             app:maxValue="2"
             app:summaryMultiplier="100"
             app:summaryFormat="%.0f%%" />
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            app:defaultSeekbarValue="0"
+            android:title="@string/title_pref_icon_brightness"
+            android:key="pref_icon_brightness"
+            app:minValue="0"
+            app:maxValue="200"
+            app:summaryMultiplier="1"
+            app:summaryFormat="%.0f" />
 
         <ch.deletescape.lawnchair.preferences.AdvancedPreferencesGroup
             app:topic="@string/adaptive_icon"
