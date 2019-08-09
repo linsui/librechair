@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import com.android.launcher3.Utilities;
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
@@ -275,7 +276,7 @@ public class LauncherClient {
     }
 
     static Intent getIntent(Context context) {
-        String pkg = context.getPackageName();
+        String pkg = Utilities.getLawnchairPrefs(context).getFeedProviderPackage();
         return new Intent("com.android.launcher3.WINDOW_OVERLAY")
                 .setPackage(context.getPackageName())
                 .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
