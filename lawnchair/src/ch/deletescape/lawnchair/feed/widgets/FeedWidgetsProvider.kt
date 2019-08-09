@@ -25,6 +25,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -51,6 +52,16 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
     }
 
     override fun getCards(): List<Card> {
+        context.lawnchairPrefs.feedWidgetList
+                .setAll(context.lawnchairPrefs.feedWidgetList.getAll().filterNot {
+                    context.appWidgetManager.getAppWidgetInfo(it) == null
+                })
+
+        context.lawnchairPrefs.feedWidgetMetadata
+                .setAll(context.lawnchairPrefs.feedWidgetMetadata.getAll().filterNot {
+                    context.appWidgetManager.getAppWidgetInfo(it.first) == null
+                })
+
         d("getCards: feed widgets list: ${context.lawnchairPrefs.feedWidgetList.getList()}")
         return context.lawnchairPrefs.feedWidgetList.getAll()
                 .filter { appWidgetManager.getAppWidgetInfo(it) != null }.map {
