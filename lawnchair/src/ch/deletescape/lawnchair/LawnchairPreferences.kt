@@ -30,6 +30,7 @@ import android.text.TextUtils
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
+import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
@@ -376,6 +377,7 @@ class LawnchairPreferences(val context: Context) :
     var displayOngoingEvents by BooleanPref("pref_smartspace_display_ongoing_events", true)
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
+    var feedProviderPackage by StringPref("pref_feed_provider_package", 1f, restart)
 
     private val was1stApril = is1stApril()
 
@@ -447,8 +449,12 @@ class LawnchairPreferences(val context: Context) :
 
                                 override fun onServiceConnected(name: ComponentName?,
                                                                 service: IBinder?) {
-                                    ProcessController.Stub.asInterface(service)
-                                            .killOverlayProcess();
+                                    ProcessController.Stub.asInterface(service).killOverlayProcess()
+                                    runOnNewThread {
+                                        Thread.sleep(100)
+                                        context.startService(
+                                                Intent(context, OverlayService::class.java))
+                                    }
                                 }
                             }, Context.BIND_AUTO_CREATE)
     }
