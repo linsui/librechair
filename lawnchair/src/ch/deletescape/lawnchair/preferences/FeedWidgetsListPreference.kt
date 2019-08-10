@@ -37,7 +37,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.FrameLayout
-import android.widget.TextView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -71,12 +70,6 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_widgets")
     }
 
-    class ViewHolder(itemView: View,
-                     val title: TextView = itemView.findViewById(android.R.id.title),
-                     val summary: TextView = itemView.findViewById(android.R.id.summary),
-                     val dragHandle: View = itemView.findViewById(R.id.drag_handle)) :
-            RecyclerView.ViewHolder(itemView)
-
     class Fragment : PreferenceDialogFragmentCompat() {
         val preference by lazy { context!!.lawnchairPrefs.feedWidgetList }
         override fun onDialogClosed(positiveResult: Boolean) {
@@ -95,7 +88,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
         class FeedWidgetsPreferenceAdapter(
                 val preference: LawnchairPreferences.MutableListPref<Int>) :
-                RecyclerView.Adapter<ViewHolder>() {
+                RecyclerView.Adapter<ProviderItemViewHolder>() {
             val prefList = preference.getList().filter {
                 Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
             }.toMutableList()
@@ -105,11 +98,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
             }
 
             override fun onCreateViewHolder(parent: ViewGroup,
-                                            viewType: Int): ViewHolder = ViewHolder(
+                                            viewType: Int): ProviderItemViewHolder = ProviderItemViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.event_provider_dialog_item,
                                                                 parent, false))
 
-            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
                 d("onBindViewHolder: retrieving widget information for widget ${preference.getAll()[holder.adapterPosition]}")
                 val appWidgetInfo = holder.itemView.context.appWidgetManager
                         .getAppWidgetInfo(preference.getAll().filter {

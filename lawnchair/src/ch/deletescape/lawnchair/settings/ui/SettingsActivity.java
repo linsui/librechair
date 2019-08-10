@@ -87,6 +87,7 @@ import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersFragment;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersPreference;
 import ch.deletescape.lawnchair.preferences.TimePickerFragment;
 import ch.deletescape.lawnchair.preferences.TimePickerPreference;
+import ch.deletescape.lawnchair.preferences.WebApplicationsPreference;
 import ch.deletescape.lawnchair.settings.ui.search.SettingsSearchActivity;
 import ch.deletescape.lawnchair.smartspace.OnboardingProvider;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
@@ -739,6 +740,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = WeatherIconPackDialogFragment.Companion.newInstance();
             } else if (preference instanceof TimePickerPreference) {
                 f = TimePickerFragment.Companion.newInstance(preference.getKey());
+            } else if (preference instanceof WebApplicationsPreference) {
+                f = WebApplicationsPreference.Fragment.Companion.make();
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;

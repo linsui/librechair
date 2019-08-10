@@ -172,6 +172,9 @@
         <ch.deletescape.lawnchair.preferences.RemoteFeedProvidersPreference
             android:key="pref_remote_feed_providers"
             android:title="@string/title_pref_remote_feed_providers" />
+        <ch.deletescape.lawnchair.preferences.WebApplicationsPreference
+            android:key="pref_feed_web_applications"
+            android:title="@string/title_pref_feed_web_applications" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
     <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
         android:key="pref_swipe_feed"

@@ -531,4 +531,7 @@
     <string name="headline2_card_welcome_feed">Your feed will inform you throughout the day</string>
     <string name="body_card_welcome_feed">Your feed is the place where you can find the information that you need, when you need it most. The feed will display upcoming calender events, news and more.</string>
     <string name="title_feed_provider_web_applications">Web applications</string>
+    <string name="negative_button_test_web_applications_preference">New</string>
+
+    <string name="title_pref_feed_web_applications">Web applications</string>
 </resources>
