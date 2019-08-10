@@ -24,8 +24,10 @@ import android.content.Context
 import android.net.Uri
 import android.webkit.WebView
 import ch.deletescape.lawnchair.lawnchairPrefs
+import java.net.URL
 
 class WebApplicationsProvider(context: Context) : FeedProvider(context) {
+    val viewCache = mutableMapOf<URL, WebView>()
     override fun onFeedShown() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -46,7 +48,7 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     override fun getCards(): List<Card> {
         return context.lawnchairPrefs.feedWebApplications.mapNotNull {
             if (it.isShortcut) null else Card(null, it.title, { v, _ ->
-                WebView(context).apply {
+                if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(context).apply {
                     settings.javaScriptEnabled = true
                     loadUrl(Uri.decode(it.url.toURI().toASCIIString()))
                 }
