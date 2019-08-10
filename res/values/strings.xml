@@ -534,4 +534,8 @@
     <string name="negative_button_test_web_applications_preference">New</string>
 
     <string name="title_pref_feed_web_applications">Web applications</string>
+    <string name="hint_web_app_link">Link</string>
+    <string name="hint_web_app_title">Title</string>
+    <string name="title_dialog_new_web_app">Add web app</string>
+    <string name="title_toast_url_invalid">Invalid URL</string>
 </resources>
