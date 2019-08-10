@@ -25,5 +25,5 @@ public class WebApplication {
 
     public URL url;
     public String title;
-    public boolean isShortcut;
+    public boolean isShortcut, sort;
 }

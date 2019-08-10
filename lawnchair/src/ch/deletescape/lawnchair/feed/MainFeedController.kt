@@ -25,7 +25,6 @@ import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -91,6 +90,8 @@ class MainFeedController(val context: Context) {
                         context)
                 PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
                         context)
+                WebApplicationsProvider::class.java.name -> context.getString(
+                        R.string.title_feed_provider_web_applications)
                 else -> error("No such provider ${provider}")
             }
         }
@@ -111,7 +112,8 @@ class MainFeedController(val context: Context) {
                           DeviceStateProvider::class.java.name,
                           FeedWidgetsProvider::class.java.name,
                           DailySummaryFeedProvider::class.java.name,
-                          PredictedAppsProvider::class.java.name)
+                          PredictedAppsProvider::class.java.name,
+                          WebApplicationsProvider::class.java.name)
                     .also { d("getFeedProviders: feed providers are $it ") }
         }
     }
