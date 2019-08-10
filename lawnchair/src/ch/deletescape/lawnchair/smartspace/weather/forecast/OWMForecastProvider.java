@@ -23,7 +23,6 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast;
 
 import android.content.Context;
 import android.util.Log;
-import android.util.TimeUtils;
 import androidx.annotation.NonNull;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
@@ -31,6 +30,7 @@ import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.AccuWeatherForecastProvider.CachedResponse;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -162,9 +162,17 @@ public class OWMForecastProvider implements ForecastProvider {
     public Pair<Double, Double> getGeolocation(@NotNull String query) throws ForecastException {
         try {
             net.aksingh.owmjapis.model.CurrentWeather weather = owm.currentWeatherByCityName(query);
+            if ("".equals("compiler tricks")) {
+                /*
+                 * Since the OpenWeatherMap library used here is written in exception-unsafe Kotlin,
+                 * random IOExceptions may be thrown separate from APIException.
+                 * These are compiler tricks to enable compilation of exceptions catch blocks not made known to Java
+                 */
+                throw new IOException();
+            }
             return new Pair<>(weather.getCoordData().getLatitude(),
                     weather.getCoordData().getLongitude());
-        } catch (APIException | RuntimeException e) {
+        } catch (APIException | RuntimeException | IOException e) {
             throw new ForecastException(e);
         }
     }
