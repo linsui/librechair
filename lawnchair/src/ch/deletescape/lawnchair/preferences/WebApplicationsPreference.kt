@@ -47,8 +47,12 @@ import java.util.*
 
 class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
         DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
+    init {
+        summary = context!!.lawnchairPrefs.feedWebApplications.map { it.title }.joinToString(", ")
+        context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_web_applications")
+    }
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
-        // TODO refresh summary when pref changed
+        summary = prefs.feedWebApplications.map { it.title }.joinToString(", ")
     }
 
     override fun getPositiveButtonText(): CharSequence {
@@ -168,10 +172,11 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
             override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
                 val app = context?.lawnchairPrefs?.feedWebApplications?.get(position)
                 holder.title.text = app?.title
-                holder.summary.text = app?.title.also {
+                holder.summary.text = app?.url?.toURI()?.toASCIIString().also {
                     if (it != null) holder.summary.visibility == View.VISIBLE else holder.summary
                             .visibility = View.GONE
                 }
+                holder.summary.visibility = View.VISIBLE
                 holder.dragHandle.visibility = View.VISIBLE
                 holder.dragHandle.setOnTouchListener { v, event ->
                     if (event.action == MotionEvent.ACTION_DOWN) {
