@@ -27,8 +27,10 @@ import android.support.v7.preference.DialogPreference
 import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -41,6 +43,7 @@ import ch.deletescape.lawnchair.theme.ThemeOverride
 import com.android.launcher3.R
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.*
 
 class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
         DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
@@ -110,8 +113,56 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
         }
 
         inner class Adapter : RecyclerView.Adapter<ProviderItemViewHolder>() {
+            private lateinit var itemTouchHelper: ItemTouchHelper
+
             override fun getItemCount(): Int {
                 return context?.lawnchairPrefs?.feedWebApplications?.size ?: 0
+            }
+
+            override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+                super.onAttachedToRecyclerView(recyclerView)
+                ItemTouchHelper(object : ItemTouchHelper.Callback() {
+                    override fun getMovementFlags(recyclerView: RecyclerView,
+                                                  viewHolder: RecyclerView.ViewHolder): Int {
+                        return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
+                                                 ItemTouchHelper.START)
+                    }
+
+                    override fun onMove(recyclerView: RecyclerView,
+                                        viewHolder: RecyclerView.ViewHolder,
+                                        target: RecyclerView.ViewHolder): Boolean {
+                        val fromPosition = target.adapterPosition
+                        val toPosition = viewHolder.adapterPosition
+                        val prefList = context!!.lawnchairPrefs.feedWebApplications.toMutableList()
+
+                        if (fromPosition < toPosition) {
+                            for (i in fromPosition until toPosition) {
+                                Collections.swap(prefList, i, i + 1)
+                            }
+                        } else {
+                            for (i in fromPosition downTo toPosition + 1) {
+                                Collections.swap(prefList, i, i - 1)
+                            }
+                        }
+
+                        context!!.lawnchairPrefs.feedWebApplications = prefList
+                        notifyItemMoved(fromPosition, toPosition)
+                        return true
+                    }
+
+                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                        context?.lawnchairPrefs?.feedWebApplications =
+                                context?.lawnchairPrefs?.feedWebApplications?.toMutableList()?.apply {
+                                    removeAt(viewHolder.adapterPosition)
+                                }?.toList() ?: emptyList()
+                        notifyItemRemoved(viewHolder.adapterPosition)
+                    }
+
+                    override fun isItemViewSwipeEnabled() = true
+                    override fun isLongPressDragEnabled() = true
+                }).apply {
+                    attachToRecyclerView(recyclerView)
+                }.also { itemTouchHelper = it }
             }
 
             override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
@@ -122,6 +173,14 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                             .visibility = View.GONE
                 }
                 holder.dragHandle.visibility = View.VISIBLE
+                holder.dragHandle.setOnTouchListener { v, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        itemTouchHelper.startDrag(holder)
+                        true
+                    } else {
+                        true
+                    }
+                }
             }
 
             override fun onCreateViewHolder(parent: ViewGroup,
