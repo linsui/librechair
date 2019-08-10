@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <about>
     <me.jfenn.attribouter.wedges.AppWedge
-        repo="LawnchairLauncher/Lawnchair"
         icon="@mipmap/ic_launcher"
-        description="^@string/about_app_description"
-        playStoreUrl="https://play.google.com/store/apps/details?id=ch.deletescape.lawnchair.plah"
-        websiteUrl="https://lawnchair.app">
+        description="^@string/about_app_description">
         <me.jfenn.attribouter.wedges.link.LinkWedge
             name="@string/about_translate"
             icon="@drawable/ic_translate"
             priority="-1"
             url="https://translate.lawnchair.app" />
+        <me.jfenn.attribouter.wedges.link.LinkWedge
+            name="GitLab"
+            priority="1"
+            url="https://gitlab.com/oldosfan/librechair" />
     </me.jfenn.attribouter.wedges.AppWedge>
 
     <me.jfenn.attribouter.wedges.ContributorsWedge

@@ -87,7 +87,7 @@ public class AllAppsGridAdapter extends RecyclerView.Adapter<AllAppsGridAdapter.
     }
 
     /**
-     * ViewHolder for each iconView.
+     * ProviderItemViewHolder for each iconView.
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
