@@ -382,6 +382,7 @@ class LawnchairPreferences(val context: Context) :
                                           restart)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
+    var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
     private val was1stApril = is1stApril()
 
     fun checkFools() {

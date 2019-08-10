@@ -84,7 +84,9 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
-                recyclerView.resources.getDimension(R.dimen.dimen_feed_card_padding).toInt()))
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                          recyclerView.context.lawnchairPrefs.cardDecorationMargin,
+                                          recyclerView.context.resources.displayMetrics).toInt()))
         this.recyclerView = recyclerView
     }
 
