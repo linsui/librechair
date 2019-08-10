@@ -48,15 +48,19 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
         // TODO refresh summary when pref changed
     }
 
-    override fun getNegativeButtonText(): CharSequence {
+    override fun getPositiveButtonText(): CharSequence {
         return context.getString(R.string.negative_button_test_web_applications_preference)
+    }
+
+    override fun getNegativeButtonText(): CharSequence? {
+        return null
     }
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
     class Fragment : PreferenceDialogFragmentCompat() {
         lateinit var recyclerView: RecyclerView
         override fun onDialogClosed(positiveResult: Boolean) {
-            if (!positiveResult) {
+            if (positiveResult) {
                 val dialog = object :
                         AlertDialog(context, ThemeOverride.AlertDialog().getTheme(context!!)) {}
                 val context = context
@@ -76,6 +80,7 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                                 this.isShortcut = false
                                 this.url = URL(link.toString())
                                 this.title = title.toString()
+                                this.sort = false
                             }
                             recyclerView.adapter
                                     ?.notifyItemInserted(recyclerView.adapter?.itemCount ?: 0)
