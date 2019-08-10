@@ -54,6 +54,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -379,7 +380,9 @@ class LawnchairPreferences(val context: Context) :
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
                                           restart)
-
+    var feedWebApplications by GsonSerializedListPref<WebApplication>("pref_feed_web_application",
+                                                                      ::restartOverlay, listOf(),
+                                                                      sharedPrefs)
     private val was1stApril = is1stApril()
 
     fun checkFools() {
@@ -504,6 +507,19 @@ class LawnchairPreferences(val context: Context) :
         onChangeListeners[key]?.remove(listener)
     }
 
+    inner class GsonSerializedListPref<T>(prefKey: String, onChange: () -> Unit = doNothing,
+                                          default: List<T> = emptyList(),
+                                          prefs: SharedPreferences) :
+            MutableListPref<T>(prefs, prefKey, onChange, default) {
+        override fun flattenValue(value: T): String {
+            return Gson().toJson(value)
+        }
+
+        override fun unflattenValue(value: String): T {
+            return Gson().fromJson(value, object : TypeToken<T>() {}.type)
+        }
+    }
+
     inner class StringListPref(prefKey: String, onChange: () -> Unit = doNothing,
                                default: List<String> = emptyList()) :
             MutableListPref<String>(prefKey, onChange, default) {
@@ -515,7 +531,8 @@ class LawnchairPreferences(val context: Context) :
     abstract inner class MutableListPref<T>(private val prefs: SharedPreferences,
                                             private val prefKey: String,
                                             onChange: () -> Unit = doNothing,
-                                            default: List<T> = emptyList()) {
+                                            default: List<T> = emptyList()) :
+            PrefDelegate<List<T>>(prefKey, default, onChange) {
 
         constructor(prefKey: String, onChange: () -> Unit = doNothing,
                     default: List<T> = emptyList()) : this(sharedPrefs, prefKey, onChange, default)
@@ -614,6 +631,14 @@ class LawnchairPreferences(val context: Context) :
             val arr = JSONArray()
             list.forEach { arr.put(flattenValue(it)) }
             return arr.toString()
+        }
+
+        override fun onGetValue(): List<T> {
+            return getAll()
+        }
+
+        override fun onSetValue(value: List<T>) {
+            setAll(value)
         }
     }
 
