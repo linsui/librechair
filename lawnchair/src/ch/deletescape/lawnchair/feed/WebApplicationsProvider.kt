@@ -51,6 +51,7 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
                 if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(context).apply {
                     settings.javaScriptEnabled = true
                     loadUrl(Uri.decode(it.url.toURI().toASCIIString()))
+                    viewCache += it.url to this
                 }
             }, Card.RAISE, if (it.sort) "" else "nosort,top", it.url.hashCode())
         } // FIXME: add support for shortcuts
