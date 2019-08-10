@@ -217,7 +217,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                 })
                     }
                     widgetBackgroundCheckbox.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard!!
+                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
+                            ?: false
                     widgetBackgroundCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                         it.context.lawnchairPrefs.feedWidgetMetadata
                                 .customAdder(appWidgetId to WidgetMetadata().apply {
