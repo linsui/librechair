@@ -538,4 +538,5 @@
     <string name="hint_web_app_title">Title</string>
     <string name="title_dialog_new_web_app">Embed website as feed card</string>
     <string name="title_toast_url_invalid">Invalid URL</string>
+    <string name="title_pref_feed_card_margin">Card margin</string>
 </resources>
