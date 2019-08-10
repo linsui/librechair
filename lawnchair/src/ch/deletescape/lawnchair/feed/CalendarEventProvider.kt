@@ -24,12 +24,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
+import android.graphics.Color
 import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import ch.deletescape.lawnchair.duplicateAndSetColour
 import ch.deletescape.lawnchair.getCalendarFeedView
+import ch.deletescape.lawnchair.useWhiteText
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
@@ -39,12 +42,8 @@ import kotlin.collections.ArrayList
     context: Context) : FeedProvider(context) {
 
     private val calendarDrawable by lazy {
-        context.getDrawable(R.drawable.ic_event_black_24dp)!!.constantState!!.newDrawable().mutate()
-    }
-
-    init {
-        d("init: initializing calendar provider")
-        calendarDrawable.setTint(context.getColor(R.color.colorAccent))
+        context.getDrawable(R.drawable.ic_event_black_24dp)!!.duplicateAndSetColour(
+                if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
 
     override fun onFeedShown() {
