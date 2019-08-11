@@ -1029,6 +1029,9 @@ inline val Int.red get() = Color.red(this)
 inline val Int.green get() = Color.green(this)
 inline val Int.blue get() = Color.blue(this)
 inline val Int.alpha get() = alpha(this)
+fun Int.setAlpha(alpha: Int): Int {
+    return ColorUtils.setAlphaComponent(this, alpha)
+}
 
 fun Int.fromStringRes(c: Context, vararg formatObjects: Any): String {
     return c.getString(this, formatObjects)

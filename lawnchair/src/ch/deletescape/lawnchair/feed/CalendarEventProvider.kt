@@ -30,10 +30,7 @@ import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import ch.deletescape.lawnchair.duplicateAndSetColour
-import ch.deletescape.lawnchair.getCalendarFeedView
-import ch.deletescape.lawnchair.getColorAttr
-import ch.deletescape.lawnchair.useWhiteText
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
@@ -143,11 +140,11 @@ import kotlin.collections.ArrayList
                     intent.data = Uri.parse(
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
-                    cards.add(Card(
-                            calendarDrawableColoured.duplicateAndSetColour(eventCursor.getInt(7)),
+                    cards.add(Card(calendarDrawableColoured.duplicateAndSetColour(
+                            eventCursor.getInt(7).setAlpha(255)),
                                    (if (title.trim().isEmpty()) context.getString(
                                            R.string.placeholder_empty_title) else "$title • ") + text,
-                            object : Card.Companion.InflateHelper {
+                                   object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
                                            return getCalendarFeedView(description, address, parent.context,
                                                                       parent)
