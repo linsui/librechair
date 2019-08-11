@@ -79,7 +79,8 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
         }
         return providerMap.map { it.value.notes }.flatten().map {
             Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).duplicateAndSetColour(
-                    context.getColorAttr(R.attr.colorAccent)), it.title, { parent, _ ->
+                    if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
+                 it.title, { parent, _ ->
                      TextView(parent.context).apply {
                          text = it.content
                      }
