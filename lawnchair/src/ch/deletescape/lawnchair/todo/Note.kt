@@ -19,13 +19,18 @@
 
 package ch.deletescape.lawnchair.todo
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Parcel
 import android.os.Parcelable
 
 data class Note(val title: String, val content: String, val type: Types, val location: String) :
         Parcelable {
     constructor(parcel: Parcel) : this(parcel.readString()!!, parcel.readString()!!,
-                                       Types.valueOf(parcel.readString()!!), parcel.readString()!!);
+                                       Types.valueOf(parcel.readString()!!), parcel.readString()!!)
+
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(content)
@@ -45,6 +50,22 @@ data class Note(val title: String, val content: String, val type: Types, val loc
         override fun newArray(size: Int): Array<Note?> {
             return arrayOfNulls(size)
         }
+    }
+}
+
+object NoteUtils {
+    @JvmStatic
+    val INTENT_ACTION = "ch.deletescape.lawnchair.todo.TODO_PROVIDER"
+
+    fun getTodoProviderIntents(context: Context): List<Intent> = getTodoProviders(context).map {
+        Intent().setComponent(ComponentName(it.packageName, it.name))
+    }
+
+    fun getTodoProviders(
+            context: Context): List<ServiceInfo> = context.packageManager.getInstalledApplications(
+            0).mapNotNull {
+        context.packageManager.resolveService(Intent(INTENT_ACTION).setPackage(it.packageName), 0)
+                ?.serviceInfo
     }
 }
 
