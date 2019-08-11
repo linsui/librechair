@@ -46,7 +46,7 @@ class NotesPreference(context: Context?, attrs: AttributeSet?) : DialogPreferenc
                                                                  LawnchairPreferences.OnPreferenceChangeListener {
     init {
         summary = context!!.lawnchairPrefs.feedNotes.map { it.title }.joinToString(", ")
-        context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_web_applications")
+        context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_notes")
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
