@@ -31,7 +31,6 @@ import android.os.Looper
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -42,7 +41,6 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.theme.ThemeManager
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
 import com.github.difflib.DiffUtils
@@ -60,9 +58,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
                                LawnchairPreferences.getInstance(
                                        context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
-    private val adapter =
-        FeedAdapter(getFeedController(context.applicationContext).getProviders(),
-                    ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
+    private val adapter = FeedAdapter(getFeedController(context).getProviders(),
+                                      ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private val feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
