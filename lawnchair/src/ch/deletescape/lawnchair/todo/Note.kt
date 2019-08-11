@@ -55,7 +55,7 @@ data class Note(val title: String, val content: String, val color: Int = Color.T
     }
 
     enum class Types : Serializable {
-        NOTE, TODO
+        NOTE
     }
 }
 

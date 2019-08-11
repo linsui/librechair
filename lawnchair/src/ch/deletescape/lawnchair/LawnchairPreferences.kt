@@ -48,6 +48,7 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.todo.Note
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.*
@@ -383,6 +384,19 @@ class LawnchairPreferences(val context: Context) :
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
+    var feedNotes by object :
+            MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay,
+                                  Collections.singletonList(
+                                          Note("Debug note demo", "debug note content",
+                                               type = Note.Types.NOTE))) {
+        override fun unflattenValue(value: String): Note {
+            return Gson().fromJson(value, Note::class.java)
+        }
+
+        override fun flattenValue(value: Note): String {
+            return Gson().toJson(value)
+        }
+    }
     private val was1stApril = is1stApril()
 
     fun checkFools() {
