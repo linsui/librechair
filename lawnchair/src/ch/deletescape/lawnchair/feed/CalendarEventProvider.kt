@@ -90,7 +90,8 @@ import kotlin.collections.ArrayList
                                    CalendarContract.Instances.DESCRIPTION,
                                    CalendarContract.Events._ID,
                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                   CalendarContract.Events.EVENT_LOCATION), query, null,
+                                   CalendarContract.Events.EVENT_LOCATION,
+                                   CalendarContract.Calendars.CALENDAR_COLOR), query, null,
                            CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
@@ -142,10 +143,11 @@ import kotlin.collections.ArrayList
                     intent.data = Uri.parse(
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
-                    cards.add(Card(calendarDrawableColoured,
+                    cards.add(Card(
+                            calendarDrawableColoured.duplicateAndSetColour(eventCursor.getInt(7)),
                                    (if (title.trim().isEmpty()) context.getString(
                                            R.string.placeholder_empty_title) else "$title • ") + text,
-                                   object : Card.Companion.InflateHelper {
+                            object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
                                            return getCalendarFeedView(description, address, parent.context,
                                                                       parent)
