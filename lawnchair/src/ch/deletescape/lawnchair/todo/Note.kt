@@ -23,19 +23,21 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
+import java.io.Serializable
 
-data class Note(val title: String, val content: String, val type: Types, val location: String) :
-        Parcelable {
+data class Note(val title: String, val content: String, val color: Int = Color.TRANSPARENT,
+                val type: Types) : Parcelable, Serializable {
     constructor(parcel: Parcel) : this(parcel.readString()!!, parcel.readString()!!,
-                                       Types.valueOf(parcel.readString()!!), parcel.readString()!!)
+                                       parcel.readInt(), Types.valueOf(parcel.readString()!!))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
         parcel.writeString(content)
+        parcel.writeInt(color)
         parcel.writeString(type.name)
-        parcel.writeString(location)
     }
 
     override fun describeContents(): Int {
@@ -50,6 +52,10 @@ data class Note(val title: String, val content: String, val type: Types, val loc
         override fun newArray(size: Int): Array<Note?> {
             return arrayOfNulls(size)
         }
+    }
+
+    enum class Types : Serializable {
+        NOTE, TODO
     }
 }
 
@@ -67,8 +73,4 @@ object NoteUtils {
         context.packageManager.resolveService(Intent(INTENT_ACTION).setPackage(it.packageName), 0)
                 ?.serviceInfo
     }
-}
-
-enum class Types {
-    NOTE, TODO
 }

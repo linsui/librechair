@@ -92,6 +92,8 @@ class MainFeedController(val context: Context) {
                         context)
                 WebApplicationsProvider::class.java.name -> context.getString(
                         R.string.title_feed_provider_web_applications)
+                NoteListProvider::class.java.name -> context.getString(
+                        R.string.title_feed_provider_note_list)
                 else -> error("No such provider ${provider}")
             }
         }
@@ -101,7 +103,7 @@ class MainFeedController(val context: Context) {
                           FeedWeatherStatsProvider::class.java.name,
                           FeedDailyForecastProvider::class.java.name,
                           FeedForecastProvider::class.java.name,
-                          RemoteFeedProvider::class.java.name,
+                          RemoteFeedProvider::class.java.name, NoteListProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
                           WikipediaFunFactsProvider::class.java.name,
                           WikinewsFeedProvider::class.java.name,
