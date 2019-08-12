@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,15 +46,16 @@ public class TabController {
     }
 
     public List<Item> getAllTabs() {
-        return Collections.emptyList();
+        return Collections.singletonList(new Item(null, "Tab"));
     }
 
     public Map<Item, List<FeedProvider>> sortFeedProviders(List<FeedProvider> providers) {
-        return Collections.singletonMap(null, providers);
+        return Collections.singletonMap(new Item(null, "Tab"), providers);
     }
 
     public static <T extends TabController> T inflate(String clazz, Context context)
-            throws ClassNotFoundException, ClassCastException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+            throws ClassNotFoundException, ClassCastException, NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<? extends TabController> clazs = (Class<? extends TabController>) Class
                 .forName(clazz);
         Constructor<? extends TabController> constructor = clazs
@@ -70,10 +72,22 @@ public class TabController {
         public Drawable icon;
         public String title;
 
+        public Item() {
+            this(null, null);
+        }
+
+        public Item(Drawable icon, String title) {
+            this.icon = icon;
+            this.title = title;
+        }
+
         @Override
         public boolean equals(@Nullable Object obj) {
-            return obj instanceof Item && (((Item) obj).icon.equals(icon) && ((Item) obj).title
-                    .equals(title));
+            if (obj == null) {
+                return false;
+            }
+            return obj instanceof Item && (Objects.equals(((Item) obj).icon, icon) && Objects
+                    .equals(((Item) obj).title, title));
         }
     }
 }
