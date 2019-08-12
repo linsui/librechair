@@ -28,7 +28,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import java.io.Serializable
 
-data class Note(val title: String, val content: String, val color: Int = Color.TRANSPARENT,
+data class Note(val title: String, val content: String, var color: Int = Color.TRANSPARENT,
                 val type: Types) : Parcelable, Serializable {
     constructor(parcel: Parcel) : this(parcel.readString()!!, parcel.readString()!!,
                                        parcel.readInt(), Types.valueOf(parcel.readString()!!))

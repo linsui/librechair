@@ -40,6 +40,8 @@ import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.todo.Note
 import com.android.launcher3.R
+import me.priyesh.chroma.ChromaView
+import me.priyesh.chroma.ColorMode
 import java.util.*
 
 class NotesPreference(context: Context?, attrs: AttributeSet?) : DialogPreference(context, attrs),
@@ -175,6 +177,24 @@ class NotesPreference(context: Context?, attrs: AttributeSet?) : DialogPreferenc
                     } else {
                         true
                     }
+                }
+                holder.itemView.setOnClickListener {
+                    val dialog = object :
+                            AlertDialog(context, ThemeOverride.AlertDialog().getTheme(context!!)) {}
+                    dialog.setView(ChromaView(app!!.color, ColorMode.ARGB, context!!).apply {
+                        id = R.id.color_view
+                    })
+                    dialog.setTitle(getString(R.string.title_dialog_select_color))
+                    dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
+                            context!!)) { dialogInterface, which ->
+                        context!!.lawnchairPrefs.feedNotes =
+                                context!!.lawnchairPrefs.feedNotes.apply {
+                                    get(holder.adapterPosition).color =
+                                            dialog.findViewById<ChromaView>(R.id.color_view)
+                                                    .currentColor
+                                }
+                    }
+                    dialog.show()
                 }
             }
 

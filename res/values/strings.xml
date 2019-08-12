@@ -544,4 +544,5 @@
     <string name="hint_text_note_content">Content</string>
 
     <string name="title_pref_feed_notes">Notes</string>
+    <string name="title_dialog_select_color">Note color</string>
 </resources>
