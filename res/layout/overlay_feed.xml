@@ -34,7 +34,8 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent" />
         <android.support.design.widget.TabLayout
-            android:theme="@style/Theme.AppCompat"
+            android:theme="@style/SettingsTheme.Base"
+            style="@style/Widget.Feed.Tabs"
             android:id="@+id/feed_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
