@@ -28,17 +28,16 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.support.design.widget.TabLayout
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.ContextThemeWrapper
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.WindowManager
+import android.view.*
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.theme.ThemeManager
 import com.android.launcher3.R
@@ -59,7 +58,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                LawnchairPreferences.getInstance(
                                        context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
-                                      ThemeManager.getInstance(context), backgroundColor, context.applicationContext)
+                                      ThemeManager.getInstance(context), backgroundColor,
+                                      context.applicationContext)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private val feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
@@ -69,10 +69,81 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 it.setBackgroundColor(backgroundColor)
                 adapter.backgroundColor = backgroundColor
             }
+    private val tabController: TabController =
+            TabController.inflate(context.lawnchairPrefs.feedTabController, context)
+    private val useTabbedMode = tabController.allTabs.isNotEmpty()
+    private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
+    private val tabs = tabController.allTabs
+    private val tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
 
     init {
+        if (!useTabbedMode) {
+            if (tabbedProviders.keys != setOf(null)) {
+                error("tabbing inconsistency detected: no tabs were defined but providers are sorted by tabs")
+            } else if (tabbedProviders.keys.isEmpty()) {
+                error("tabbing inconsistency detected: no tabs were defined but there is no null key in provider map")
+            }
+            tabView.visibility = View.GONE
+        } else {
+            if (tabbedProviders.keys != tabs) {
+                error("tabbing inconsistency detected: keys in provider map are inconsistent with tabs. keys must be organized in the same order as tabs.")
+            }
+            tabs.forEach {
+                tabView.addTab(tabView.newTab().apply {
+                    text = it.title
+                    icon = it.icon
+                })
+            }
+            tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab) {
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab) {
+                }
+
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
+                    Executors.newSingleThreadExecutor().submit {
+                        recyclerView.post {
+                            recyclerView.isLayoutFrozen = true
+                        }
+                        val oldCards = adapter.immutableCards
+                        adapter.refresh()
+                        val cards = adapter.immutableCards
+                        val patch = DiffUtils.diff(oldCards, cards)
+
+                        handler.post {
+                            patch.deltas.forEach {
+                                when (it.type) {
+                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
+                                            it.source.position, it.source.lines.size)
+                                    DeltaType.EQUAL -> {
+                                    }
+                                }
+                            }
+                            recyclerView.post {
+                                recyclerView.isLayoutFrozen = false
+                                if (adapter.itemCount == 0) {
+                                    toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
+                                                                               context)) Color.WHITE else Color.DKGRAY)
+                                    toolbar.title =
+                                            context.getString(R.string.title_feed_refreshing)
+                                } else {
+                                    toolbar.title = ""
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            adapter.providers = tabbedProviders[tabs.first()]!!
+        }
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 runOnMainThread {
@@ -143,9 +214,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                     .isLayoutFrozen =
                                                                                     true
                                                                         }
-                                                                        val oldCards = adapter.immutableCards
+                                                                        val oldCards = adapter
+                                                                                .immutableCards
                                                                         adapter.refresh()
-                                                                        val cards = adapter.immutableCards
+                                                                        val cards = adapter
+                                                                                .immutableCards
                                                                         val patch = DiffUtils
                                                                                 .diff(oldCards,
                                                                                       cards)

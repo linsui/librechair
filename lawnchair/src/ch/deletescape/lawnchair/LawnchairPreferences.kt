@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.impl.OverlayService
+import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
@@ -381,6 +382,8 @@ class LawnchairPreferences(val context: Context) :
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
                                           restart)
+    var feedTabController by StringPref("pref_feed_tab_controller", TabController::class.java.name,
+                                        ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
