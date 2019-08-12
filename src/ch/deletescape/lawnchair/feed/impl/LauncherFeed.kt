@@ -274,7 +274,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 if (field) {
                     if (recyclerView.adapter == null) {
                         recyclerView.adapter = this.adapter
-                        recyclerView.layoutManager = LinearLayoutManager(context)
+                        recyclerView.layoutManager = object : LinearLayoutManager(context) {
+                            override fun onLayoutChildren(recycler: RecyclerView.Recycler?,
+                                                          state: RecyclerView.State?) {
+                                try {
+                                    super.onLayoutChildren(recycler, state)
+                                } catch (e: RuntimeException) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
                     }
                     Executors.newSingleThreadExecutor().submit {
                         Thread.sleep(1000)

@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,8 +64,9 @@ public class TabController {
         return (T) constructor.newInstance(context);
     }
 
-    public static List<Class<TabController>> getAvailableControllers() {
-        return Collections.singletonList(TabController.class);
+    public static List<Class<? extends
+            TabController>> getAvailableControllers() {
+        return Arrays.asList(TabController.class, CategorizedTabbingController.class);
     }
 
     public static class Item {

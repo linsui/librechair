@@ -23,5 +23,6 @@ import com.android.launcher3.R
 
 object NameRegistry {
     val nameMap
-        get() = mapOf(TabController::class.java.name to R.string.title_tab_controller_none)
+        get() = mapOf(TabController::class.java.name to R.string.title_tab_controller_none,
+                      CategorizedTabbingController::class.java.name to R.string.title_sorting_provider_categorized)
 }
