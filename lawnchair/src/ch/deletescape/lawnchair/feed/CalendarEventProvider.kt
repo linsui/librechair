@@ -140,11 +140,13 @@ import kotlin.collections.ArrayList
                     intent.data = Uri.parse(
                         "content://com.android.calendar/events/" + eventCursor.getLong(
                             4).toString())
-                    cards.add(Card(calendarDrawableColoured.duplicateAndSetColour(
-                            eventCursor.getInt(7).setAlpha(255)),
+                    cards.add(Card(
+                            if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.duplicateAndSetColour(
+                                    eventCursor.getInt(7).setAlpha(
+                                            255)) else calendarDrawableColoured,
                                    (if (title.trim().isEmpty()) context.getString(
                                            R.string.placeholder_empty_title) else "$title • ") + text,
-                                   object : Card.Companion.InflateHelper {
+                            object : Card.Companion.InflateHelper {
                                        override fun inflate(parent: ViewGroup): View {
                                            return getCalendarFeedView(description, address, parent.context,
                                                                       parent)
@@ -194,7 +196,6 @@ import kotlin.collections.ArrayList
                         if (eventCursor.getInt(
                                     4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
 
-                    val description = eventCursor.getString(3);
                     eventCursor.moveToNext();
                     cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
                         override fun inflate(parent: ViewGroup): View {

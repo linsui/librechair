@@ -386,6 +386,7 @@ class LawnchairPreferences(val context: Context) :
                                         ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
+    val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
     var feedNotes by object :
             MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay,
@@ -472,9 +473,11 @@ class LawnchairPreferences(val context: Context) :
                                                                 service: IBinder?) {
                                     ProcessController.Stub.asInterface(service).killOverlayProcess()
                                     runOnNewThread {
-                                        Thread.sleep(100)
-                                        context.startService(
-                                                Intent(context, OverlayService::class.java))
+                                        Thread.sleep(1000)
+                                        runOnMainThread {
+                                            context.startService(
+                                                    Intent(context, OverlayService::class.java))
+                                        }
                                     }
                                 }
                             }, Context.BIND_AUTO_CREATE)
