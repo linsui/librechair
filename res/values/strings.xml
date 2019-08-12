@@ -545,4 +545,7 @@
 
     <string name="title_pref_feed_notes">Notes</string>
     <string name="title_dialog_select_color">Note color</string>
+    <string name="title_tab_controller_none">None</string>
+
+    <string name="title_pref_feed_tab_controller">Tabbing provider</string>
 </resources>

@@ -87,9 +87,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             }
             tabView.visibility = View.GONE
         } else {
-            if (tabbedProviders.keys != tabs) {
-                error("tabbing inconsistency detected: keys in provider map are inconsistent with tabs. keys must be organized in the same order as tabs.")
-            }
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
                     text = it.title
