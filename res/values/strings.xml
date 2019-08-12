@@ -549,4 +549,7 @@
 
     <string name="title_pref_feed_tab_controller">Tabbing provider</string>
     <string name="feed_category_events">Events</string>
+
+    <string name="title_pref_feed_show_event_color">Tint calendar events</string>
+    <string name="summary_pref_feed_show_event_color">Calendar events will be tinted by the colour of the calendar</string>
 </resources>

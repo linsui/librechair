@@ -137,6 +137,11 @@
             android:key="pref_feed_providers"
             android:summary="%s"
             android:title="@string/title_preference_feed_providers" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_feed_show_event_color"
+            android:title="@string/title_pref_feed_show_event_color"
+            android:summary="@string/summary_pref_feed_show_event_color"
+            android:defaultValue="true" />
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_opacity"
             android:persistent="true"
