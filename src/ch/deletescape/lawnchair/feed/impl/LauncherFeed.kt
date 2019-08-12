@@ -105,6 +105,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     Executors.newSingleThreadExecutor().submit {
                         recyclerView.post {
                             recyclerView.isLayoutFrozen = true
+                            recyclerView.layoutManager?.scrollToPosition(0)
                         }
                         val oldCards = adapter.immutableCards
                         adapter.refresh()
