@@ -46,11 +46,11 @@ public class TabController {
     }
 
     public List<Item> getAllTabs() {
-        return Collections.singletonList(new Item(null, "Tab"));
+        return Collections.emptyList();
     }
 
     public Map<Item, List<FeedProvider>> sortFeedProviders(List<FeedProvider> providers) {
-        return Collections.singletonMap(new Item(null, "Tab"), providers);
+        return Collections.singletonMap(null, providers);
     }
 
     public static <T extends TabController> T inflate(String clazz, Context context)
