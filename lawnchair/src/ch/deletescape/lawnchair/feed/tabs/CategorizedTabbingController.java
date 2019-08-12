@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider;
 import ch.deletescape.lawnchair.feed.NoteListProvider;
 import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
+import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
 import com.android.launcher3.R;
 import java.util.Arrays;
@@ -70,7 +71,8 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof WikipediaFunFactsProvider
                 || it instanceof NoteListProvider
                 || it instanceof FeedWidgetsProvider).collect(Collectors.toList());
-        news = providers.stream().filter(it -> it instanceof AbstractRSSFeedProvider).collect(
+        news = providers.stream().filter(it -> it instanceof AbstractRSSFeedProvider
+                || it instanceof WikipediaNewsProvider).collect(
                 Collectors.toList());
         events = providers.stream().filter(it -> it instanceof CalendarEventProvider).collect(
                 Collectors.toList());
