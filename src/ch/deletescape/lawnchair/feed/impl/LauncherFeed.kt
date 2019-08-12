@@ -23,6 +23,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -79,6 +80,14 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
 
     init {
+        if (!useWhiteText(backgroundColor, context)) {
+            tabView.tabTextColors =
+                    ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
+            tabView.tabIconTint =
+                    ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
+            tabView.tabSelectedIndicator!!
+                    .setTint(R.color.textColorPrimaryInverse.fromColorRes(context))
+        }
         if (!useTabbedMode) {
             if (tabbedProviders.keys != setOf(null)) {
                 error("tabbing inconsistency detected: no tabs were defined but providers are sorted by tabs")
