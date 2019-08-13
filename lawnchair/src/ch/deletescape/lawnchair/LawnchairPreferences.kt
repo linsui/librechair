@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.impl.OverlayService
+import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
@@ -377,7 +378,6 @@ class LawnchairPreferences(val context: Context) :
     var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
     var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
-    var displayOngoingEvents by BooleanPref("pref_smartspace_display_ongoing_events", true)
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
@@ -387,6 +387,15 @@ class LawnchairPreferences(val context: Context) :
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
+    val feedCustomTabs by object : SetPref<CustomTab>("pref_feed_tabs", emptySet()) {
+        override fun unserialize(value: String): CustomTab {
+            return Gson().fromJson(value, CustomTab::class.java)
+        }
+
+        override fun serialize(value: CustomTab): String {
+            return Gson().toJson(value)
+        }
+    }
     val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
     var feedNotes by object :
@@ -787,12 +796,26 @@ class LawnchairPreferences(val context: Context) :
 
     open inner class StringSetPref(key: String, defaultValue: Set<String>,
                                    onChange: () -> Unit = doNothing) :
-            PrefDelegate<Set<String>>(key, defaultValue, onChange) {
-        override fun onGetValue(): Set<String> = sharedPrefs.getStringSet(getKey(), defaultValue)
+            SetPref<String>(key, defaultValue, onChange) {
+        override fun serialize(value: String) = value
+        override fun unserialize(value: String) = value
+    }
 
-        override fun onSetValue(value: Set<String>) {
-            edit { putStringSet(getKey(), value) }
+    open abstract inner class SetPref<T>(key: String, defaultValue: Set<T>,
+                                         onChange: () -> Unit = doNothing) :
+            PrefDelegate<Set<T>>(key, defaultValue, onChange) {
+        override fun onGetValue(): Set<T> {
+            return sharedPrefs.getStringSet(key, emptySet()).map { unserialize(it) }.toSet()
         }
+
+        override fun onSetValue(value: Set<T>) {
+            edit {
+                putStringSet(key, value.map { serialize(it) }.toSet())
+            }
+        }
+
+        abstract fun serialize(value: T): String
+        abstract fun unserialize(value: String): T
     }
 
     open inner class StringIntPref(key: String, defaultValue: Int = 0,

@@ -17,13 +17,16 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed.tabs
+package ch.deletescape.lawnchair.feed.tabs;
 
-import com.android.launcher3.R
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
-object NameRegistry {
-    val nameMap
-        get() = mapOf(TabController::class.java.name to R.string.title_tab_controller_none,
-                      CategorizedTabbingController::class.java.name to R.string.title_sorting_provider_categorized,
-                      CustomTabbingController::class.java.name to R.string.title_tabbing_controller_custom)
+public class CustomTab {
+
+    @SerializedName("a")
+    public String name;
+
+    @SerializedName("b")
+    public List<String> providers;
 }
