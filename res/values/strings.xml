@@ -560,4 +560,5 @@
 
     <string name="title_pref_feed_tabs">Customize tabs</string>
     <string name="title_dialog_select_tab_providers">Select providers</string>
+    <string name="title_tab_controller_by_provider">By provider</string>
 </resources>

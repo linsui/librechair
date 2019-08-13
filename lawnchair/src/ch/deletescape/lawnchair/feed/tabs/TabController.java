@@ -65,7 +65,9 @@ public class TabController {
 
     public static List<Class<? extends
             TabController>> getAvailableControllers() {
-        return Arrays.asList(TabController.class, CategorizedTabbingController.class,
+        return Arrays.asList(TabController.class,
+                CategorizedTabbingController.class,
+                ProviderTabbingController.class,
                 CustomTabbingController.class);
     }
 

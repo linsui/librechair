@@ -22,8 +22,8 @@ package ch.deletescape.lawnchair.feed.tabs
 import com.android.launcher3.R
 
 object NameRegistry {
-    val nameMap
-        get() = mapOf(TabController::class.java.name to R.string.title_tab_controller_none,
-                      CategorizedTabbingController::class.java.name to R.string.title_sorting_provider_categorized,
-                      CustomTabbingController::class.java.name to R.string.title_tabbing_controller_custom)
+    val nameMap = mapOf(TabController::class.java.name to R.string.title_tab_controller_none,
+                        CategorizedTabbingController::class.java.name to R.string.title_sorting_provider_categorized,
+                        ProviderTabbingController::class.java.name to R.string.title_tab_controller_by_provider,
+                        CustomTabbingController::class.java.name to R.string.title_tabbing_controller_custom)
 }
