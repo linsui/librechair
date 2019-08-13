@@ -47,12 +47,14 @@ import ch.deletescape.lawnchair.theme.ThemeOverride
 import com.android.launcher3.R
 import java.util.*
 
-class CustomizableTabsPreference(context: Context?, attrs: AttributeSet?) :
+class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
         DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
     init {
-        summary = context!!.lawnchairPrefs.feedCustomTabs.map { it.name }.joinToString(", ")
+        summary = context.lawnchairPrefs.feedCustomTabs.map { it.name }.joinToString(", ")
+        isVisible =
+                context.lawnchairPrefs.feedTabController == CustomTabbingController::class.qualifiedName
         context.lawnchairPrefs
-                .addOnPreferenceChangeListener(this, "pref_feed_tab_provider", "pref_feed_tabs")
+                .addOnPreferenceChangeListener(this, "pref_feed_tab_controller", "pref_feed_tabs")
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
