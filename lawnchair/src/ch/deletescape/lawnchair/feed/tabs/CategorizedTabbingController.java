@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,9 @@ public class CategorizedTabbingController extends TabController {
 
     @Override
     public List<Item> getAllTabs() {
-        return Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, MISC_TAB);
+        return Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab() ? Arrays
+                .asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, MISC_TAB)
+                : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB);
     }
 
     @Override

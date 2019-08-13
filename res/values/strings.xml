@@ -552,4 +552,7 @@
 
     <string name="title_pref_feed_show_event_color">Tint calendar events</string>
     <string name="summary_pref_feed_show_event_color">Calendar events will be tinted by the colour of the calendar</string>
+
+    <string name="title_pref_show_other_tab">Show uncategorized tab</string>
+    <string name="summary_pref_show_other_tab">If turned on, a tab will be shown containing all cards that cannot be categorized. Not all tabbing providers will work with this.</string>
 </resources>

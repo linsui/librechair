@@ -123,6 +123,11 @@
             android:defaultValue="ch.deletescape.lawnchair.feed.tabs.TabController"
             android:summary="%s"
             android:title="@string/title_pref_feed_tab_controller" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_show_other_tab"
+            android:title="@string/title_pref_show_other_tab"
+            android:defaultValue="true"
+            android:summary="@string/summary_pref_show_other_tab" />
         <ch.deletescape.lawnchair.preferences.RSSSourcesPreference
             android:key="pref_rss_sources"
             android:summary="%s"

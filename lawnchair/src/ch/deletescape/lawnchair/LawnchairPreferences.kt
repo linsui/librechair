@@ -386,6 +386,7 @@ class LawnchairPreferences(val context: Context) :
                                         ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
+    val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
     var feedNotes by object :
