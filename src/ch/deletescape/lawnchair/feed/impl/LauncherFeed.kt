@@ -41,6 +41,7 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
 import com.github.difflib.DiffUtils
@@ -149,6 +150,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     }
                 }
             })
+            d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
             adapter.providers = tabbedProviders[tabs.first()]!!
         }
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {

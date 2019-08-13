@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -85,12 +84,21 @@ public class TabController {
         }
 
         @Override
-        public boolean equals(@Nullable Object obj) {
-            if (obj == null) {
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
                 return false;
             }
-            return obj instanceof Item && (Objects.equals(((Item) obj).icon, icon) && Objects
-                    .equals(((Item) obj).title, title));
+            Item item = (Item) o;
+            return Objects.equals(icon, item.icon) &&
+                    Objects.equals(title, item.title);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(icon, title);
         }
     }
 }

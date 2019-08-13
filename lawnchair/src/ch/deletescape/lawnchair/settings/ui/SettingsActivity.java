@@ -77,6 +77,7 @@ import ch.deletescape.lawnchair.gestures.ui.GesturePreference;
 import ch.deletescape.lawnchair.gestures.ui.SelectGestureHandlerFragment;
 import ch.deletescape.lawnchair.globalsearch.ui.SearchProviderPreference;
 import ch.deletescape.lawnchair.globalsearch.ui.SelectSearchProviderFragment;
+import ch.deletescape.lawnchair.preferences.CustomizableTabsPreference;
 import ch.deletescape.lawnchair.preferences.FeedProvidersFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersPreference;
 import ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference;
@@ -745,6 +746,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = WebApplicationsPreference.Fragment.Companion.make();
             } else if (preference instanceof NotesPreference) {
                 f = NotesPreference.Fragment.Companion.make();
+            } else if (preference instanceof CustomizableTabsPreference) {
+                f = CustomizableTabsPreference.Fragment.Companion.make();
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;

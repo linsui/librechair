@@ -556,4 +556,7 @@
     <string name="title_pref_show_other_tab">Show uncategorized tab</string>
     <string name="summary_pref_show_other_tab">If turned on, a tab will be shown containing all cards that cannot be categorized. Not all tabbing providers will work with this.</string>
     <string name="title_tabbing_controller_custom">Customizable</string>
+    <string name="title_dialog_new_tab">New tab</string>
+
+    <string name="title_pref_feed_tabs">Customize tabs</string>
 </resources>
