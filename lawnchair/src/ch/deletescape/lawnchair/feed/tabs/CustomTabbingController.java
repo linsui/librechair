@@ -63,8 +63,8 @@ public class CustomTabbingController extends TabController {
                 result.put(new Item(null, tab.name), sorted);
             }
             if (Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab()) {
-                result.put(MISC_TAB, providers.stream().filter(provider -> !result.values().stream()
-                        .anyMatch(it -> provider.equals(it))).collect(Collectors.toList()));
+                result.put(MISC_TAB, providers.stream().filter(provider -> result.values().stream()
+                        .noneMatch(it -> it.contains(provider))).collect(Collectors.toList()));
             }
             return result;
         }
