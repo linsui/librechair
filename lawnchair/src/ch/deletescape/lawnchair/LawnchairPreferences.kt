@@ -387,7 +387,8 @@ class LawnchairPreferences(val context: Context) :
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
-    var feedCustomTabs by object : SetPref<CustomTab>("pref_feed_tabs", emptySet()) {
+    var feedCustomTabs by object :
+            SetPref<CustomTab>("pref_feed_tabs", emptySet(), ::restartOverlay) {
         override fun unserialize(value: String): CustomTab {
             return Gson().fromJson(value, CustomTab::class.java)
         }
