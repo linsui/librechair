@@ -802,11 +802,12 @@ class LawnchairPreferences(val context: Context) :
         override fun unserialize(value: String) = value
     }
 
-    open abstract inner class SetPref<T>(key: String, defaultValue: Set<T>,
-                                         onChange: () -> Unit = doNothing) :
+    abstract inner class SetPref<T>(key: String, defaultValue: Set<T>,
+                                    onChange: () -> Unit = doNothing) :
             PrefDelegate<Set<T>>(key, defaultValue, onChange) {
         override fun onGetValue(): Set<T> {
-            return sharedPrefs.getStringSet(key, emptySet()).map { unserialize(it) }.toSet()
+            return sharedPrefs.getStringSet(key, emptySet())?.map { unserialize(it) }?.toSet()
+                   ?: emptySet()
         }
 
         override fun onSetValue(value: Set<T>) {

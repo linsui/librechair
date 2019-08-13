@@ -157,7 +157,7 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                             }
                         }
 
-                        context!!.lawnchairPrefs.feedCustomTabs = prefList.toSet()
+                        context!!.lawnchairPrefs.feedCustomTabs = LinkedHashSet(prefList)
                         notifyItemMoved(fromPosition, toPosition)
                         return true
                     }
