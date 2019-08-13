@@ -1,6 +1,5 @@
 package com.google.android.apps.nexuslauncher;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
 import com.google.android.libraries.gsa.launcherclient.ISerializableScrollCallback;
@@ -39,9 +38,6 @@ public class NexusLauncherOverlay implements Launcher.LauncherOverlay, ISerializ
     public void onServiceStateChanged(boolean overlayAttached) {
         if (overlayAttached != mAttached) {
             mAttached = overlayAttached;
-            if (LawnchairUtilsKt.getLawnchairPrefs(this.mLauncher).getSwipeForFeed()) {
-                mLauncher.setLauncherOverlay(overlayAttached ? this : null);
-            }
         }
     }
 
