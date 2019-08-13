@@ -38,6 +38,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.CustomTabbingController
 import ch.deletescape.lawnchair.fromStringRes
@@ -175,8 +176,8 @@ class CustomizableTabsPreference(context: Context?, attrs: AttributeSet?) :
             }
 
             override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
-                val app = context?.lawnchairPrefs?.feedCustomTabs?.elementAt(position)
-                holder.title.text = app?.name
+                val app = context!!.lawnchairPrefs.feedCustomTabs.elementAt(position)
+                holder.title.text = app.name
                 holder.dragHandle.visibility = View.VISIBLE
                 holder.dragHandle.setOnTouchListener { v, event ->
                     if (event.action == MotionEvent.ACTION_DOWN) {
@@ -187,7 +188,29 @@ class CustomizableTabsPreference(context: Context?, attrs: AttributeSet?) :
                     }
                 }
                 holder.itemView.setOnClickListener {
-                    // TODO allow changing provider list
+                    AlertDialog.Builder(context!!, ThemeOverride.AlertDialog().getTheme(context!!))
+                            .setTitle(R.string.title_dialog_select_tab_providers)
+                            .setMultiChoiceItems(MainFeedController.getFeedProviders().map {
+                                MainFeedController.getDisplayName(it, context!!)
+                            }.toTypedArray(), MainFeedController.getFeedProviders().map {
+                                app.providers.contains(it)
+                            }.toBooleanArray()) { dialog, which, isChecked ->
+                                if (!isChecked) {
+                                    app.providers = app.providers
+                                            .minus(MainFeedController.getFeedProviders().get(which))
+                                } else {
+                                    app.providers =
+                                            app.providers + MainFeedController.getFeedProviders().get(
+                                                    which)
+                                }
+
+                                context!!.lawnchairPrefs.feedCustomTabs =
+                                        context!!.lawnchairPrefs.feedCustomTabs.toMutableSet()
+                                                .apply {
+                                                    elementAt(holder.adapterPosition).providers =
+                                                            app.providers
+                                                }
+                            }.setPositiveButton(android.R.string.ok) { dialog, which -> }.show()
                 }
             }
 

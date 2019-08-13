@@ -559,4 +559,5 @@
     <string name="title_dialog_new_tab">New tab</string>
 
     <string name="title_pref_feed_tabs">Customize tabs</string>
+    <string name="title_dialog_select_tab_providers">Select providers</string>
 </resources>
