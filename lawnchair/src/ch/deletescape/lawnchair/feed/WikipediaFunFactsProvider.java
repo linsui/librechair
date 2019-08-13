@@ -29,6 +29,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
 import fastily.jwiki.core.Wiki;
 import info.bliki.wiki.model.WikiModel;
@@ -47,7 +48,7 @@ public class WikipediaFunFactsProvider extends FeedProvider {
         super(c);
         this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
                 .newDrawable().mutate();
-        this.newsIcon.setTint(c.getColor(R.color.colorAccent));
+        this.newsIcon.setTint(LawnchairUtilsKt.getColorAttr(c, R.attr.colorAccent));
         Executors.newSingleThreadExecutor().submit(() -> {
             this.wikipedia = new Wiki("en.wikipedia.org");
             this.wikipedia.conf.userAgent = "Librechair";
