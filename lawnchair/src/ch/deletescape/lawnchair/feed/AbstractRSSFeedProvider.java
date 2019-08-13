@@ -36,17 +36,20 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     private SyndFeed articles;
+    private long lastUpdate;
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
         bindFeed(feed1 -> {
             Log.d(getClass().getName(), "constructor: bound to feed");
+            lastUpdate = System.currentTimeMillis();
             articles = feed1;
         });
     }
@@ -73,6 +76,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
+        if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
+            bindFeed(feed1 -> {
+                Log.d(getClass().getName(), "constructor: bound to feed");
+                lastUpdate = System.currentTimeMillis();
+                articles = feed1;
+            });
+        }
         if (articles == null) {
             Log.d(getClass().getName(), "getCards: feed is null; returning empty list");
             return Collections.emptyList();

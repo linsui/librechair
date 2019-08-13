@@ -38,14 +38,17 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
+import java.util.concurrent.TimeUnit
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
-    internal var feeds: List<SyndFeed>? = null
+    private var feeds: List<SyndFeed>? = null
+    private var lastUpdate: Long = 0
 
     init {
         @Suppress("LeakingThis") bindFeeds(object : OnBindHandler {
             override fun bindFeed(feeds2: List<SyndFeed>) {
-                feeds = feeds2;
+                feeds = feeds2
+                lastUpdate = System.currentTimeMillis()
             }
         })
     }
@@ -54,6 +57,14 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
     }
 
     override fun getCards(): List<Card> {
+        if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
+            bindFeeds(object : OnBindHandler {
+                override fun bindFeed(feeds2: List<SyndFeed>) {
+                    feeds = feeds2
+                    lastUpdate = System.currentTimeMillis()
+                }
+            })
+        }
         if (feeds == null) {
             return emptyList()
         } else {
