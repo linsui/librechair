@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
+import android.animation.Animator
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -49,6 +50,7 @@ import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import java.util.concurrent.Executors
+import kotlin.math.hypot
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val dark: Boolean = ThemeManager.getInstance(
@@ -280,7 +282,19 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     fun displayView(inflater: (parent: ViewGroup) -> View) {
         content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
-        content.addView(inflater(content).apply { id = R.id.feed_overlay_view })
+        val anim: Animator
+        content.addView(inflater(content).apply {
+            id = R.id.feed_overlay_view
+            visibility = View.INVISIBLE
+        })
+        content.findViewById<View>(R.id.feed_overlay_view).apply {
+            val cx = width / 2
+            val cy = height / 2
+            val finalRadius = hypot(cx.toDouble(), cy.toDouble()).toFloat()
+            anim = ViewAnimationUtils.createCircularReveal(this, cx, cy, 10f, finalRadius)
+            visibility = View.VISIBLE
+            anim.start()
+        }
         toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
             icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
                     if (useWhiteText(backgroundColor,
