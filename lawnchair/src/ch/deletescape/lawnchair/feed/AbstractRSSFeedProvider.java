@@ -35,16 +35,17 @@ import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
-import de.l3s.boilerpipe.BoilerpipeProcessingException;
-import de.l3s.boilerpipe.extractors.ArticleExtractor;
-import java.net.MalformedURLException;
+import io.github.cdimascio.essence.Essence;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import kotlin.Unit;
+import org.apache.commons.io.IOUtils;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -147,15 +148,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 articleView.findViewById(R.id.open_externally)
                                         .setOnClickListener(v3 -> Utilities
                                                 .openURLinBrowser(getContext(), entry.getUri()));
-                                ArticleExtractor extractor = ArticleExtractor.INSTANCE;
                                 titleView.setText(entry.getTitle());
                                 Executors.newSingleThreadExecutor().submit(() -> {
                                     try {
-                                        String text = extractor.getText(new URL(entry.getLink()));
+                                        String text = Essence.extract(IOUtils.toString(
+                                                new URL(entry.getUri()).openStream(), Charset
+                                                        .defaultCharset())).getText();
                                         contentView.post(() -> contentView.setText(text));
-                                    } catch (BoilerpipeProcessingException e) {
-                                        e.printStackTrace();
-                                    } catch (MalformedURLException e) {
+                                    } catch (IOException e) {
                                         e.printStackTrace();
                                     }
                                 });

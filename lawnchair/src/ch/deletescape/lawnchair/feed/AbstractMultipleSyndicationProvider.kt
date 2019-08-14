@@ -39,10 +39,11 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
-import de.l3s.boilerpipe.BoilerpipeProcessingException
-import de.l3s.boilerpipe.extractors.ArticleExtractor
-import java.net.MalformedURLException
+import io.github.cdimascio.essence.Essence
+import org.apache.commons.io.IOUtils
+import java.io.IOException
 import java.net.URL
+import java.nio.charset.Charset
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -141,15 +142,14 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                 .setOnClickListener { v3 ->
                                                     Utilities.openURLinBrowser(context, entry.uri)
                                                 }
-                                        val extractor = ArticleExtractor.INSTANCE
                                         titleView.text = entry.title
                                         Executors.newSingleThreadExecutor().submit {
                                             try {
-                                                val text = extractor.getText(URL(entry.link))
+                                                val text = Essence.extract(IOUtils.toString(
+                                                        URL(entry.uri).openStream(),
+                                                        Charset.defaultCharset())).text
                                                 contentView.post { contentView.text = text }
-                                            } catch (e: BoilerpipeProcessingException) {
-                                                e.printStackTrace()
-                                            } catch (e: MalformedURLException) {
+                                            } catch (e: IOException) {
                                                 e.printStackTrace()
                                             }
                                         }
