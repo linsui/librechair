@@ -42,6 +42,7 @@ import com.squareup.picasso.Picasso
 import io.github.cdimascio.essence.Essence
 import org.apache.commons.io.IOUtils
 import java.io.IOException
+import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.util.concurrent.Executors
@@ -145,9 +146,18 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                         titleView.text = entry.title
                                         Executors.newSingleThreadExecutor().submit {
                                             try {
-                                                val text = Essence.extract(IOUtils.toString(
-                                                        URL(entry.uri).openStream(),
+                                                val urlConnection = URL(entry.uri).openConnection()
+                                                if (urlConnection is HttpURLConnection) {
+                                                    urlConnection.instanceFollowRedirects = true
+                                                }
+                                                var text: CharSequence = Essence.extract(
+                                                        IOUtils.toString(
+                                                                urlConnection.getInputStream(),
                                                         Charset.defaultCharset())).text
+                                                if (text.trim().isEmpty()) {
+                                                    text = Html
+                                                            .fromHtml(entry.description.value, 0);
+                                                }
                                                 contentView.post { contentView.text = text }
                                             } catch (e: IOException) {
                                                 e.printStackTrace()

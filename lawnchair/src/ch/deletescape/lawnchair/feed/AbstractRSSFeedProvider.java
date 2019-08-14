@@ -37,7 +37,9 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
 import io.github.cdimascio.essence.Essence;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
@@ -151,10 +153,22 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 titleView.setText(entry.getTitle());
                                 Executors.newSingleThreadExecutor().submit(() -> {
                                     try {
-                                        String text = Essence.extract(IOUtils.toString(
-                                                new URL(entry.getUri()).openStream(), Charset
+                                        URLConnection urlConnection = new URL(entry.getUri())
+                                                .openConnection();
+                                        if (urlConnection instanceof HttpURLConnection) {
+                                            ((HttpURLConnection) urlConnection)
+                                                    .setInstanceFollowRedirects(true);
+                                        }
+                                        CharSequence text = Essence
+                                                .extract(IOUtils.toString(urlConnection
+                                                        .getInputStream(), Charset
                                                         .defaultCharset())).getText();
-                                        contentView.post(() -> contentView.setText(text));
+                                        if (text.toString().trim().isEmpty()) {
+                                            text = Html
+                                                    .fromHtml(entry.getDescription().getValue(), 0);
+                                        }
+                                        CharSequence finalText = text;
+                                        contentView.post(() -> contentView.setText(finalText));
                                     } catch (IOException e) {
                                         e.printStackTrace();
                                     }
