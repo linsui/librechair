@@ -25,6 +25,7 @@ import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,8 +34,13 @@ import com.android.launcher3.R;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
+import de.l3s.boilerpipe.BoilerpipeProcessingException;
+import de.l3s.boilerpipe.extractors.ArticleExtractor;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import kotlin.Unit;
@@ -130,8 +136,26 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     readMore.setOnClickListener(v2 -> {
                         if (getFeed() != null) {
                             getFeed().displayView((parent2) -> {
-                                return LayoutInflater.from(parent2.getContext())
-                                        .inflate(R.layout.dialog_time_picker, parent2, false);
+                                ViewGroup articleView = (ViewGroup) LayoutInflater
+                                        .from(getContext())
+                                        .inflate(R.layout.overlay_article, parent2, false);
+                                articleView.setBackgroundColor(
+                                        LawnchairUtilsKt.setAlpha(getBackgroundColor(), 255));
+                                TextView titleView = articleView.findViewById(R.id.title);
+                                TextView contentView = articleView.findViewById(R.id.content);
+                                ArticleExtractor extractor = ArticleExtractor.INSTANCE;
+                                titleView.setText(entry.getTitle());
+                                Executors.newSingleThreadExecutor().submit(() -> {
+                                    try {
+                                        String text = extractor.getText(new URL(entry.getLink()));
+                                        contentView.post(() -> contentView.setText(text));
+                                    } catch (BoilerpipeProcessingException e) {
+                                        e.printStackTrace();
+                                    } catch (MalformedURLException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                                return articleView;
                             });
                         }
                     });
