@@ -373,8 +373,6 @@ dependencies {
     implementation 'io.github.cdimascio:essence:0.13.0'
     implementation 'com.github.Gryzor:SwipeNoLib:v1.0.6'
 
-    implementation project(':boilerplate')
-
     quickstepImplementation project(':systemui-shared')
     l3goImplementation project(':systemui-shared')
 
