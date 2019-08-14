@@ -143,8 +143,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                 if (adapter.itemCount == 0) {
                                     toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
                                                                                context)) Color.WHITE else Color.DKGRAY)
-                                    toolbar.title =
-                                            context.getString(R.string.title_feed_refreshing)
                                 } else {
                                     toolbar.title = ""
                                 }
@@ -162,7 +160,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     if (adapter.itemCount == 0) {
                         toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
                                                                    context)) Color.WHITE else Color.DKGRAY)
-                        toolbar.title = context.getString(R.string.title_feed_refreshing)
                     } else {
                         toolbar.title = ""
                     }
@@ -172,7 +169,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         if (adapter.itemCount == 0) {
             toolbar.setTitleTextColor(
                     if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
-            toolbar.title = context.getString(R.string.title_feed_refreshing)
         } else {
             toolbar.title = ""
         }
@@ -255,20 +251,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                 recyclerView
                                                                                         .isLayoutFrozen =
                                                                                         false
-                                                                                if (adapter.itemCount == 0) {
-                                                                                    toolbar
-                                                                                            .setTitleTextColor(
-                                                                                                    if (useWhiteText(
-                                                                                                                    backgroundColor,
-                                                                                                                    context)) Color.WHITE else Color.DKGRAY)
-                                                                                    toolbar.title =
-                                                                                            context
-                                                                                                    .getString(
-                                                                                                            R.string.title_feed_refreshing)
-                                                                                } else {
-                                                                                    toolbar.title =
-                                                                                            ""
-                                                                                }
                                                                             }
                                                                         }
                                                                     }
@@ -355,13 +337,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                 }
                             }
                             recyclerView.isLayoutFrozen = false
-                            if (adapter.itemCount == 0) {
-                                toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
-                                                                           context)) Color.WHITE else Color.DKGRAY)
-                                toolbar.title = context.getString(R.string.title_feed_refreshing)
-                            } else {
-                                toolbar.title = ""
-                            }
                         }
                     }
                     windowService.addView(feedController, layoutParams)
