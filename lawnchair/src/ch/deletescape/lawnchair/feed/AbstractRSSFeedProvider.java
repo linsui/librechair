@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
@@ -143,6 +144,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                         LawnchairUtilsKt.setAlpha(getBackgroundColor(), 255));
                                 TextView titleView = articleView.findViewById(R.id.title);
                                 TextView contentView = articleView.findViewById(R.id.content);
+                                articleView.findViewById(R.id.open_externally)
+                                        .setOnClickListener(v3 -> Utilities
+                                                .openURLinBrowser(getContext(), entry.getUri()));
                                 ArticleExtractor extractor = ArticleExtractor.INSTANCE;
                                 titleView.setText(entry.getTitle());
                                 Executors.newSingleThreadExecutor().submit(() -> {

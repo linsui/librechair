@@ -20,7 +20,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="32dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     android:orientation="vertical">
     <TextView
         android:id="@+id/title"
@@ -29,6 +32,12 @@
         android:textStyle="bold"
         style="@style/TextAppearance.MaterialComponents.Headline5"
         android:text="@string/placeholder_rss_item" />
+    <Button
+        android:id="@+id/open_externally"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/title_button_open_externally" />
     <ScrollView
         android:layout_marginTop="16dp"
         android:layout_width="match_parent"
@@ -37,7 +46,7 @@
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
+            android:textStyle="normal"
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:text="@string/placeholder_rss_item_categories" />
     </ScrollView>

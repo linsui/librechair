@@ -281,6 +281,18 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     fun displayView(inflater: (parent: ViewGroup) -> View) {
         content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         content.addView(inflater(content).apply { id = R.id.feed_overlay_view })
+        toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
+            icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
+                    if (useWhiteText(backgroundColor,
+                                     context)) R.color.textColorPrimary.fromColorRes(
+                            context) else R.color.textColorPrimaryInverse.fromColorRes(context))
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setOnMenuItemClickListener {
+                toolbar.menu.removeItem(R.id.cancel)
+                removeDisplayedView()
+                true
+            }
+        }
     }
 
     fun removeDisplayedView() {
