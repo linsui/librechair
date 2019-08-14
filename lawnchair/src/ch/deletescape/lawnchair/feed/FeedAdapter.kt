@@ -42,6 +42,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.impl.Interpolators
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
@@ -49,7 +50,8 @@ import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
 
 class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
-                  backgroundColor: Int, private val context: Context) :
+                  backgroundColor: Int, private val context: Context,
+                  private val feed: LauncherFeed) :
         RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
@@ -102,6 +104,9 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         cards.clear()
         val toSort: MutableList<List<Card>> = ArrayList()
         providers.iterator().forEach {
+            if (it.feed == null) {
+                it.feed = feed
+            }
             toSort += it.cards
         }
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(

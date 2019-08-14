@@ -23,7 +23,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.android.launcher3.R
 
@@ -37,8 +37,7 @@ class FeedLayout(context: Context, attrs: AttributeSet?) : FrameLayout(context, 
     }
     private val time get() = System.currentTimeMillis()
     private var downTime = 0L
-
-    private val feedContent by lazy { findViewById<View>(R.id.feed_recycler) }
+    private val feedContent by lazy { findViewById<ViewGroup>(R.id.feed_content) }
     private var currentAnimation: AnimatorPlaybackController? = null
     private var currentState = STATE_CLOSED
     private var startState: Int? = null

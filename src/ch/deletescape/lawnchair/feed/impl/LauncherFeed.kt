@@ -61,7 +61,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                        context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
                                       ThemeManager.getInstance(context), backgroundColor,
-                                      context.applicationContext)
+                                      context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private val feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
@@ -79,6 +79,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+    private val content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
 
     init {
         if (!useWhiteText(backgroundColor, context)) {
@@ -275,6 +276,15 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                     }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
         }
+    }
+
+    fun displayView(inflater: (parent: ViewGroup) -> View) {
+        content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
+        content.addView(inflater(content).apply { id = R.id.feed_overlay_view })
+    }
+
+    fun removeDisplayedView() {
+        content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
     }
 
     private var callback: ILauncherOverlayCallback? = null

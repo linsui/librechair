@@ -2,4 +2,5 @@
 <resources>
     <item name="message_search" type="id" />
     <item name="hotseat_qsb_menu_item" type="id" />
+    <item name="feed_overlay_view" type="id" />
 </resources>

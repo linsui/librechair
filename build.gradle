@@ -372,6 +372,8 @@ dependencies {
 
     implementation 'com.github.Gryzor:SwipeNoLib:v1.0.6'
 
+    implementation project(':boilerplate')
+
     quickstepImplementation project(':systemui-shared')
     l3goImplementation project(':systemui-shared')
 

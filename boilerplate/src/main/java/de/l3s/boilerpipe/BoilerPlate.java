@@ -1,4 +1,6 @@
 /*
+ *     Copyright (c) 2017-2019 the Lawnchair team
+ *     Copyright (c)  2019 oldosfan (would)
  *     This file is part of Lawnchair Launcher.
  *
  *     Lawnchair Launcher is free software: you can redistribute it and/or modify
@@ -15,4 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-include ':systemui-shared', ':boilerplate'
+package de.l3s.boilerpipe;
+
+public class BoilerPlate {
+
+}

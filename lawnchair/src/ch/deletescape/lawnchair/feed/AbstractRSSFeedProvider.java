@@ -30,7 +30,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
@@ -129,7 +128,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     }
                     description.setText(spanned);
                     readMore.setOnClickListener(v2 -> {
-                        Utilities.openURLinBrowser(v2.getContext(), entry.getLink());
+                        if (getFeed() != null) {
+                            getFeed().displayView((parent2) -> {
+                                return LayoutInflater.from(parent2.getContext())
+                                        .inflate(R.layout.dialog_time_picker, parent2, false);
+                            });
+                        }
                     });
 
                     if (entry.getCategories().isEmpty()) {

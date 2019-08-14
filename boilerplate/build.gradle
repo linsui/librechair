@@ -1,4 +1,6 @@
 /*
+ *     Copyright (c) 2017-2019 the Lawnchair team
+ *     Copyright (c)  2019 oldosfan (would)
  *     This file is part of Lawnchair Launcher.
  *
  *     Lawnchair Launcher is free software: you can redistribute it and/or modify
@@ -15,4 +17,12 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-include ':systemui-shared', ':boilerplate'
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'net.sourceforge.nekohtml:nekohtml:1.9.22'
+}
+
+sourceCompatibility = "8"
+targetCompatibility = "8"

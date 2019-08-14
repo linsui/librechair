@@ -114,7 +114,7 @@ tasks.whenTaskAdded { task ->
             def variantName = String.valueOf(name.substring('mergeExtDex'.length()).charAt(0)).uncapitalize() + name.substring('mergeExtDex'.length() + 1)
             def split = dashSeparated(variantName).split('-')
             def buildType = split[split.length - 1]
-            int classNo = 1;
+            int classNo = 2;
             File classOutFolder = new File("./build/intermediates/dex/${variantName + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/mergeProjectDex${String.valueOf(variantName.charAt(0)).capitalize() + variantName.substring(1) + buildType.substring(0, 1).capitalize() + buildType.substring(1)}/out/");
             if (!classOutFolder.exists()) {
                 classOutFolder.mkdirs();

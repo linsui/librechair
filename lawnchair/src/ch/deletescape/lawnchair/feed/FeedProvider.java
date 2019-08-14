@@ -20,12 +20,14 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import java.util.List;
 
 public abstract class FeedProvider {
 
     private Context context;
     private FeedAdapter adapter;
+    private LauncherFeed feed;
     private boolean requestedRefresh;
 
     public FeedProvider(Context c) {
@@ -64,5 +66,13 @@ public abstract class FeedProvider {
 
     public int getBackgroundColor() {
         return adapter == null ? 0 : adapter.getBackgroundColor();
+    }
+
+    public LauncherFeed getFeed() {
+        return feed;
+    }
+
+    public void setFeed(LauncherFeed feed) {
+        this.feed = feed;
     }
 }

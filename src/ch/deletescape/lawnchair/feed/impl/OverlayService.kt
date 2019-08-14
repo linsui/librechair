@@ -25,8 +25,11 @@ import android.os.IBinder
 import android.os.Process
 
 class OverlayService : Service() {
+    val feed by lazy { LauncherFeed(applicationContext) }.also { INSTANCE = this }
 
-    val feed by lazy { LauncherFeed(applicationContext) }
+    companion object
+
+    var INSTANCE: OverlayService? = null
 
     override fun onBind(intent: Intent): IBinder {
         return feed;
