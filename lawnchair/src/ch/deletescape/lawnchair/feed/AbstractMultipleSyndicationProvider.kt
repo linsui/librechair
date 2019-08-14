@@ -32,12 +32,18 @@ import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.setAlpha
 import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
+import de.l3s.boilerpipe.BoilerpipeProcessingException
+import de.l3s.boilerpipe.extractors.ArticleExtractor
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
@@ -120,7 +126,36 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             }
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
-                                Utilities.openURLinBrowser(v2.context, entry.link)
+                                if (feed != null) {
+                                    feed.displayView { parent2 ->
+                                        val articleView = LayoutInflater.from(context).inflate(
+                                                R.layout.overlay_article, parent2,
+                                                false) as ViewGroup
+                                        articleView
+                                                .setBackgroundColor(backgroundColor.setAlpha(255))
+                                        val titleView =
+                                                articleView.findViewById<TextView>(R.id.title)
+                                        val contentView =
+                                                articleView.findViewById<TextView>(R.id.content)
+                                        articleView.findViewById<View>(R.id.open_externally)
+                                                .setOnClickListener { v3 ->
+                                                    Utilities.openURLinBrowser(context, entry.uri)
+                                                }
+                                        val extractor = ArticleExtractor.INSTANCE
+                                        titleView.text = entry.title
+                                        Executors.newSingleThreadExecutor().submit {
+                                            try {
+                                                val text = extractor.getText(URL(entry.link))
+                                                contentView.post { contentView.text = text }
+                                            } catch (e: BoilerpipeProcessingException) {
+                                                e.printStackTrace()
+                                            } catch (e: MalformedURLException) {
+                                                e.printStackTrace()
+                                            }
+                                        }
+                                        articleView
+                                    }
+                                }
                             }
 
                             date.text = entry.publishedDate?.toLocaleString()
