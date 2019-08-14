@@ -29,14 +29,15 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        style="@style/TextAppearance.MaterialComponents.Headline5"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+        android:fontFamily="serif"
         android:text="@string/placeholder_rss_item" />
     <Button
         android:id="@+id/open_externally"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:fontFamily="serif"
         android:text="@string/title_button_open_externally"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:textAllCaps="false" />
@@ -49,7 +50,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textStyle="normal"
-            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            android:fontFamily="serif"
             android:text="@string/placeholder_rss_card_description" />
     </ScrollView>
 </LinearLayout>
