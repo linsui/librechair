@@ -86,6 +86,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
 
     init {
+        tabView.tabMode = TabLayout.MODE_SCROLLABLE
+        tabView.setOnTouchListener { view, _ ->
+            view.parent.requestDisallowInterceptTouchEvent(true)
+            true
+        }
         if (!useWhiteText(backgroundColor, context)) {
             tabView.tabTextColors =
                     ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
