@@ -151,6 +151,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                         .setOnClickListener(v3 -> Utilities
                                                 .openURLinBrowser(getContext(), entry.getUri()));
                                 titleView.setText(entry.getTitle());
+                                TextView categoriesView = articleView
+                                        .findViewById(R.id.article_categories);
+                                categoriesView.setText(categories.getText());
                                 Executors.newSingleThreadExecutor().submit(() -> {
                                     try {
                                         URLConnection urlConnection = new URL(entry.getUri())

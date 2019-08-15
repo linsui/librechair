@@ -20,6 +20,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="8dp"
     android:paddingBottom="128dp"
     android:paddingStart="8dp"
@@ -31,7 +32,12 @@
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
         android:fontFamily="serif"
-        android:text="@string/placeholder_rss_item" />
+        tools:text="@string/placeholder_rss_item" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="@string/placeholder_rss_item_categories"
+        android:id="@+id/article_categories" />
     <Button
         android:id="@+id/open_externally"
         android:layout_width="wrap_content"
@@ -52,6 +58,6 @@
             android:textStyle="normal"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:fontFamily="serif"
-            android:text="@string/placeholder_rss_card_description" />
+            tools:text="@string/placeholder_rss_card_description" />
     </ScrollView>
 </LinearLayout>

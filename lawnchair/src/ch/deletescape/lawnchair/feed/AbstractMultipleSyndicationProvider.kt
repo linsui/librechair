@@ -143,6 +143,9 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                 .setOnClickListener { v3 ->
                                                     Utilities.openURLinBrowser(context, entry.uri)
                                                 }
+                                        val categoriesView = articleView
+                                                .findViewById<TextView>(R.id.article_categories)
+                                        categoriesView.text = categories.text
                                         titleView.text = entry.title
                                         Executors.newSingleThreadExecutor().submit {
                                             try {
