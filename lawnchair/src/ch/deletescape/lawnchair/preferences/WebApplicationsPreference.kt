@@ -33,6 +33,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import ch.deletescape.lawnchair.LawnchairPreferences
@@ -73,6 +74,12 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                 val context = context
                 val view = LayoutInflater.from(context)
                         .inflate(R.layout.dialog_create_web_app, null, false)
+                view as ViewGroup
+                val articleCheckbox: CheckBox
+                view.addView(CheckBox(context).apply {
+                    text = context!!.getString(R.string.title_checkbox_display_as_article)
+                    articleCheckbox = this
+                })
                 dialog.setTitle(R.string.title_dialog_new_web_app)
                 dialog.setView(view)
                 dialog.setButton(Dialog.BUTTON_POSITIVE,
@@ -84,7 +91,7 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                     } else {
                         try {
                             context.lawnchairPrefs.feedWebApplications += WebApplication().apply {
-                                this.isArticle = false
+                                this.isArticle = articleCheckbox.isChecked
                                 this.url = URL(link.toString())
                                 this.title = title.toString()
                                 this.sort = false

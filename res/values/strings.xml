@@ -562,4 +562,5 @@
     <string name="title_dialog_select_tab_providers">Select providers</string>
     <string name="title_tab_controller_by_provider">By provider</string>
     <string name="title_button_open_externally">Open in browser</string>
+    <string name="title_checkbox_display_as_article">Display as article</string>
 </resources>
