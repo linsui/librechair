@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.feed.FeedForecastProvider;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider;
 import ch.deletescape.lawnchair.feed.NoteListProvider;
+import ch.deletescape.lawnchair.feed.WebApplicationsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
@@ -77,7 +78,8 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof DailySummaryFeedProvider
                 || it instanceof WikipediaFunFactsProvider
                 || it instanceof NoteListProvider
-                || it instanceof FeedWidgetsProvider).collect(Collectors.toList());
+                || it instanceof FeedWidgetsProvider
+                || it instanceof WebApplicationsProvider).collect(Collectors.toList());
         news = providers.stream().filter(it -> it instanceof AbstractRSSFeedProvider
                 || it instanceof WikipediaNewsProvider).collect(
                 Collectors.toList());

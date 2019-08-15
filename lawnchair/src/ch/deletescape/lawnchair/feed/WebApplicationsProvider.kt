@@ -25,6 +25,7 @@ import android.net.Uri
 import android.webkit.WebView
 import android.widget.TextView
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.runOnNewThread
 import io.github.cdimascio.essence.Essence
 import org.apache.commons.io.IOUtils
 import java.io.IOException
@@ -33,7 +34,6 @@ import java.nio.charset.Charset
 
 class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     val viewCache = mutableMapOf<URL, WebView>()
-
     override fun onFeedShown() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -63,12 +63,17 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
                     }
                 } else {
                     TextView(v.context).apply {
-                        try {
-                            text = Essence.extract(
-                                    IOUtils.toString(it.url.openStream(), Charset.defaultCharset()))
-                                    .text
-                        } catch (e: IOException) {
-                            text = e.localizedMessage
+                        runOnNewThread {
+                            try {
+                                val loadedText = Essence.extract(
+                                        IOUtils.toString(it.url.openStream(),
+                                                         Charset.defaultCharset())).text
+                                post {
+                                    text = loadedText
+                                }
+                            } catch (e: IOException) {
+                                text = e.localizedMessage
+                            }
                         }
                     }
                 }
