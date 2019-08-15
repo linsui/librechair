@@ -84,6 +84,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
 
+
     init {
         if (!useWhiteText(backgroundColor, context)) {
             tabView.tabTextColors =
@@ -120,17 +121,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     if (backgroundColor.alpha > 35) {
-                        tabView.setSelectedTabIndicatorColor(
-                                googleColours[tab.position % googleColours.size])
+                        tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
                         tabView.tabTextColors = ColorStateList(
                                 arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                         arrayOf<Int>().toIntArray()),
-                                arrayOf(googleColours[tab.position % googleColours.size],
+                                arrayOf(getColorForIndex(tab.position),
                                         tabView.tabIconTint!!.defaultColor).toIntArray())
                         tabView.tabIconTint = ColorStateList(
                                 arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                         arrayOf<Int>().toIntArray()),
-                                arrayOf(googleColours[tab.position % googleColours.size],
+                                arrayOf(getColorForIndex(tab.position),
                                         tabView.tabIconTint!!.defaultColor).toIntArray())
                     }
                     adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
@@ -445,7 +445,17 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    companion object {
-        private const val TAG = "LauncherFeed"
+    fun getColorForIndex(index: Int): Int {
+        if (index < googleColours.size) {
+            return googleColours[index]
+        } else {
+            val first = googleColours[index % googleColours.size]
+            val second = googleColours[googleColours.size - 1 - index % googleColours.size]
+            return {
+                val result = first or (second and 0xFF00FF)
+                val opacity = first shr 24
+                opacity shl 24 or (result and 0xFFFFFF)
+            }()
+        }
     }
 }
