@@ -82,6 +82,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private val content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
+    private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
+                                        Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
 
     init {
         if (!useWhiteText(backgroundColor, context)) {
@@ -91,6 +93,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
             tabView.tabSelectedIndicator!!
                     .setTint(R.color.textColorPrimaryInverse.fromColorRes(context))
+            tabView.tabTextColors = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                            arrayOf<Int>().toIntArray()),
+                    arrayOf(googleColours[0], tabView.tabIconTint!!.defaultColor).toIntArray())
         }
         if (!useTabbedMode) {
             if (tabbedProviders.keys != setOf(null)) {
@@ -114,6 +120,20 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
+                    if (backgroundColor.alpha > 35) {
+                        tabView.setSelectedTabIndicatorColor(
+                                googleColours[tab.position % googleColours.size])
+                        tabView.tabTextColors = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        arrayOf<Int>().toIntArray()),
+                                arrayOf(googleColours[tab.position % googleColours.size],
+                                        tabView.tabIconTint!!.defaultColor).toIntArray())
+                        tabView.tabIconTint = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        arrayOf<Int>().toIntArray()),
+                                arrayOf(googleColours[tab.position % googleColours.size],
+                                        tabView.tabIconTint!!.defaultColor).toIntArray())
+                    }
                     adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
                     Executors.newSingleThreadExecutor().submit {
                         recyclerView.post {
@@ -153,6 +173,13 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             })
             d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
             adapter.providers = tabbedProviders[tabs.first()]!!
+            if (backgroundColor.alpha > 35) {
+                tabView.setSelectedTabIndicatorColor(googleColours[0])
+                tabView.tabIconTint = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                arrayOf<Int>().toIntArray()),
+                        arrayOf(googleColours[0], tabView.tabIconTint!!.defaultColor).toIntArray())
+            }
         }
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
