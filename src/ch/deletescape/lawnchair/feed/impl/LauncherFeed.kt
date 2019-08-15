@@ -19,7 +19,6 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
-import android.animation.Animator
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -35,6 +34,7 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.widget.FrameLayout
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.FeedAdapter
@@ -82,6 +82,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private val content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
+    private val frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
 
@@ -304,13 +305,12 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun displayView(inflater: (parent: ViewGroup) -> View) {
-        content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
-        val anim: Animator
-        content.addView(inflater(content).apply {
+        frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
+        frame.addView(inflater(frame).apply {
             id = R.id.feed_overlay_view
             alpha = 0f
         })
-        content.findViewById<View>(R.id.feed_overlay_view).apply {
+        frame.findViewById<View>(R.id.feed_overlay_view).apply {
             animate().alpha(255f).duration = 2000
         }
         toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
@@ -328,7 +328,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView() {
-        content.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
+        frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
     }
 
     private var callback: ILauncherOverlayCallback? = null

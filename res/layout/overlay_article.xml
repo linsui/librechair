@@ -22,7 +22,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="8dp"
-    android:paddingBottom="128dp"
+    android:paddingBottom="8dp"
     android:paddingStart="8dp"
     android:paddingEnd="8dp"
     android:orientation="vertical">

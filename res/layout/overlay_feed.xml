@@ -21,7 +21,7 @@
     android:id="@+id/overlay_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="32dp">
+    android:fitsSystemWindows="true">
     <LinearLayout
         android:id="@+id/feed_content"
         android:layout_width="match_parent"
@@ -34,16 +34,26 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent" />
         <android.support.design.widget.TabLayout
-            android:theme="@style/SettingsTheme.Base"
-            style="@style/Widget.Feed.Tabs"
             android:id="@+id/feed_tabs"
+            style="@style/Widget.Feed.Tabs"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/feed_recycler"
+            android:layout_height="wrap_content"
+            android:theme="@style/SettingsTheme.Base" />
+        <FrameLayout
+            android:id="@+id/feed_main_frame"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginBottom="32dp" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/feed_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>
