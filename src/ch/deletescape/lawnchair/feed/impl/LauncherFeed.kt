@@ -85,7 +85,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
 
-
     init {
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
@@ -473,7 +472,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             val first = googleColours[index % googleColours.size]
             val second = googleColours[googleColours.size - 1 - index % googleColours.size]
             return {
-                val result = first or (second and 0xFF00FF)
+                val result =
+                        if (index % 2 > 0) (first and 0x00F0FF) or (second and 0xFF0F00) else (first and 0xFF00F0) or (second and 0x00FF0F)
                 val opacity = first shr 24
                 opacity shl 24 or (result and 0xFFFFFF)
             }()
