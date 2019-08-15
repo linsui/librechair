@@ -297,8 +297,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
                                                             else -> error("invalid bitmask")
                                                         }, parent, false)) {
         if (type and Card.RAISE != 0) {
-            (itemView as CardView).background.alpha =
-                    itemView.context.lawnchairPrefs.feedCardOpacity.toInt()
+            (itemView as CardView).alpha = itemView.context.lawnchairPrefs.feedCardOpacity
         }
 
         if (type and Card.TEXT_ONLY == 1) {
