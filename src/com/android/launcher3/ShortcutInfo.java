@@ -75,7 +75,7 @@ public class ShortcutInfo extends ItemInfoWithIcon {
     public Intent intent;
 
     /**
-     * If isShortcut=true and customIcon=false, this contains a reference to the shortcut iconView as an
+     * If isArticle=true and customIcon=false, this contains a reference to the shortcut iconView as an
      * application's resource.
      */
     public Intent.ShortcutIconResource iconResource;

@@ -23,11 +23,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.webkit.WebView
+import android.widget.TextView
 import ch.deletescape.lawnchair.lawnchairPrefs
+import io.github.cdimascio.essence.Essence
+import org.apache.commons.io.IOUtils
+import java.io.IOException
 import java.net.URL
+import java.nio.charset.Charset
 
 class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     val viewCache = mutableMapOf<URL, WebView>()
+
     override fun onFeedShown() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -47,13 +53,26 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     @SuppressLint("SetJavaScriptEnabled")
     override fun getCards(): List<Card> {
         return context.lawnchairPrefs.feedWebApplications.mapNotNull {
-            if (it.isShortcut) null else Card(null, it.title, { v, _ ->
-                if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(context).apply {
-                    settings.javaScriptEnabled = true
-                    loadUrl(Uri.decode(it.url.toURI().toASCIIString()))
-                    viewCache += it.url to this
+            Card(null, it.title, { v, _ ->
+                if (!it.isArticle) {
+                    if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(
+                            context).apply {
+                        settings.javaScriptEnabled = true
+                        loadUrl(Uri.decode(it.url.toURI().toASCIIString()))
+                        viewCache += it.url to this
+                    }
+                } else {
+                    TextView(v.context).apply {
+                        try {
+                            text = Essence.extract(
+                                    IOUtils.toString(it.url.openStream(), Charset.defaultCharset()))
+                                    .text
+                        } catch (e: IOException) {
+                            text = e.localizedMessage
+                        }
+                    }
                 }
             }, Card.RAISE, if (it.sort) "" else "nosort,top", it.url.hashCode())
-        } // FIXME: add support for shortcuts
+        }
     }
 }

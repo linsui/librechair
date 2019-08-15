@@ -84,7 +84,7 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                     } else {
                         try {
                             context.lawnchairPrefs.feedWebApplications += WebApplication().apply {
-                                this.isShortcut = false
+                                this.isArticle = false
                                 this.url = URL(link.toString())
                                 this.title = title.toString()
                                 this.sort = false
