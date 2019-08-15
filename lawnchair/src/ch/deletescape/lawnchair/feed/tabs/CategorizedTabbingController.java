@@ -50,10 +50,14 @@ public class CategorizedTabbingController extends TabController {
     public CategorizedTabbingController(
             @NotNull Context context) {
         super(context);
-        TOOLS_TAB = new Item(null, context.getString(R.string.category_tools));
-        NEWS_TAB = new Item(null, context.getString(R.string.category_news));
-        EVENTS_TAB = new Item(null, context.getString(R.string.feed_category_events));
-        MISC_TAB = new Item(null, context.getString(R.string.pref_category_misc));
+        TOOLS_TAB = new Item(context.getDrawable(R.drawable.ic_featured_play_list_black_24dp),
+                context.getString(R.string.category_tools));
+        NEWS_TAB = new Item(context.getDrawable(R.drawable.ic_assignment_black_24dp),
+                context.getString(R.string.category_news));
+        EVENTS_TAB = new Item(context.getDrawable(R.drawable.ic_event_black_24dp),
+                context.getString(R.string.feed_category_events));
+        MISC_TAB = new Item(context.getDrawable(R.drawable.ic_spa_black_24dp),
+                context.getString(R.string.pref_category_misc));
     }
 
     @Override
