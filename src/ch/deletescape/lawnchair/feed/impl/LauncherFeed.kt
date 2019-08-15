@@ -87,6 +87,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     init {
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
+        tabView.tabGravity = TabLayout.GRAVITY_FILL
         tabView.setOnTouchListener { view, _ ->
             view.parent.requestDisallowInterceptTouchEvent(true)
             true
@@ -116,6 +117,15 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     text = it.title
                     icon = it.icon
                 })
+            }
+            val pxWidth = context.resources.displayMetrics.widthPixels
+            val tlWidth = tabView
+                    .apply { measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED) }
+                    .measuredWidth
+            if (pxWidth < tlWidth) {
+                tabView.tabMode = TabLayout.MODE_SCROLLABLE
+            } else {
+                tabView.tabMode = TabLayout.MODE_FIXED
             }
             tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab) {
