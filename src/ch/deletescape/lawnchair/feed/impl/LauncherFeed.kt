@@ -50,6 +50,7 @@ import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import java.util.concurrent.Executors
+import kotlin.math.sign
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val dark: Boolean = ThemeManager.getInstance(
@@ -385,6 +386,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     override fun startScroll() {
         handler.post {
             feedAttached = true
+            if (!useWhiteText(backgroundColor, context)) {
+                feedController.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            }
             feedController.startScroll()
         }
     }
@@ -454,8 +458,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     fun onProgress(progress: Float, isDragging: Boolean) {
         callback?.overlayScrollChanged(progress)
-        val touchable = Math.signum(progress).compareTo(Math.signum(0f)) != 0
+        val touchable = Math.signum(progress).compareTo(sign(0f)) != 0
         if (!touchable && !isDragging) {
+            feedController.systemUiVisibility = 0
             feedAttached = false
         }
     }
