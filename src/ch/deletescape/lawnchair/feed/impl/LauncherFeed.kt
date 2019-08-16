@@ -355,29 +355,40 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             setOnMenuItemClickListener {
                 toolbar.menu.removeItem(R.id.cancel)
-                removeDisplayedView()
+                removeDisplayedView(x, y)
                 true
             }
         }
     }
 
-    fun removeDisplayedView() {
+    fun removeDisplayedView(x: Float, y: Float) {
         recyclerView.isLayoutFrozen = false
-        frame.findViewById<View>(R.id.feed_overlay_view)?.also {
-            it.animate().alpha(0f).setDuration(240).setListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
+        frame.findViewById<View>(R.id.feed_overlay_view)?.apply {
+            val view = this
+            val (height, width) = measuredHeight to measuredWidth
+            val radius = hypot(height.toDouble(), width.toDouble())
+            val animator = ViewAnimationUtils
+                    .createCircularReveal(this@apply, x.toInt(), y.toInt(), radius.toFloat(), 0f)
+            visibility = View.VISIBLE
+            animator.apply {
+                duration = 300
+                addListener(object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(animation: Animator?) {
+                    }
 
-                override fun onAnimationEnd(animation: Animator?) {
-                    frame.removeView(it)
-                }
+                    override fun onAnimationEnd(animation: Animator?) {
+                        frame.removeView(view)
+                    }
 
-                override fun onAnimationCancel(animation: Animator?) {
-                }
+                    override fun onAnimationCancel(animation: Animator?) {
+                    }
 
-                override fun onAnimationStart(animation: Animator?) {
-                }
-            })
+                    override fun onAnimationStart(animation: Animator?) {
+                    }
+                })
+                start()
+            }
+            recyclerView.isLayoutFrozen = false
         }
     }
 
