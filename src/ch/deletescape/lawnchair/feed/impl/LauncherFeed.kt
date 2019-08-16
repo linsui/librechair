@@ -326,9 +326,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             id = R.id.feed_overlay_view
             visibility = View.INVISIBLE
             fitsSystemWindows = false
-            setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
-                    context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(context).toInt(),
-                       paddingRight, paddingBottom)
+            if (useTabbedMode) {
+                setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
+                        context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
+                        context).toInt(), paddingRight, paddingBottom)
+            }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     val (height, width) = measuredHeight to measuredWidth
