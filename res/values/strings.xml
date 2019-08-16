@@ -566,4 +566,6 @@
 
     <string name="title_pref_feed_hide_toolbar">Automatically hide toolbar</string>
     <string name="summary_pref_feed_hide_toolbar">The toolbar will be automatically hidden when scrolling through the feed</string>
+
+    <string name="title_pref_feed_widgets_tab">Categorize widgets in separate tab</string>
 </resources>

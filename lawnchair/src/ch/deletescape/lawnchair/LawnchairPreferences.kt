@@ -203,6 +203,8 @@ class LawnchairPreferences(val context: Context) :
             return Integer.valueOf(value)
         }
     }
+    val feedCategorizeWidgetsAsSeparateTab by BooleanPref("pref_feed_widgets_tab", true,
+                                                          ::restartOverlay)
     var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restartOverlay);
     var feedRSSSources = StringListPref("pref_rss_sources", ::restartOverlay, emptyList())
     var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restartOverlay)
@@ -240,7 +242,7 @@ class LawnchairPreferences(val context: Context) :
                                              ::restartOverlay);
 
     var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, ::restartOverlay);
-    var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restartOverlay);
+    var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restart);
 
     var weatherApiKey by StringPref("pref_weatherApiKey",
                                     context.getString(R.string.default_owm_key))

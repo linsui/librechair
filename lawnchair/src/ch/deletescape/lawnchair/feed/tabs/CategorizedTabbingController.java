@@ -47,6 +47,7 @@ public class CategorizedTabbingController extends TabController {
     public Item NEWS_TAB;
     public Item EVENTS_TAB;
     public Item MISC_TAB;
+    public Item WIDGETS_TAB;
 
     public CategorizedTabbingController(
             @NotNull Context context) {
@@ -59,6 +60,8 @@ public class CategorizedTabbingController extends TabController {
                 context.getString(R.string.feed_category_events));
         MISC_TAB = new Item(context.getDrawable(R.drawable.ic_spa_black_24dp),
                 context.getString(R.string.pref_category_misc));
+        WIDGETS_TAB = new Item(context.getDrawable(R.drawable.ic_widget),
+                context.getString(R.string.widget_button_text));
     }
 
     @Override
@@ -71,7 +74,7 @@ public class CategorizedTabbingController extends TabController {
     @Override
     public Map<Item, List<FeedProvider>> sortFeedProviders(List<FeedProvider> providers) {
         Map<Item, List<FeedProvider>> map = new HashMap<>();
-        List<FeedProvider> tools, news, events, misc;
+        List<FeedProvider> tools, news, events, misc, widgets;
         tools = providers.stream().filter(it -> it instanceof FeedWeatherStatsProvider
                 || it instanceof FeedForecastProvider
                 || it instanceof FeedDailyForecastProvider
@@ -85,14 +88,20 @@ public class CategorizedTabbingController extends TabController {
                 Collectors.toList());
         events = providers.stream().filter(it -> it instanceof CalendarEventProvider).collect(
                 Collectors.toList());
+        widgets = providers.stream().filter(it -> it instanceof FeedWidgetsProvider).collect(
+                Collectors.toList());
         misc = providers.stream()
-                .filter(it -> !(tools.contains(it) || news.contains(it) || events.contains(it)))
+                .filter(it -> !(tools.contains(it) || news.contains(it) || events.contains(it)
+                        || widgets.contains(it)))
                 .collect(
                         Collectors.toList());
         HashMap<Item, List<FeedProvider>> result = new HashMap<>();
         result.put(TOOLS_TAB, tools);
         result.put(NEWS_TAB, news);
         result.put(EVENTS_TAB, events);
+        if (Utilities.getLawnchairPrefs(getContext()).getFeedCategorizeWidgetsAsSeparateTab()) {
+            result.put(WIDGETS_TAB, widgets);
+        }
         result.put(MISC_TAB, misc);
         return result;
     }
