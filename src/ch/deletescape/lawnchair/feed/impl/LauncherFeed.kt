@@ -330,6 +330,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
                         context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
                         context).toInt(), paddingRight, paddingBottom)
+            } else {
+                setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
+                        context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
+                        context).toInt(), paddingRight, paddingBottom)
             }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
