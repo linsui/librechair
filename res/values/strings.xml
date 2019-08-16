@@ -563,4 +563,7 @@
     <string name="title_tab_controller_by_provider">By provider</string>
     <string name="title_button_open_externally">Open in browser</string>
     <string name="title_checkbox_display_as_article">Display as article</string>
+
+    <string name="title_pref_feed_hide_toolbar">Automatically hide toolbar</string>
+    <string name="summary_pref_feed_hide_toolbar">The toolbar will be automatically hidden when scrolling through the feed</string>
 </resources>

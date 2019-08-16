@@ -116,16 +116,18 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             }
             tabView.visibility = View.GONE
         } else {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    if (dy > 0) {
-                        toolbar.animate().translationY(-toolbar.measuredHeight.toFloat())
-                    } else {
-                        toolbar.animate().translationY(0f)
+            if (context.lawnchairPrefs.feedAutoHideToolbar) {
+                recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+                        if (dy > 0) {
+                            toolbar.animate().translationY(-toolbar.measuredHeight.toFloat())
+                        } else {
+                            toolbar.animate().translationY(0f)
+                        }
                     }
-                }
-            })
+                })
+            }
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
                     text = it.title
