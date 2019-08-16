@@ -29,11 +29,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.LawnchairPreferences
-import ch.deletescape.lawnchair.newList
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
-import ch.deletescape.lawnchair.setAlpha
-import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -129,7 +126,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
                                 if (feed != null) {
-                                    feed.displayView { parent2 ->
+                                    feed.displayView({ parent2 ->
                                         val articleView = LayoutInflater.from(context).inflate(
                                                 R.layout.overlay_article, parent2,
                                                 false) as ViewGroup
@@ -167,7 +164,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                             }
                                         }
                                         articleView
-                                    }
+                                                     }, v2.getPostionOnScreen().first.toFloat(),
+                                                     v2.getPostionOnScreen().second.toFloat())
                                 }
                             }
 

@@ -1140,3 +1140,9 @@ fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float): Bitmap
 
 fun Bitmap.toDrawable(c: Context? = null) = if (c == null) BitmapDrawable(this) else BitmapDrawable(
         c.resources, this)
+
+fun View.getPostionOnScreen(): Pair<Int, Int> {
+    val array = intArrayOf(0, 0)
+    getLocationOnScreen(array)
+    return array[0] to array[1]
+}

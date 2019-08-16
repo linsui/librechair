@@ -50,6 +50,7 @@ import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import java.util.concurrent.Executors
+import kotlin.math.hypot
 import kotlin.math.sign
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
@@ -304,14 +305,36 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    fun displayView(inflater: (parent: ViewGroup) -> View) {
+    fun displayView(inflater: (parent: ViewGroup) -> View, x: Float? = null, y: Float? = null) {
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
             id = R.id.feed_overlay_view
-            alpha = 0f
+            if (x == null || y == null) {
+                alpha = 0f
+            } else {
+                visibility = View.INVISIBLE
+                viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                    override fun onPreDraw(): Boolean {
+                        val (height, width) = measuredHeight to measuredWidth
+                        viewTreeObserver.removeOnPreDrawListener(this)
+                        val radius = hypot(height.toDouble(), width.toDouble())
+                        val animator = ViewAnimationUtils
+                                .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
+                                                      radius.toFloat())
+                        visibility = View.VISIBLE
+                        animator.apply {
+                            duration = 700
+                            start()
+                        }
+                        return true;
+                    }
+                })
+            }
         })
         frame.findViewById<View>(R.id.feed_overlay_view).apply {
-            animate().alpha(255f).duration = 2000
+            if (x == null || y == null) {
+                animate().alpha(255f).duration = 2000
+            }
         }
         toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
             icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
