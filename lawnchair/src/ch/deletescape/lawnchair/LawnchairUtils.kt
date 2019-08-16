@@ -41,6 +41,7 @@ import android.provider.OpenableColumns
 import android.service.notification.StatusBarNotification
 import android.support.animation.FloatPropertyCompat
 import android.support.annotation.ColorInt
+import android.support.design.widget.TabLayout
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.ColorUtils
 import android.support.v4.graphics.drawable.DrawableCompat
@@ -1150,3 +1151,19 @@ fun View.getPostionOnScreen(): Pair<Int, Int> {
     getLocationOnScreen(array)
     return array[0] to array[1]
 }
+
+inline var TabLayout.tabsEnabled: Boolean
+    set(value) = {
+        for (child in (childs[0] as ViewGroup).childs) {
+            child.isClickable = value
+        }
+    }()
+    get() = run {
+        for (child in (childs[0] as ViewGroup).childs) {
+            if (!child.isClickable) {
+                return@run false
+            }
+        }
+        true
+    }
+

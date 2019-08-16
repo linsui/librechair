@@ -320,6 +320,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
+        tabView.tabsEnabled = false
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
             id = R.id.feed_overlay_view
@@ -362,6 +363,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView(x: Float, y: Float) {
+        tabView.tabsEnabled = true
         recyclerView.isLayoutFrozen = false
         frame.findViewById<View>(R.id.feed_overlay_view)?.apply {
             val view = this
