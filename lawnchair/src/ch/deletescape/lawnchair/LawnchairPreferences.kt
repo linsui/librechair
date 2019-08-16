@@ -400,10 +400,7 @@ class LawnchairPreferences(val context: Context) :
     val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
     var feedNotes by object :
-            MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay,
-                                  Collections.singletonList(
-                                          Note("Debug note demo", "debug note content",
-                                               type = Note.Types.NOTE))) {
+            MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay, emptyList()) {
         override fun unflattenValue(value: String): Note {
             return Gson().fromJson(value, Note::class.java)
         }
