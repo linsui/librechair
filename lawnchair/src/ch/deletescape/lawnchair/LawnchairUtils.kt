@@ -1065,6 +1065,10 @@ fun Drawable.duplicateAndSetColour(colour: Int): Drawable {
     return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
 }
 
+fun Int.fromDimenRes(c: Context): Float {
+    return c.resources.getDimension(this)
+}
+
 fun <T> alter(condition: Boolean, pos: T, neg: T): T {
     return if (condition) pos else neg
 }

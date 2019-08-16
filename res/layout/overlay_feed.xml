@@ -22,11 +22,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/feed_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+        <android.support.v7.widget.RecyclerView
+            android:paddingTop="@dimen/app_bar_height_material"
+            android:clipToPadding="false"
+            android:id="@+id/feed_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <FrameLayout
+            android:fitsSystemWindows="false"
+            android:id="@+id/feed_main_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" />
         <Toolbar
             android:id="@+id/feed_title_bar"
             android:layout_width="match_parent"
@@ -40,21 +52,5 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/SettingsTheme.Base" />
         </Toolbar>
-        <FrameLayout
-            android:id="@+id/feed_main_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/feed_recycler"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
-            </LinearLayout>
-        </FrameLayout>
-    </LinearLayout>
+    </FrameLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>

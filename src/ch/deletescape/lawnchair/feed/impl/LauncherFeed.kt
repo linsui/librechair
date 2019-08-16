@@ -116,6 +116,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             }
             tabView.visibility = View.GONE
         } else {
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        toolbar.animate().translationY(-toolbar.measuredHeight.toFloat())
+                    } else {
+                        toolbar.animate().translationY(0f)
+                    }
+                }
+            })
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
                     text = it.title
@@ -307,37 +317,34 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    fun displayView(inflater: (parent: ViewGroup) -> View, x: Float? = null, y: Float? = null) {
+    fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
             id = R.id.feed_overlay_view
-            if (x == null || y == null) {
-                alpha = 0f
-            } else {
-                visibility = View.INVISIBLE
-                viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
-                    override fun onPreDraw(): Boolean {
-                        val (height, width) = measuredHeight to measuredWidth
-                        viewTreeObserver.removeOnPreDrawListener(this)
-                        val radius = hypot(height.toDouble(), width.toDouble())
-                        val animator = ViewAnimationUtils
-                                .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
-                                                      radius.toFloat())
-                        visibility = View.VISIBLE
-                        animator.apply {
-                            duration = 300
-                            start()
-                        }
-                        return true;
+            visibility = View.INVISIBLE
+            fitsSystemWindows = false
+            setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
+                    context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(context).toInt(),
+                       paddingRight, paddingBottom)
+            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                override fun onPreDraw(): Boolean {
+                    val (height, width) = measuredHeight to measuredWidth
+                    viewTreeObserver.removeOnPreDrawListener(this)
+                    val radius = hypot(height.toDouble(), width.toDouble())
+                    val animator = ViewAnimationUtils
+                            .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
+                                                  radius.toFloat())
+                    visibility = View.VISIBLE
+                    animator.apply {
+                        duration = 300
+                        start()
                     }
-                })
-            }
+                    recyclerView.isLayoutFrozen = true
+                    toolbar.animate().translationY(0f)
+                    return true;
+                }
+            })
         })
-        frame.findViewById<View>(R.id.feed_overlay_view).apply {
-            if (x == null || y == null) {
-                animate().alpha(255f).duration = 300
-            }
-        }
         toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
             icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
                     if (useWhiteText(backgroundColor,
@@ -353,6 +360,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView() {
+        recyclerView.isLayoutFrozen = false
         frame.findViewById<View>(R.id.feed_overlay_view)?.also {
             it.animate().alpha(0f).setDuration(240).setListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {
