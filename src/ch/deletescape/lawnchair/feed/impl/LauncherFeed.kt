@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
+import android.animation.Animator
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -323,7 +324,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                       radius.toFloat())
                         visibility = View.VISIBLE
                         animator.apply {
-                            duration = 700
+                            duration = 300
                             start()
                         }
                         return true;
@@ -333,7 +334,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         })
         frame.findViewById<View>(R.id.feed_overlay_view).apply {
             if (x == null || y == null) {
-                animate().alpha(255f).duration = 2000
+                animate().alpha(255f).duration = 300
             }
         }
         toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
@@ -351,7 +352,22 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView() {
-        frame.findViewById<View>(R.id.feed_overlay_view)?.also { frame.removeView(it) }
+        frame.findViewById<View>(R.id.feed_overlay_view)?.also {
+            it.animate().alpha(0f).setDuration(240).setListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    frame.removeView(it)
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                }
+            })
+        }
     }
 
     private var callback: ILauncherOverlayCallback? = null
