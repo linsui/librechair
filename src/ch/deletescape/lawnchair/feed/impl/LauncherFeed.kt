@@ -163,6 +163,12 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                         arrayOf<Int>().toIntArray()),
                                 arrayOf(getColorForIndex(tab.position),
                                         tabView.tabIconTint!!.defaultColor).toIntArray())
+                        tabView.tabRippleColor = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        arrayOf<Int>().toIntArray()),
+                                arrayOf(getColorForIndex(tab.position).setAlpha(50),
+                                        tabView.tabRippleColor!!.defaultColor.setAlpha(
+                                                50)).toIntArray())
                     }
                     adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
                     Executors.newSingleThreadExecutor().submit {
@@ -207,8 +213,13 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 tabView.setSelectedTabIndicatorColor(googleColours[0])
                 tabView.tabIconTint = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                arrayOf<Int>().toIntArray()), arrayOf(getColorForIndex(0),
+                                                                      tabView.tabIconTint!!.defaultColor).toIntArray())
+                tabView.tabRippleColor = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                 arrayOf<Int>().toIntArray()),
-                        arrayOf(googleColours[0], tabView.tabIconTint!!.defaultColor).toIntArray())
+                        arrayOf(getColorForIndex(0).setAlpha(50),
+                                tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
             }
         }
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
