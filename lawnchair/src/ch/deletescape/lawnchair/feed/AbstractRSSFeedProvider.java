@@ -177,8 +177,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                     }
                                 });
                                 return articleView;
-                                    }, (float) LawnchairUtilsKt.getPostionOnScreen(v2).getFirst(),
-                                    (float) LawnchairUtilsKt.getPostionOnScreen(v2).getSecond());
+                                    }, (float) (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
+                                            + v2.getWidth() / 2),
+                                    (float) (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
+                                            + v2.getHeight() / 2));
                         }
                     });
 

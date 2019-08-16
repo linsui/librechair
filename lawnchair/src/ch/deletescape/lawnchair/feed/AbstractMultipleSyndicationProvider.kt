@@ -179,8 +179,9 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                                      }
                                                                  }
                                                          articleView
-                                                     }, v2.getPostionOnScreen().first.toFloat(),
-                                                     v2.getPostionOnScreen().second.toFloat())
+                                                     },
+                                                     (v2.getPostionOnScreen().first + v2.width / 2).toFloat(),
+                                                     (v2.getPostionOnScreen().second + v2.height / 2).toFloat())
                                 }
                             }
 
