@@ -328,7 +328,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView() {
-        frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
+        frame.findViewById<View>(R.id.feed_overlay_view)?.also { frame.removeView(it) }
     }
 
     private var callback: ILauncherOverlayCallback? = null
