@@ -327,11 +327,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             visibility = View.INVISIBLE
             fitsSystemWindows = false
             if (useTabbedMode) {
-                setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
+                setPadding(paddingLeft, R.dimen.feed_app_bar_height_material.fromDimenRes(
                         context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
                         context).toInt(), paddingRight, paddingBottom)
             } else {
-                setPadding(paddingLeft, R.dimen.app_bar_height_material.fromDimenRes(
+                setPadding(paddingLeft, R.dimen.feed_app_bar_height_material.fromDimenRes(
                         context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
                         context).toInt(), paddingRight, paddingBottom)
             }
