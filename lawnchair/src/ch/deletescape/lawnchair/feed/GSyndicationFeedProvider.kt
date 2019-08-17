@@ -20,6 +20,8 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import ch.deletescape.lawnchair.twoLetterCountryCode
+import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import org.apache.commons.io.IOUtils
@@ -33,8 +35,9 @@ import java.util.*
 class GSyndicationFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) {
     override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
         val feed = IOUtils.toString(URL("https://news.google.com/rss?gl=${Locale("",
-                                                                                 country).country}").openConnection().also {
+                                                                                 country).twoLetterCountryCode}").openConnection().also {
             (it as HttpURLConnection).instanceFollowRedirects = true
+            d("getLocationAwareFeed: URL is ${it.url.toExternalForm()}")
         }.getInputStream(), Charset.defaultCharset())
         return SyndFeedInput()
                 .build(InputSource(CharSequenceInputStream(feed, Charset.defaultCharset())))

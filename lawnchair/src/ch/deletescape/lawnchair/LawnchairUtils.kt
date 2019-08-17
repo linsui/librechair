@@ -1174,4 +1174,12 @@ inline var TabLayout.tabsEnabled: Boolean
         }
         true
     }
-
+val Locale.twoLetterCountryCode: String
+    get() = run {
+        val countries: MutableMap<String, String> = mutableMapOf()
+        for (iso in Locale.getISOCountries()) {
+            val l = Locale("", iso);
+            countries.put(l.isO3Country, iso);
+        }
+        return@run countries[isO3Country]!!
+    }
