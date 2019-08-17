@@ -153,7 +153,9 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                                  .submit {
                                                                      try {
                                                                          val urlConnection =
-                                                                                 URL(entry.uri)
+                                                                                 URL(entry.uri.replace(
+                                                                                         "http://",
+                                                                                         "https://"))
                                                                                          .openConnection()
                                                                          if (urlConnection is HttpURLConnection) {
                                                                              urlConnection

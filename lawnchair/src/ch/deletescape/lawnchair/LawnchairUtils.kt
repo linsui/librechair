@@ -34,6 +34,8 @@ import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Color.alpha
 import android.graphics.drawable.*
+import android.location.Criteria
+import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Handler
@@ -1155,6 +1157,8 @@ fun View.getPostionOnScreen(): Pair<Int, Int> {
 
 val Context.locationManager
     get() = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+val LocationManager.lastKnownPosition: Location?
+    get() = getLastKnownLocation(getBestProvider(Criteria(), true))
 
 inline var TabLayout.tabsEnabled: Boolean
     set(value) = {

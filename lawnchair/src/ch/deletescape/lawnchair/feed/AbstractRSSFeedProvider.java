@@ -155,7 +155,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 categoriesView.setText(categories.getText());
                                 Executors.newSingleThreadExecutor().submit(() -> {
                                     try {
-                                        URLConnection urlConnection = new URL(entry.getUri())
+                                        URLConnection urlConnection = new URL(
+                                                entry.getUri().replace("http://", "https://"))
                                                 .openConnection();
                                         if (urlConnection instanceof HttpURLConnection) {
                                             ((HttpURLConnection) urlConnection)
