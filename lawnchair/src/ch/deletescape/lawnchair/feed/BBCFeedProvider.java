@@ -20,38 +20,63 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
-import android.util.Log;
+import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import kotlin.Pair;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceInputStream;
+import org.jetbrains.annotations.NotNull;
 import org.xml.sax.InputSource;
 
-public class BBCFeedProvider extends AbstractRSSFeedProvider {
+public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
+
+    private static final HashMap<String, String> feeds = new HashMap<>();
+    private static final String GB = "https://feeds.bbci.co.uk/news/england/rss.xml";
+    private static final String US = "https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml";
+    private static final String IL = "https://feeds.bbci.co.uk/news/northern_ireland/rss.xml";
+    private static final String AS = "https://feeds.bbci.co.uk/news/world/asia/rss.xml";
+    private static final String WD = "https://feeds.bbci.co.uk/news/world/rss.xml";
+
+    static {
+        feeds.put("GBR", GB);
+        feeds.put("IRL", IL);
+        feeds.put("USA", US);
+        feeds.put("CAN", US);
+        feeds.put("CHN", AS);
+        feeds.put("JPN", AS);
+        feeds.put("PRK", AS);
+        feeds.put("KOR", AS);
+        feeds.put("WORLD", WD);
+    }
 
     public BBCFeedProvider(Context c) {
         super(c);
     }
 
+    @NotNull
     @Override
-    public void bindFeed(BindCallback callback) {
-        Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
-        Executors.newSingleThreadExecutor().submit(() -> {
-            String feed = null;
-            try {
-                feed = IOUtils.toString(
-                        new URL("https://feeds.bbci.co.uk/news/england/rss.xml").openConnection()
-                                .getInputStream(), Charset
-                                .defaultCharset());
-                callback.onBind(new SyndFeedInput().build(new InputSource(
-                        new CharSequenceInputStream(feed, Charset.defaultCharset()))));
-            } catch (FeedException | IOException e) {
-                e.printStackTrace();
-            }
-        });
+    public SyndFeed getLocationAwareFeed(@NotNull Pair<Double, Double> location,
+            @NotNull String country) {
+        try {
+            String feed = IOUtils.toString(
+                    new URL(feeds.get(country)).openConnection()
+                            .getInputStream(), Charset
+                            .defaultCharset());
+            return new SyndFeedInput().build(new InputSource(
+                    new CharSequenceInputStream(feed, Charset.defaultCharset())));
+        } catch (FeedException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @NotNull
+    @Override
+    public SyndFeed getFallbackFeed() {
+        return getLocationAwareFeed(new Pair<>(0d, 0d), "WORLD");
     }
 }
