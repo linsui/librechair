@@ -152,6 +152,7 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
                           "" to "https://www.theguardian.com/world/somalia",
                           "" to "https://www.theguardian.com/world/southafrica",
                           "KOR" to "https://www.theguardian.com/world/south-korea",
+                          "USA" to "https://www.theguardian.com/us",
                           "" to "https://www.theguardian.com/world/south-sudan",
                           "" to "https://www.theguardian.com/world/spain",
                           "" to "https://www.theguardian.com/world/srilanka",
