@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -130,7 +131,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     }
 
                     title.setText(String.format("%s: %s", MainFeedController.Companion
-                            .getDisplayName(getClass().getName(), getContext()), entry.getTitle()));
+                                    .getDisplayName(getClass().getName(), getContext()),
+                            ClickbaitRanker.completePipeline(entry.getTitle())));
                     String spanned = Html.fromHtml(entry.getDescription().getValue(), 0).toString();
                     if (spanned.length() > 256) {
                         spanned = spanned.subSequence(0, 256).toString() + "...";

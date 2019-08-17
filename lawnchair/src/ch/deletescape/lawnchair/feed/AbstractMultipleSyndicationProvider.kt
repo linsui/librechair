@@ -30,6 +30,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.clickbait.ClickbaitRanker
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -117,7 +118,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                         entry.categories.map { it.name }.joinToString(", ")
                             }
 
-                            title.text = entry.title
+                            title.text = ClickbaitRanker.completePipeline(entry.title)
                             var spanned =
                                     Html.fromHtml(entry.description?.value ?: "", 0).toString()
                             if (spanned.length > 256) {
