@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import org.apache.commons.io.IOUtils
@@ -177,7 +178,7 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
                           "" to "http://www.theguardian.com/world/tuvalu",
                           "" to "http://www.theguardian.com/world/uganda",
                           "" to "http://www.theguardian.com/world/ukraine",
-                          "GBR" to "https://www.theguardian.com/uk/rss",
+                          "GBR" to "https://www.theguardian.com/uk",
                           "" to "http://www.theguardian.com/world/united-arab-emirates",
                           "" to "http://www.theguardian.com/world/uruguay",
                           "" to "http://www.theguardian.com/world/uzbekistan",
@@ -190,9 +191,9 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
     }
 
     override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
-        val feed = IOUtils.toString(
-                URL("https://www.theguardian.com/uk/rss").openConnection().getInputStream(),
-                Charset.defaultCharset())
+        d("getLocationAwareFeed: country is $country")
+        val feed = IOUtils.toString(URL(feeds[country] + "/rss").openConnection().getInputStream(),
+                                    Charset.defaultCharset())
         return SyndFeedInput()
                 .build(InputSource(CharSequenceInputStream(feed, Charset.defaultCharset())))
     }
