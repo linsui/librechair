@@ -25,6 +25,7 @@ import android.location.Criteria
 import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.locationManager
 import ch.deletescape.lawnchair.runOnNewThread
+import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import geocode.GeocoderCompat
 import java.util.*
@@ -36,13 +37,17 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
             if (context.checkLocationAccess()) {
                 val location = context.locationManager.getLastKnownLocation(
                         context.locationManager.getBestProvider(Criteria(), true))
+                d("bindFeed: location is ${location.latitude to location.longitude}")
                 runOnNewThread {
                     try {
+                        val country = GeocoderCompat(context, true)
+                                .nearestPlace(location.latitude, location.longitude).country
+                        d("bindFeed: country is $country")
                         callback.onBind(getLocationAwareFeed(
                                 location.latitude to location.longitude,
-                                Locale(GeocoderCompat(context, true).nearestPlace(location.latitude,
-                                                                                  location.longitude).country).isO3Country))
+                                Locale("", country).isO3Country))
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         try {
                             callback.onBind(getFallbackFeed())
                         } catch (e: Exception) {
@@ -51,6 +56,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                     }
                 }
             } else {
+                d("bindFeed: location not available; binding to fallback feed")
                 runOnNewThread {
                     try {
                         callback.onBind(getFallbackFeed())

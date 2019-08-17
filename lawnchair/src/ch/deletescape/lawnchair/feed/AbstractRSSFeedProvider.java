@@ -87,7 +87,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     public List<Card> getCards() {
         if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
             bindFeed(feed1 -> {
-                Log.d(getClass().getName(), "constructor: bound to feed");
                 lastUpdate = System.currentTimeMillis();
                 articles = feed1;
             });

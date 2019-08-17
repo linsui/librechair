@@ -26,6 +26,6 @@ public class GeocoderCompat extends ReverseGeoCode {
 
     public GeocoderCompat(Context c, boolean majorOnly)
             throws IOException {
-        super(c.getAssets().open("geocodes.txt"), majorOnly);
+        super(c.getAssets().open("geonames.txt"), majorOnly);
     }
 }
