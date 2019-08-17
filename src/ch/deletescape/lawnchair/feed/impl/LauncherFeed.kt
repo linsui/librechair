@@ -495,11 +495,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     override fun windowDetached(isChangingConfigurations: Boolean) {
-        handler.post { windowService.removeView(feedController) }
+        handler.post {
+            feedAttached = false
+            windowService.removeView(feedController)
+        }
     }
 
     override fun closeOverlay(flags: Int) {
-        handler.post { feedController.closeOverlay((flags and 1) != 0, flags shr 2) }
+        if (feedAttached) {
+            handler.post { feedController.closeOverlay((flags and 1) != 0, flags shr 2) }
+        }
     }
 
     override fun onPause() {

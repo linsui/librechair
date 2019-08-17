@@ -317,7 +317,7 @@ public class LauncherClient {
     }
 
     public final void hideOverlay(boolean feedRunning) {
-        if (mOverlay != null) {
+        if (mOverlay != null && feedRunning) {
             try {
                 mOverlay.closeOverlay(0);
             } catch (RemoteException ignored) {
