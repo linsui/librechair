@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Criteria
+import android.location.Location
 import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.locationManager
 import ch.deletescape.lawnchair.runOnNewThread
@@ -35,19 +36,18 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     override fun bindFeed(callback: BindCallback) {
         try {
             if (context.checkLocationAccess()) {
-                val location = context.locationManager.getLastKnownLocation(
+                val location: Location? = context.locationManager.getLastKnownLocation(
                         context.locationManager.getBestProvider(Criteria(), true))
-                d("bindFeed: location is ${location.latitude to location.longitude}")
+                d("bindFeed: location is ${location?.latitude to location?.longitude}")
                 runOnNewThread {
-                    try {
+                    if (location != null) {
                         val country = GeocoderCompat(context, true)
                                 .nearestPlace(location.latitude, location.longitude).country
                         d("bindFeed: country is $country")
                         callback.onBind(getLocationAwareFeed(
                                 location.latitude to location.longitude,
                                 Locale("", country).isO3Country))
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    } else {
                         try {
                             callback.onBind(getFallbackFeed())
                         } catch (e: Exception) {
