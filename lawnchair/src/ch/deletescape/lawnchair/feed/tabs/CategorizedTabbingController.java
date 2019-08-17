@@ -86,7 +86,6 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof DailySummaryFeedProvider
                 || it instanceof WikipediaFunFactsProvider
                 || it instanceof NoteListProvider
-                || it instanceof FeedWidgetsProvider
                 || it instanceof WebApplicationsProvider).collect(Collectors.toList());
         news = providers.stream().filter(it -> it instanceof AbstractRSSFeedProvider
                 || it instanceof WikipediaNewsProvider).collect(
