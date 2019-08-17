@@ -105,9 +105,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     arrayOf(googleColours[0],
                             R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
         }
-        tabView.tabTextColors = ColorStateList(
-                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                arrayOf(googleColours[0], tabView.tabTextColors!!.defaultColor).toIntArray())
         if (!useTabbedMode) {
             if (tabbedProviders.keys != setOf(null)) {
                 error("tabbing inconsistency detected: no tabs were defined but providers are sorted by tabs")
@@ -210,6 +207,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
             adapter.providers = tabbedProviders[tabs.first()]!!
             if (backgroundColor.alpha > 35) {
+                tabView.tabTextColors = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                        arrayOf(googleColours[0],
+                                tabView.tabTextColors!!.defaultColor).toIntArray())
                 tabView.setSelectedTabIndicatorColor(googleColours[0])
                 tabView.tabIconTint = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
