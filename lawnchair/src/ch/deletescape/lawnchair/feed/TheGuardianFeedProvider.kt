@@ -188,7 +188,8 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
                           "" to "https://www.theguardian.com/world/vietnam",
                           "" to "https://www.theguardian.com/world/yemen",
                           "" to "https://www.theguardian.com/world/zambia",
-                          "" to "https://www.theguardian.com/world/zimbabwe")
+                          "" to "https://www.theguardian.com/world/zimbabwe",
+                          "WORLD" to "https://www.theguardian.com/world")
     }
 
     override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
@@ -201,6 +202,6 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
 
     override fun getFallbackFeed(): SyndFeed {
         d("", Throwable())
-        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "GBR")
+        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "WORLD")
     }
 }
