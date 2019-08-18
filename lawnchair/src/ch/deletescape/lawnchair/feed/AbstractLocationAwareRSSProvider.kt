@@ -34,7 +34,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     @SuppressLint("MissingPermission")
     override fun bindFeed(callback: BindCallback) {
         try {
-            if (context.checkLocationAccess()) {
+            if (context.checkLocationAccess() && context.lawnchairPrefs.overrideLocale.isEmpty()) {
                 val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
                 runOnNewThread {
                     if (lat != null && lon != null) {
