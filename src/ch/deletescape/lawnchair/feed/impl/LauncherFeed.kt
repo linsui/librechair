@@ -26,6 +26,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -51,6 +52,7 @@ import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import kotlin.math.hypot
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
@@ -60,8 +62,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils
             .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
-                               LawnchairPreferences.getInstance(
-                                       context).feedBackgroundOpacity.toInt() * (255 / 100)).also {}
+                               (LawnchairPreferences.getInstance(
+                                       context).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+            .also {}
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
                                       ThemeManager.getInstance(context), backgroundColor,
                                       context.applicationContext, this)
@@ -71,7 +74,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
-                it.setBackgroundColor(backgroundColor)
+                it.setBackground(ColorDrawable(backgroundColor))
                 adapter.backgroundColor = backgroundColor
             }
     private val tabController: TabController =
