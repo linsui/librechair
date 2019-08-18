@@ -54,16 +54,16 @@ import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
+import com.android.launcher3.plugin.PluginLauncher
 import com.android.launcher3.uioverrides.OverviewState
 import com.android.launcher3.util.ComponentKey
 import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
-import com.google.android.apps.nexuslauncher.NexusLauncherActivity
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Semaphore
 
-open class LawnchairLauncher : NexusLauncherActivity(),
+open class LawnchairLauncher : PluginLauncher(),
                                LawnchairPreferences.OnPreferenceChangeListener,
                                ColorEngine.OnColorChangeListener {
     val hideStatusBarKey = "pref_hideStatusBar"

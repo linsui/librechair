@@ -31,7 +31,12 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.plugin.PluginManager;
+import com.android.launcher3.plugin.SerializableShortcut;
+import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
+import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient.ShortcutWithIcon;
 import com.android.launcher3.util.ComponentKey;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -259,6 +264,23 @@ public class DeepShortcutManager {
             }
             for (ShortcutInfo shortcutInfo : shortcutInfos) {
                 shortcutInfoCompats.add(new ShortcutInfoCompat(shortcutInfo));
+            }
+
+            List<ShortcutWithIcon> plugins = PluginManager.getInstance(mContext).getClient(
+                    ShortcutPluginClient.class).queryShortcuts(packageName, activity);
+            for (ShortcutWithIcon shortcut : plugins) {
+                try {
+                    SerializableShortcut shortcut1 = new SerializableShortcut(shortcut.getBundle());
+                    shortcutInfoCompats.add(new ShortcutInfoCompat(
+                            new ShortcutInfo.Builder(mContext, shortcut1.mId)
+                                    .setActivity(shortcut1.mActivity)
+                                    .setDisabledMessage(shortcut1.mDisabledMessage)
+                                    .setLongLabel(shortcut1.mLongLabel)
+                                    .setShortLabel(shortcut1.mShortLabel)
+                                    .setDisabledMessage(shortcut1.mDisabledMessage).build()));
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
         }

@@ -16,6 +16,8 @@ import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.plugin.PluginManager;
+import com.android.launcher3.plugin.button.ButtonPluginClient;
 import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.Themes;
 import com.google.android.apps.nexuslauncher.PredictionUiStateManager.Client;
@@ -52,7 +54,7 @@ public class NexusLauncher {
     public NexusLauncher(NexusLauncherActivity activity) {
         mLauncher = activity;
         mExterns = activity;
-        mCallbacks = new NexusLauncherCallbacks();
+        mCallbacks = new ShadeCompatLauncherCallbacks();
         mExterns.setLauncherCallbacks(mCallbacks);
         mLauncher.addOnDeviceProfileChangeListener(dp -> mClient.redraw());
     }
@@ -87,7 +89,7 @@ public class NexusLauncher {
         this.mFeedRunning = mFeedRunning;
     }
 
-    class NexusLauncherCallbacks implements LauncherCallbacks,
+    public class NexusLauncherCallbacks implements LauncherCallbacks,
             SharedPreferences.OnSharedPreferenceChangeListener,
             WallpaperColorInfo.OnChangeListener {
 
@@ -102,6 +104,10 @@ public class NexusLauncher {
                 mItemInfoUpdateReceiver = new ItemInfoUpdateReceiver(mLauncher, mCallbacks);
             }
             return mItemInfoUpdateReceiver;
+        }
+
+        protected final Launcher getLauncher() {
+            return mLauncher;
         }
 
         public void bindAllApplications(final ArrayList<AppInfo> list) {
@@ -397,4 +403,18 @@ public class NexusLauncher {
             }
         }
     }
+
+    public class ShadeCompatLauncherCallbacks extends NexusLauncherCallbacks {
+
+        @Override
+        public void onHomeIntent(boolean internalStateHandled) {
+            super.onHomeIntent(internalStateHandled);
+            PluginManager.getInstance(getLauncher()).getClient(ButtonPluginClient.class)
+                    .onHomeIntent(intent -> {
+                        getLauncher().startActivity(intent);
+                        return true;
+                    });
+        }
+    }
+
 }
