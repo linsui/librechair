@@ -123,11 +123,11 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             .getThumbnailURL(entry).startsWith("http")) {
                         new Builder(parent.getContext()).build()
                                 .load(LawnchairUtilsKt.getThumbnailURL(entry))
-                                .placeholder(R.mipmap.ic_launcher).into(icon);
+                                .placeholder(R.drawable.work_tab_user_education).into(icon);
                     } else {
                         new Builder(parent.getContext()).build()
                                 .load("https:" + LawnchairUtilsKt.getThumbnailURL(entry))
-                                .placeholder(R.mipmap.ic_launcher).into(icon);
+                                .placeholder(R.drawable.work_tab_user_education).into(icon);
                     }
 
                     title.setText(String.format("%s: %s", MainFeedController.Companion

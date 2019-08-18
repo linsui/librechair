@@ -104,11 +104,11 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             if (entry.thumbnailURL != null && entry.thumbnailURL!!.startsWith(
                                             "http")) {
                                 Picasso.Builder(parent.context).build().load(entry.thumbnailURL)
-                                        .placeholder(R.mipmap.ic_launcher).into(icon)
+                                        .placeholder(R.drawable.work_tab_user_education).into(icon)
                             } else {
                                 Picasso.Builder(parent.context).build()
                                         .load("https://" + entry.thumbnailURL)
-                                        .placeholder(R.mipmap.ic_launcher).into(icon)
+                                        .placeholder(R.drawable.work_tab_user_education).into(icon)
                             }
 
                             if (entry.categories.isEmpty()) {
