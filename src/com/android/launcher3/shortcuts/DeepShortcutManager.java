@@ -24,6 +24,7 @@ import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.ShortcutQuery;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.Log;
@@ -277,7 +278,10 @@ public class DeepShortcutManager {
                                     .setDisabledMessage(shortcut1.mDisabledMessage)
                                     .setLongLabel(shortcut1.mLongLabel)
                                     .setShortLabel(shortcut1.mShortLabel)
-                                    .setDisabledMessage(shortcut1.mDisabledMessage).build()));
+                                    .setDisabledMessage(shortcut1.mDisabledMessage)
+                                    .setIcon(Icon.createWithBitmap(shortcut.getIcon(
+                                            mContext.getResources()
+                                                    .getDisplayMetrics().densityDpi))).build()));
                 } catch (URISyntaxException e) {
                     e.printStackTrace();
                 }
