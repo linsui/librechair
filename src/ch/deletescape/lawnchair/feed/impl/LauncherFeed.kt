@@ -87,6 +87,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
     init {
+        feedController.mOpenedCallback = {
+            runOnNewThread {
+                refresh(100)
+            }
+        }
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
         tabView.setOnTouchListener { view, _ ->

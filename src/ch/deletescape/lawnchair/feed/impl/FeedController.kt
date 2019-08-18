@@ -33,6 +33,7 @@ import com.android.launcher3.util.PendingAnimation
 
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
                                                               SwipeDetector.Listener {
+    public var mOpenedCallback: (() -> Unit)? = null
     protected val mDetector: SwipeDetector
     protected var mStartState: FeedState? = null
     protected var mFromState: FeedState? = null
@@ -49,6 +50,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mFeedBackground: View? = null
     private var mFeedContent: View? = null
     private var mCurrentState: FeedState? = FeedState.CLOSED
+        set(value) = {
+            if (value == FeedState.OPEN && mOpenedCallback != null) {
+                mOpenedCallback?.invoke()
+            }
+            field = value
+        }()
     private var mDownTime: Long = 0
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
