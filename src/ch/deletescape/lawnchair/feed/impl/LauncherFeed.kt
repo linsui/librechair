@@ -50,7 +50,6 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
-import java.util.concurrent.Executors
 import kotlin.math.hypot
 import kotlin.math.sign
 
@@ -167,40 +166,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                 50)).toIntArray())
                     }
                     adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
-                    Executors.newSingleThreadExecutor().submit {
-                        recyclerView.post {
-                            recyclerView.isLayoutFrozen = true
-                            recyclerView.layoutManager?.scrollToPosition(0)
-                        }
-                        val oldCards = adapter.immutableCards
-                        adapter.refresh()
-                        val cards = adapter.immutableCards
-                        val patch = DiffUtils.diff(oldCards, cards)
-
-                        handler.post {
-                            patch.deltas.forEach {
-                                when (it.type) {
-                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.EQUAL -> {
-                                    }
-                                }
-                            }
-                            recyclerView.post {
-                                recyclerView.isLayoutFrozen = false
-                                if (adapter.itemCount == 0) {
-                                    toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
-                                                                               context)) Color.WHITE else Color.DKGRAY)
-                                } else {
-                                    toolbar.title = ""
-                                }
-                            }
-                        }
-                    }
+                    runOnNewThread { refresh(0) }
                 }
             })
             d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
@@ -283,45 +249,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                                 },
                                                                                 Context.BIND_AUTO_CREATE)
 
-                                                            Executors.newSingleThreadExecutor()
-                                                                    .submit {
-                                                                        recyclerView.post {
-                                                                            recyclerView
-                                                                                    .isLayoutFrozen =
-                                                                                    true
-                                                                        }
-                                                                        val oldCards = adapter
-                                                                                .immutableCards
-                                                                        adapter.refresh()
-                                                                        val cards = adapter
-                                                                                .immutableCards
-                                                                        val patch = DiffUtils
-                                                                                .diff(oldCards,
-                                                                                      cards)
-
-                                                                        handler.post {
-                                                                            patch.deltas.forEach {
-                                                                                when (it.type) {
-                                                                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
-                                                                                            it.source.position,
-                                                                                            it.source.lines.size)
-                                                                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
-                                                                                            it.source.position,
-                                                                                            it.source.lines.size)
-                                                                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
-                                                                                            it.source.position,
-                                                                                            it.source.lines.size)
-                                                                                    DeltaType.EQUAL -> {
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                            recyclerView.post {
-                                                                                recyclerView
-                                                                                        .isLayoutFrozen =
-                                                                                        false
-                                                                            }
-                                                                        }
-                                                                    }
+                                                            runOnNewThread {
+                                                                refresh(0)
+                                                            }
                                                         }
                                                     })
                                         }
@@ -431,30 +361,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                             }
                         }
                     }
-                    Executors.newSingleThreadExecutor().submit {
-                        Thread.sleep(1000)
-                        recyclerView.post { recyclerView.isLayoutFrozen = true }
-                        val oldCards = adapter.immutableCards
-                        adapter.refresh()
-                        val cards = adapter.immutableCards
-                        val patch = DiffUtils.diff(oldCards, cards)
-
-                        handler.post {
-                            patch.deltas.forEach {
-                                when (it.type) {
-                                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
-                                            it.source.position, it.source.lines.size)
-                                    DeltaType.EQUAL -> {
-                                    }
-                                }
-                            }
-                            recyclerView.isLayoutFrozen = false
-                        }
-                    }
                     windowService.addView(feedController, layoutParams)
                 } else {
                     windowService.removeView(feedController)
@@ -562,6 +468,31 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 val opacity = first shr 24
                 opacity shl 24 or (result and 0xFFFFFF)
             }()
+        }
+    }
+
+    fun refresh(sleep: Long) {
+        Thread.sleep(sleep)
+        recyclerView.post { recyclerView.isLayoutFrozen = true }
+        val oldCards = adapter.immutableCards
+        adapter.refresh()
+        val cards = adapter.immutableCards
+        val patch = DiffUtils.diff(oldCards, cards)
+
+        runOnMainThread {
+            patch.deltas.forEach {
+                when (it.type) {
+                    DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
+                                                                       it.source.lines.size)
+                    DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
+                                                                        it.source.lines.size)
+                    DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
+                                                                       it.source.lines.size)
+                    DeltaType.EQUAL -> {
+                    }
+                }
+            }
+            recyclerView.isLayoutFrozen = false
         }
     }
 }
