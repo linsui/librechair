@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.smartspace
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
 import ch.deletescape.lawnchair.*
@@ -65,8 +64,7 @@ class UnifiedWeatherDataProvider(
                     }
                 } else {
                     val updateWeather = {
-                        val locationProvider = locationManager?.getBestProvider(Criteria(), true)
-                        val (lat, lon) = locationManager?.getLastKnownLocation(locationProvider)
+                        val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
                         val currentWeather = context.forecastProvider
                                 .getCurrentWeather(lat ?: (-1).toDouble(), lon ?: (-1).toDouble());
                         d("updateData: current weather is ${Gson().toJson(currentWeather)}")
