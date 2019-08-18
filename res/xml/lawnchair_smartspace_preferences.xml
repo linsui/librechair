@@ -209,6 +209,9 @@
         <ch.deletescape.lawnchair.preferences.NotesPreference
             android:key="pref_feed_notes"
             android:title="@string/title_pref_feed_notes" />
+        <ch.deletescape.lawnchair.preferences.LocaleOverridePreference
+            android:key="pref_override_locale"
+            android:title="@string/title_pref_override_locale" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
     <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
         android:key="pref_swipe_feed"

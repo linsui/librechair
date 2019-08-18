@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.lawnchairLocationManager
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
@@ -39,14 +40,28 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                     if (lat != null && lon != null) {
                         val country = GeocoderCompat(context, true).nearestPlace(lat, lon).country
                         d("bindFeed: country is $country")
-                        callback.onBind(getLocationAwareFeed(lat to lon,
-                                                             Locale("", country).isO3Country))
+                        try {
+                            callback.onBind(getLocationAwareFeed(lat to lon,
+                                                                 Locale("", country).isO3Country))
+                        } catch (e: Exception) {
+                            callback.onBind(getFallbackFeed())
+                        }
                     } else {
                         try {
                             callback.onBind(getFallbackFeed())
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
+                    }
+                }
+            } else if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
+                runOnNewThread {
+                    try {
+                        callback.onBind(getLocationAwareFeed(0.toDouble() to 0.toDouble(),
+                                                             Locale("",
+                                                                    context.lawnchairPrefs.overrideLocale).isO3Country))
+                    } catch (e: Exception) {
+                        callback.onBind(getFallbackFeed())
                     }
                 }
             } else {

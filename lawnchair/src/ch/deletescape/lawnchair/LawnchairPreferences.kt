@@ -347,6 +347,7 @@ class LawnchairPreferences(val context: Context) :
             BugReportClient.getInstance(context).setAutoUploadEnabled()
         }
     }
+    val overrideLocale by StringPref("pref_override_locale", "", ::restartOverlay)
     val forceFakePieAnims by BooleanPref("pref_forceFakePieAnims", false)
     val displayDebugOverlay by BooleanPref("pref_debugDisplayState", false)
 

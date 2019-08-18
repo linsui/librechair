@@ -569,4 +569,6 @@
 
     <string name="title_pref_feed_widgets_tab">Categorize widgets in separate tab</string>
     <string name="title_smartspace_provider_shade_compat">Shade plugin compatibility</string>
+
+    <string name="title_pref_override_locale">Override locale</string>
 </resources>
