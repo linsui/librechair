@@ -220,7 +220,7 @@
             android:grantUriPermissions="true"
             android:name="ch.deletescape.lawnchair.FiveSecsProvider" /> <!-- Icon picker -->
         <receiver
-            android:name="ch.deletescape.lawnchair.smartspace.LawnchairCalendarProviderChangesReceiver"
+            android:name="ch.deletescape.lawnchair.smartspace.LauncherEventChangeListener"
             android:priority="1000">
 
         </receiver>

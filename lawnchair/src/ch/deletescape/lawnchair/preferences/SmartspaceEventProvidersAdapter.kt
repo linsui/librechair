@@ -29,6 +29,7 @@ import android.widget.TextView
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.shade.CompatSmartspaceProvider
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
@@ -291,6 +292,7 @@ class SmartspaceEventProvidersAdapter(private val context: Context)
             list.add(PersonalityProvider::class.java.name)
             list.add(SmartspaceForecastProvider::class.java.name)
             list.add(DailyBriefingProvider::class.java.name)
+            list.add(CompatSmartspaceProvider::class.java.name)
             if (context.lawnchairPrefs.showDebugInfo)
                 list.add(FakeDataProvider::class.java.name)
             return list

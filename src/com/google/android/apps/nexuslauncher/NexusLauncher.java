@@ -160,7 +160,7 @@ public class NexusLauncher {
 
             prefs.registerOnSharedPreferenceChangeListener(this);
 
-            SmartspaceController.get(mLauncher).cW();
+            SmartspaceController.get(mLauncher).sendMessage();
 
             mQsbAnimationController = new QsbAnimationController(mLauncher);
 

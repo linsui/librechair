@@ -25,7 +25,7 @@ import android.content.Intent;
 import android.util.Log;
 import ch.deletescape.lawnchair.LawnchairApp;
 
-public class LawnchairCalendarProviderChangesReceiver extends BroadcastReceiver {
+public class LauncherEventChangeListener extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

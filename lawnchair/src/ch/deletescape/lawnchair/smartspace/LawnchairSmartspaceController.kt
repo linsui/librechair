@@ -39,6 +39,7 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.NOTIFICATION_BADGING
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.CONTENT_RES_ID
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.TITLE
+import ch.deletescape.lawnchair.shade.CompatSmartspaceProvider
 import ch.deletescape.lawnchair.smartspace.weather.WeatherbitDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
@@ -542,7 +543,8 @@ class LawnchairSmartspaceController(val context: Context) {
                       WeatherbitDataProvider::class.java.name to R.string.title_weather_provider_weatherbit_data,
                       UnifiedWeatherDataProvider::class.java.name to R.string.title_weather_provider_unified,
                       DailyBriefingProvider::class.java.name to R.string.title_smartspace_provider_daily_briefing,
-                      OngoingEventsProvider::class.java.name to R.string.title_smartspace_provider_ongoing_events)
+                      OngoingEventsProvider::class.java.name to R.string.title_smartspace_provider_ongoing_events,
+                      CompatSmartspaceProvider::class.java.name to R.string.title_smartspace_provider_shade_compat)
 
         fun getDisplayName(providerName: String): Int {
             return displayNames[providerName] ?: error("No display name for provider $providerName")

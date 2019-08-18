@@ -31,7 +31,7 @@ public class SmartspaceController implements Handler.Callback {
     private final SmartspaceDataContainer dataContainer;
     private final Alarm refreshAlarm;
     private ISmartspace mSmartspace;
-    private final ProtoStore dT;
+    private final ProtoStore protoStore;
     private final Context mAppContext;
     private final Handler mUiHandler;
     private final Handler mWorker;
@@ -41,8 +41,8 @@ public class SmartspaceController implements Handler.Callback {
         this.mUiHandler = new Handler(Looper.getMainLooper(), this);
         this.mAppContext = mAppContext;
         this.dataContainer = new SmartspaceDataContainer();
-        this.dT = new ProtoStore(mAppContext);
-        (this.refreshAlarm = new Alarm()).setOnAlarmListener(alarm -> dc());
+        this.protoStore = new ProtoStore(mAppContext);
+        (this.refreshAlarm = new Alarm()).setOnAlarmListener(alarm -> refresh());
         this.updateGsa();
         mAppContext.registerReceiver(new BroadcastReceiver() {
             @Override
@@ -60,7 +60,7 @@ public class SmartspaceController implements Handler.Callback {
         return new Intent();
     }
 
-    private void dc() {
+    private void refresh() {
         boolean weatherAvailable = this.dataContainer.isWeatherAvailable();
         boolean dataAvailable = this.dataContainer.isDataAvailable();
         this.dataContainer.clearAll();
@@ -113,7 +113,7 @@ public class SmartspaceController implements Handler.Callback {
         }
     }
 
-    public void cW() {
+    public void sendMessage() {
         Message.obtain(this.mWorker, 1).sendToTarget();
     }
 
@@ -148,21 +148,21 @@ public class SmartspaceController implements Handler.Callback {
             case 1:
                 i data = new i();
                 SmartspaceCard weatherCard =
-                        this.dT.dv(SmartspaceController.Store.WEATHER.filename, data) ?
-                                SmartspaceCard.cD(this.mAppContext, data, true) :
+                        this.protoStore.dv(SmartspaceController.Store.WEATHER.filename, data) ?
+                                SmartspaceCard.createNew(this.mAppContext, data, true) :
                                 null;
 
                 data = new i();
                 SmartspaceCard eventCard =
-                        this.dT.dv(SmartspaceController.Store.CURRENT.filename, data) ?
-                                SmartspaceCard.cD(this.mAppContext, data, false) :
+                        this.protoStore.dv(SmartspaceController.Store.CURRENT.filename, data) ?
+                                SmartspaceCard.createNew(this.mAppContext, data, false) :
                                 null;
 
                 Message.obtain(this.mUiHandler, 101, new SmartspaceCard[]{weatherCard, eventCard})
                         .sendToTarget();
                 break;
             case 2:
-                this.dT.dw(SmartspaceCard.cQ(this.mAppContext, (NewCardInfo) message.obj),
+                this.protoStore.dw(SmartspaceCard.cQ(this.mAppContext, (NewCardInfo) message.obj),
                         SmartspaceController.Store.values()[message.arg1].filename);
                 Message.obtain(this.mUiHandler, 1).sendToTarget();
                 break;

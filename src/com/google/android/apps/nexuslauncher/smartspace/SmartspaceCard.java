@@ -45,16 +45,17 @@ public class SmartspaceCard {
         this.dL = dl;
     }
 
-    static SmartspaceCard cD(Context context, i iVar, boolean z) {
-        if (iVar != null) {
+    static SmartspaceCard createNew(Context context, i protobufData, boolean z) {
+        if (protobufData != null) {
             try {
-                Intent parseUri = TextUtils.isEmpty(iVar.de.cG.cZ) ?
+                Intent parseUri = TextUtils.isEmpty(protobufData.de.cG.cZ) ?
                         null :
-                        Intent.parseUri(iVar.de.cG.cZ, 0);
+                        Intent.parseUri(protobufData.de.cG.cZ, 0);
 
-                Bitmap bitmap = iVar.dd == null ?
+                Bitmap bitmap = protobufData.dd == null ?
                         null :
-                        BitmapFactory.decodeByteArray(iVar.dd, 0, iVar.dd.length, null);
+                        BitmapFactory
+                                .decodeByteArray(protobufData.dd, 0, protobufData.dd.length, null);
 
                 if (bitmap != null) {
                     // TODO: implement this
@@ -68,8 +69,9 @@ public class SmartspaceCard {
 //                            55);
                 }
 
-                return new SmartspaceCard(context, iVar.de, parseUri, z, bitmap, iVar.dc, iVar.df,
-                        iVar.dh, iVar.dg);
+                return new SmartspaceCard(context, protobufData.de, parseUri, z, bitmap,
+                        protobufData.dc, protobufData.df,
+                        protobufData.dh, protobufData.dg);
             } catch (Throwable e) {
                 Log.e("SmartspaceCard", "from proto", e);
             }

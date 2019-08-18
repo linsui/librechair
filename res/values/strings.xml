@@ -568,4 +568,5 @@
     <string name="summary_pref_feed_hide_toolbar">The toolbar will be automatically hidden when scrolling through the feed</string>
 
     <string name="title_pref_feed_widgets_tab">Categorize widgets in separate tab</string>
+    <string name="title_smartspace_provider_shade_compat">Shade plugin compatibility</string>
 </resources>
