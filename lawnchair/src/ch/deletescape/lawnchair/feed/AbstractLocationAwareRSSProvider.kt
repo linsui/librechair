@@ -21,10 +21,8 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.location.Criteria
-import android.location.Location
 import ch.deletescape.lawnchair.checkLocationAccess
-import ch.deletescape.lawnchair.locationManager
+import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
@@ -36,17 +34,13 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     override fun bindFeed(callback: BindCallback) {
         try {
             if (context.checkLocationAccess()) {
-                val location: Location? = context.locationManager.getLastKnownLocation(
-                        context.locationManager.getBestProvider(Criteria(), true))
-                d("bindFeed: location is ${location?.latitude to location?.longitude}")
+                val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
                 runOnNewThread {
-                    if (location != null) {
-                        val country = GeocoderCompat(context, true)
-                                .nearestPlace(location.latitude, location.longitude).country
+                    if (lat != null && lon != null) {
+                        val country = GeocoderCompat(context, true).nearestPlace(lat, lon).country
                         d("bindFeed: country is $country")
-                        callback.onBind(getLocationAwareFeed(
-                                location.latitude to location.longitude,
-                                Locale("", country).isO3Country))
+                        callback.onBind(getLocationAwareFeed(lat to lon,
+                                                             Locale("", country).isO3Country))
                     } else {
                         try {
                             callback.onBind(getFallbackFeed())

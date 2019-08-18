@@ -1183,3 +1183,9 @@ val Locale.twoLetterCountryCode: String
         }
         return@run countries[isO3Country]!!
     }
+val Context.lawnchairLocationManager: ch.deletescape.lawnchair.location.LocationManager
+    get() = ch.deletescape.lawnchair.location.LocationManager.also {
+        if (it.context == null) {
+            it.context = this
+        }
+    }
