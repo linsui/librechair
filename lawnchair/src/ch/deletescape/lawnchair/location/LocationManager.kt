@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 object LocationManager {
     var context: Context? = null
         set(value) = {
-            providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value!!)))
+            providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value)))
         }()
     val providers: MutableList<LocationProvider> = mutableListOf()
     var cache: Pair<Long, Pair<Double, Double>?>? = null
