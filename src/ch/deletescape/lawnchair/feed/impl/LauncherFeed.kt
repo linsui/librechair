@@ -39,6 +39,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
@@ -60,8 +61,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             contex2t.applicationContext).isDark || contex2t.lawnchairPrefs.feedCardBlur
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
-    private var backgroundColor: Int = ColorUtils
-            .setAlphaComponent(if (dark) Color.DKGRAY else Color.WHITE,
+    private var backgroundColor: Int = ColorUtils.setAlphaComponent(
+            ColorEngine.getInstance(contex2t).feedBackground.value.resolveColor(),
                                (LawnchairPreferences.getInstance(
                                        context).feedBackgroundOpacity * (255f / 100f)).roundToInt())
             .also {}

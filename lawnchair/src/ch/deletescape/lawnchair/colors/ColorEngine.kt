@@ -42,6 +42,7 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
     val accentResolver get() = _accentResolver.value
     val accent get() = accentResolver.resolveColor()
     val accentForeground get() = accentResolver.computeForegroundColor()
+    val feedBackground get() = getResolverCache(Resolvers.FEED_BACKGROUND)
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
         if (!force) {
@@ -168,6 +169,7 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
             const val DOCK_BACKGROUND = "pref_dockBackgroundColorResolver"
             const val ALLAPPS_BACKGROUND = "pref_allAppsBackgroundColorResolver"
             const val SUPERG_BACKGROUND = "pref_superGBackgroundColorResolver"
+            const val FEED_BACKGROUND = "pref_feedBackgroundColorResolver"
 
             fun getDefaultResolver(key: String, engine: ColorEngine): ColorResolver {
                 val context = engine.context
@@ -187,7 +189,7 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
                     HOTSEAT_ICON_LABEL -> {
                         WorkspaceLabelAutoResolver(createConfig(key, engine))
                     }
-                    DOCK_BACKGROUND, ALLAPPS_BACKGROUND -> {
+                    DOCK_BACKGROUND, ALLAPPS_BACKGROUND, FEED_BACKGROUND -> {
                         ShelfBackgroundAutoResolver(createConfig(key, engine))
                     }
                     SUPERG_BACKGROUND -> {

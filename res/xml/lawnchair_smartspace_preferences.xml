@@ -123,6 +123,10 @@
             android:defaultValue="ch.deletescape.lawnchair.feed.tabs.TabController"
             android:summary="%s"
             android:title="@string/title_pref_feed_tab_controller" />
+        <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
+            android:key="pref_feedBackgroundColorResolver"
+            android:title="@string/background_color"
+            app:resolvers="@array/resolvers_shelf_background" />
         <ch.deletescape.lawnchair.preferences.CustomizableTabsPreference
             android:key="pref_feed_tabs"
             android:title="@string/title_pref_feed_tabs" />

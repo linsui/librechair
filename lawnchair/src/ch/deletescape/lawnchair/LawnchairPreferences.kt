@@ -413,7 +413,6 @@ class LawnchairPreferences(val context: Context) :
         }
     }
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
-
     private val was1stApril = is1stApril()
 
     fun checkFools() {
