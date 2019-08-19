@@ -34,6 +34,7 @@ import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +104,8 @@ public class CategorizedTabbingController extends TabController {
         result.put(TOOLS_TAB, tools);
         result.put(NEWS_TAB, news);
         result.put(EVENTS_TAB, events);
-        if (Utilities.getLawnchairPrefs(getContext()).getFeedCategorizeWidgetsAsSeparateTab()) {
+        if (Utilities.getLawnchairPrefs(getContext()).getFeedCategorizeWidgetsAsSeparateTab()
+                && !FeatureFlags.GO_DISABLE_WIDGETS) {
             result.put(WIDGETS_TAB, widgets);
         }
         result.put(MISC_TAB, misc);
