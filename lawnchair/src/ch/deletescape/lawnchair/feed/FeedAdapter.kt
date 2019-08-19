@@ -153,48 +153,56 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
                     background = ColorDrawable(Color.BLACK)
                     alpha = 0f
                     if (hasAction) {
-                        findViewsByClass(TextView::class.java, true)
-                                .forEach { it.visibility = GONE }
-                        findViewById<Button>(R.id.delete_item_action).apply {
-                            text = cards[holder.adapterPosition].actionName
-                            setOnClickListener {
-                                cards[holder.adapterPosition].actionListener?.invoke(it.context)
-                                isDeleteActive = false
-                                holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
-                                holder.itemView.removeView(
-                                        holder.itemView.findViewById<View>(R.id.card_removal_hint));
-                            }
-                        }
-                        findViewById<Button>(R.id.remove_action).setOnClickListener {
-                            holder.itemView.animate().scaleX(0f).scaleY(0f)
-                                    .setInterpolator(Interpolators.ACCEL).duration = 500
-                            (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
-                                    .vibrate(20)
-                            val backupCards = cards.clone() as List<Card>
-                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                    .add(cards[holder.adapterPosition].identifier)
-                            runOnNewThread {
-                                cards.removeAt(holder.adapterPosition)
-                                holder.itemView.post {
+                        try {
+                            findViewsByClass(TextView::class.java, true)
+                                    .forEach { it.visibility = GONE }
+                            findViewById<Button>(R.id.delete_item_action).apply {
+                                text = cards[holder.adapterPosition].actionName
+                                setOnClickListener {
+                                    cards[holder.adapterPosition].actionListener?.invoke(it.context)
+                                    isDeleteActive = false
+                                    holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
                                     holder.itemView.removeView(holder.itemView.findViewById<View>(
                                             R.id.card_removal_hint));
-                                    notifyItemRemoved(holder.adapterPosition)
-                                    Snackbar.make(holder.itemView, R.string.item_removed,
-                                                  Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
-                                        runOnNewThread {
-                                            holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                                    .remove(cards[holder.adapterPosition].identifier)
-                                            cards.clear()
-                                            cards.addAll(backupCards)
-                                            holder.itemView.post {
-                                                notifyItemInserted(holder.adapterPosition)
-                                                recyclerView
-                                                        .scrollToPosition(holder.adapterPosition)
-                                            }
-                                        }
-                                    }.show()
                                 }
                             }
+                            findViewById<Button>(R.id.remove_action).setOnClickListener {
+                                holder.itemView.animate().scaleX(0f).scaleY(0f)
+                                        .setInterpolator(Interpolators.ACCEL).duration = 500
+                                (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
+                                        .vibrate(20)
+                                val backupCards = cards.clone() as List<Card>
+                                holder.itemView.context.lawnchairPrefs.feedDisabledCards
+                                        .add(cards[holder.adapterPosition].identifier)
+                                runOnNewThread {
+                                    cards.removeAt(holder.adapterPosition)
+                                    holder.itemView.post {
+                                        holder.itemView.removeView(
+                                                holder.itemView.findViewById<View>(
+                                                        R.id.card_removal_hint));
+                                        notifyItemRemoved(holder.adapterPosition)
+                                        Snackbar.make(holder.itemView, R.string.item_removed,
+                                                      Snackbar.LENGTH_SHORT)
+                                                .setAction(R.string.undo) {
+                                                    runOnNewThread {
+                                                        holder.itemView.context.lawnchairPrefs
+                                                                .feedDisabledCards
+                                                                .remove(cards[holder.adapterPosition].identifier)
+                                                        cards.clear()
+                                                        cards.addAll(backupCards)
+                                                        holder.itemView.post {
+                                                            notifyItemInserted(
+                                                                    holder.adapterPosition)
+                                                            recyclerView.scrollToPosition(
+                                                                    holder.adapterPosition)
+                                                        }
+                                                    }
+                                                }.show()
+                                    }
+                                }
+                            }
+                        } catch (e: IndexOutOfBoundsException) {
+                            e.printStackTrace()
                         }
                     } else {
                         findViewById<Button>(R.id.delete_item_action).visibility = GONE
