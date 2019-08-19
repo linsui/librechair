@@ -27,16 +27,14 @@ import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
@@ -62,6 +60,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             (LawnchairPreferences.getInstance(
                     contex2t).feedBackgroundOpacity * (255f / 100f)).roundToInt())
     private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), contex2t)
+    private val accessingPackages = mutableSetOf<String>()
 
     init {
         d("init: dark ${dark}")
@@ -438,8 +437,25 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
 
     override fun startScroll() {
+        accessingPackages += context.packageManager.getPackagesForUid(
+                Binder.getCallingUid())?.toSet() ?: emptySet()
         handler.post {
             feedAttached = true
+            if (accessingPackages.size > 1) {
+                displayView({
+                                return@displayView FrameLayout(it.context).apply {
+                                    layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
+                                    layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+                                    addView(TextView(it.context).apply {
+                                        layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
+                                        layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+                                        gravity = Gravity.CENTER
+                                        text = R.string.message_feed_multiple_processes
+                                                .fromStringRes(context)
+                                    })
+                                }
+                            }, 0f, 0f)
+            }
             if (!useWhiteText(backgroundColor, context)) {
                 feedController.systemUiVisibility =
                         View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
