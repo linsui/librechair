@@ -619,7 +619,6 @@ class LawnchairPreferences(val context: Context) :
         fun getAll(): List<T> = valueList
 
         fun setAll(value: List<T>) {
-            if (value == valueList) return
             valueList.clear()
             valueList.addAll(value)
             saveChanges()
