@@ -27,6 +27,9 @@ public final class FeatureFlags extends BaseFlags {
     // When enabled, app shortcuts are extracted from the package XML.
     public static final boolean LAUNCHER3_BACKPORT_SHORTCUTS = true;
 
+    // When enabled, the feed will use a less resource-intensive animation
+    public static final boolean FEED_SIMPLE_ANIMATION = false;
+
     // Feature flag to enable moving the QSB on the 0th screen of the workspace.
     public static final boolean QSB_ON_FIRST_SCREEN = false;
 

@@ -34,6 +34,8 @@ public final class FeatureFlags extends BaseFlags {
     // Feature flag to enable moving the QSB on the 0th screen of the workspace.
     public static boolean QSB_ON_FIRST_SCREEN = true;
 
+    public static final boolean FEED_SIMPLE_ANIMATION = true;
+
     // When enabled, app shortcuts are extracted from the package XML.
     public static final boolean LAUNCHER3_BACKPORT_SHORTCUTS = true;
 
