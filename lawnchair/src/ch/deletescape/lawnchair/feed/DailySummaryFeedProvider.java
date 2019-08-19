@@ -23,9 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
@@ -37,9 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider.ForecastException;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
@@ -54,86 +49,39 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executors;
 import kotlin.Pair;
-import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
 
     @Thunk
     Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
-    private final LocationManager manager;
-
+    private long sunriseSunsetExpiry;
     @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
-        manager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        Executors.newSingleThreadExecutor().submit(() -> {
-            while (sunriseSunset == null) {
-                Log.d(getClass().getName(), "init: retrieving sunrise and sunset times");
-                if (LawnchairUtilsKt.checkLocationAccess(getContext())) {
-                    Log.d(getClass().getName(),
-                            "init: retrieving sunrise and sunset times from current location");
-                    Location location = manager
-                            .getLastKnownLocation(manager.getBestProvider(new Criteria(), true));
-                    Log.d(getClass().getName(), "init: location retrieved: " + location);
-                    if (location != null) {
-                        Calendar sunrise = SunriseSunsetCalculator
-                                .getSunrise(location.getLatitude(), location.getLongitude(),
-                                        Calendar.getInstance().getTimeZone(),
-                                        new GregorianCalendar(), 6);
-                        Calendar sunset = SunriseSunsetCalculator
-                                .getSunset(location.getLatitude(), location.getLongitude(),
-                                        Calendar.getInstance().getTimeZone(),
-                                        new GregorianCalendar(), 6);
-                        Log.d(getClass().getName(),
-                                "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                                        + sunset);
-                        sunriseSunset = new Pair<>(ZonedDateTime
-                                .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                                        ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
-                                ZonedDateTime.ofInstant(
-                                        Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                                        ZoneId
-                                                .of(Calendar.getInstance().getTimeZone().getID())));
-                    }
-                } else {
-                    try {
-                        Pair<Double, Double> location = LawnchairUtilsKt
-                                .getForecastProvider(getContext()).getGeolocation(
-                                        LawnchairPreferences.Companion.getInstance(getContext())
-                                                .getWeatherCity());
-                        Calendar sunrise = SunriseSunsetCalculator
-                                .getSunrise(location.getFirst(), location.getSecond(),
-                                        Calendar.getInstance().getTimeZone(),
-                                        new GregorianCalendar(), 6);
-                        Calendar sunset = SunriseSunsetCalculator
-                                .getSunset(location.getFirst(), location.getSecond(),
-                                        Calendar.getInstance().getTimeZone(),
-                                        new GregorianCalendar(), 6);
-                        sunriseSunset = new Pair<>(ZonedDateTime
-                                .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                                        ZoneId
-                                                .of(Calendar.getInstance().getTimeZone().getID())),
-                                ZonedDateTime.ofInstant(
-                                        Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                                        ZoneId
-                                                .of(Calendar.getInstance().getTimeZone().getID())));
-                        LawnchairUtilsKt.runOnMainThread(() -> {
-                            requestRefresh();
-                            return Unit.INSTANCE;
-                        });
-                    } catch (ForecastException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-        });
+        Pair<Double, Double> location = LawnchairUtilsKt.getLawnchairLocationManager(c)
+                .getLocation();
+        if (location != null) {
+            Calendar sunrise = SunriseSunsetCalculator
+                    .getSunrise(location.getFirst(), location.getSecond(),
+                            Calendar.getInstance().getTimeZone(),
+                            new GregorianCalendar(), 6);
+            Calendar sunset = SunriseSunsetCalculator
+                    .getSunset(location.getFirst(), location.getSecond(),
+                            Calendar.getInstance().getTimeZone(),
+                            new GregorianCalendar(), 6);
+            Log.d(getClass().getName(),
+                    "init: sunrise and sunset times retrieved: " + sunrise + ", "
+                            + sunset);
+            sunriseSunset = new Pair<>(ZonedDateTime
+                    .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
+                            ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
+                    ZonedDateTime.ofInstant(
+                            Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
+                            ZoneId
+                                    .of(Calendar.getInstance().getTimeZone().getID())));
+            sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
+        }
     }
 
     @Override
@@ -158,6 +106,31 @@ public class DailySummaryFeedProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
+        if (sunriseSunsetExpiry < System.currentTimeMillis()) {
+            Pair<Double, Double> location = LawnchairUtilsKt
+                    .getLawnchairLocationManager(getContext()).getLocation();
+            if (location != null) {
+                Calendar sunrise = SunriseSunsetCalculator
+                        .getSunrise(location.getFirst(), location.getSecond(),
+                                Calendar.getInstance().getTimeZone(),
+                                new GregorianCalendar(), 6);
+                Calendar sunset = SunriseSunsetCalculator
+                        .getSunset(location.getFirst(), location.getSecond(),
+                                Calendar.getInstance().getTimeZone(),
+                                new GregorianCalendar(), 6);
+                Log.d(getClass().getName(),
+                        "init: sunrise and sunset times retrieved: " + sunrise + ", "
+                                + sunset);
+                sunriseSunset = new Pair<>(ZonedDateTime
+                        .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
+                                ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
+                        ZonedDateTime.ofInstant(
+                                Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
+                                ZoneId
+                                        .of(Calendar.getInstance().getTimeZone().getID())));
+                sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
+            }
+        }
         return Collections.singletonList(new Card(null, null,
                 parent -> {
                     View v = LayoutInflater.from(parent.getContext())

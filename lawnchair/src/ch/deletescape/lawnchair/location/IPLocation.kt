@@ -22,6 +22,7 @@ import android.os.NetworkOnMainThreadException
 import android.os.SystemClock
 import ch.deletescape.lawnchair.perms.CustomPermissionManager
 import ch.deletescape.lawnchair.perms.checkCustomPermission
+import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
 import okhttp3.Request
 import org.json.JSONObject
@@ -31,7 +32,12 @@ class IPLocation(context: Context,
                  private val cacheValidityMs: Long = TimeUnit.MINUTES.toMillis(30)) :
         LocationManager.LocationProvider(context) {
     override val location: Pair<Double, Double>?
-        get() = if (get().success) get().lat to get().lon else null
+        get() = if (cache?.success == true) cache!!.lat to cache!!.lon else ch.deletescape.lawnchair.also(
+                null) {
+            runOnNewThread {
+                get()
+            }
+        }
     private val permissionManager = CustomPermissionManager.getInstance(context)
     private val client = OkHttpClientBuilder().build(context)
 
