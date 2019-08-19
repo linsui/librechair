@@ -130,7 +130,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         if (notify) {
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
         }
-        mFeedBackground!!.alpha = (mProgress * (255f / 100))
+        mFeedBackground!!.animate().alpha(mProgress * (255f / 100)).setDuration(0)
         mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
     }
 
