@@ -67,14 +67,22 @@ public class CategorizedTabbingController extends TabController {
 
     @Override
     public List<Item> getAllTabs() {
-        return Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab() ?
-                Utilities.getLawnchairPrefs(getContext()).getFeedCategorizeWidgetsAsSeparateTab()
-                        ? Arrays
-                        .asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, WIDGETS_TAB, MISC_TAB)
-                        : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, MISC_TAB)
-                : Utilities.getLawnchairPrefs(getContext()).getFeedCategorizeWidgetsAsSeparateTab()
-                        ? Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, WIDGETS_TAB)
-                        : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB);
+        if (!FeatureFlags.GO_DISABLE_WIDGETS) {
+            return Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab() ?
+                    Utilities.getLawnchairPrefs(getContext())
+                            .getFeedCategorizeWidgetsAsSeparateTab()
+                            ? Arrays
+                            .asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, WIDGETS_TAB, MISC_TAB)
+                            : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, MISC_TAB)
+                    : Utilities.getLawnchairPrefs(getContext())
+                            .getFeedCategorizeWidgetsAsSeparateTab()
+                            ? Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, WIDGETS_TAB)
+                            : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB);
+        } else {
+            return Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab()
+                    ? Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB, MISC_TAB)
+                    : Arrays.asList(TOOLS_TAB, NEWS_TAB, EVENTS_TAB);
+        }
     }
 
     @Override
