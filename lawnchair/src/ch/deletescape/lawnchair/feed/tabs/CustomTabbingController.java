@@ -23,6 +23,7 @@ import android.content.Context;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,7 +59,8 @@ public class CustomTabbingController extends TabController {
             Map<Item, List<FeedProvider>> result = new LinkedHashMap<>();
             for (CustomTab tab : Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs()) {
                 List<FeedProvider> sorted = providers.stream()
-                        .filter(it -> tab.providers.contains(it.getClass().getName())).collect(
+                        .filter(it -> Arrays.asList(tab.providers)
+                                .contains(it.getClass().getName())).collect(
                                 Collectors.toList());
                 result.put(new Item(null, tab.name), sorted);
             }

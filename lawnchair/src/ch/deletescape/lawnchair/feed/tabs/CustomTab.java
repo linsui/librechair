@@ -20,7 +20,8 @@
 package ch.deletescape.lawnchair.feed.tabs;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CustomTab {
 
@@ -28,5 +29,25 @@ public class CustomTab {
     public String name;
 
     @SerializedName("b")
-    public List<String> providers;
+    public String[] providers;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CustomTab customTab = (CustomTab) o;
+        return Objects.equals(name, customTab.name) &&
+                Arrays.equals(providers, customTab.providers);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(name);
+        result = 31 * result + Arrays.hashCode(providers);
+        return result;
+    }
 }

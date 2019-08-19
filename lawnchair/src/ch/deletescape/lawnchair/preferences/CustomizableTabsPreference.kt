@@ -100,7 +100,7 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                     } else {
                         context.lawnchairPrefs.feedCustomTabs += CustomTab().apply {
                             name = title.toString()
-                            providers = emptyList()
+                            providers = arrayOf()
                         }
                         recyclerView.adapter
                                 ?.notifyItemInserted(recyclerView.adapter?.itemCount ?: 0)
@@ -199,16 +199,17 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                             }.toBooleanArray()) { dialog, which, isChecked ->
                                 if (!isChecked) {
                                     app.providers = app.providers
-                                            .minus(MainFeedController.getFeedProviders().get(which))
+                                            .filter { it != MainFeedController.getFeedProviders()[which] }
+                                            .toTypedArray()
                                 } else {
                                     app.providers =
-                                            app.providers + MainFeedController.getFeedProviders().get(
-                                                    which)
+                                            app.providers + MainFeedController.getFeedProviders()[which]
                                 }
 
                                 context!!.lawnchairPrefs.feedCustomTabs =
-                                        context!!.lawnchairPrefs.feedCustomTabs.apply {
-                                            this[holder.adapterPosition].providers = app.providers
+                                        context!!.lawnchairPrefs.feedCustomTabs.toMutableList()
+                                                .apply {
+                                                    set(holder.adapterPosition, app)
                                         }
                             }.setPositiveButton(android.R.string.ok) { dialog, which -> }.show()
                 }
