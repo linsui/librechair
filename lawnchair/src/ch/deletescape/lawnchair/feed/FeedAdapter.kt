@@ -51,8 +51,7 @@ import com.github.mmin18.widget.RealtimeBlurView
 
 class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
                   backgroundColor: Int, private val context: Context,
-                  private val feed: LauncherFeed) :
-        RecyclerView.Adapter<CardViewHolder>() {
+                  private val feed: LauncherFeed) : RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {
@@ -266,7 +265,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (holder.itemViewType and Card.RAISE != 0 && useWhiteText(backgroundColor.setAlpha(255),
                                                                     context)) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                    holder.itemView.context.getColor(R.color.qsb_background_dark))
+                    if (context.lawnchairPrefs.feedOLEDCards) Color.BLACK else holder.itemView.context.getColor(
+                            R.color.qsb_background_dark))
         } else if (holder.itemViewType and Card.RAISE != 0) {
             (holder.itemView as CardView).setCardBackgroundColor(
                     holder.itemView.context.getColor(R.color.qsb_background))

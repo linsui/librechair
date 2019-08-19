@@ -734,4 +734,7 @@
 
     <string name="title_pref_icon_contrast">Icon contrast</string>
     <string name="title_pref_icon_brightness">Icon brightness</string>
+
+    <string name="title_pref_oled_feed_cards">OLED black feed cards</string>
+    <string name="summary_pref_oled_feed_cards">Cards will be tinted pure black when in a dark theme</string>
 </resources>
