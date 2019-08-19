@@ -92,6 +92,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
+    private val tabsOnBottom = contex2t.lawnchairPrefs.feedTabsOnBottom
 
     init {
         feedController.mOpenedCallback = {
@@ -104,6 +105,13 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         tabView.setOnTouchListener { view, _ ->
             view.parent.requestDisallowInterceptTouchEvent(true)
             true
+        }
+        if (tabsOnBottom) {
+            (toolbar.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
+            toolbar.parent.requestLayout()
+            recyclerView.apply {
+                setPadding(paddingLeft, 0, paddingRight, paddingTop)
+            }
         }
         if (!useWhiteText(backgroundColor, context)) {
             tabView.tabIconTint =
@@ -128,9 +136,11 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
                         if (dy > 0) {
-                            toolbar.animate().translationY(-toolbar.measuredHeight.toFloat())
+                            toolbar.animate().translationY(
+                                    if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else 0f)
                         } else {
-                            toolbar.animate().translationY(0f)
+                            toolbar.animate().translationY(
+                                    if (!tabsOnBottom) 0f else toolbar.measuredHeight.toFloat())
                         }
                     }
                 })

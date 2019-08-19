@@ -571,4 +571,7 @@
     <string name="title_smartspace_provider_shade_compat">Shade plugin compatibility</string>
 
     <string name="title_pref_override_locale">Override locale</string>
+
+    <string name="title_pref_feed_tabs_on_bottom">Display title bar on bottom</string>
+    <string name="summary_pref_feed_tabs_on_bottom">Tabs and menu items will be displayed at the bottom of the screen</string>
 </resources>

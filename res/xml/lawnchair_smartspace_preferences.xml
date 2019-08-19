@@ -131,6 +131,7 @@
             android:key="pref_feed_tabs"
             android:title="@string/title_pref_feed_tabs" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
             android:key="pref_feed_widgets_tab"
             android:title="@string/title_pref_feed_widgets_tab" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
@@ -197,13 +198,20 @@
             android:title="@string/title_preference_feed_widgets"
             android:key="pref_feed_widgets" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
             android:key="pref_blur_feed_cards"
             android:summary="@string/description_pref_blur_feed_cards"
             android:title="@string/title_pref_blur_feed_cards" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
             android:key="pref_feed_hide_toolbar"
             android:summary="@string/summary_pref_feed_hide_toolbar"
             android:title="@string/title_pref_feed_hide_toolbar" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="pref_feed_tabs_on_bottom"
+            android:summary="@string/summary_pref_feed_tabs_on_bottom"
+            android:title="@string/title_pref_feed_tabs_on_bottom" />
         <ch.deletescape.lawnchair.preferences.RemoteFeedProvidersPreference
             android:key="pref_remote_feed_providers"
             android:title="@string/title_pref_remote_feed_providers" />
