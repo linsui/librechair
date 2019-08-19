@@ -96,17 +96,6 @@ class LawnchairPreferences(val context: Context) :
     }
 
     fun lbcMigratePrefs() {
-        if (sharedPrefs.all["pref_feed_tabs"] is Set<*>) {
-            val temp = sharedPrefs.getStringSet("pref_feed_tabs", setOf())!!
-            var arr: JSONArray
-            try {
-                arr = JSONArray(temp)
-            } catch (e: ClassCastException) {
-                e.printStackTrace()
-                arr = JSONArray()
-            }
-            sharedPrefs.edit().putString("pref_feed_tabs", arr.toString()).commit()
-        }
     }
 
     init {
