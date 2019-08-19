@@ -95,6 +95,23 @@ class LawnchairPreferences(val context: Context) :
                 }
     }
 
+    fun lbcMigratePrefs() {
+        if (sharedPrefs.all["pref_feed_tabs"] is Set<*>) {
+            val temp = sharedPrefs.getStringSet("pref_feed_tabs", setOf())!!
+            var arr: JSONArray
+            try {
+                arr = JSONArray(temp)
+            } catch (e: ClassCastException) {
+                e.printStackTrace()
+                arr = JSONArray()
+            }
+            sharedPrefs.edit().putString("pref_feed_tabs", arr.toString()).commit()
+        }
+    }
+
+    init {
+    }
+
     val doNothing = { }
     val recreate = { recreate() }
     private val reloadApps = { reloadApps() }
@@ -392,12 +409,13 @@ class LawnchairPreferences(val context: Context) :
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     var feedCustomTabs by object :
-            SetPref<CustomTab>("pref_feed_tabs", emptySet(), ::restartOverlay) {
-        override fun unserialize(value: String): CustomTab {
+            MutableListPref<CustomTab>(sharedPrefs, "pref_feed_tabs", ::restartOverlay,
+                                       emptyList()) {
+        override fun unflattenValue(value: String): CustomTab {
             return Gson().fromJson(value, CustomTab::class.java)
         }
 
-        override fun serialize(value: CustomTab): String {
+        override fun flattenValue(value: CustomTab): String {
             return Gson().toJson(value)
         }
     }

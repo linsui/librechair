@@ -157,16 +157,16 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                             }
                         }
 
-                        context!!.lawnchairPrefs.feedCustomTabs = LinkedHashSet(prefList)
+                        context!!.lawnchairPrefs.feedCustomTabs = prefList
                         notifyItemMoved(fromPosition, toPosition)
                         return true
                     }
 
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                         context?.lawnchairPrefs?.feedCustomTabs =
-                                context?.lawnchairPrefs?.feedCustomTabs?.toMutableSet()?.apply {
-                                    remove(elementAt(viewHolder.adapterPosition))
-                                } ?: emptySet()
+                                context?.lawnchairPrefs?.feedCustomTabs?.toMutableList().apply {
+                                    this?.removeAt(viewHolder.adapterPosition)
+                                } ?: emptyList()
                         notifyItemRemoved(viewHolder.adapterPosition)
                     }
 
@@ -207,11 +207,9 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                                 }
 
                                 context!!.lawnchairPrefs.feedCustomTabs =
-                                        context!!.lawnchairPrefs.feedCustomTabs.toMutableSet()
-                                                .apply {
-                                                    elementAt(holder.adapterPosition).providers =
-                                                            app.providers
-                                                }
+                                        context!!.lawnchairPrefs.feedCustomTabs.apply {
+                                            this[holder.adapterPosition].providers = app.providers
+                                        }
                             }.setPositiveButton(android.R.string.ok) { dialog, which -> }.show()
                 }
             }
