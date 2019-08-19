@@ -62,6 +62,7 @@ import com.android.quickstep.views.LauncherRecentsView
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.Semaphore
+import java.util.concurrent.atomic.AtomicBoolean
 
 open class LawnchairLauncher : PluginLauncher(),
                                LawnchairPreferences.OnPreferenceChangeListener,
@@ -75,7 +76,7 @@ open class LawnchairLauncher : PluginLauncher(),
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
     val feed by lazy { findViewById(R.id.feed_recycler) as RecyclerView }
     val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
-    val queuedWidgetRequests = mutableListOf<Pair<Int, (i: Int) -> Unit>>()
+    val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
@@ -513,8 +514,8 @@ open class LawnchairLauncher : PluginLauncher(),
         val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
         startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
             it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-            queuedWidgetRequests += id shl 1 to callback
-        }, id shl 1)
+            queuedWidgetCallbacks += id to AtomicBoolean(false) to callback
+        }, id)
     }
 
     fun pickWidget(callback: WidgetSelectionCallback) {
@@ -525,23 +526,24 @@ open class LawnchairLauncher : PluginLauncher(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (queuedWidgetRequests.any { it.first == requestCode } && resultCode == Activity.RESULT_OK) {
-            queuedWidgetRequests.filter { it.first == requestCode }.forEach {
-                it.second.let {
-                    val id = requestCode shr 1
+        if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get().not() } && resultCode == Activity.RESULT_OK) {
+            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
+                it.second.let { callback ->
+                    val id = requestCode
                     val widgetInfo = appWidgetManager.getAppWidgetInfo(id)
                     d("onActivityResult: requested widget info: $widgetInfo")
                     if (widgetInfo?.configure != null) {
                         startActivityForResult(Intent().setComponent(widgetInfo.configure).also {
                             it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-                        }, id);
+                        }, id)
+                        it.first.second.set(true)
                     } else {
-                        it(id)
+                        callback(id)
                     }
                 }
             }
-        } else if (queuedWidgetRequests.any { it.first == requestCode shl 1 }) {
-            queuedWidgetRequests.filter { it.first == requestCode shl 1 }.forEach {
+        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get() }) {
+            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
                 it.second.let {
                     if (resultCode == Activity.RESULT_OK) {
                         it(requestCode)
@@ -552,7 +554,7 @@ open class LawnchairLauncher : PluginLauncher(),
                     }
                 }
             }
-        } else if (queuedWidgetRequests.any { it.first == requestCode }) {
+        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode }) {
             (applicationContext as LawnchairApp).overlayWidgetHost
                     .deleteAppWidgetId(requestCode shr 1)
         }
