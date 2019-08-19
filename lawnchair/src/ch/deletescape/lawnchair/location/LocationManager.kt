@@ -25,20 +25,28 @@ import java.util.concurrent.TimeUnit
 
 @SuppressLint("StaticFieldLeak")
 object LocationManager {
+    var cache: Pair<Long, Pair<Double, Double>?>? = null
     var context: Context? = null
         set(value) = {
             providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value),
-                                    WeatherCityLocationProvider(value)))
+                                    WeatherCityLocationProvider(value),
+                                    LastKnownLocationProvider(value)))
             field = value
         }()
+    val changeCallbacks: MutableList<(lat: Double, lon: Double) -> Unit> = mutableListOf()
     val providers: MutableList<LocationProvider> = mutableListOf()
-    var cache: Pair<Long, Pair<Double, Double>?>? = null
     val location: Pair<Double, Double>?
         get() = run {
             if (cache == null || System.currentTimeMillis() - cache!!.first > TimeUnit.MINUTES.toMillis(
                             10) || cache!!.second == null) internalGet().also {
                 cache = System.currentTimeMillis() to it
-            } else cache!!.second
+            }
+            changeCallbacks.forEach {
+                if (cache?.second != null) {
+                    it(cache!!.second!!.first, cache!!.second!!.second)
+                }
+            }
+            cache?.second
         }
 
     fun internalGet(): Pair<Double, Double>? {

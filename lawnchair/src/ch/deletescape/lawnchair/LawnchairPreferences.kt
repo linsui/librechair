@@ -412,6 +412,7 @@ class LawnchairPreferences(val context: Context) :
             return Gson().toJson(value)
         }
     }
+    var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
     private val was1stApril = is1stApril()
 
