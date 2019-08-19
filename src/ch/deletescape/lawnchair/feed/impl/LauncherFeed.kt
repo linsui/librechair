@@ -63,9 +63,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils.setAlphaComponent(
             ColorEngine.getInstance(contex2t).feedBackground.value.resolveColor(),
-                               (LawnchairPreferences.getInstance(
-                                       context).feedBackgroundOpacity * (255f / 100f)).roundToInt())
-            .also {}
+            (LawnchairPreferences.getInstance(
+                    context).feedBackgroundOpacity * (255f / 100f)).roundToInt()).also {}
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
                                       ThemeManager.getInstance(context), backgroundColor,
                                       context.applicationContext, this)
@@ -90,6 +89,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
+    private lateinit var oldIconTint: ColorStateList
+    private var oldIndicatorTint: Int = -1
+    private lateinit var oldTextColor: ColorStateList
+
     init {
         feedController.mOpenedCallback = {
             runOnNewThread {
@@ -271,6 +274,33 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
         tabView.tabsEnabled = false
+        oldIconTint = tabView.tabIconTint!!
+        oldIndicatorTint = if (backgroundColor.alpha > 35) getColorForIndex(
+                tabView.selectedTabPosition) else if (useWhiteText(backgroundColor,
+                                                                   context)) R.color.textColorPrimary.fromColorRes(
+                context) else R.color.textColorPrimaryInverse.fromColorRes(context)
+        oldTextColor = tabView.tabTextColors!!
+        if (useWhiteText(backgroundColor, context) && !dark) {
+            tabView.tabIconTint = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                            R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
+            tabView.tabSelectedIndicator!!.setTint(getColorForIndex(tabView.selectedTabPosition))
+            tabView.tabTextColors = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                            R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
+        } else if (!useWhiteText(backgroundColor, context) && dark) {
+            tabView.tabIconTint = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                            R.color.textColorPrimary.fromColorRes(context)).toIntArray())
+            tabView.tabSelectedIndicator!!.setTint(getColorForIndex(tabView.selectedTabPosition))
+            tabView.tabTextColors = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                            R.color.textColorPrimary.fromColorRes(context)).toIntArray())
+        }
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
             id = R.id.feed_overlay_view
@@ -316,9 +346,19 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 true
             }
         }
+        for (i in 0 until toolbar.menu.size()) {
+            toolbar.menu.getItem(i).icon?.setTint(tabView.tabTextColors?.defaultColor ?: 0);
+        }
     }
 
     fun removeDisplayedView(x: Float, y: Float) {
+        tabView.tabIconTint = oldIconTint
+        tabView.tabTextColors = oldTextColor
+        tabView.tabSelectedIndicator?.setTint(oldIndicatorTint)
+        for (i in 0 until toolbar.menu.size()) {
+            toolbar.menu.getItem(i).icon?.setTint(oldTextColor.defaultColor)
+        }
+
         tabView.tabsEnabled = true
         recyclerView.isLayoutFrozen = false
         frame.findViewById<View>(R.id.feed_overlay_view)?.apply {
