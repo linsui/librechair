@@ -140,10 +140,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                         super.onScrolled(recyclerView, dx, dy)
                         if (dy > 0) {
                             toolbar.animate().translationY(
-                                    if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else 0f)
-                        } else {
-                            toolbar.animate().translationY(
-                                    if (!tabsOnBottom) 0f else toolbar.measuredHeight.toFloat())
+                                    if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
+                        } else if (dy < 0) {
+                            toolbar.animate().translationY(0f)
                         }
                     }
                 })
