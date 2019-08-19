@@ -57,14 +57,17 @@ import kotlin.math.roundToInt
 import kotlin.math.sign
 
 class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
-    private val dark: Boolean = ThemeManager.getInstance(
-            contex2t.applicationContext).isDark || contex2t.lawnchairPrefs.feedCardBlur
-    private val context = ContextThemeWrapper(contex2t,
-                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var backgroundColor: Int = ColorUtils.setAlphaComponent(
             ColorEngine.getInstance(contex2t).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
-                    context).feedBackgroundOpacity * (255f / 100f)).roundToInt()).also {}
+                    contex2t).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+    private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), contex2t)
+
+    init {
+        d("init: dark ${dark}")
+    }
+    private val context = ContextThemeWrapper(contex2t,
+                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
                                       ThemeManager.getInstance(context), backgroundColor,
                                       context.applicationContext, this)
@@ -74,7 +77,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
-                it.setBackground(ColorDrawable(backgroundColor))
+                it.background = ColorDrawable(backgroundColor)
                 adapter.backgroundColor = backgroundColor
             }
     private val tabController: TabController =

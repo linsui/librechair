@@ -263,8 +263,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         holder.viewHolder.removeAllViewsInLayout()
         holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
                 holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
-        if (holder.itemViewType and Card.RAISE != 0 && ThemeManager.isDark(
-                        themeManager.getCurrentFlags())) {
+        if (holder.itemViewType and Card.RAISE != 0 && useWhiteText(backgroundColor.setAlpha(255),
+                                                                    context)) {
             (holder.itemView as CardView).setCardBackgroundColor(
                     holder.itemView.context.getColor(R.color.qsb_background_dark))
         } else if (holder.itemViewType and Card.RAISE != 0) {
