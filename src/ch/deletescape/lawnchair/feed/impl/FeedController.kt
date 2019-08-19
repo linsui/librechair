@@ -27,6 +27,7 @@ import android.widget.FrameLayout
 import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
 import com.android.launcher3.util.FlingBlockCheck
@@ -131,7 +132,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         if (notify) {
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
         }
-        if (FeatureFlags.FEED_SIMPLE_ANIMATION) {
+        if (FeatureFlags.FEED_SIMPLE_ANIMATION || context.lawnchairPrefs.lowPerformanceMode) {
             mFeedBackground!!.translationX = (-1 + mProgress) * shiftRange
             mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
         } else {

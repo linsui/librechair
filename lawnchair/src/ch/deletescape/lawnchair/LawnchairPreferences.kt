@@ -335,7 +335,8 @@ class LawnchairPreferences(val context: Context) :
     val showDebugInfo by BooleanPref("pref_showDebugInfo", false, doNothing)
     val alwaysClearIconCache by BooleanPref("pref_alwaysClearIconCache", false, restart)
     val debugLegacyTreatment by BooleanPref("pref_debugLegacyTreatment", false, restart)
-    val lowPerformanceMode by BooleanPref("pref_lowPerformanceMode", false, doNothing)
+    val lowPerformanceMode by BooleanPref("pref_lowPerformanceMode",
+                                          BuildConfig.FLAVOR_go == "l3go", doNothing)
     val enablePhysics get() = !lowPerformanceMode
     val backupScreenshot by BooleanPref("pref_backupScreenshot", false, doNothing)
     var useScaleAnim by BooleanPref("pref_useScaleAnim", false, doNothing)
