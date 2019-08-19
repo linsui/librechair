@@ -320,13 +320,21 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             visibility = View.INVISIBLE
             fitsSystemWindows = false
             if (useTabbedMode) {
-                setPadding(paddingLeft, R.dimen.feed_app_bar_height_material.fromDimenRes(
+                setPadding(paddingLeft,
+                           if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
                         context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                        context).toInt(), paddingRight, paddingBottom)
+                                   context).toInt() else paddingTop, paddingRight,
+                           if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                   context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
+                                   context).toInt() else paddingBottom)
             } else {
-                setPadding(paddingLeft, R.dimen.feed_app_bar_height_material.fromDimenRes(
+                setPadding(paddingLeft,
+                           if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
                         context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                        context).toInt(), paddingRight, paddingBottom)
+                                   context).toInt() else paddingTop, paddingRight,
+                           if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                   context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
+                                   context).toInt() else paddingBottom)
             }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
