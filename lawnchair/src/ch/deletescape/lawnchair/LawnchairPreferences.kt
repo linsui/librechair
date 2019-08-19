@@ -110,6 +110,7 @@ class LawnchairPreferences(val context: Context) :
     }
 
     init {
+        lbcMigratePrefs()
     }
 
     val doNothing = { }
