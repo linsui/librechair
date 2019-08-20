@@ -192,6 +192,8 @@ public final class PluginManager {
         List<ServiceInfo> siList = queryInstalledPlugins();
         List<Plugin> plugins = new ArrayList<>();
 
+        Log.d(getClass().getName(), "getPlugins: " + siList);
+
         for (ServiceInfo si : siList) {
             if (si.permission == null || hasPermission(si.permission)) {
                 try {
@@ -350,10 +352,7 @@ public final class PluginManager {
         private Set<String> getClientPlugins() {
             Set<String> defaultSet = new HashSet<>();
             for (Plugin plugin : getPlugins()) {
-                // By default, enable plugins that are in the same package.
-                if (plugin.isInPackage() && plugin.getInterface().equals(mInterface)) {
-                    defaultSet.add(plugin.getPluginKey());
-                }
+                defaultSet.add(plugin.getPluginKey());
             }
             return Utilities.getPrefs(mContext).getStringSet(mClientKey, defaultSet);
         }
