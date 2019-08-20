@@ -48,8 +48,7 @@ public class ShadeShortcutManager {
 
     public void startShortcut(String packageName, String id, Intent intent,
             Bundle startActivityOptions, UserHandle user) {
-        mLastCallExternal = ShortcutInfoCompatExt.isExternal(id);
-        if (mLastCallExternal) {
+        if (ShortcutInfoCompatExt.isExternal(id)) {
             mContext.startActivity(intent, startActivityOptions);
         } else {
             mManager.startShortcutReal(packageName, id, intent, startActivityOptions, user);
