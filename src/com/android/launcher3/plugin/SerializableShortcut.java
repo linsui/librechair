@@ -19,22 +19,24 @@ import java.net.URISyntaxException;
 
 public class SerializableShortcut {
 
-    public final String mPackageName;
-    public final ComponentName mActivity;
+    public String mPackageName;
+    public ComponentName mActivity;
 
     public int mIcon;
-    public final String mId;
-    public final String mComponentPackage;
-    public final boolean mEnabled;
-    public final String mShortLabel;
-    public final String mLongLabel;
-    public final String mDisabledMessage;
+    public String mId;
+    public String mComponentPackage;
+    public boolean mEnabled;
+    public String mShortLabel;
+    public String mLongLabel;
+    public String mDisabledMessage;
 
-    public final Intent mIntent;
+    public Intent mIntent;
 
     public SerializableShortcut(Bundle from) throws URISyntaxException {
-        Pair<ComponentName, String> idActivityPair = fromKey(from.getString("key"));
-        mActivity = idActivityPair.first;
+        String activityTemp = from.getString("activity");
+        if (activityTemp != null) {
+            mActivity = ComponentName.unflattenFromString(activityTemp);
+        }
         mId = from.getString("id");
         mComponentPackage = from.getString("package");
         mEnabled = from.getBoolean("enabled");
@@ -73,7 +75,8 @@ public class SerializableShortcut {
     }
 
     public Pair<ComponentName, String> fromKey(String key) {
-        return new Pair<>(ComponentName.unflattenFromString(key.substring(0, key.lastIndexOf('/'))),
+        return new Pair<>(
+                ComponentName.unflattenFromString(key.substring(0, key.lastIndexOf('/') - 1)),
                 key.substring(key.lastIndexOf('/')));
     }
 

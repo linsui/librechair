@@ -24,7 +24,6 @@ import android.content.pm.LauncherApps;
 import android.content.pm.LauncherApps.ShortcutQuery;
 import android.content.pm.ShortcutInfo;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.util.Log;
@@ -32,12 +31,8 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.plugin.PluginManager;
-import com.android.launcher3.plugin.SerializableShortcut;
-import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
-import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient.ShortcutWithIcon;
+import com.android.launcher3.plugin.shortcuts.ShortcutManager;
 import com.android.launcher3.util.ComponentKey;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +53,7 @@ public class DeepShortcutManager {
     public static DeepShortcutManager getInstance(Context context) {
         synchronized (sInstanceLock) {
             if (sInstance == null) {
-                sInstance = new DeepShortcutManager(context.getApplicationContext());
+                sInstance = new ShortcutManager(context.getApplicationContext());
             }
             return sInstance;
         }
@@ -68,7 +63,7 @@ public class DeepShortcutManager {
     private final LauncherApps mLauncherApps;
     private boolean mWasLastCallSuccess;
 
-    private DeepShortcutManager(Context context) {
+    protected DeepShortcutManager(Context context) {
         mContext = context;
         mLauncherApps = (LauncherApps) context.getSystemService(Context.LAUNCHER_APPS_SERVICE);
         if (Utilities.ATLEAST_MARSHMALLOW && !Utilities.ATLEAST_NOUGAT_MR1) {
@@ -240,7 +235,7 @@ public class DeepShortcutManager {
      * TODO: Use the cache to optimize this so we don't make an RPC every time.
      */
     @TargetApi(25)
-    private List<ShortcutInfoCompat> query(int flags, String packageName,
+    protected List<ShortcutInfoCompat> query(int flags, String packageName,
             ComponentName activity, List<String> shortcutIds, UserHandle user) {
         List<ShortcutInfoCompat> shortcutInfoCompats = new ArrayList<>();
         // LIBRE_CHANGED: Remove Sesame
@@ -265,26 +260,6 @@ public class DeepShortcutManager {
             }
             for (ShortcutInfo shortcutInfo : shortcutInfos) {
                 shortcutInfoCompats.add(new ShortcutInfoCompat(shortcutInfo));
-            }
-
-            List<ShortcutWithIcon> plugins = PluginManager.getInstance(mContext).getClient(
-                    ShortcutPluginClient.class).queryShortcuts(packageName, activity);
-            for (ShortcutWithIcon shortcut : plugins) {
-                try {
-                    SerializableShortcut shortcut1 = new SerializableShortcut(shortcut.getBundle());
-                    shortcutInfoCompats.add(new ShortcutInfoCompat(
-                            new ShortcutInfo.Builder(mContext, shortcut1.mId)
-                                    .setActivity(shortcut1.mActivity)
-                                    .setDisabledMessage(shortcut1.mDisabledMessage)
-                                    .setLongLabel(shortcut1.mLongLabel)
-                                    .setShortLabel(shortcut1.mShortLabel)
-                                    .setDisabledMessage(shortcut1.mDisabledMessage)
-                                    .setIcon(Icon.createWithBitmap(shortcut.getIcon(
-                                            mContext.getResources()
-                                                    .getDisplayMetrics().densityDpi))).build()));
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
             }
         } else {
         }
