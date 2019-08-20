@@ -44,12 +44,12 @@ class ShortcutExtension {
         return PluginManager.getInstance(mContext).getClient(ShortcutPluginClient.class);
     }
 
-    Drawable getShortcutIconDrawable(ShortcutInfoCompat info, int density) {
+    public Drawable getShortcutIconDrawable(ShortcutInfoCompat info, int density) {
         ShortcutInfoCompatExt ext = (ShortcutInfoCompatExt) info;
         return ext.getIcon(mContext, density);
     }
 
-    List<ShortcutInfoCompat> getForActivity(String packageName, ComponentName activity) {
+    public List<ShortcutInfoCompat> getForActivity(String packageName, ComponentName activity) {
         List<ShortcutInfoCompat> out = new ArrayList<>();
 
         List<LauncherActivityInfo> infoList =

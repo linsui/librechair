@@ -31,11 +31,12 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.Utilities;
-import com.android.launcher3.plugin.shortcuts.ShortcutManager;
+import com.android.launcher3.plugin.shortcuts.ShadeShortcutManager;
 import com.android.launcher3.util.ComponentKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Performs operations related to deep shortcuts, such as querying for them, pinning them, etc.
@@ -48,12 +49,19 @@ public class DeepShortcutManager {
             | ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_PINNED;
 
     private static DeepShortcutManager sInstance;
+
+    public static ShadeShortcutManager getShadeManager() {
+        return sShadeManager;
+    }
+
+    private static ShadeShortcutManager sShadeManager;
     private static final Object sInstanceLock = new Object();
 
     public static DeepShortcutManager getInstance(Context context) {
         synchronized (sInstanceLock) {
             if (sInstance == null) {
-                sInstance = new ShortcutManager(context.getApplicationContext());
+                sInstance = new DeepShortcutManager(context);
+                sShadeManager = new ShadeShortcutManager(context, sInstance);
             }
             return sInstance;
         }
@@ -107,8 +115,23 @@ public class DeepShortcutManager {
      */
     public List<ShortcutInfoCompat> queryForShortcutsContainer(ComponentName activity,
             List<String> ids, UserHandle user) {
-        return query(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC,
-                activity.getPackageName(), activity, ids, user);
+        List<ShortcutInfoCompat> local = query(
+                ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC,
+                activity.getPackageName(),
+                activity, ids, user);
+        List<ShortcutInfoCompat> shadeCompat = sShadeManager
+                .getAll(activity.getPackageName(), activity).stream()
+                .filter(it -> ids.contains(it.getId())).collect(
+                        Collectors.toList());
+        Log.d(getClass().getName(),
+                "queryForShortcutsContainer: ids are " + ids + ", local shortcuts are: " + local
+                        + ", and shade shortcuts are: " + shadeCompat);
+        if (local.isEmpty()) {
+            return shadeCompat;
+        } else {
+            local.addAll(shadeCompat);
+            return local;
+        }
     }
 
     /**
@@ -117,8 +140,21 @@ public class DeepShortcutManager {
      */
     public List<ShortcutInfoCompat> queryForShortcutsContainer(String packageName,
             List<String> ids, UserHandle user) {
-        return query(ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC,
-                packageName, null, ids, user);
+        List<ShortcutInfoCompat> local = query(
+                ShortcutQuery.FLAG_MATCH_MANIFEST | ShortcutQuery.FLAG_MATCH_DYNAMIC, packageName,
+                null, ids, user);
+        List<ShortcutInfoCompat> shadeCompat = sShadeManager.getAll(packageName, null).stream()
+                .filter(it -> ids.contains(it.getId())).collect(
+                        Collectors.toList());
+        Log.d(getClass().getName(),
+                "queryForShortcutsContainer: ids are " + ids + ", local shortcuts are: " + local
+                        + ", and shade shortcuts are: " + shadeCompat);
+        if (local.isEmpty()) {
+            return shadeCompat;
+        } else {
+            local.addAll(shadeCompat);
+            return local;
+        }
     }
 
 
@@ -164,6 +200,12 @@ public class DeepShortcutManager {
     @TargetApi(25)
     public void startShortcut(String packageName, String id, Intent intent,
             Bundle startActivityOptions, UserHandle user) {
+        sInstance.startShortcut(packageName, id, intent, startActivityOptions, user);
+    }
+
+    @TargetApi(25)
+    public void startShortcutReal(String packageName, String id, Intent intent,
+            Bundle startActivityOptions, UserHandle user) {
         if (Utilities.ATLEAST_NOUGAT_MR1) {
             try {
                 mLauncherApps.startShortcut(packageName, id, intent.getSourceBounds(),
@@ -181,6 +223,11 @@ public class DeepShortcutManager {
 
     @TargetApi(25)
     public Drawable getShortcutIconDrawable(ShortcutInfoCompat shortcutInfo, int density) {
+        return sShadeManager.getShortcutIconDrawable(shortcutInfo, density);
+    }
+
+    @TargetApi(25)
+    public Drawable getShortcutIconDrawableReal(ShortcutInfoCompat shortcutInfo, int density) {
         if (Utilities.ATLEAST_NOUGAT_MR1) {
             try {
                 Drawable icon = mLauncherApps.getShortcutIconDrawable(
@@ -235,7 +282,7 @@ public class DeepShortcutManager {
      * TODO: Use the cache to optimize this so we don't make an RPC every time.
      */
     @TargetApi(25)
-    protected List<ShortcutInfoCompat> query(int flags, String packageName,
+    public List<ShortcutInfoCompat> query(int flags, String packageName,
             ComponentName activity, List<String> shortcutIds, UserHandle user) {
         List<ShortcutInfoCompat> shortcutInfoCompats = new ArrayList<>();
         // LIBRE_CHANGED: Remove Sesame

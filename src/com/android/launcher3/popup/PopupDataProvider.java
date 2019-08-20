@@ -194,6 +194,11 @@ public class PopupDataProvider implements NotificationListener.NotificationsChan
             if (tmp != null) {
                 ids.addAll(tmp);
             }
+            for (ShortcutInfoCompat infoCompat :
+                    DeepShortcutManager.getShadeManager()
+                            .getAll(component.getPackageName(), component)) {
+                ids.add(infoCompat.getId());
+            }
         }
         return ids;
     }
