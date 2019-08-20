@@ -9,7 +9,7 @@
  *     (at your option) any later version.
  *
  *     Lawnchair Launcher is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     but WITHOUT ANY WARRANTY without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
@@ -31,8 +31,10 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import org.apache.commons.lang3.time.DateFormatUtils
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -72,9 +74,10 @@ import kotlin.collections.ArrayList
         }
         val cards = ArrayList<Card>()
         run {
-            val currentTime = GregorianCalendar();
-            val endTime = GregorianCalendar();
-            endTime.add(Calendar.DAY_OF_MONTH, 5);
+            val currentTime = GregorianCalendar()
+            val endTime = GregorianCalendar()
+            endTime.add(Calendar.DAY_OF_MONTH,
+                        if (context.lawnchairPrefs.feedTabController == TabController::class.qualifiedName) 5 else 60)
             Log.v(javaClass.name,
                   "getCards: searching for events between " + currentTime + " and " + endTime.toString())
             val query =
@@ -93,22 +96,22 @@ import kotlin.collections.ArrayList
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
                       "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return emptyList();
+                return emptyList()
             }
             try {
                 val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst();
+                eventCursor.moveToFirst()
                 while (!eventCursor.isAfterLast) {
                     val title = eventCursor.getString(0).take(25)
                     Log.v(javaClass.name, "getCards: query found event")
                     Log.v(javaClass.name, "getCards:     title: " + title)
                     val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1);
+                    startTime.timeInMillis = eventCursor.getLong(1)
                     Log.v(javaClass.name, "getCards:     startTime: " + startTime)
                     val eventEndTime = GregorianCalendar()
                     eventEndTime.timeInMillis = eventCursor.getLong(2)
                     Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
-                    val description = eventCursor.getString(3);
+                    val description = eventCursor.getString(3)
                     val diff = startTime.timeInMillis - currentTime.timeInMillis
                     Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
                     val diffSeconds = diff / 1000
@@ -122,11 +125,14 @@ import kotlin.collections.ArrayList
                             diffDays) else context.getString(R.string.tomorrow)
                     } else if (diffHours > 4) {
                         text = context.getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                    } else {
+                    } else if (diffDays < 10) {
                         text = if (diffMinutes <= 0) context.getString(
                             R.string.reusable_str_now) else context.getString(
                             if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                             diffMinutes)
+                    } else {
+                        text = DateFormatUtils
+                                .format(endTime, DateFormatUtils.ISO_DATE_FORMAT.pattern)
                     }
                     val intent = Intent(Intent.ACTION_VIEW)
                     if (eventCursor.getString(5) != null) {
@@ -160,7 +166,7 @@ import kotlin.collections.ArrayList
             }
         }
         run {
-            val currentTime = GregorianCalendar();
+            val currentTime = GregorianCalendar()
             Log.v(javaClass.name,
                   "getCards: searching for events that are active at ${currentTime}")
             val query =
@@ -176,17 +182,17 @@ import kotlin.collections.ArrayList
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
                       "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return cards;
+                return cards
             }
             try {
                 val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst();
+                eventCursor.moveToFirst()
                 while (!eventCursor.isAfterLast) {
                     val title = eventCursor.getString(0).take(25)
                     Log.v(javaClass.name, "getCards: query found event")
                     Log.v(javaClass.name, "getCards:     title: " + title)
                     val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1);
+                    startTime.timeInMillis = eventCursor.getLong(1)
                     Log.v(javaClass.name, "getCards:     startTime: " + startTime)
                     val eventEndTime = GregorianCalendar()
                     eventEndTime.timeInMillis = eventCursor.getLong(2)
@@ -196,7 +202,7 @@ import kotlin.collections.ArrayList
                         if (eventCursor.getInt(
                                     4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
 
-                    eventCursor.moveToNext();
+                    eventCursor.moveToNext()
                     cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
                         override fun inflate(parent: ViewGroup): View {
                             return View(parent.context)
@@ -209,6 +215,6 @@ import kotlin.collections.ArrayList
 
             }
         }
-        return cards;
+        return cards
     }
 }
