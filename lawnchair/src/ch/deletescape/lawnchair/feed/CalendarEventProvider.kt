@@ -34,7 +34,8 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import org.apache.commons.lang3.time.DateFormatUtils
+import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
+import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -120,7 +121,8 @@ import kotlin.collections.ArrayList
                     val diffDays = diff / (24 * 60 * 60 * 1000)
                     var text: String
                     if (diffDays > 20) {
-                        text = DateFormatUtils.format(endTime, "dd MMM")
+                        text = IcuDateTextView.getDateFormat(context, true, null, false)
+                                .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
                     } else if (diffDays >= 1) {
                         text = if (diffDays < 1 || diffDays > 1) context.getString(
                             R.string.title_text_calendar_feed_provider_in_d_days,
