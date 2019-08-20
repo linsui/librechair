@@ -41,6 +41,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
@@ -265,8 +266,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         if (holder.itemViewType and Card.RAISE != 0 && useWhiteText(backgroundColor.setAlpha(255),
                                                                     context)) {
             (holder.itemView as CardView).setCardBackgroundColor(
-                    if (context.lawnchairPrefs.feedOLEDCards) Color.BLACK else holder.itemView.context.getColor(
-                            R.color.qsb_background_dark))
+                    context.colorEngine.getResolver(ColorEngine.Resolvers.FEED_CARD).resolveColor())
         } else if (holder.itemViewType and Card.RAISE != 0) {
             (holder.itemView as CardView).setCardBackgroundColor(
                     holder.itemView.context.getColor(R.color.qsb_background))

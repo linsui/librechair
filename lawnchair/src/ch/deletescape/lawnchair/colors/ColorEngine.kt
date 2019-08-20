@@ -30,20 +30,17 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.Utilities
 import java.lang.reflect.Constructor
 
-class ColorEngine private constructor(val context: Context) : LawnchairPreferences.OnPreferenceChangeListener {
-
+class ColorEngine private constructor(val context: Context) :
+        LawnchairPreferences.OnPreferenceChangeListener {
     private val prefs by lazy { Utilities.getLawnchairPrefs(context) }
     private val colorListeners = mutableMapOf<String, MutableSet<OnColorChangeListener>>()
-
     private val resolverCache = mutableMapOf<String, ResolverCache>()
     private val constructorCache = mutableMapOf<String, Constructor<*>>()
-
     private var _accentResolver = getResolverCache(Resolvers.ACCENT)
     val accentResolver get() = _accentResolver.value
     val accent get() = accentResolver.resolveColor()
     val accentForeground get() = accentResolver.computeForegroundColor()
     val feedBackground get() = getResolverCache(Resolvers.FEED_BACKGROUND)
-
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
         if (!force) {
             onColorChanged(key, getResolver(key))
@@ -51,7 +48,9 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
     }
 
     private fun onColorChanged(key: String, colorResolver: ColorResolver) {
-        runOnMainThread { colorListeners[key]?.forEach { it.onColorChange(ResolveInfo(key, colorResolver)) } }
+        runOnMainThread {
+            colorListeners[key]?.forEach { it.onColorChange(ResolveInfo(key, colorResolver)) }
+        }
     }
 
     fun addColorChangeListeners(listener: OnColorChangeListener, vararg keys: String) {
@@ -90,11 +89,11 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
             val parts = string.split("|")
             val className = parts[0]
             val args = if (parts.size > 1) parts.subList(1, parts.size) else emptyList()
-
             val constructor = constructorCache.getOrPut(className) {
                 Class.forName(className).getConstructor(ColorResolver.Config::class.java)
             }
-            resolver = constructor.newInstance(ColorResolver.Config(key, this, ::onColorChanged, args)) as ColorResolver
+            resolver = constructor.newInstance(
+                    ColorResolver.Config(key, this, ::onColorChanged, args)) as ColorResolver
         } catch (e: IllegalStateException) {
         } catch (e: ClassNotFoundException) {
         } catch (e: InstantiationException) {
@@ -125,36 +124,25 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
         }
     }
 
-    companion object : SingletonHolder<ColorEngine, Context>(ensureOnMainThread(useApplicationContext(::ColorEngine))) {
+    companion object : SingletonHolder<ColorEngine, Context>(
+            ensureOnMainThread(useApplicationContext(::ColorEngine))) {
         @JvmStatic
         override fun getInstance(arg: Context) = super.getInstance(arg)
 
         fun setColor(editor: SharedPreferences.Editor, resolver: String, color: Int) {
-            editor.putString(
-                    resolver, (if (alpha(color) < 0xFF) {
+            editor.putString(resolver, (if (alpha(color) < 0xFF) {
                 // ARGB
-                arrayOf(
-                        ARGBColorResolver::class.java.name,
-                        color.alpha.toString(),
-                        color.red.toString(),
-                        color.green.toString(),
-                        color.blue.toString()
-                       )
+                arrayOf(ARGBColorResolver::class.java.name, color.alpha.toString(),
+                        color.red.toString(), color.green.toString(), color.blue.toString())
             } else {
                 // RGB
-                arrayOf(
-                        RGBColorResolver::class.java.name,
-                        color.red.toString(),
-                        color.green.toString(),
-                        color.blue.toString()
-                       )
-            }).joinToString("|")
-                            )
+                arrayOf(RGBColorResolver::class.java.name, color.red.toString(),
+                        color.green.toString(), color.blue.toString())
+            }).joinToString("|"))
         }
     }
 
     interface OnColorChangeListener {
-
         fun onColorChange(resolveInfo: ResolveInfo)
     }
 
@@ -170,7 +158,7 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
             const val ALLAPPS_BACKGROUND = "pref_allAppsBackgroundColorResolver"
             const val SUPERG_BACKGROUND = "pref_superGBackgroundColorResolver"
             const val FEED_BACKGROUND = "pref_feedBackgroundColorResolver"
-
+            const val FEED_CARD = "pref_feedCardColorResolver"
             fun getDefaultResolver(key: String, engine: ColorEngine): ColorResolver {
                 val context = engine.context
                 return when (key) {
@@ -192,25 +180,26 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
                     DOCK_BACKGROUND, ALLAPPS_BACKGROUND, FEED_BACKGROUND -> {
                         ShelfBackgroundAutoResolver(createConfig(key, engine))
                     }
+                    FEED_CARD -> FeedCardResolver(createConfig(key, engine))
                     SUPERG_BACKGROUND -> {
                         SuperGAutoResolver(createConfig(key, engine))
                     }
                     else -> {
-                        engine.createColorResolverNullable(key,
-                                LawnchairConfig.getInstance(context).defaultColorResolver)
-                                ?: PixelAccentResolver(createConfig(key, engine))
+                        engine.createColorResolverNullable(key, LawnchairConfig.getInstance(
+                                context).defaultColorResolver) ?: PixelAccentResolver(
+                                createConfig(key, engine))
                     }
                 }
             }
 
-            private fun createConfig(key: String, engine: ColorEngine)
-                    = ColorResolver.Config(key, engine, engine::onColorChanged)
+            private fun createConfig(key: String, engine: ColorEngine) = ColorResolver.Config(key,
+                                                                                              engine,
+                                                                                              engine::onColorChanged)
         }
     }
 
-    class ResolverCache(private val engine: ColorEngine, key: String)
-        : LawnchairPreferences.OnPreferenceChangeListener {
-
+    class ResolverCache(private val engine: ColorEngine, key: String) :
+            LawnchairPreferences.OnPreferenceChangeListener {
         private var currentValue: ColorResolver? = null
             set(value) {
                 if (field != value) {
@@ -219,9 +208,7 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
                     field?.startListening()
                 }
             }
-
         val value get() = currentValue!!
-
         private var prefValue by engine.context.lawnchairPrefs.StringPref(key, "")
 
         init {
@@ -241,31 +228,23 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
     }
 
     abstract class ColorResolver(val config: Config) : ThemedContextProvider.Listener {
-
         private var listening = false
         val engine get() = config.engine
         val args get() = config.args
         open val isCustom = false
         open val themeAware = false
         open val themeSet: ThemeOverride.ThemeSet = ThemeOverride.Launcher()
-
         val context get() = engine.context
-
         private val themedContextProvider by lazy { ThemedContextProvider(context, this, themeSet) }
         val themedContext get() = themedContextProvider.get()
-
         abstract fun resolveColor(): Int
-
         abstract fun getDisplayName(): String
-
-        override fun toString() = TextUtils.join("|", listOf(this::class.java.name) + args) as String
+        override fun toString() = TextUtils.join("|",
+                                                 listOf(this::class.java.name) + args) as String
 
         fun computeForegroundColor() = resolveColor().foregroundColor
-
         fun computeLuminance() = resolveColor().luminance
-
         fun computeIsDark() = resolveColor().isDark
-
         fun ensureIsListening() {
             if (!listening) {
                 startListening()
@@ -300,20 +279,16 @@ class ColorEngine private constructor(val context: Context) : LawnchairPreferenc
             notifyChanged()
         }
 
-        class Config(
-                val key: String,
-                val engine: ColorEngine,
-                val listener: ((String, ColorResolver) -> Unit)? = null,
-                val args: List<String> = emptyList())
+        class Config(val key: String, val engine: ColorEngine,
+                     val listener: ((String, ColorResolver) -> Unit)? = null,
+                     val args: List<String> = emptyList())
     }
 
     class ResolveInfo(val key: String, resolver: ColorResolver) {
-
         val color = resolver.resolveColor()
         val foregroundColor by lazy { color.foregroundColor }
         val luminance = color.luminance
         val isDark = luminance < 0.5f
-
         val resolverClass = resolver::class.java
     }
 }

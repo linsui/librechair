@@ -1189,3 +1189,5 @@ val Context.lawnchairLocationManager: ch.deletescape.lawnchair.location.Location
             it.context = this
         }
     }
+val Context.colorEngine
+    get() = ColorEngine.getInstance(this)
