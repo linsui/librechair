@@ -30,12 +30,12 @@ import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-class ShortcutExtension {
+public class ShortcutExtension {
 
     private final Context mContext;
     private final LauncherAppsCompat mApps;
 
-    ShortcutExtension(Context context) {
+    public ShortcutExtension(Context context) {
         mContext = context;
         mApps = LauncherAppsCompat.getInstance(context);
     }

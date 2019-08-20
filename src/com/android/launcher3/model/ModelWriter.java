@@ -26,17 +26,23 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-
 import ch.deletescape.lawnchair.iconpack.IconPackManager;
-import com.android.launcher3.*;
+import com.android.launcher3.FolderInfo;
+import com.android.launcher3.ItemInfo;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherAppWidgetHost;
+import com.android.launcher3.LauncherAppWidgetInfo;
+import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherModel.Callbacks;
+import com.android.launcher3.LauncherProvider;
+import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.LauncherSettings.Settings;
-import com.android.launcher3.logging.FileLog;
+import com.android.launcher3.ShortcutInfo;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LooperExecutor;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -260,6 +266,9 @@ public class ModelWriter {
 
             synchronized (mBgDataModel) {
                 checkItemInfoLocked(item.id, item, stackTrace);
+                if (item.getIntent().getPackage() == null) {
+                    return;
+                }
                 mBgDataModel.addItem(mContext, item, true);
                 verifier.verifyModel();
             }
