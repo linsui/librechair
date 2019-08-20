@@ -52,7 +52,7 @@ public class ShadeShortcutManager {
         if (mLastCallExternal) {
             mContext.startActivity(intent, startActivityOptions);
         } else {
-            mManager.startShortcut(packageName, id, intent, startActivityOptions, user);
+            mManager.startShortcutReal(packageName, id, intent, startActivityOptions, user);
         }
     }
 
