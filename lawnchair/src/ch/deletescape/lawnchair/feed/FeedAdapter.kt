@@ -30,18 +30,15 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
@@ -264,8 +261,10 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
                 holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
         if (holder.itemView is CardView) {
-            holder.itemView.setCardBackgroundColor(
-                    context.colorEngine.getResolver(ColorEngine.Resolvers.FEED_CARD).resolveColor())
+            if (!context.lawnchairPrefs.feedCardBlur) {
+                holder.itemView.setCardBackgroundColor(
+                        context.colorEngine.getResolver(FEED_CARD).resolveColor())
+            }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                                LawnchairPreferences.getInstance(
                                                                        holder.itemView.context).feedCornerRounding,
@@ -286,18 +285,20 @@ class CardViewHolder : RecyclerView.ViewHolder {
         itemView.findViewById(R.id.card_blur_view) as RealtimeBlurView?
     }
 
-    constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(
-            LayoutInflater.from(parent.context).inflate(when (type) {
-                                                            Card.DEFAULT -> R.layout.card_default
-                                                            Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
-                                                            Card.DEFAULT or Card.RAISE -> R.layout.card_raised
-                                                            Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
-                                                            Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
-                                                            Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
-                                                            Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
-                                                            Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
-                                                            else -> error("invalid bitmask")
-                                                        }, parent, false)) {
+    constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(LayoutInflater.from(
+            ContextThemeWrapper(parent.context, if (useWhiteText(backgroundColor,
+                                                                 parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)).inflate(
+            when (type) {
+                Card.DEFAULT -> R.layout.card_default
+                Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
+                Card.DEFAULT or Card.RAISE -> R.layout.card_raised
+                Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
+                Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
+                Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
+                Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
+                Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
+                else -> error("invalid bitmask")
+            }, parent, false)) {
         if (type and Card.RAISE != 0) {
             (itemView as CardView).alpha = itemView.context.lawnchairPrefs.feedCardOpacity
         }
