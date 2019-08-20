@@ -590,16 +590,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         val oldCards = adapter.immutableCards
         adapter.refresh()
         val cards = adapter.immutableCards
-        if (oldCards.size == 0) {
+        if (oldCards.isEmpty()) {
             runOnMainThread {
-                adapter.notifyItemRangeChanged(0, cards.size)
+                adapter.notifyItemRangeInserted(0, cards.size)
             }
         } else {
             val patch = DiffUtils.diff(oldCards, cards)
 
             runOnMainThread {
                 patch.deltas.forEach {
-                    when (it.type) {
+                    when (it.type!!) {
                         DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
                                                                            it.source.lines.size)
                         DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
