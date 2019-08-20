@@ -263,14 +263,8 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         holder.viewHolder.removeAllViewsInLayout()
         holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
                 holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
-        if (holder.itemViewType and Card.RAISE != 0 && useWhiteText(backgroundColor.setAlpha(255),
-                                                                    context)) {
-            (holder.itemView as CardView).setCardBackgroundColor(
-                    context.colorEngine.getResolver(ColorEngine.Resolvers.FEED_CARD).resolveColor())
-        } else if (holder.itemViewType and Card.RAISE != 0) {
-            (holder.itemView as CardView).setCardBackgroundColor(
-                    holder.itemView.context.getColor(R.color.qsb_background))
-        }
+        (holder.itemView as CardView).setCardBackgroundColor(
+                context.colorEngine.getResolver(ColorEngine.Resolvers.FEED_CARD).resolveColor())
         if (holder.itemView is CardView) {
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                                LawnchairPreferences.getInstance(
