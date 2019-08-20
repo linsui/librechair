@@ -200,7 +200,7 @@ public class DeepShortcutManager {
     @TargetApi(25)
     public void startShortcut(String packageName, String id, Intent intent,
             Bundle startActivityOptions, UserHandle user) {
-        sInstance.startShortcut(packageName, id, intent, startActivityOptions, user);
+        sShadeManager.startShortcut(packageName, id, intent, startActivityOptions, user);
     }
 
     @TargetApi(25)
