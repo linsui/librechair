@@ -737,4 +737,6 @@
 
     <string name="title_pref_oled_feed_cards">OLED black feed cards</string>
     <string name="summary_pref_oled_feed_cards">Cards will be tinted pure black when in a dark theme</string>
+
+    <string name="title_pref_card_background">Card background</string>
 </resources>

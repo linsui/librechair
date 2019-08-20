@@ -71,6 +71,7 @@
     </string-array>
     <string-array name="resolvers_feed_card_background">
         <item>ch.deletescape.lawnchair.colors.resolvers.FeedCardResolver</item>
+        <item>ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver</item>
         <item>ch.deletescape.lawnchair.colors.LawnchairAccentResolver</item>
         <item>ch.deletescape.lawnchair.colors.WallpaperMainColorResolver</item>
         <item>ch.deletescape.lawnchair.colors.WallpaperSecondaryColorResolver</item>

@@ -30,6 +30,7 @@ import android.text.TextUtils
 import android.util.Log
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
@@ -96,6 +97,11 @@ class LawnchairPreferences(val context: Context) :
     }
 
     fun lbcMigratePrefs() {
+        if (sharedPrefs.all["pref_oled_feed_cards"] == true) {
+            sharedPrefs.edit().putString(ColorEngine.Resolvers.FEED_CARD,
+                                         OLEDBlackColorResolver::class.qualifiedName)
+                    .putBoolean("pref_oled_feed_cards", false).commit();
+        }
     }
 
     init {

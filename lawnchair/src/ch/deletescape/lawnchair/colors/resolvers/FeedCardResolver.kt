@@ -19,11 +19,9 @@
 
 package ch.deletescape.lawnchair.colors.resolvers
 
-import ch.deletescape.lawnchair.colorEngine
+import android.graphics.Color
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.fromColorRes
-import ch.deletescape.lawnchair.setAlpha
-import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
 
 class FeedCardResolver(config: Config) : ColorEngine.ColorResolver(config) {
@@ -37,4 +35,9 @@ class FeedCardResolver(config: Config) : ColorEngine.ColorResolver(config) {
     override fun getDisplayName(): String {
         return context.getString(R.string.title_color_resolver_feed_card)
     }
+}
+
+class OLEDBlackColorResolver(config: Config) : ColorEngine.ColorResolver(config) {
+    override fun resolveColor() = Color.BLACK
+    override fun getDisplayName() = R.string.theme_black.fromStringRes(context)
 }
