@@ -35,7 +35,9 @@ class LawnchairAccentResolver(config: Config) : ColorEngine.ColorResolver(config
     }
 
     override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
-        notifyChanged()
+        if (config.key != ColorEngine.Resolvers.FEED_CARD) {
+            notifyChanged()
+        }
     }
 
     override fun stopListening() {
