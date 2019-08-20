@@ -119,20 +119,19 @@ import kotlin.collections.ArrayList
                     val diffHours = diff / (60 * 60 * 1000)
                     val diffDays = diff / (24 * 60 * 60 * 1000)
                     var text: String
-                    if (diffDays >= 1) {
+                    if (diffDays > 20) {
+                        text = DateFormatUtils.format(endTime, "dd MMM")
+                    } else if (diffDays >= 1) {
                         text = if (diffDays < 1 || diffDays > 1) context.getString(
                             R.string.title_text_calendar_feed_provider_in_d_days,
                             diffDays) else context.getString(R.string.tomorrow)
                     } else if (diffHours > 4) {
                         text = context.getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                    } else if (diffDays < 10) {
+                    } else {
                         text = if (diffMinutes <= 0) context.getString(
                             R.string.reusable_str_now) else context.getString(
                             if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                             diffMinutes)
-                    } else {
-                        text = DateFormatUtils
-                                .format(endTime, DateFormatUtils.ISO_DATE_FORMAT.pattern)
                     }
                     val intent = Intent(Intent.ACTION_VIEW)
                     if (eventCursor.getString(5) != null) {
