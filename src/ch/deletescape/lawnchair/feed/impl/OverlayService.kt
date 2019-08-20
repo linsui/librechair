@@ -23,16 +23,25 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import ch.deletescape.lawnchair.theme.ThemeManager
 
-class OverlayService : Service() {
-    val feed by lazy { LauncherFeed(applicationContext) }.also { INSTANCE = this }
-
-    companion object
-
-    var INSTANCE: OverlayService? = null
+class OverlayService : Service(), () -> Unit {
+    lateinit var feed: LauncherFeed;
+    override fun onCreate() {
+        super.onCreate()
+        this()
+        ThemeManager.getInstance(applicationContext).changeCallbacks += this
+    }
 
     override fun onBind(intent: Intent): IBinder {
+        if (!::feed.isInitialized) {
+            this()
+        }
         return feed;
+    }
+
+    override fun invoke() {
+        feed = LauncherFeed(applicationContext)
     }
 
     override fun onDestroy() {

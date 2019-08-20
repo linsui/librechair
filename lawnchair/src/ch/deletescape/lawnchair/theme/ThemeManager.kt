@@ -64,6 +64,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
                 updateTheme()
             }
         }
+    val changeCallbacks = mutableListOf<() -> Unit>()
 
     val isDark get() = themeFlags and THEME_DARK != 0
     val supportsDarkText get() = themeFlags and THEME_DARK_TEXT != 0
@@ -154,6 +155,7 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
     }
 
     fun updateTheme() {
+        changeCallbacks.forEach { it() }
         val theme = updateTwilightState(prefs.launcherTheme)
         val isBlack = isBlack(theme)
 
