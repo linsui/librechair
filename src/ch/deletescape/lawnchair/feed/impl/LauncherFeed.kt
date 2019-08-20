@@ -65,6 +65,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     init {
         d("init: dark ${dark}")
     }
+
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private val adapter = FeedAdapter(getFeedController(context).getProviders(),
@@ -95,8 +96,33 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
     private val tabsOnBottom = contex2t.lawnchairPrefs.feedTabsOnBottom
+    var statusBarHeight: Int? = null
+    var navigationBarHeight: Int? = null
 
     init {
+        var oldToolbarPadding: Pair<Int, Int>? = null
+        var oldRecyclerViewPadding: Pair<Int, Int>? = null
+        feedController.setOnApplyWindowInsetsListener { v, insets ->
+            statusBarHeight = insets.stableInsetTop
+            navigationBarHeight = insets.stableInsetBottom
+            recyclerView.apply {
+                if (oldRecyclerViewPadding == null) {
+                    oldRecyclerViewPadding = paddingTop to paddingBottom
+                }
+                setPadding(paddingLeft, oldRecyclerViewPadding!!.first + statusBarHeight!!,
+                           paddingRight, oldRecyclerViewPadding!!.second + navigationBarHeight!!)
+            }
+            toolbar.apply {
+                if (oldToolbarPadding == null) {
+                    oldToolbarPadding = paddingTop to paddingBottom
+                }
+                setPadding(paddingLeft,
+                           if (!tabsOnBottom) oldToolbarPadding!!.first + statusBarHeight!! else paddingTop,
+                           paddingRight,
+                           if (tabsOnBottom) oldToolbarPadding!!.second + navigationBarHeight!! else paddingBottom)
+            }
+            insets
+        }
         feedController.mOpenedCallback = {
             runOnNewThread {
                 refresh(100)
@@ -320,19 +346,21 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             if (useTabbedMode) {
                 setPadding(paddingLeft,
                            if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                        context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() else paddingTop, paddingRight,
+                                   context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
+                                   context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                           paddingRight,
                            if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
                                    context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() else paddingBottom)
+                                   context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
             } else {
                 setPadding(paddingLeft,
                            if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                        context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() else paddingTop, paddingRight,
+                                   context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
+                                   context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                           paddingRight,
                            if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
                                    context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() else paddingBottom)
+                                   context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
             }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {

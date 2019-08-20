@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.smartspace.accu.model.AccuDailyForecastsGSon
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
 import ch.deletescape.lawnchair.util.Temperature
 import retrofit2.Response
+import java.io.IOException
 import java.time.Instant
 import java.util.*
 import kotlin.math.roundToInt
@@ -39,14 +40,19 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     var cachedCurrent: CachedResponse<ForecastProvider.CurrentWeather>? = null
 
     override fun getGeolocation(query: String): Pair<Double, Double> {
-        val response = AccuRetrofitServiceFactory.accuSearchRetrofitService
-                .search(query, c.locale.language).execute()
-        if (!response.isSuccessful || response.body()?.isEmpty() == true) {
-            throw ForecastProvider.ForecastException("request not successful or no location found")
-        } else {
-            return (response.body()!![0].geoPosition.latitude.toDoubleOrNull()
-                    ?: 0.toDouble()) to (response.body()!![0].geoPosition.longitude.toDoubleOrNull()
-                                         ?: 0.toDouble())
+        try {
+            val response = AccuRetrofitServiceFactory.accuSearchRetrofitService
+                    .search(query, c.locale.language).execute()
+            if (!response.isSuccessful || response.body()?.isEmpty() == true) {
+                throw ForecastProvider.ForecastException(
+                        "request not successful or no location found")
+            } else {
+                return (response.body()!![0].geoPosition.latitude.toDoubleOrNull()
+                        ?: 0.toDouble()) to (response.body()!![0].geoPosition.longitude.toDoubleOrNull()
+                                             ?: 0.toDouble())
+            }
+        } catch (e: IOException) {
+            throw ForecastProvider.ForecastException(e)
         }
     }
 

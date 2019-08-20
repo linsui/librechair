@@ -29,8 +29,8 @@ object LocationManager {
     var context: Context? = null
         set(value) = {
             providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value),
-                                    WeatherCityLocationProvider(value),
-                                    LastKnownLocationProvider(value)))
+                                    LastKnownLocationProvider(value),
+                                    WeatherCityLocationProvider(value)))
             field = value
         }()
     val changeCallbacks: MutableList<(lat: Double, lon: Double) -> Unit> = mutableListOf()

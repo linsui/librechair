@@ -20,29 +20,52 @@
 package ch.deletescape.lawnchair.location;
 
 import android.content.Context;
+import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.location.LocationManager.LocationProvider;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider.ForecastException;
 import com.android.launcher3.Utilities;
+import java.util.concurrent.Executors;
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class WeatherCityLocationProvider extends LocationProvider {
+public class WeatherCityLocationProvider extends LocationProvider implements
+        LawnchairPreferences.OnPreferenceChangeListener {
+
+    private Pair<Double, Double> location;
 
     public WeatherCityLocationProvider(
             @NotNull Context context) {
         super(context);
+        Utilities.getLawnchairPrefs(context)
+                .addOnPreferenceChangeListener("pref_weather_city", this);
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try {
+                LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
+                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
+            } catch (ForecastException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Nullable
     @Override
     public Pair<Double, Double> getLocation() {
-        try {
-            return LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
-                    Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
-        } catch (ForecastException e) {
-            return null;
-        }
+        return location;
+    }
+
+    @Override
+    public void onValueChanged(@NotNull String key, @NotNull LawnchairPreferences prefs,
+            boolean force) {
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try {
+                LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
+                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
+            } catch (ForecastException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }
