@@ -511,6 +511,7 @@ class LawnchairPreferences(val context: Context) :
                                     }
                                 }
                             }, Context.BIND_AUTO_CREATE)
+        restart()
     }
 
     fun refreshGrid() {
