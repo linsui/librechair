@@ -586,7 +586,12 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     fun refresh(sleep: Long) = synchronized(this) {
         Thread.sleep(sleep)
-        recyclerView.post { recyclerView.isLayoutFrozen = true }
+        recyclerView.apply {
+            post {
+                scrollToPosition(0)
+                recyclerView.isLayoutFrozen = true
+            }
+        }
         val oldCards = adapter.immutableCards
         adapter.refresh()
         val cards = adapter.immutableCards
