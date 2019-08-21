@@ -53,7 +53,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mFeedContent: View? = null
     private var mCurrentState: FeedState? = FeedState.CLOSED
         set(value) = {
-            if (value == FeedState.OPEN && mOpenedCallback != null) {
+            if (field != value && value == FeedState.OPEN && mOpenedCallback != null) {
                 mOpenedCallback?.invoke()
             }
             field = value
