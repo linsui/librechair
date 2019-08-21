@@ -103,7 +103,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     init {
         var oldToolbarPadding: Pair<Int, Int>? = null
         var oldRecyclerViewPadding: Pair<Int, Int>? = null
-        toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+        if (backgroundColor.alpha == 255) {
+            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+        }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
