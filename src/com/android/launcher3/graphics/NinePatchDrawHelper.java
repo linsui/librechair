@@ -93,10 +93,6 @@ public class NinePatchDrawHelper {
 
         mDst.left = dstLeft;
         mDst.right = dstRight;
-        try {
-            c.drawBitmap(bitmap, mSrc, mDst, paint);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
+        c.drawBitmap(bitmap, mSrc, mDst, paint);
     }
 }
