@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastPr
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
 import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
@@ -53,11 +54,11 @@ import com.android.launcher3.notification.NotificationListener
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class LawnchairSmartspaceController public constructor(val context: Context) {
+class LawnchairSmartspaceController(val context: Context) {
 
     var smartspaceData = DataContainer()
-    private var weatherData: WeatherData? = null
-    private var cardData: CardData? = null
+    var weatherData: WeatherData? = null
+    var cardData: CardData? = null
     private val listeners = ArrayList<Listener>()
     private val weatherProviderPref = Utilities.getLawnchairPrefs(context)::weatherProvider
     private val eventProvidersPref = context.lawnchairPrefs.eventProviders
@@ -83,6 +84,7 @@ class LawnchairSmartspaceController public constructor(val context: Context) {
     }
 
     private fun updateData(weather: WeatherData?, card: CardData?) {
+        d("updateData: call stack", Throwable())
         weatherData = weather
         cardData = card
         smartspaceData = DataContainer(weather, card)

@@ -30,9 +30,12 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
+import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.plugin.unread.IUnreadPlugin.Stub;
 import com.android.launcher3.plugin.unread.IUnreadPluginCallback;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -61,10 +64,9 @@ public class SmartspaceShadespacePlugin extends Stub {
         context.registerReceiver(timeTickReciever, intentFilter);
     }
 
-    @Override
-    public List<String> getText() throws RemoteException {
+    public List<String> getCardText() throws RemoteException {
         CardData card = ((LawnchairApp) context.getApplicationContext()).getSmartspace()
-                .getSmartspaceData().getCard();
+                .getCardData();
         if (card != null) {
             if (!card.getForceSingleLine()) {
                 return card.getLines().stream().map(it -> it.getText().toString())
@@ -85,9 +87,21 @@ public class SmartspaceShadespacePlugin extends Stub {
     }
 
     @Override
+    public List<String> getText() throws RemoteException {
+        WeatherData data;
+        if ((data = ((LawnchairApp) context.getApplicationContext()).getSmartspace()
+                .getWeatherData()) != null) {
+            List<String> cardData = new ArrayList<>(getCardText());
+            cardData.add(data.getTitle(Utilities.getLawnchairPrefs(context).getWeatherUnit()));
+            return cardData;
+        }
+        return getCardText();
+    }
+
+    @Override
     public void clickView(int index, Bundle launchOptions) throws RemoteException {
         CardData card = ((LawnchairApp) context.getApplicationContext()).getSmartspace()
-                .getSmartspaceData().getCard();
+                .getCardData();
         if (card != null && card.getOnClickListener() != null) {
             card.getOnClickListener().onClick(new View(context));
         }
