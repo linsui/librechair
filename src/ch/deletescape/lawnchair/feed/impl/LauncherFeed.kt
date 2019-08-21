@@ -218,6 +218,12 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
                     if (hasWidgetTab) {
                         toolbar.menu.getItem(0).isVisible = tabs[tab.position]!!.isWidgetTab
+                        toolbar.menu.getItem(0).icon = R.drawable.ic_add.fromDrawableRes(context)
+                                .duplicateAndSetColour(if (useWhiteText(backgroundColor,
+                                                                        context)) R.color.textColorPrimary.fromColorRes(
+                                        context)
+                                                       else R.color.textColorPrimaryInverse.fromColorRes(
+                                        context))
                     }
                     runOnNewThread { refresh(0) }
                 }
