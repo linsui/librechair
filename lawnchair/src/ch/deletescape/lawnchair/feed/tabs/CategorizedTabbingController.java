@@ -63,6 +63,7 @@ public class CategorizedTabbingController extends TabController {
                 context.getString(R.string.pref_category_misc));
         WIDGETS_TAB = new Item(context.getDrawable(R.drawable.ic_widget),
                 context.getString(R.string.widget_button_text));
+        WIDGETS_TAB.isWidgetTab = true;
     }
 
     @Override

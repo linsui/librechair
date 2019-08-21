@@ -75,6 +75,7 @@ public class TabController {
 
         public Drawable icon;
         public String title;
+        public boolean isWidgetTab;
 
         public Item() {
             this(null, null);
@@ -95,7 +96,8 @@ public class TabController {
             }
             Item item = (Item) o;
             return Objects.equals(icon, item.icon) &&
-                    Objects.equals(title, item.title);
+                    Objects.equals(title, item.title) &
+                            isWidgetTab == item.isWidgetTab;
         }
 
         @Override

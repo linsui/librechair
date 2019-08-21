@@ -96,6 +96,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
     private val tabsOnBottom = contex2t.lawnchairPrefs.feedTabsOnBottom
+    private val hasWidgetTab = tabs.any { it.isWidgetTab }
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
 
@@ -214,7 +215,10 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                         tabView.tabRippleColor!!.defaultColor.setAlpha(
                                                 50)).toIntArray())
                     }
-                    adapter.providers = tabbedProviders[tabs.first { it.title == tab.text }]!!
+                    adapter.providers = tabbedProviders[tabs[tab.position]]!!
+                    if (hasWidgetTab) {
+                        toolbar.menu.getItem(0).isVisible = tabs[tab.position]!!.isWidgetTab
+                    }
                     runOnNewThread { refresh(0) }
                 }
             })
@@ -305,6 +309,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                                     })
                                         }
                                     }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+            }
+            if (hasWidgetTab) {
+                toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
             }
         }
     }
