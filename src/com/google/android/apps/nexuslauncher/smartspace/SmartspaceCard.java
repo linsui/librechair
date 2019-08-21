@@ -23,11 +23,11 @@ import com.google.android.apps.nexuslauncher.utils.ColorManipulation;
 public class SmartspaceCard {
 
     private final b dI;
-    private final long dJ;
-    private final int dK;
+    private final long gsaUpdateTIme;
+    private final int gsaVersion;
     private final boolean dL;
     private final boolean dM;
-    private final long dN;
+    private final long published;
     private final Context mContext;
     private Bitmap mIcon;
     private final Intent mIntent;
@@ -39,9 +39,9 @@ public class SmartspaceCard {
         this.dM = dm;
         this.mIntent = mIntent;
         this.mIcon = mIcon;
-        this.dN = dn;
-        this.dJ = dj;
-        this.dK = dk;
+        this.published = dn;
+        this.gsaUpdateTIme = dj;
+        this.gsaVersion = dk;
         this.dL = dl;
     }
 
@@ -258,7 +258,7 @@ public class SmartspaceCard {
         return this.cO(true, s);
     }
 
-    public long cF() {
+    public long expires() {
         return this.dI.cF.da;
     }
 
@@ -273,7 +273,7 @@ public class SmartspaceCard {
     }
 
     public boolean cM() {
-        return System.currentTimeMillis() > this.cF();
+        return System.currentTimeMillis() > this.expires();
     }
 
     void click(View view) {
@@ -341,7 +341,8 @@ public class SmartspaceCard {
     }
 
     public String toString() {
-        return "title:" + this.getTitle() + " expires:" + this.cF() + " published:" + this.dN
-                + " gsaVersion:" + this.dK + " gsaUpdateTime: " + this.dJ;
+        return "title:" + this.getTitle() + " expires:" + this.expires() + " published:"
+                + this.published
+                + " gsaVersion:" + this.gsaVersion + " gsaUpdateTime: " + this.gsaUpdateTIme;
     }
 }

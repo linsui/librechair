@@ -53,7 +53,7 @@ import com.android.launcher3.notification.NotificationListener
 import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
-class LawnchairSmartspaceController(val context: Context) {
+class LawnchairSmartspaceController public constructor(val context: Context) {
 
     var smartspaceData = DataContainer()
     private var weatherData: WeatherData? = null

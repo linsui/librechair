@@ -82,6 +82,11 @@ public class SmartspaceController implements Handler.Callback {
     private void onPostGsaUpdate() {
     }
 
+
+    public SmartspaceDataContainer getDataContainer() {
+        return dataContainer;
+    }
+
     private void updateSmartspaceStore(final NewCardInfo a,
             final SmartspaceController.Store SmartspaceControllerStore) {
         Message.obtain(this.mWorker, 2, SmartspaceControllerStore.ordinal(), 0, a).sendToTarget();

@@ -320,6 +320,23 @@
             android:exported="false"
             android:name="ch.deletescape.lawnchair.bugreport.DogbinUploadService"
             android:process=":bugReport" />
+
+        <service
+            android:name="ch.deletescape.lawnchair.shade.ShadeSmartspacePlugin$Service"
+            android:exported="true"
+            android:label="@string/service_label"
+            android:description="@string/service_desc">
+            <intent-filter>
+                <action android:name="com.android.launcher3.PLUGIN" />
+            </intent-filter>
+
+            <meta-data
+                android:name="interface.descriptor"
+                android:value="com.android.launcher3.plugin.unread.IUnreadPlugin" />
+            <meta-data
+                android:name="interface.version"
+                android:value="1" />
+        </service>
     </application>
     <permission
         android:name="${applicationId}.permission.QSB"

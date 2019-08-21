@@ -21,13 +21,13 @@ public class SmartspaceDataContainer {
     public long timeRemainingTillExpiry() {
         final long currentTimeMillis = System.currentTimeMillis();
         if (isDataAvailable() && isWeatherAvailable()) {
-            return Math.min(dataCard.cF(), weatherCard.cF()) - currentTimeMillis;
+            return Math.min(dataCard.expires(), weatherCard.expires()) - currentTimeMillis;
         }
         if (isDataAvailable()) {
-            return dataCard.cF() - currentTimeMillis;
+            return dataCard.expires() - currentTimeMillis;
         }
         if (isWeatherAvailable()) {
-            return weatherCard.cF() - currentTimeMillis;
+            return weatherCard.expires() - currentTimeMillis;
         }
         return 0L;
     }

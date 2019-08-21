@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.pm.ServiceInfo;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.os.IBinder;
 import android.util.Log;
 import com.android.launcher3.BuildConfig;
@@ -237,7 +238,8 @@ public final class PluginManager {
         for (ResolveInfo ri : mPm.queryIntentServices(intent,
                 PackageManager.GET_META_DATA | PackageManager.GET_RESOLVED_FILTER)) {
             ServiceInfo si = ri.serviceInfo;
-            if (si != null && si.metaData != null) {
+            if (si != null && si.metaData != null && !si.packageName
+                    .equals(BuildConfig.APPLICATION_ID)) {
                 siList.add(ri.serviceInfo);
             }
         }
@@ -257,8 +259,8 @@ public final class PluginManager {
         private final String mPluginKey;
         private final CharSequence mAppLabel;
         private final boolean mDebuggable;
-        private final CharSequence mShortLabel;
-        private final CharSequence mLongLabel;
+        private CharSequence mShortLabel;
+        private CharSequence mLongLabel;
 
         /**
          * Fill plugin information using given service info.
@@ -281,8 +283,16 @@ public final class PluginManager {
             mPluginKey = mComponent.flattenToShortString();
             mAppLabel = si.applicationInfo.loadLabel(mPm);
             mDebuggable = (si.applicationInfo.flags & FLAG_DEBUGGABLE) != 0;
-            mShortLabel = si.loadLabel(mPm);
-            mLongLabel = res.getString(si.descriptionRes);
+            try {
+                mShortLabel = si.loadLabel(mPm);
+            } catch (NotFoundException e) {
+                mShortLabel = "";
+            }
+            try {
+                mLongLabel = res.getString(si.descriptionRes);
+            } catch (NotFoundException e) {
+                mLongLabel = "";
+            }
         }
 
         private PluginInterface getInterface() {
