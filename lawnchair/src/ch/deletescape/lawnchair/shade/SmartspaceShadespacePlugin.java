@@ -19,8 +19,10 @@
 
 package ch.deletescape.lawnchair.shade;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -30,15 +32,33 @@ import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
 import com.android.launcher3.plugin.unread.IUnreadPlugin.Stub;
 import com.android.launcher3.plugin.unread.IUnreadPluginCallback;
+import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ShadeSmartspacePlugin extends Stub {
+public class SmartspaceShadespacePlugin extends Stub {
 
     private Context context;
+    private BroadcastReceiver timeTickReciever;
+    private Runnable onTick;
 
-    public ShadeSmartspacePlugin(Context context) {
+    public SmartspaceShadespacePlugin(Context context) {
         this.context = context;
+        this.timeTickReciever = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(Intent.ACTION_TIME_TICK) && onTick != null) {
+                    onTick.run();
+                }
+            }
+        };
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_TIME_TICK);
+        intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+        context.registerReceiver(timeTickReciever, intentFilter);
     }
 
     @Override
@@ -46,10 +66,21 @@ public class ShadeSmartspacePlugin extends Stub {
         CardData card = ((LawnchairApp) context.getApplicationContext()).getSmartspace()
                 .getSmartspaceData().getCard();
         if (card != null) {
-            return card.getLines().stream().map(it -> it.getText().toString())
-                    .collect(Collectors.toList());
+            if (!card.getForceSingleLine()) {
+                return card.getLines().stream().map(it -> it.getText().toString())
+                        .collect(Collectors.toList());
+            } else if (card.getSubtitle() != null) {
+                return Collections.singletonList(card.getSubtitle().toString());
+            } else if (card.getTitle() != null) {
+                return Collections.singletonList(card.getTitle().toString());
+            } else {
+                return Collections.singletonList(
+                        IcuDateTextView.getDateFormat(context, true, null, false)
+                                .format(new Date()));
+            }
         } else {
-            return null;
+            return Collections.singletonList(
+                    IcuDateTextView.getDateFormat(context, true, null, false).format(new Date()));
         }
     }
 
@@ -73,6 +104,16 @@ public class ShadeSmartspacePlugin extends Stub {
                 e.printStackTrace();
             }
         });
+
+        onTick = () -> {
+            try {
+                if (cb != null) {
+                    cb.onChange();
+                }
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        };
     }
 
     @Override
@@ -82,13 +123,13 @@ public class ShadeSmartspacePlugin extends Stub {
 
     public static final class Service extends android.app.Service {
 
-        public ShadeSmartspacePlugin implementation;
+        public SmartspaceShadespacePlugin implementation;
 
         @Nullable
         @Override
         public IBinder onBind(Intent intent) {
             return implementation != null ? implementation
-                    : (implementation = new ShadeSmartspacePlugin(getApplicationContext()));
+                    : (implementation = new SmartspaceShadespacePlugin(getApplicationContext()));
         }
     }
 }

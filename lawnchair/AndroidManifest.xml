@@ -321,7 +321,7 @@
             android:process=":bugReport" />
 
         <service
-            android:name="ch.deletescape.lawnchair.shade.ShadeSmartspacePlugin$Service"
+            android:name="ch.deletescape.lawnchair.shade.SmartspaceShadespacePlugin$Service"
             android:exported="true"
             android:label="@string/service_label"
             android:description="@string/service_desc">
