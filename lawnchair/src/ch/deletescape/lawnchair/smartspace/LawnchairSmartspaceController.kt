@@ -45,7 +45,6 @@ import ch.deletescape.lawnchair.smartspace.weather.forecast.SmartspaceForecastPr
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.weathercom.WeatherChannelWeatherProvider
 import ch.deletescape.lawnchair.util.Temperature
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.Launcher
 import com.android.launcher3.R
@@ -84,7 +83,6 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     private fun updateData(weather: WeatherData?, card: CardData?) {
-        d("updateData: call stack", Throwable())
         weatherData = weather
         cardData = card
         smartspaceData = DataContainer(weather, card)

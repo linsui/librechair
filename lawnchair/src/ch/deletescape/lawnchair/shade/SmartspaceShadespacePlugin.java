@@ -36,6 +36,7 @@ import com.android.launcher3.plugin.unread.IUnreadPlugin.Stub;
 import com.android.launcher3.plugin.unread.IUnreadPluginCallback;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -71,14 +72,11 @@ public class SmartspaceShadespacePlugin extends Stub {
             if (!card.getForceSingleLine()) {
                 return card.getLines().stream().map(it -> it.getText().toString())
                         .collect(Collectors.toList());
-            } else if (card.getSubtitle() != null) {
-                return Collections.singletonList(card.getSubtitle().toString());
-            } else if (card.getTitle() != null) {
-                return Collections.singletonList(card.getTitle().toString());
             } else {
-                return Collections.singletonList(
-                        IcuDateTextView.getDateFormat(context, true, null, false)
-                                .format(new Date()));
+                return Arrays.asList(IcuDateTextView.getDateFormat(context, true, null, false)
+                                .format(new Date()),
+                        card.getLines().stream().map(it -> it.getText()).collect(
+                                Collectors.joining(" -- ")));
             }
         } else {
             return Collections.singletonList(
