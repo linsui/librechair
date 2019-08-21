@@ -33,9 +33,12 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toolbar
+import at.favre.lib.dali.view.ObservableRecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
@@ -50,6 +53,7 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import io.alterac.blurkit.BlurLayout
 import kotlin.math.hypot
 import kotlin.math.roundToInt
 import kotlin.math.sign
@@ -86,7 +90,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
     private val tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-    private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+    private val recyclerView =
+            (feedController.findViewById(R.id.feed_recycler) as ObservableRecyclerView)
     private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private val content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private val frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
@@ -99,10 +104,14 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
+    val blurView = BlurLayout(context)
 
     init {
         var oldToolbarPadding: Pair<Int, Int>? = null
         var oldRecyclerViewPadding: Pair<Int, Int>? = null
+        recyclerView.setOnDrawListener {
+            blurView.invalidate()
+        }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
@@ -122,6 +131,16 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                            paddingRight,
                            if (tabsOnBottom) oldToolbarPadding!!.second + navigationBarHeight!! else paddingBottom)
             }
+            if (!context.lawnchairPrefs.lowPerformanceMode) {
+                toolbar.setBackgroundColor(backgroundColor.setAlpha(127))
+                if (blurView.layoutParams == null) {
+                    blurView.layoutParams = FrameLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+                }
+                (blurView.layoutParams as FrameLayout.LayoutParams).gravity =
+                        if (tabsOnBottom) Gravity.BOTTOM else Gravity.TOP
+            } else {
+                blurView.visibility = View.GONE
+            }
             insets
         }
         feedController.mOpenedCallback = {
@@ -136,8 +155,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             true
         }
         if (tabsOnBottom) {
-            (toolbar.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
-            toolbar.parent.requestLayout()
             recyclerView.apply {
                 setPadding(paddingLeft, 0, paddingRight, paddingTop)
             }
@@ -165,9 +182,12 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                         super.onScrolled(recyclerView, dx, dy)
                         if (dy > 0) {
+                            blurView.animate().translationY(
+                                    if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
                             toolbar.animate().translationY(
                                     if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
                         } else if (dy < 0) {
+                            blurView.animate().translationY(0f)
                             toolbar.animate().translationY(0f)
                         }
                     }
@@ -188,6 +208,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             } else {
                 tabView.tabMode = TabLayout.MODE_FIXED
             }
+
             tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab) {
                 }
@@ -457,6 +478,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             if (field != value) {
                 field = value
                 if (field) {
+                    blurView.startBlur()
                     if (recyclerView.adapter == null) {
                         recyclerView.adapter = this.adapter
                         recyclerView.layoutManager = object : LinearLayoutManager(context) {
@@ -472,6 +494,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     }
                     windowService.addView(feedController, layoutParams)
                 } else {
+                    blurView.pauseBlur()
                     windowService.removeView(feedController)
                 }
             }

@@ -67,6 +67,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
@@ -284,6 +285,11 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
                                     .getBugReporter().reportVmViolation(v))
                     .build());
         }
+
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+        );
 
         TraceHelper.beginSection("Launcher-onCreate");
 

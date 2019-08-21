@@ -122,6 +122,12 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         this.Dn = new TransformingTouchDelegate(this);
         setTouchDelegate(this.Dn);
         this.CV.setColor(Color.WHITE);
+        setLayerType(LAYER_TYPE_HARDWARE, null);
+    }
+
+    @Override
+    public boolean isHardwareAccelerated() {
+        return true;
     }
 
     protected void onAttachedToWindow() {

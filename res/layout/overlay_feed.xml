@@ -18,6 +18,7 @@
   -->
 
 <ch.deletescape.lawnchair.feed.impl.FeedController xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/overlay_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <android.support.v7.widget.RecyclerView
+        <at.favre.lib.dali.view.ObservableRecyclerView
             android:paddingTop="@dimen/feed_app_bar_height_material"
             android:clipToPadding="false"
             android:id="@+id/feed_recycler"
@@ -39,19 +40,28 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" />
-        <Toolbar
-            android:fitsSystemWindows="false"
-            android:id="@+id/feed_title_bar"
+        <io.alterac.blurkit.BlurLayout
+            android:layout_gravity="top"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/transparent">
-            <android.support.design.widget.TabLayout
-                android:id="@+id/feed_tabs"
-                style="@style/Widget.Feed.Tabs"
+            android:layout_height="match_parent"
+            android:id="@+id/blur_view"
+            app:blk_blurRadius="16"
+            app:blk_downscaleFactor="0.12"
+            app:blk_fps="0">
+            <Toolbar
+                android:fitsSystemWindows="false"
+                android:id="@+id/feed_title_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/SettingsTheme.Base" />
-        </Toolbar>
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent">
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/feed_tabs"
+                    style="@style/Widget.Feed.Tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SettingsTheme.Base" />
+            </Toolbar>
+        </io.alterac.blurkit.BlurLayout>
     </FrameLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>
