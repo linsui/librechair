@@ -266,9 +266,6 @@ public class ModelWriter {
 
             synchronized (mBgDataModel) {
                 checkItemInfoLocked(item.id, item, stackTrace);
-                if (item.getIntent().getPackage() == null) {
-                    return;
-                }
                 mBgDataModel.addItem(mContext, item, true);
                 verifier.verifyModel();
             }

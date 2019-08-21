@@ -32,6 +32,7 @@ import com.android.launcher3.util.Provider;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Handles changes due to shortcut manager updates (deep shortcut changes)
@@ -65,7 +66,8 @@ public class ShortcutsChangedTask extends BaseModelUpdateTask {
         for (ItemInfo itemInfo : dataModel.itemsIdMap) {
             if (itemInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
                 ShortcutInfo si = (ShortcutInfo) itemInfo;
-                if (si.getIntent().getPackage().equals(mPackageName) && si.user.equals(mUser)) {
+                if (Objects.equals(si.getIntent().getPackage(), mPackageName) && si.user
+                        .equals(mUser)) {
                     keyToShortcutInfo.addToList(ShortcutKey.fromItemInfo(si), si);
                     allIds.add(si.getDeepShortcutId());
                 }
