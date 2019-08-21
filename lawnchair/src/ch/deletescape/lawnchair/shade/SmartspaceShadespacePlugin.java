@@ -49,7 +49,7 @@ public class SmartspaceShadespacePlugin extends Stub {
         this.timeTickReciever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction().equals(Intent.ACTION_TIME_TICK) && onTick != null) {
+                if (onTick != null) {
                     onTick.run();
                 }
             }
