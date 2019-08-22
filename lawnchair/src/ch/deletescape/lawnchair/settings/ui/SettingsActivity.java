@@ -740,9 +740,9 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         preferenceMap.put(plugin.getClientKey(), switchPref);
                         pluginCategory.addPreference(switchPref);
                     }
-                    if (preferenceMap.isEmpty()) {
-                        pluginCategory.addPreference(noPlugins);
-                    }
+                }
+                if (preferenceMap.isEmpty()) {
+                    pluginCategory.addPreference(noPlugins);
                 }
             } else if (getContent() == R.xml.lawnchair_dev_options_preference) {
                 findPreference("kill").setOnPreferenceClickListener(this);
@@ -757,7 +757,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 getPreferenceScreen().addPreference(pluginCategory);
                 Map<String, StyledSwitchPreferenceCompat> preferenceMap = new HashMap<>();
                 for (Plugin plugin : PluginManager.getInstance(getContext()).getPlugins()) {
-                    if (plugin.getInterface().equals(UnreadPluginClient.INTERFACE)) {
+                    if (plugin.getInterface().equals(UnreadPluginClient.INTERFACE) && !plugin
+                            .isInPackage()) {
                         StyledSwitchPreferenceCompat switchPref = new StyledSwitchPreferenceCompat(
                                 getContext(), null);
                         switchPref.setKey("useless_" + plugin.getClientKey().hashCode());
