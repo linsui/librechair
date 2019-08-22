@@ -88,6 +88,8 @@ import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersFragment;
 import ch.deletescape.lawnchair.preferences.SmartspaceEventProvidersPreference;
+import ch.deletescape.lawnchair.preferences.StyledPreferenceCategory;
+import ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat;
 import ch.deletescape.lawnchair.preferences.TimePickerFragment;
 import ch.deletescape.lawnchair.preferences.TimePickerPreference;
 import ch.deletescape.lawnchair.preferences.WebApplicationsPreference;
@@ -103,6 +105,9 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.plugin.PluginManager;
+import com.android.launcher3.plugin.PluginManager.Plugin;
+import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ContentWriter.CommitParams;
@@ -110,6 +115,8 @@ import com.android.launcher3.util.SettingsObserver;
 import com.android.launcher3.views.ButtonPreference;
 import com.google.android.apps.nexuslauncher.reflection.ReflectionClient;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import kotlin.Unit;
@@ -679,6 +686,26 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     return true;
                 });
                 findPreference(SHOW_PREDICTIONS_PREF).setOnPreferenceChangeListener(this);
+                StyledPreferenceCategory pluginCategory = new StyledPreferenceCategory(getContext(),
+                        null);
+                pluginCategory.setTitle(R.string.pref_category_plugins);
+                getPreferenceScreen().addPreference(pluginCategory);
+                Map<String, StyledSwitchPreferenceCompat> preferenceMap = new HashMap<>();
+                for (Plugin plugin : PluginManager.getInstance(getContext()).getPlugins()) {
+                    if (plugin.getInterface().equals(ShortcutPluginClient.INTERFACE)) {
+                        StyledSwitchPreferenceCompat switchPref = new StyledSwitchPreferenceCompat(
+                                getContext(), null);
+                        switchPref.setKey("useless_" + plugin.getClientKey().hashCode());
+                        switchPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                            plugin.setEnabled((boolean) newValue);
+                            return true;
+                        });
+                        switchPref.setSummary(plugin.getLongLabel());
+                        switchPref.setTitle(plugin.getShortLabel());
+                        preferenceMap.put(plugin.getClientKey(), switchPref);
+                        pluginCategory.addPreference(switchPref);
+                    }
+                }
             } else if (getContent() == R.xml.lawnchair_dev_options_preference) {
                 findPreference("kill").setOnPreferenceClickListener(this);
                 findPreference("addSettingsShortcut").setOnPreferenceClickListener(this);

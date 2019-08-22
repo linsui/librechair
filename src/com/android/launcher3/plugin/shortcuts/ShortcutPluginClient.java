@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ShortcutPluginClient extends PluginClient<IShortcutPlugin> {
 
-    private static final PluginInterface INTERFACE = new PluginInterface(
+    public static final PluginInterface INTERFACE = new PluginInterface(
             "com.android.launcher3.plugin.shortcuts.IShortcutPlugin",
             1
     );

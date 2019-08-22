@@ -15,13 +15,18 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.os.IBinder;
 import android.util.Log;
+import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.shade.SmartspaceShadespacePlugin;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.plugin.activity.ActivityPluginClient;
+import com.android.launcher3.plugin.activity.IActivityPlugin;
 import com.android.launcher3.plugin.button.ButtonPluginClient;
+import com.android.launcher3.plugin.button.IButtonPlugin;
+import com.android.launcher3.plugin.shortcuts.IShortcutPlugin;
 import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
+import com.android.launcher3.plugin.unread.IUnreadPlugin;
 import com.android.launcher3.plugin.unread.UnreadPluginClient;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -263,6 +268,8 @@ public final class PluginManager {
         private CharSequence mShortLabel;
         private CharSequence mLongLabel;
 
+        private CharSequence mDescriptor;
+
         /**
          * Fill plugin information using given service info.
          *
@@ -274,6 +281,7 @@ public final class PluginManager {
             int version = si.metaData.getInt(INTERFACE_VERSION);
             mInterface = new PluginInterface(descriptor, version);
             mClientKey = PREF_PLUGIN_PREFIX + "_" + descriptor + "_" + version;
+            mDescriptor = descriptor;
 
             PluginClient client = getBaseClient(this);
             mExclusive = client != null && client.isExclusive();
@@ -296,7 +304,7 @@ public final class PluginManager {
             }
         }
 
-        private PluginInterface getInterface() {
+        public PluginInterface getInterface() {
             return mInterface;
         }
 
@@ -343,16 +351,35 @@ public final class PluginManager {
          * @param enable True if the plugin should be enabled, false otherwise.
          */
         public void setEnabled(boolean enable) {
-            Set<String> clientPlugins = new HashSet<>(getClientPlugins());
-            if (enable) {
-                if (mExclusive) {
-                    clientPlugins.clear();
+            if (mDescriptor == IUnreadPlugin.class.getName()) {
+                Utilities.getLawnchairPrefs(mContext)
+                        .setShadespacePlugin(enable ? mPluginKey : null);
+            } else if (mDescriptor == IButtonPlugin.class.getName()) {
+                Set<String> buttonPlugins = Utilities.getLawnchairPrefs(mContext)
+                        .getButtonPlugins();
+                if (enable) {
+                    buttonPlugins.add(mPluginKey);
+                } else {
+                    buttonPlugins.remove(mPluginKey);
                 }
-                clientPlugins.add(mPluginKey);
-            } else {
-                clientPlugins.remove(mPluginKey);
+                Utilities.getLawnchairPrefs(mContext).setButtonPlugins(buttonPlugins);
+            } else if (mDescriptor == IActivityPlugin.class.getName()) {
+                Set<String> plugins = Utilities.getLawnchairPrefs(mContext).getActivityPlugins();
+                if (enable) {
+                    plugins.add(mPluginKey);
+                } else {
+                    plugins.remove(mPluginKey);
+                }
+                Utilities.getLawnchairPrefs(mContext).setActivityPlugins(plugins);
+            } else if (mDescriptor == IShortcutPlugin.class.getName()) {
+                Set<String> plugins = Utilities.getLawnchairPrefs(mContext).getShortcutPlugins();
+                if (enable) {
+                    plugins.add(mPluginKey);
+                } else {
+                    plugins.remove(mPluginKey);
+                }
+                Utilities.getLawnchairPrefs(mContext).setShortcutPlugins(plugins);
             }
-            Utilities.getPrefs(mContext).edit().putStringSet(mClientKey, clientPlugins).apply();
         }
 
         /**
@@ -361,11 +388,17 @@ public final class PluginManager {
          * @return The list of plugins.
          */
         private Set<String> getClientPlugins() {
-            Set<String> defaultSet = new HashSet<>();
-            for (Plugin plugin : getPlugins()) {
-                defaultSet.add(plugin.getPluginKey());
-            }
-            return Utilities.getPrefs(mContext).getStringSet(mClientKey, defaultSet);
+            LawnchairPreferences prefs = Utilities.getLawnchairPrefs(mContext);
+            Set<String> plugins = new HashSet<>();
+            plugins.add(prefs.getShadespacePlugin());
+            plugins.addAll(prefs.getActivityPlugins());
+            plugins.addAll(prefs.getButtonPlugins());
+            plugins.addAll(prefs.getShortcutPlugins());
+            return plugins;
+        }
+
+        public String getClientKey() {
+            return mClientKey;
         }
     }
 }
