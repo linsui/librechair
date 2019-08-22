@@ -99,7 +99,6 @@ class LawnchairSmartspaceController(val context: Context) {
                     }
                     onProviderChanged()
                 }
-                startSetup(onFinish)
             }
         } else {
             requiresSetup = false

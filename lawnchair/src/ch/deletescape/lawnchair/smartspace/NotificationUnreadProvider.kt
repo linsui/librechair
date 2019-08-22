@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Line
 import ch.deletescape.lawnchair.toBitmap
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.notification.NotificationInfo
 import com.android.launcher3.util.PackageUserKey
@@ -53,8 +54,14 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         zenModeEnabled = it
     }
 
+    init {
+        startListening()
+    }
+
     override fun startListening() {
         super.startListening()
+
+        d("startListening: registering notification listener")
 
         manager.addListener(this)
         zenModeListener.startListening()
@@ -67,6 +74,7 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun onNotificationsChanged() {
+        d("onNotificationsChanged: notifications changed")
         runOnMainThread {
             updateData(null, getEventCard())
         }

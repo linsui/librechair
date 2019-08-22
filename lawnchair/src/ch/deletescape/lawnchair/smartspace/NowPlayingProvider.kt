@@ -35,6 +35,9 @@ class NowPlayingProvider(controller: LawnchairSmartspaceController) :
     private val media = MediaListener(context, this::reload, Handler(LauncherModel.getUiWorkerLooper()))
     private val defaultIcon = context.getDrawable(R.drawable.ic_music_note)!!.toBitmap()!!
 
+    init {
+        startListening()
+    }
     override fun startListening() {
         super.startListening()
 

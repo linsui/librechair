@@ -21,6 +21,7 @@ import android.os.Looper
 import android.service.notification.StatusBarNotification
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnUiWorkerThread
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.LauncherNotifications
 import com.android.launcher3.MainThreadExecutor
 import com.android.launcher3.notification.NotificationKeyData
@@ -33,11 +34,15 @@ import java.util.concurrent.ExecutionException
 class NotificationsManager private constructor(): NotificationListener.NotificationsChangedListener {
 
     private val bgNotificationsMap = mutableMapOf<String, StatusBarNotification>()
+    private val notificationList = mutableListOf<StatusBarNotification>()
     private val listeners  = mutableListOf<OnChangeListener>()
     private var refreshPending = false
-
-    var notifications = emptyList<StatusBarNotification>()
-        private set
+    val notifications: List<StatusBarNotification>
+        get() {
+            synchronized(notificationList) {
+                return notificationList
+            }
+        }
 
     init {
         LauncherNotifications.getInstance().addListener(this)
@@ -58,6 +63,7 @@ class NotificationsManager private constructor(): NotificationListener.Notificat
             postedPackageUserKey: PackageUserKey?,
             notificationKey: NotificationKeyData,
             shouldBeFilteredOut: Boolean) {
+        d("onNotificationPosted: notification listener called")
         runOnUiWorkerThread {
             val sbn = NotificationListener.getInstanceIfConnected()
                     ?.getNotificationsForKeys(Collections.singletonList(notificationKey))
@@ -83,12 +89,14 @@ class NotificationsManager private constructor(): NotificationListener.Notificat
 
     override fun onNotificationFullRefresh(
             activeNotifications: MutableList<StatusBarNotification>?) {
+        d("onNotificationFullRefresh: called")
         runOnUiWorkerThread {
             doFullRefresh()
         }
     }
 
     private fun doFullRefresh() {
+        d("doFullRefresh: triggering listeners $listeners")
         if (listeners.isEmpty()) {
             refreshPending = true
             return
@@ -102,9 +110,13 @@ class NotificationsManager private constructor(): NotificationListener.Notificat
     }
 
     private fun onChange() {
+        d("onChange: called")
         val notifications = bgNotificationsMap.values.toList()
         runOnMainThread {
-            this.notifications = notifications
+            synchronized(notificationList) {
+                notificationList.clear()
+                notificationList.addAll(notifications)
+            }
             listeners.forEach(OnChangeListener::onNotificationsChanged)
         }
     }
