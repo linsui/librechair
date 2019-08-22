@@ -110,6 +110,7 @@ import com.android.launcher3.plugin.PluginManager.Plugin;
 import com.android.launcher3.plugin.activity.ActivityPluginClient;
 import com.android.launcher3.plugin.button.ButtonPluginClient;
 import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
+import com.android.launcher3.plugin.unread.UnreadPluginClient;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ContentWriter.CommitParams;
@@ -739,6 +740,33 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 findPreference("currentWeatherProvider").setSummary(
                         Utilities.getLawnchairPrefs(mContext).getWeatherProvider());
                 findPreference("appInfo").setOnPreferenceClickListener(this);
+            } else if (getContent() == R.xml.lawnchair_smartspace_preferences) {
+                StyledPreferenceCategory pluginCategory = new StyledPreferenceCategory(getContext(),
+                        null);
+                pluginCategory.setTitle(R.string.pref_category_plugins);
+                getPreferenceScreen().addPreference(pluginCategory);
+                Map<String, StyledSwitchPreferenceCompat> preferenceMap = new HashMap<>();
+                for (Plugin plugin : PluginManager.getInstance(getContext()).getPlugins()) {
+                    if (plugin.getInterface().equals(UnreadPluginClient.INTERFACE)) {
+                        StyledSwitchPreferenceCompat switchPref = new StyledSwitchPreferenceCompat(
+                                getContext(), null);
+                        switchPref.setKey("useless_" + plugin.getClientKey().hashCode());
+                        switchPref.setChecked(plugin.isEnabled());
+                        switchPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                            plugin.setEnabled((boolean) newValue);
+                            for (String key : preferenceMap.keySet()) {
+                                if (!key.equals(key)) {
+                                    preferenceMap.get(key).setChecked(false);
+                                }
+                            }
+                            return true;
+                        });
+                        switchPref.setSummary(plugin.getLongLabel());
+                        switchPref.setTitle(plugin.getShortLabel());
+                        preferenceMap.put(plugin.getClientKey(), switchPref);
+                        pluginCategory.addPreference(switchPref);
+                    }
+                }
             }
         }
 
