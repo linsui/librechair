@@ -107,7 +107,8 @@ public class SmartspaceShadespacePlugin extends Stub {
 
     @Override
     public void addOnChangeListener(IUnreadPluginCallback cb) throws RemoteException {
-        ((LawnchairApp) context.getApplicationContext()).getSmartspace().addListener(container -> {
+        ((LawnchairApp) context.getApplicationContext()).getSmartspace()
+                .addListener((weather, card) -> {
             try {
                 if (cb != null) {
                     cb.onChange();

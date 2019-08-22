@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.allapps
 
 import me.xdrop.fuzzywuzzy.ToStringFunction
 import me.xdrop.fuzzywuzzy.algorithms.WeightedRatio
+import kotlin.math.roundToInt
 
 /**
  * Weighted ratio with higher scores for strings with common prefix like in the Jaro-Winkler algorithm
