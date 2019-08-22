@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.os.IBinder;
 import android.util.Log;
+import ch.deletescape.lawnchair.shade.SmartspaceShadespacePlugin;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
@@ -196,7 +197,8 @@ public final class PluginManager {
         Log.d(getClass().getName(), "getPlugins: " + siList);
 
         for (ServiceInfo si : siList) {
-            if (si.permission == null || hasPermission(si.permission)) {
+            if ((si.permission == null || hasPermission(si.permission)) && !si.name.equals(
+                    SmartspaceShadespacePlugin.class.getName())) {
                 try {
                     plugins.add(new Plugin(si));
                 } catch (PackageManager.NameNotFoundException e) {
@@ -238,8 +240,7 @@ public final class PluginManager {
         for (ResolveInfo ri : mPm.queryIntentServices(intent,
                 PackageManager.GET_META_DATA | PackageManager.GET_RESOLVED_FILTER)) {
             ServiceInfo si = ri.serviceInfo;
-            if (si != null && si.metaData != null && !si.packageName
-                    .equals(BuildConfig.APPLICATION_ID)) {
+            if (si != null && si.metaData != null) {
                 siList.add(ri.serviceInfo);
             }
         }
