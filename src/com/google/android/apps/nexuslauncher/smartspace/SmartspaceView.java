@@ -52,7 +52,6 @@ import com.google.android.apps.nexuslauncher.graphics.DoubleShadowTextView;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import java.util.ArrayList;
 import java.util.List;
-import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -245,16 +244,19 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     @SuppressWarnings("ConstantConditions")
     private void loadDoubleLine(@Nullable WeatherData weather, @NotNull CardData card) {
-        setOnClickListener(mEventClickListener);
-        setBackgroundResource(mSmartspaceBackgroundRes);
-        mTitleText.setText(card.getTitle());
-        mTitleText.setEllipsize(card.getTitleEllipsize());
-        mSubtitleText.setText(card.getSubtitle());
-        mSubtitleText.setEllipsize(card.getSubtitleEllipsize());
-        mSubtitleIcon.setImageTintList(dH);
-        mSubtitleIcon.setImageBitmap(card.getIcon());
-        bindWeather(weather, mSubtitleWeatherContent, mSubtitleWeatherText, mSubtitleWeatherIcon);
-        bindClockAbove(false);
+        mSubtitleText.post(() -> {
+            setOnClickListener(mEventClickListener);
+            setBackgroundResource(mSmartspaceBackgroundRes);
+            mTitleText.setText(card.getTitle());
+            mTitleText.setEllipsize(card.getTitleEllipsize());
+            mSubtitleText.setText(card.getSubtitle());
+            mSubtitleText.setEllipsize(card.getSubtitleEllipsize());
+            mSubtitleIcon.setImageTintList(dH);
+            mSubtitleIcon.setImageBitmap(card.getIcon());
+            bindWeather(weather, mSubtitleWeatherContent, mSubtitleWeatherText,
+                    mSubtitleWeatherIcon);
+            bindClockAbove(false);
+        });
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -294,7 +296,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     }
 
     private void bindClockAndSeparator(boolean forced) {
-        if (mPrefs.getSmartspaceDate() || mPrefs.getSmartspaceTime()) {
+        if ((mPrefs.getSmartspaceDate() || mPrefs.getSmartspaceTime()) && mClockView != null) {
             mClockView.setVisibility(View.VISIBLE);
             mClockView.setOnClickListener(mCalendarClickListener);
             mClockView.setOnLongClickListener(co());
@@ -304,7 +306,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
             if (!Utilities.ATLEAST_NOUGAT) {
                 mClockView.onVisibilityAggregated(true);
             }
-        } else {
+        } else if (mClockView != null) {
             mClockView.setVisibility(View.GONE);
             mTitleSeparator.setVisibility(View.GONE);
         }
@@ -326,7 +328,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     }
 
     private void bindWeather(@Nullable WeatherData weather, View container, TextView title, ImageView icon) {
-        LawnchairUtilsKt.runOnMainThread(() -> {
+        post(() -> {
             mWeatherAvailable = weather != null;
             if (mWeatherAvailable) {
                 container.setVisibility(View.VISIBLE);
@@ -335,10 +337,9 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
                 title.setText(weather.getTitle(
                         Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()));
                 icon.setImageBitmap(addShadowToBitmap(weather.getIcon()));
-            } else {
+            } else if (container != null) {
                 container.setVisibility(View.GONE);
             }
-            return Unit.INSTANCE;
         });
     }
 
