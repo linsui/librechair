@@ -390,7 +390,9 @@ public final class PluginManager {
         private Set<String> getClientPlugins() {
             LawnchairPreferences prefs = Utilities.getLawnchairPrefs(mContext);
             Set<String> plugins = new HashSet<>();
-            plugins.add(prefs.getShadespacePlugin());
+            if (prefs.getShadespacePlugin() != null) {
+                plugins.add(prefs.getShadespacePlugin());
+            }
             plugins.addAll(prefs.getActivityPlugins());
             plugins.addAll(prefs.getButtonPlugins());
             plugins.addAll(prefs.getShortcutPlugins());

@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 
 public class ButtonPluginClient extends PluginClient.Exclusive<IButtonPlugin> {
 
-    private static final PluginInterface INTERFACE = new PluginInterface(
+    public static final PluginInterface INTERFACE = new PluginInterface(
             "com.android.launcher3.plugin.button.IButtonPlugin",
             1
     );

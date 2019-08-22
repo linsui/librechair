@@ -311,10 +311,10 @@ class LawnchairPreferences(val context: Context) :
     }
     val separateWorkApps by BooleanPref("pref_separateWorkApps", true, recreate)
     val saveScrollPosition by BooleanPref("pref_keepScrollState", false, doNothing)
-    var shadespacePlugin by NullableStringPref("pref_shadespace_plugins", null, restart)
-    var shortcutPlugins by StringSetPref("pref_shortcut_plugins", emptySet(), restart)
-    var buttonPlugins by StringSetPref("pref_button_plugins", emptySet(), restart)
-    var activityPlugins by StringSetPref("pref_activity_plugins", emptySet(), restart)
+    var shadespacePlugin by NullableStringPref("pref_shadespace_plugins", null)
+    var shortcutPlugins by StringSetPref("pref_shortcut_plugins", emptySet())
+    var buttonPlugins by StringSetPref("pref_button_plugins", emptySet())
+    var activityPlugins by StringSetPref("pref_activity_plugins", emptySet())
 
     private val drawerGridSizeDelegate = ResettableLazy {
         GridSize(this, "numColsDrawer", LauncherAppState.getIDP(context), recreate)

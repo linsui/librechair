@@ -107,6 +107,8 @@ import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.notification.NotificationListener;
 import com.android.launcher3.plugin.PluginManager;
 import com.android.launcher3.plugin.PluginManager.Plugin;
+import com.android.launcher3.plugin.activity.ActivityPluginClient;
+import com.android.launcher3.plugin.button.ButtonPluginClient;
 import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ContentWriter;
@@ -665,6 +667,29 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     mIconBadgingObserver
                             .register(NOTIFICATION_BADGING, NOTIFICATION_ENABLED_LISTENERS);
                 }
+                StyledPreferenceCategory pluginCategory = new StyledPreferenceCategory(getContext(),
+                        null);
+                pluginCategory.setTitle(R.string.pref_category_plugins);
+                getPreferenceScreen().addPreference(pluginCategory);
+                Map<String, StyledSwitchPreferenceCompat> preferenceMap = new HashMap<>();
+                for (Plugin plugin : PluginManager.getInstance(getContext()).getPlugins()) {
+                    if (plugin.getInterface().equals(ButtonPluginClient.INTERFACE) ||
+                            plugin.getInterface().equals(ActivityPluginClient.INTERFACE)) {
+                        StyledSwitchPreferenceCompat switchPref = new StyledSwitchPreferenceCompat(
+                                getContext(), null);
+                        switchPref.setKey("useless_" + plugin.getClientKey().hashCode());
+                        switchPref.setChecked(plugin.isEnabled());
+                        switchPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                            plugin.setEnabled((boolean) newValue);
+                            LawnchairLauncher.getLauncher(getContext()).scheduleRestartForLater();
+                            return true;
+                        });
+                        switchPref.setSummary(plugin.getLongLabel());
+                        switchPref.setTitle(plugin.getShortLabel());
+                        preferenceMap.put(plugin.getClientKey(), switchPref);
+                        pluginCategory.addPreference(switchPref);
+                    }
+                }
             } else if (getContent() == R.xml.lawnchair_theme_preferences) {
                 Preference resetIconsPreference = findPreference("pref_resetCustomIcons");
                 resetIconsPreference.setOnPreferenceClickListener(preference -> {
@@ -696,8 +721,10 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         StyledSwitchPreferenceCompat switchPref = new StyledSwitchPreferenceCompat(
                                 getContext(), null);
                         switchPref.setKey("useless_" + plugin.getClientKey().hashCode());
+                        switchPref.setChecked(plugin.isEnabled());
                         switchPref.setOnPreferenceChangeListener((preference, newValue) -> {
                             plugin.setEnabled((boolean) newValue);
+                            LawnchairLauncher.getLauncher(getContext()).scheduleRestartForLater();
                             return true;
                         });
                         switchPref.setSummary(plugin.getLongLabel());

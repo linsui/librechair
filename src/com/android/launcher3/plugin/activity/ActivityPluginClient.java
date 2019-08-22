@@ -7,7 +7,7 @@ import com.android.launcher3.plugin.PluginInterface;
 
 public class ActivityPluginClient extends PluginClient<IActivityPlugin> {
 
-    private static final PluginInterface INTERFACE = new PluginInterface(
+    public static final PluginInterface INTERFACE = new PluginInterface(
             "com.android.launcher3.plugin.activity.IActivityPlugin",
             1
     );
