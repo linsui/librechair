@@ -21,8 +21,6 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,30 +70,34 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
     }
 
     override fun getCards(): List<Card> {
-        Log.d(javaClass.name, "getCards: " + weatherData!!)
         return if (weatherData != null && forecastHigh != null && forecastLow != null && weatherTypeResource != null) listOf(
-                Card(BitmapDrawable(context.resources, weatherData!!.icon),
-                     context.getString(R.string.title_card_weather_temperature,
-                                       weatherData!!.getTitle(context.lawnchairPrefs.weatherUnit)),
+                Card(null, null,
                      object : Card.Companion.InflateHelper {
                          @SuppressLint("SetTextI18n")
                          override fun inflate(parent: ViewGroup): View {
+                             d("inflate: inflating view")
                              val v = LayoutInflater.from(parent.getContext())
                                      .inflate(R.layout.weather_heads_up, parent, false)
+                             d("inflate: inflated view")
                              val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                              val information =
                                      v.findViewById(R.id.weather_hud_information) as TextView
                              val currentInformation =
                                      v.findViewById(R.id.weather_hud_current_temp) as TextView
                              val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
+                             d("inflate: initialized views")
 
                              currentInformation.text =
                                      weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
                              currentIcon.setImageBitmap(weatherData?.icon)
 
+                             d("inflate: set text for current data text view")
+
                              highLow.text =
                                      "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                              information.text = context.getString(weatherTypeResource!!)
+
+                             d("inflate: set thext for rest of views")
                              if (useWhiteText(backgroundColor, parent.context)) {
                                  highLow.setTextColor(
                                          context.resources.getColor(R.color.textColorPrimary))
@@ -104,15 +106,17 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                                  currentInformation.setTextColor(
                                          context.resources.getColor(R.color.textColorPrimary))
                              }
-                             return v;
+                             d("inflate: returning view")
+                             return v
                          }
                      }, Card.NO_HEADER, "nosort,top"))
-        else emptyList()
+        else mutableListOf()
     }
 
     override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
         if (weatherData?.coordLat != null && weatherData.coordLon != null) {
             refreshExecutor.submit {
+                this.weatherData = weatherData;
                 d("onDataUpdated: updating forcast HUD")
 
                 try {
@@ -121,7 +125,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                             context.forecastProvider.getHourlyForecast(weatherData.coordLon,
                                                                        weatherData.coordLat)
                     d("onDataUpdated: data retrieved")
-
                     val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
                         if (it.date.before(tomorrow())) {
                             it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
@@ -134,7 +137,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                     d("today is: ${Date()}")
 
                     d("onDataUpdated: temp list: $tempList")
-
                     val today = ArrayList<Int>()
                     tempList.forEach {
                         if (it != null) {
@@ -148,11 +150,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                     forecastHigh = Collections.max(today)
 
                     d("onDataUpdated: hi: $forecastHigh lo: $forecastLow")
-
                     val condCodes = run {
                         val list = newList<Int>()
-                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
-                                .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }.forEach { list += it.condCode?.toList() ?: listOf(1) }
                         list
                     }
 
@@ -163,16 +163,13 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
 
 
                     d("onDataUpdated: sending classification statsitics to statistics function")
-
-                    val type = WeatherTypes
-                            .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+                    val type = WeatherTypes.getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
 
                     d("onDataUpdated: weather type is ${type.name}")
 
                     weatherTypeResource = WeatherTypes.getStringResource(type)
 
                     d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
-
                 } catch (e: ForecastProvider.ForecastException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {

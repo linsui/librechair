@@ -75,5 +75,9 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
             fun inflate(parent: ViewGroup): View
         }
     }
+
+    override fun toString(): String {
+        return "Card(icon=$icon, title=$title, inflateHelper=$inflateHelper, type=$type, algoFlags=$algoFlags, identifier=$identifier, canHide=$canHide, internalCategory=$internalCategory, actionName=$actionName, actionListener=$actionListener)"
+    }
 }
 

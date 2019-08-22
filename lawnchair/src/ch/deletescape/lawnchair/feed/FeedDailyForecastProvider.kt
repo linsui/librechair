@@ -39,7 +39,7 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
             weatherData = weather
             updateData()
         } else {
-            weatherData = weather
+            weatherData = null
             updateData()
         }
     }

@@ -104,13 +104,15 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
             if (it.feed == null) {
                 it.feed = feed
             }
-            toSort += it.cards
+            toSort += mutableListOf(it.cards)
         }
+
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
                 LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
         d("refresh: sorting algorithm is $algorithm")
         cards += algorithm.sort(* toSort.toTypedArray())
                 .filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
+        d("refresh: cards are: $cards")
         return cards.size
     }
 
