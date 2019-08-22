@@ -580,4 +580,6 @@
 
     <string name="title_pref_feed">Feed</string>
     <string name="summary_pref_feed">Providers, opacity, background color</string>
+    <string name="title_pref_no_plugins">No plugins</string>
+    <string name="summary_pref_no_plugins">Librechair is compatible with plugins designed for the Shade launcher.</string>
 </resources>

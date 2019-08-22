@@ -655,6 +655,10 @@ public class SettingsActivity extends SettingsBaseActivity implements
             super.onCreate(savedInstanceState);
 
             mContext = getActivity();
+            Preference noPlugins = new Preference(mContext);
+            noPlugins.setTitle(R.string.title_pref_no_plugins);
+            noPlugins.setSummary(R.string.summary_pref_no_plugins);
+            noPlugins.setEnabled(false);
 
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
             if (getContent() == R.xml.lawnchair_desktop_preferences) {
@@ -690,6 +694,9 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         preferenceMap.put(plugin.getClientKey(), switchPref);
                         pluginCategory.addPreference(switchPref);
                     }
+                }
+                if (preferenceMap.isEmpty()) {
+                    pluginCategory.addPreference(noPlugins);
                 }
             } else if (getContent() == R.xml.lawnchair_theme_preferences) {
                 Preference resetIconsPreference = findPreference("pref_resetCustomIcons");
@@ -733,6 +740,9 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         preferenceMap.put(plugin.getClientKey(), switchPref);
                         pluginCategory.addPreference(switchPref);
                     }
+                    if (preferenceMap.isEmpty()) {
+                        pluginCategory.addPreference(noPlugins);
+                    }
                 }
             } else if (getContent() == R.xml.lawnchair_dev_options_preference) {
                 findPreference("kill").setOnPreferenceClickListener(this);
@@ -755,7 +765,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         switchPref.setOnPreferenceChangeListener((preference, newValue) -> {
                             plugin.setEnabled((boolean) newValue);
                             for (String key : preferenceMap.keySet()) {
-                                if (!key.equals(key)) {
+                                if (!key.equals(plugin.getClientKey())) {
                                     preferenceMap.get(key).setChecked(false);
                                 }
                             }
@@ -766,6 +776,9 @@ public class SettingsActivity extends SettingsBaseActivity implements
                         preferenceMap.put(plugin.getClientKey(), switchPref);
                         pluginCategory.addPreference(switchPref);
                     }
+                }
+                if (preferenceMap.isEmpty()) {
+                    pluginCategory.addPreference(noPlugins);
                 }
             }
         }
