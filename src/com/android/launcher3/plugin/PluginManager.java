@@ -21,12 +21,8 @@ import com.android.launcher3.BuildConfig;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.plugin.activity.ActivityPluginClient;
-import com.android.launcher3.plugin.activity.IActivityPlugin;
 import com.android.launcher3.plugin.button.ButtonPluginClient;
-import com.android.launcher3.plugin.button.IButtonPlugin;
-import com.android.launcher3.plugin.shortcuts.IShortcutPlugin;
 import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
-import com.android.launcher3.plugin.unread.IUnreadPlugin;
 import com.android.launcher3.plugin.unread.UnreadPluginClient;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -351,28 +347,30 @@ public final class PluginManager {
          * @param enable True if the plugin should be enabled, false otherwise.
          */
         public void setEnabled(boolean enable) {
-            if (mDescriptor == IUnreadPlugin.class.getName()) {
+            if (mInterface.equals(UnreadPluginClient.INTERFACE)) {
                 Utilities.getLawnchairPrefs(mContext)
                         .setShadespacePlugin(enable ? mPluginKey : null);
-            } else if (mDescriptor == IButtonPlugin.class.getName()) {
-                Set<String> buttonPlugins = Utilities.getLawnchairPrefs(mContext)
-                        .getButtonPlugins();
+            } else if (mInterface.equals(ButtonPluginClient.INTERFACE)) {
+                Set<String> buttonPlugins = new HashSet<>(Utilities.getLawnchairPrefs(mContext)
+                        .getButtonPlugins());
                 if (enable) {
                     buttonPlugins.add(mPluginKey);
                 } else {
                     buttonPlugins.remove(mPluginKey);
                 }
                 Utilities.getLawnchairPrefs(mContext).setButtonPlugins(buttonPlugins);
-            } else if (mDescriptor == IActivityPlugin.class.getName()) {
-                Set<String> plugins = Utilities.getLawnchairPrefs(mContext).getActivityPlugins();
+            } else if (mInterface.equals(ActivityPluginClient.INTERFACE)) {
+                Set<String> plugins = new HashSet<>(
+                        Utilities.getLawnchairPrefs(mContext).getActivityPlugins());
                 if (enable) {
                     plugins.add(mPluginKey);
                 } else {
                     plugins.remove(mPluginKey);
                 }
                 Utilities.getLawnchairPrefs(mContext).setActivityPlugins(plugins);
-            } else if (mDescriptor == IShortcutPlugin.class.getName()) {
-                Set<String> plugins = Utilities.getLawnchairPrefs(mContext).getShortcutPlugins();
+            } else if (mInterface.equals(ShortcutPluginClient.INTERFACE)) {
+                Set<String> plugins = new HashSet<>(
+                        Utilities.getLawnchairPrefs(mContext).getShortcutPlugins());
                 if (enable) {
                     plugins.add(mPluginKey);
                 } else {

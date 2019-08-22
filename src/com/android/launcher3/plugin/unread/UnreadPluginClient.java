@@ -10,7 +10,7 @@ import java.util.List;
 
 public class UnreadPluginClient extends PluginClient.Exclusive<IUnreadPlugin> {
 
-    private static final PluginInterface INTERFACE = new PluginInterface(
+    public static final PluginInterface INTERFACE = new PluginInterface(
             "com.android.launcher3.plugin.unread.IUnreadPlugin",
             1
     );
