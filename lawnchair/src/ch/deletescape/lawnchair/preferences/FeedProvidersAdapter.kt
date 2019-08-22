@@ -26,11 +26,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import ch.deletescape.lawnchair.feed.FeedProviderContainer
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
@@ -44,7 +44,7 @@ class FeedProvidersAdapter(private val context: Context)
     private var dividerIndex = 0
 
     private val adapterItems = ArrayList<Item>()
-    private val currentSpecs = ArrayList<String>()
+    private val currentSpecs = ArrayList<FeedProviderContainer>()
     private val otherItems = ArrayList<ProviderItem>()
     private val divider = DividerItem()
     private var isDragging = false
@@ -52,7 +52,9 @@ class FeedProvidersAdapter(private val context: Context)
     var itemTouchHelper: ItemTouchHelper? = null
 
     init {
-        allProviders.addAll(MainFeedController.getFeedProviders().map { ProviderItem(ProviderInfo(it)) })
+        allProviders.addAll(MainFeedController.getFeedProviders(context).map {
+            ProviderItem(ProviderInfo(it))
+        })
         currentSpecs.addAll(prefs.feedProviders.getAll())
 
         fillItems()
@@ -78,8 +80,8 @@ class FeedProvidersAdapter(private val context: Context)
         return adapterItems[position].type
     }
 
-    fun saveSpecs(): ArrayList<String> {
-        val newSpecs = ArrayList<String>()
+    fun saveSpecs(): ArrayList<FeedProviderContainer> {
+        val newSpecs = ArrayList<FeedProviderContainer>()
         val iterator = adapterItems.iterator()
 
         while (iterator.hasNext()) {
@@ -110,7 +112,7 @@ class FeedProvidersAdapter(private val context: Context)
         adapterItems.addAll(otherItems)
     }
 
-    private fun getAndRemoveOther(s: String): ProviderItem? {
+    private fun getAndRemoveOther(s: FeedProviderContainer): ProviderItem? {
         val iterator = otherItems.iterator()
         while (iterator.hasNext()) {
             val item = iterator.next()
@@ -169,7 +171,7 @@ class FeedProvidersAdapter(private val context: Context)
         }
     }
 
-    inner class ProviderInfo(val name: String) {
+    inner class ProviderInfo(val name: FeedProviderContainer) {
 
         val displayName = MainFeedController.getDisplayName(name, context);
     }

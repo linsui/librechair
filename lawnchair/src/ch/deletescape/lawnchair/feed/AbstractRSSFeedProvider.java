@@ -130,9 +130,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 .placeholder(R.drawable.work_tab_user_education).into(icon);
                     }
 
-                    title.setText(String.format("%s: %s", MainFeedController.Companion
-                                    .getDisplayName(getClass().getName(), getContext()),
-                            ClickbaitRanker.completePipeline(entry.getTitle())));
+                    title.setText(ClickbaitRanker.completePipeline(entry.getTitle()));
                     String spanned = Html.fromHtml(entry.getDescription().getValue(), 0).toString();
                     if (spanned.length() > 256) {
                         spanned = spanned.subSequence(0, 256).toString() + "...";

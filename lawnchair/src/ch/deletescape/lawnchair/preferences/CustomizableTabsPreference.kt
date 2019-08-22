@@ -192,18 +192,22 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                 holder.itemView.setOnClickListener {
                     AlertDialog.Builder(context!!, ThemeOverride.AlertDialog().getTheme(context!!))
                             .setTitle(R.string.title_dialog_select_tab_providers)
-                            .setMultiChoiceItems(MainFeedController.getFeedProviders().map {
+                            .setMultiChoiceItems(
+                                    MainFeedController.getFeedProviders(context!!).map {
                                 MainFeedController.getDisplayName(it, context!!)
-                            }.toTypedArray(), MainFeedController.getFeedProviders().map {
+                                    }.toTypedArray(),
+                                    MainFeedController.getFeedProviders(context!!).map {
                                 app.providers.contains(it)
                             }.toBooleanArray()) { dialog, which, isChecked ->
                                 if (!isChecked) {
-                                    app.providers = app.providers
-                                            .filter { it != MainFeedController.getFeedProviders()[which] }
+                                    app.providers = app.providers.filter {
+                                        it != MainFeedController.getFeedProviders(context!!)[which]
+                                    }
                                             .toTypedArray()
                                 } else {
                                     app.providers =
-                                            app.providers + MainFeedController.getFeedProviders()[which]
+                                            app.providers + MainFeedController.getFeedProviders(
+                                                    context!!)[which]
                                 }
 
                                 context!!.lawnchairPrefs.feedCustomTabs =

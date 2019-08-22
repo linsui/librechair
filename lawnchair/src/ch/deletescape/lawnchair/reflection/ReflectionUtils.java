@@ -20,18 +20,32 @@
 package ch.deletescape.lawnchair.reflection;
 
 import android.content.Context;
+import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.feed.AbstractFeedSortingAlgorithm;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class ReflectionUtils {
-    public static FeedProvider inflateFeedProvider(String clazz, Context context)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+
+    public static FeedProvider inflateFeedProvider(String clazz, Context context,
+            @Nullable Map<String, String> arguments)
+            throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         Class clazs = Class.forName(clazz);
-        Constructor<FeedProvider> method = clazs.getConstructor(Context.class);
-        return method.newInstance(context);
+        Constructor<FeedProvider> method;
+        boolean isArguments = false;
+        try {
+            method = arguments == null || arguments.isEmpty() ? clazs.getConstructor(Context.class)
+                    : clazs.getConstructor(Context.class, Map.class);
+            isArguments = !(arguments == null || arguments.isEmpty());
+        } catch (NoSuchMethodException e) {
+            method = clazs.getConstructor(Context.class, Map.class);
+            isArguments = true;
+        }
+        return isArguments ? method.newInstance(context, arguments) : method.newInstance(context);
     }
 
     public static AbstractFeedSortingAlgorithm inflateSortingAlgorithm(String clazz)

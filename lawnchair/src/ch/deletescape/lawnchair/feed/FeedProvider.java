@@ -21,17 +21,26 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class FeedProvider {
 
     private Context context;
+    private Map<String, String> arguments;
     private FeedAdapter adapter;
     private LauncherFeed feed;
     private boolean requestedRefresh;
+    private FeedProviderContainer container;
 
     public FeedProvider(Context c) {
+        this(c, new HashMap<>());
+    }
+
+    public FeedProvider(Context c, Map<String, String> arguments) {
         context = c;
+        this.arguments = arguments;
     }
 
     public Context getContext() {
@@ -74,5 +83,17 @@ public abstract class FeedProvider {
 
     public void setFeed(LauncherFeed feed) {
         this.feed = feed;
+    }
+
+    public Map<String, String> getArguments() {
+        return arguments;
+    }
+
+    public FeedProviderContainer getContainer() {
+        return container;
+    }
+
+    public void setContainer(FeedProviderContainer container) {
+        this.container = container;
     }
 }

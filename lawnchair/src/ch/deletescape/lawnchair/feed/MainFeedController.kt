@@ -25,7 +25,6 @@ import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
@@ -41,69 +40,78 @@ fun getFeedController(c: Context): MainFeedController {
 
 class MainFeedController(val context: Context) {
     fun getProviders(): List<FeedProvider> {
-        context.lawnchairPrefs.beginBlockingEdit()
-        context.lawnchairPrefs.feedProviders
-                .setAll(context.lawnchairPrefs.feedProviders.getAll().map {
-                    substitutions[it] ?: it
-                }.distinct())
-
-        return (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.toList()
-                .map {
-                    ReflectionUtils.inflateFeedProvider(it, context)
-                }
+        migrateToContainerSystem(context);
+        return (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.getList()
+                .map { it.instantiate(context) }
     }
 
     companion object {
         val substitutions =
                 mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to FeedWeatherStatsProvider::class.java.name)
-        fun getDisplayName(provider: String, context: Context): String {
-            return when (provider) {
-                CalendarEventProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_calendar)
-                FeedWeatherStatsProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_weather_stats)
-                FeedForecastProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_forecast)
-                FeedDailyForecastProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_daily_forecast)
-                RemoteFeedProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_remote_feeds)
-                WikipediaNewsProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_wikipedia_news)
-                WikipediaFunFactsProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_wikipedia_fun_facts)
-                WikinewsFeedProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_wikinews)
-                TheGuardianFeedProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_the_guardian)
-                BBCFeedProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_bbc)
-                GSyndicationFeedProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_google_news)
-                CustomizableRSSProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_customizable_rss)
-                DeviceStateProvider::class.java.name -> R.string.title_feed_provider_device_state.fromStringRes(
-                        context)
-                FeedWidgetsProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_widgets)
-                DailySummaryFeedProvider::class.java.name -> R.string.title_feed_provider_daily_summary.fromStringRes(
-                        context)
-                PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
-                        context)
-                WebApplicationsProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_web_applications)
-                NoteListProvider::class.java.name -> context.getString(
-                        R.string.title_feed_provider_note_list)
-                else -> error("No such provider ${provider}")
+
+        fun getDisplayName(provider: FeedProviderContainer, context: Context): String {
+            return when {
+                provider.name != null -> provider.name!!
+                else -> when (provider.clazz) {
+                    CalendarEventProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_calendar)
+                    FeedWeatherStatsProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_weather_stats)
+                    FeedForecastProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_forecast)
+                    FeedDailyForecastProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_daily_forecast)
+                    RemoteFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_remote_feeds)
+                    WikipediaNewsProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_wikipedia_news)
+                    WikipediaFunFactsProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_wikipedia_fun_facts)
+                    WikinewsFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_wikinews)
+                    TheGuardianFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_the_guardian)
+                    BBCFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_bbc)
+                    GSyndicationFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_google_news)
+                    CustomizableRSSProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_customizable_rss)
+                    DeviceStateProvider::class.java.name -> R.string.title_feed_provider_device_state.fromStringRes(
+                            context)
+                    FeedWidgetsProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_widgets)
+                    DailySummaryFeedProvider::class.java.name -> R.string.title_feed_provider_daily_summary.fromStringRes(
+                            context)
+                    PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
+                            context)
+                    WebApplicationsProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_web_applications)
+                    NoteListProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_note_list)
+                    else -> error("no default or override name for provider ${provider.clazz}")
+                }
             }
         }
 
-        fun getFeedProviders(): List<String> {
+        fun migrateToContainerSystem(context: Context) {
+            context.lawnchairPrefs.beginBlockingEdit()
+            if (context.lawnchairPrefs.feedProvidersLegacy.getAll().isNotEmpty()) {
+                context.lawnchairPrefs.feedProviders
+                        .setAll(context.lawnchairPrefs.feedProvidersLegacy.getAll().mapNotNull {
+                            if (it != RemoteFeedProvider::class.qualifiedName) substitutions[it]
+                                                                               ?: it else null
+                        }.map { FeedProviderContainer(it, null) })
+                context.lawnchairPrefs.feedProvidersLegacy.setAll(emptyList())
+            }
+        }
+
+        fun getFeedProviders(context: Context): List<FeedProviderContainer> {
+            migrateToContainerSystem(context)
             return listOf(CalendarEventProvider::class.java.name,
                           FeedWeatherStatsProvider::class.java.name,
                           FeedDailyForecastProvider::class.java.name,
-                          FeedForecastProvider::class.java.name,
-                          RemoteFeedProvider::class.java.name, NoteListProvider::class.java.name,
+                          FeedForecastProvider::class.java.name, NoteListProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
                           WikipediaFunFactsProvider::class.java.name,
                           WikinewsFeedProvider::class.java.name,
@@ -115,8 +123,14 @@ class MainFeedController(val context: Context) {
                           FeedWidgetsProvider::class.java.name,
                           DailySummaryFeedProvider::class.java.name,
                           PredictedAppsProvider::class.java.name,
-                          WebApplicationsProvider::class.java.name)
-                    .also { d("getFeedProviders: feed providers are $it ") }
+                          WebApplicationsProvider::class.java.name).map {
+                FeedProviderContainer(it, null)
+            } + RemoteFeedProvider.allProviders(context).map {
+                FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
+                                      mapOf(RemoteFeedProvider.COMPONENT_KEY to it.flattenToString()),
+                                      context.packageManager.getServiceInfo(it, 0).loadLabel(
+                                              context.packageManager).toString())
+            }.also { d("getFeedProvidersLegacy: feed providers are $it ") }
         }
     }
 }

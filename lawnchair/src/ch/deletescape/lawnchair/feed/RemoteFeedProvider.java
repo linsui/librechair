@@ -28,7 +28,6 @@ import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
-import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.reflection.ReflectionUtils;
@@ -44,22 +43,9 @@ import java.util.stream.Collectors;
 public class RemoteFeedProvider extends FeedProvider {
 
     public static final String SERVICE_ACTION = "ch.deletescape.lawnchair.FEED_PROVIDER";
-    private Map<ComponentName, IFeedProvider> providerMap = new HashMap<>();
+    public static final String COMPONENT_KEY = "RemoteFeedProvider::component_key";
 
-    public static List<ComponentName> availableProviders(Context context) {
-        List<ComponentName> infos = new ArrayList<>();
-        for (ApplicationInfo packageInfo : context.getPackageManager()
-                .getInstalledApplications(0)) {
-            if (resolveFeedProvider(packageInfo.packageName, context) != null
-                    && packageInfo.enabled) {
-                ServiceInfo service = resolveFeedProvider(packageInfo.packageName, context);
-                infos.add(new ComponentName(service.packageName, service.name));
-            }
-        }
-        return infos.stream().filter(it -> LawnchairPreferences.Companion.getInstance(context)
-                .getRemoteFeedProviders().contains(it.flattenToString())).collect(
-                Collectors.toList());
-    }
+    private Map<ComponentName, IFeedProvider> providerMap = new HashMap<>();
 
     public static List<ComponentName> allProviders(Context context) {
         List<ComponentName> infos = new ArrayList<>();
@@ -80,68 +66,32 @@ public class RemoteFeedProvider extends FeedProvider {
                 : context.getPackageManager().resolveService(intent, 0).serviceInfo;
     }
 
-    public RemoteFeedProvider(Context c) {
-        super(c);
+    public RemoteFeedProvider(Context c, Map<String, String> arguments) {
+        super(c, arguments);
     }
 
-    public void refreshIPCBindings(@Nullable ComponentName toRefresh) {
-        if (toRefresh != null) {
-            try {
-                getContext()
-                        .bindService(new Intent().setComponent(toRefresh), new ServiceConnection() {
-                            @Override
-                            public void onServiceConnected(ComponentName name, IBinder service) {
-                                try {
-                                    providerMap.put(name, IFeedProvider.Stub.asInterface(service));
-                                } catch (RuntimeException e) {
-                                    Log.d(getClass().getName(),
-                                            "onServiceConnected: could not convert service to interface",
-                                            e);
-                                }
-                            }
+    public void refreshIPCBindings(ComponentName toRefresh) {
+        getContext()
+                .bindService(new Intent().setComponent(toRefresh), new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder service) {
+                        try {
+                            providerMap.put(name, IFeedProvider.Stub.asInterface(service));
+                        } catch (RuntimeException e) {
+                            Log.d(getClass().getName(),
+                                    "onServiceConnected: could not convert service to interface",
+                                    e);
+                        }
+                    }
 
-                            @Override
-                            public void onServiceDisconnected(ComponentName name) {
-                                providerMap.remove(name);
-                                Log.d(getClass().getName(),
-                                        "onServiceDisconnected: disconnected from service. re-establishing connection");
-                                refreshIPCBindings(name);
-                            }
-                        }, Context.BIND_AUTO_CREATE);
-            } catch (SecurityException e) {
-                Log.w("refreshIPCBindings: bind failed due to SecurityException", e);
-            }
-        } else {
-            for (ComponentName name : availableProviders(getContext())) {
-                try {
-                    getContext()
-                            .bindService(new Intent().setComponent(name), new ServiceConnection() {
-                                @Override
-                                public void onServiceConnected(ComponentName name,
-                                        IBinder service) {
-                                    try {
-                                        providerMap
-                                                .put(name, IFeedProvider.Stub.asInterface(service));
-                                    } catch (RuntimeException e) {
-                                        Log.d(getClass().getName(),
-                                                "onServiceConnected: could not convert service to interface",
-                                                e);
-                                    }
-                                }
-
-                                @Override
-                                public void onServiceDisconnected(ComponentName name) {
-                                    providerMap.remove(name);
-                                    Log.d(getClass().getName(),
-                                            "onServiceDisconnected: disconnected from service. re-establishing connection");
-                                    refreshIPCBindings(name);
-                                }
-                            }, 0);
-                } catch (SecurityException e) {
-                    Log.w("refreshIPCBindings: bind failed due to SecurityException", e);
-                }
-            }
-        }
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                        providerMap.remove(name);
+                        Log.d(getClass().getName(),
+                                "onServiceDisconnected: disconnected from service. re-establishing connection");
+                        refreshIPCBindings(name);
+                    }
+                }, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -169,22 +119,20 @@ public class RemoteFeedProvider extends FeedProvider {
     public List<Card> getCards() {
         List<List<Card>> toSort = new ArrayList<>();
         Log.d(getClass().getName(), "getCards: retrieving cards");
-        for (ComponentName name : availableProviders(getContext())) {
-            Log.d(getClass().getName(), "getCards: found provider " + name);
-            if (!providerMap.containsKey(name) || !providerMap.get(name).asBinder().pingBinder()) {
-                refreshIPCBindings(name);
-            } else {
-                try {
-                    toSort.add(providerMap.get(name).getCards().stream()
-                            .map(remoteCard -> remoteCard.toCard(getContext())).collect(
-                                    Collectors.toList()));
-                } catch (RemoteException | RuntimeException e) {
-                    Log.w(getClass().getName(),
-                            "getCards: remote card failed to load and the provider has been disabled",
-                            e);
-                    LawnchairUtilsKt.getLawnchairPrefs(getContext())
-                            .getRemoteFeedProviders().remove(name.flattenToString());
-                }
+        ComponentName name = ComponentName.unflattenFromString(getArguments().get(COMPONENT_KEY));
+        if (!providerMap.containsKey(name) || !providerMap.get(name).asBinder().pingBinder()) {
+            refreshIPCBindings(name);
+        } else {
+            try {
+                toSort.add(providerMap.get(name).getCards().stream()
+                        .map(remoteCard -> remoteCard.toCard(getContext())).collect(
+                                Collectors.toList()));
+            } catch (RemoteException | RuntimeException e) {
+                Log.w(getClass().getName(),
+                        "getCards: remote card failed to load and the provider has been disabled",
+                        e);
+                LawnchairUtilsKt.getLawnchairPrefs(getContext())
+                        .getRemoteFeedProviders().remove(name.flattenToString());
             }
         }
         try {

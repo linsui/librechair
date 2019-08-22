@@ -21,24 +21,26 @@ package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
 import ch.deletescape.lawnchair.feed.FeedProvider;
+import ch.deletescape.lawnchair.feed.FeedProviderContainer;
 import ch.deletescape.lawnchair.feed.MainFeedController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public class ProviderTabbingController extends TabController {
 
-    public Map<String, Item> providerItemMap;
+    public Map<FeedProviderContainer, Item> providerItemMap;
 
-    public ProviderTabbingController(
-            @NotNull Context context) {
+    public ProviderTabbingController(@NotNull Context context) {
         super(context);
         this.providerItemMap = new LinkedHashMap<>();
-        for (String provider : MainFeedController.Companion.getFeedProviders()) {
+        for (FeedProviderContainer provider : MainFeedController.Companion
+                .getFeedProviders(context)) {
             providerItemMap.put(provider,
                     new Item(null, MainFeedController.Companion.getDisplayName(provider, context)));
         }
@@ -52,9 +54,9 @@ public class ProviderTabbingController extends TabController {
     @Override
     public Map<Item, List<FeedProvider>> sortFeedProviders(List<FeedProvider> providers) {
         Map<Item, List<FeedProvider>> result = new LinkedHashMap<>();
-        for (String provider : providerItemMap.keySet()) {
-            result.put(providerItemMap.get(provider),
-                    providers.stream().filter(it -> it.getClass().getName().equals(provider))
+        for (FeedProviderContainer provider : providerItemMap.keySet()) {
+            result.put(Objects.requireNonNull(providerItemMap.get(provider)),
+                    providers.stream().filter(it -> Objects.equals(it.getContainer(), provider))
                             .collect(
                                     Collectors.toList()));
         }

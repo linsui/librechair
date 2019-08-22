@@ -204,13 +204,29 @@ class LawnchairPreferences(val context: Context) :
                                   NowPlayingProvider::class.java.name,
                                   BatteryStatusProvider::class.java.name,
                                   PersonalityProvider::class.java.name))
-    var feedProviders = StringListPref("pref_feed_providers", ::restartOverlay,
-                                       listOf(FeedWeatherStatsProvider::class.java.name,
+    var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay,
+                                             listOf(FeedWeatherStatsProvider::class.java.name,
                                               FeedForecastProvider::class.java.name,
                                               DeviceStateProvider::class.java.name,
                                               CalendarEventProvider::class.java.name,
                                               WikipediaNewsProvider::class.java.name,
                                               WikinewsFeedProvider::class.java.name))
+    var feedProviders = object :
+            MutableListPref<FeedProviderContainer>(sharedPrefs, "pref_feed_provider_containers",
+                                                   ::restartOverlay,
+                                                   listOf(FeedWeatherStatsProvider::class.java.name,
+                                                          FeedForecastProvider::class.java.name,
+                                                          DeviceStateProvider::class.java.name,
+                                                          CalendarEventProvider::class.java.name,
+                                                          WikipediaNewsProvider::class.java.name,
+                                                          WikinewsFeedProvider::class.java.name).map {
+                                                       FeedProviderContainer(it, null)
+                                                   }) {
+        override fun unflattenValue(value: String) = Gson().fromJson(value,
+                                                                     FeedProviderContainer::class.java)
+
+        override fun flattenValue(value: FeedProviderContainer) = Gson().toJson(value)
+    }
 
     var feedDisabledCards = object : MutableListPref<Int>("pref_feed_hidden_cards", ::restart, emptyList()) {
         override fun unflattenValue(value: String): Int {
@@ -413,7 +429,7 @@ class LawnchairPreferences(val context: Context) :
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     var feedCustomTabs by object :
-            MutableListPref<CustomTab>(sharedPrefs, "pref_feed_tabs", ::restartOverlay,
+            MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay,
                                        emptyList()) {
         override fun unflattenValue(value: String): CustomTab {
             return Gson().fromJson(value, CustomTab::class.java)

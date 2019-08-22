@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.tabs;
 
+import ch.deletescape.lawnchair.feed.FeedProviderContainer;
 import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.Objects;
@@ -29,7 +30,7 @@ public class CustomTab {
     public String name;
 
     @SerializedName("b")
-    public String[] providers;
+    public FeedProviderContainer[] providers;
 
     @Override
     public boolean equals(Object o) {

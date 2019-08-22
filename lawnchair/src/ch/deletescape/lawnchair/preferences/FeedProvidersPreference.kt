@@ -43,6 +43,7 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.feed.FeedProviderContainer
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
@@ -60,7 +61,7 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
         updateSummary()
     }
 
-    fun setProviders(providers: List<String>) {
+    fun setProviders(providers: List<FeedProviderContainer>) {
         context.lawnchairPrefs.feedProviders.setAll(providers)
     }
 
