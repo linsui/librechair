@@ -27,6 +27,5 @@ class SettingsIntegrationActivity: SettingsActivity() {
     }
 
     override fun createLaunchFragment(intent: Intent?) = SubSettingsFragment.newInstance(
-                getString(R.string.pref_integrations),
-                R.xml.lawnchair_integration_preferences)
+            getString(R.string.pref_integrations), R.xml.lawnchair_feed_preferences)
 }

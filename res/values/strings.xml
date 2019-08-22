@@ -577,4 +577,7 @@
     <string name="message_feed_multiple_processes">This feed appears to have been accessed from multiple applications, which is not recommended and may leave your launcher in an unknown state, and now needs to be restarted.</string>
     <string name="title_color_resolver_feed_card">Automatic</string>
     <string name="pref_category_plugins">Plugins</string>
+
+    <string name="title_pref_feed">Feed</string>
+    <string name="summary_pref_feed">Providers, opacity, background color</string>
 </resources>

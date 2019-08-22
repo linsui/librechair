@@ -40,6 +40,14 @@
         android:layout="@layout/home_preference"/>
 
     <ch.deletescape.lawnchair.settings.ui.SubPreference
+        android:icon="@drawable/ic_integrations"
+        android:summary="@string/summary_pref_feed"
+        android:title="@string/title_pref_feed"
+        android:key="feed"
+        app:content="@xml/lawnchair_feed_preferences"
+        android:layout="@layout/home_preference" />
+
+    <ch.deletescape.lawnchair.settings.ui.SubPreference
         android:icon="@drawable/ic_dock"
         android:summary="@string/dock_pref_summary"
         android:title="@string/dock_pref_title"
