@@ -27,14 +27,18 @@ import ch.deletescape.lawnchair.locationManager
 class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c) {
     override val location: Pair<Double, Double>?
         get() = run {
-            if (context.checkLocationAccess()) {
-                val location = context.locationManager.lastKnownPosition
-                if (location != null) {
-                    return@run location.latitude to location.longitude
+            try {
+                if (context.checkLocationAccess()) {
+                    val location = context.locationManager.lastKnownPosition
+                    if (location != null) {
+                        return@run location.latitude to location.longitude
+                    }
+                    return@run null
+                } else {
+                    return@run null
                 }
-                return@run null
-            } else {
-                return@run null
+            } catch (e: IllegalArgumentException) {
+                return@run null;
             }
         }
 }
