@@ -24,6 +24,7 @@ import android.content.pm.PackageManager
 import android.os.*
 import android.util.Log
 import android.view.View
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnThread
 import ch.deletescape.lawnchair.runOnUiWorkerThread
@@ -32,6 +33,7 @@ import com.android.launcher3.*
 import com.android.launcher3.graphics.LauncherIcons
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
+import com.android.launcher3.util.PackageManagerHelper
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.allapps.Action
 import com.google.android.apps.nexuslauncher.allapps.ActionView
@@ -39,7 +41,27 @@ import com.google.android.apps.nexuslauncher.allapps.ActionsController
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
 import org.json.JSONObject
+import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
+import kotlin.collections.MutableList
+import kotlin.collections.Set
+import kotlin.collections.count
+import kotlin.collections.distinct
+import kotlin.collections.drop
+import kotlin.collections.filterNot
+import kotlin.collections.joinToString
+import kotlin.collections.listOf
+import kotlin.collections.map
+import kotlin.collections.mapIndexedNotNull
+import kotlin.collections.mapNotNull
+import kotlin.collections.mutableListOf
+import kotlin.collections.removeAll
+import kotlin.collections.reversed
+import kotlin.collections.sortedBy
+import kotlin.collections.take
+import kotlin.collections.toMutableList
+import kotlin.collections.toSet
 
 // TODO: Fix action icons being loaded too early, leading to f*cked icons when using sesame
 /**
@@ -61,9 +83,11 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     private val appsList = CountRankedArrayPreference(devicePrefs, "recent_app_launches", 250)
     private val phonesList = CountRankedArrayPreference(devicePrefs, "plugged_app_launches", 20)
     private val actionList = CountRankedArrayPreference(devicePrefs, "recent_shortcut_launches", 100)
-    private val isActionsEnabled get() = prefs.showActions
+    open val isActionsEnabled get() = !(PackageManagerHelper.isAppEnabled(context.packageManager, ACTIONS_PACKAGE, 0) && ActionsController.get(context).actions.size > 0) && prefs.showActions
 
     private var actionsCache = listOf<String>()
+
+    private val sesameComponent = ComponentName.unflattenFromString("ninja.sesame.app.edge/.activities.MainActivity")
 
     /**
      * Time at which headphones have been plugged in / connected. 0 if disconnected, -1 before initialized
@@ -195,7 +219,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     override fun logShortcutLaunch(intent: Intent, info: ItemInfo) {
         super.logShortcutLaunch(intent, info)
         if (isActionsEnabled) {
-           if (info is ShortcutInfo && info.shortcutInfo != null) {
+            if (info is ShortcutInfo && info.shortcutInfo != null) {
                 runOnThread(handler) {
                     cleanActions()
 
@@ -217,7 +241,6 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
 
     // TODO: There must be a better, more elegant way to concatenate these lists
     override fun getPredictions(): MutableList<ComponentKeyMapper> {
-        // LIBRE_CHANGED: Remove Sesame, as it is a non-free addon and depends on a non-free library
         return if (isPredictorEnabled) {
             clearRemovedComponents()
             val user = Process.myUserHandle()
@@ -233,6 +256,26 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
             }
             fullList.take(MAX_PREDICTIONS).toMutableList()
         } else mutableListOf()
+    }
+
+    open fun setHiddenAction(action: String) {
+        val hiddenActionSet = HashSet(context.lawnchairPrefs.hiddenPredictionActionSet)
+        hiddenActionSet.add(action)
+        Utilities.getLawnchairPrefs(context).hiddenPredictionActionSet = hiddenActionSet
+    }
+
+    private fun isHiddenAction(action: String): Boolean {
+        return HashSet(Utilities.getLawnchairPrefs(context).hiddenPredictionActionSet).contains(action)
+    }
+
+    private fun getFilteredActionList(actionList: ArrayList<Action>): ArrayList<Action> {
+        val arrayList = ArrayList<Action>()
+        for (action: Action in actionList) {
+            if (!isHiddenAction(action.toString())) {
+                arrayList.add(action)
+            }
+        }
+        return arrayList
     }
 
     // TODO: Extension function?
@@ -277,9 +320,16 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
 
     fun getActions(callback: (ArrayList<Action>) -> Unit) {
         cleanActions()
+        if (!isActionsEnabled) {
+            callback(ArrayList())
+            return
+        }
         runOnUiWorkerThread {
-            // LIBRE_CHANGED: Remove Sesame, as it depends on a non-free library
-            callback(ArrayList(actionList.getRanked().take(ActionsController.MAX_ITEMS).mapIndexedNotNull { index, s -> actionFromString(s, index.toLong()) }))
+            callback(getFilteredActionList(ArrayList(actionList.getRanked()
+                                                             .take(ActionsController.MAX_ITEMS)
+                                                             .mapIndexedNotNull { index, s ->
+                                                                 actionFromString(s, index.toLong())
+                                                             })))
         }
     }
 
@@ -299,8 +349,15 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
             }
         } else if (key == SettingsActivity.SHOW_ACTIONS_PREF) {
             if (!isActionsEnabled) {
-                actionList.clear()
+                getActions {
+                    actions ->
+                    runOnMainThread {
+                        actionsRow.onUpdated(actions)
+                    }
+                }
             }
+        } else if (key == SettingsActivity.HIDDEN_ACTIONS_PREF) {
+            updateActions()
         }
     }
 
@@ -389,6 +446,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     }
 
     companion object {
+        const val ACTIONS_PACKAGE = "com.google.android.as"
 
         const val KEY_ID = "id"
         const val KEY_EXPIRATION = "expiration"

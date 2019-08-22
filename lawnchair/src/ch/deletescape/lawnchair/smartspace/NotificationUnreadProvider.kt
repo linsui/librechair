@@ -24,6 +24,7 @@ import android.text.TextUtils
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.flowerpot.FlowerpotApps
 import ch.deletescape.lawnchair.loadSmallIcon
+import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Line
@@ -52,8 +53,8 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         zenModeEnabled = it
     }
 
-    override fun waitForSetup() {
-        super.waitForSetup()
+    override fun startListening() {
+        super.startListening()
 
         manager.addListener(this)
         zenModeListener.startListening()
@@ -66,7 +67,9 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun onNotificationsChanged() {
-        updateData(null, getEventCard())
+        runOnMainThread {
+            updateData(null, getEventCard())
+        }
     }
 
     private fun isCommunicationApp(sbn: StatusBarNotification): Boolean {
@@ -124,8 +127,8 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         return arrayOf(title)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun stopListening() {
+        super.stopListening()
         manager.removeListener(this)
         zenModeListener.stopListening()
     }

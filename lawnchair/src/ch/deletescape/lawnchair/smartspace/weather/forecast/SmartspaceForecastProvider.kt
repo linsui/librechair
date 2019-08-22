@@ -31,6 +31,14 @@ import java.util.concurrent.TimeUnit
 
 class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
         PeriodicDataProvider(controller), Listener {
+    override fun onDataUpdated(weather: WeatherData?, card: CardData?) {
+        if (weather?.coordLat != null && weather.coordLon != null) {
+            lat = weather.coordLat
+            lon = weather.coordLon
+            updateData()
+        }
+    }
+
     private var lat: Double? = null
     private var lon: Double? = null
     override val timeout: Long
@@ -49,9 +57,9 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                     val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
                     if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
                         val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.SNOW, false), listOf(
-                            Line(context.getString(R.string.title_card_incoming_snow),
-                                 TextUtils.TruncateAt.END)), true)
+                                WeatherIconManager.Icon.SNOW, false), listOf(Line(
+                                context.getString(R.string.title_card_incoming_snow),
+                                TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 600..699 }) {
                             runOnMainThread {
@@ -60,9 +68,9 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                         }
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
                         val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(
-                            Line(context.getString(R.string.title_card_incoming_thunder),
-                                 TextUtils.TruncateAt.END)), true)
+                                WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(Line(
+                                context.getString(R.string.title_card_incoming_thunder),
+                                TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 200..299 }) {
                             runOnMainThread {
@@ -71,9 +79,9 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                         }
                     } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
                         val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.RAIN, false), listOf(
-                            Line(context.getString(R.string.title_card_upcoming_rain),
-                                 TextUtils.TruncateAt.END)), true)
+                                WeatherIconManager.Icon.RAIN, false), listOf(Line(
+                                context.getString(R.string.title_card_upcoming_rain),
+                                TextUtils.TruncateAt.END)), true)
                         val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 300..599 }) {
                             runOnMainThread {
@@ -85,14 +93,6 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                     e.printStackTrace()
                 }
             }
-        }
-    }
-
-    override fun onDataUpdated(data: DataContainer) {
-        if (data.weather?.coordLat != null && data.weather.coordLon != null) {
-            lat = data.weather.coordLat
-            lon = data.weather.coordLon
-            updateData()
         }
     }
 }

@@ -83,10 +83,6 @@ import kotlin.collections.ArrayList
         }
     }
 
-    override fun onDestroy() {
-        handlerThread.quitSafely();
-    }
-
     override fun forceUpdate() {
         updateInformation()
         handler.postAtTime(this::forceUpdate, SystemClock.uptimeMillis() + TimeUnit.SECONDS.toMillis(5))

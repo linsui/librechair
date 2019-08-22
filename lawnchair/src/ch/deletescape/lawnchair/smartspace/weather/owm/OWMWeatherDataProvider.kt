@@ -132,12 +132,6 @@ import kotlin.math.roundToInt
         updateData(null, null)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        prefs.removeOnPreferenceChangeListener(this, "pref_weatherApiKey", "pref_weather_city",
-                                               "pref_weather_units")
-    }
-
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
         if (key in arrayOf("pref_weatherApiKey", "pref_weather_city", "pref_weather_units")) {
             if (key == "pref_weather_units") {

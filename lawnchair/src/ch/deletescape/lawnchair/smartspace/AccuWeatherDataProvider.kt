@@ -123,8 +123,8 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
         })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun stopListening() {
+        super.stopListening()
         prefs.removeOnPreferenceChangeListener(this, "pref_weather_city")
     }
 

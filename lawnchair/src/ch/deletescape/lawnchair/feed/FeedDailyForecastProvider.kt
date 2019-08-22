@@ -31,10 +31,18 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
 import com.android.launcher3.R
-import net.aksingh.owmjapis.api.APIException
 import java.io.IOException
 
 class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
+    override fun onDataUpdated(weather: WeatherData?, card: CardData?) {
+        if (weather != null) {
+            weatherData = weather
+            updateData()
+        } else {
+            weatherData = weather
+            updateData()
+        }
+    }
 
     private var forecast: ForecastProvider.DailyForecast? = null
     private var weatherData: WeatherData? = null
@@ -102,15 +110,5 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
                     }
 
                 }, Card.NO_HEADER, "nosort,top"))
-    }
-
-    override fun onDataUpdated(data: DataContainer) {
-        if (data.isWeatherAvailable && data.weather != weatherData) {
-            weatherData = data.weather
-            updateData()
-        } else {
-            weatherData = data.weather
-            updateData()
-        }
     }
 }

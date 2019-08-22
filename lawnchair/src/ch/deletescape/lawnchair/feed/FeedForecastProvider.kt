@@ -103,12 +103,12 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                 }, Card.NO_HEADER, "nosort,top"))
     }
 
-    override fun onDataUpdated(data: DataContainer) {
-        if (data.isWeatherAvailable && data.weather != weatherData) {
-            weatherData = data.weather
+    override fun onDataUpdated(data: WeatherData?, card: CardData?) {
+        if (data != null && data != weatherData) {
+            weatherData = data
             updateData()
         } else {
-            weatherData = data.weather
+            weatherData = null
             updateData()
         }
     }

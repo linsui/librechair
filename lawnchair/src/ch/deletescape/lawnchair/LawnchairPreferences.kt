@@ -55,6 +55,7 @@ import ch.deletescape.lawnchair.todo.Note
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.*
+import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm
 import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
@@ -329,6 +330,7 @@ class LawnchairPreferences(val context: Context) :
     val showActions by BooleanPref("pref_show_suggested_actions", true, doNothing)
     val sortDrawerByColors by BooleanPref("pref_allAppsColorSorted", false, reloadAll)
     val drawerTextScale by FloatPref("pref_allAppsIconTextScale", 1f, recreate)
+    val searchHiddenApps by BooleanPref(DefaultAppSearchAlgorithm.SEARCH_HIDDEN_APPS, false)
 
     // Dev
     var developerOptionsEnabled by BooleanPref("pref_showDevOptions", false, doNothing)
@@ -448,6 +450,8 @@ class LawnchairPreferences(val context: Context) :
 
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set",
+                                                Collections.emptySet(), doNothing)
+    var hiddenPredictionActionSet by StringSetPref("pref_hidden_prediction_set",
                                                 Collections.emptySet(), doNothing)
     val customAppName =
             object : MutableMapPref<ComponentKey, String>("pref_appNameMap", reloadAll) {

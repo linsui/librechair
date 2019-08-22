@@ -110,17 +110,16 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
         else emptyList()
     }
 
-    override fun onDataUpdated(data: DataContainer) {
-        weatherData = data.weather;
-        if (data.weather?.coordLat != null && data.weather.coordLon != null) {
+    override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
+        if (weatherData?.coordLat != null && weatherData.coordLon != null) {
             refreshExecutor.submit {
                 d("onDataUpdated: updating forcast HUD")
 
                 try {
                     d("onDataUpdated: fetching weather data")
                     hourlyWeatherForecast =
-                            context.forecastProvider.getHourlyForecast(data.weather.coordLat,
-                                                                       data.weather.coordLon)
+                            context.forecastProvider.getHourlyForecast(weatherData.coordLon,
+                                                                       weatherData.coordLat)
                     d("onDataUpdated: data retrieved")
 
                     val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {

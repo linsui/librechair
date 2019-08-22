@@ -110,6 +110,7 @@ class EditIconActivity : SettingsBaseActivity() {
                 packs.forEach {
                     it.ensureInitialLoadComplete()
                     val entry = it.getEntryForComponent(component!!)
+                                ?: it.getMaskEntryForComponent(component!!)
                     if (entry != null) {
                         runOnUiThread {
                             val item = IconItem(entry, it is DefaultPack, it.displayName)

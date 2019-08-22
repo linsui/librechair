@@ -50,12 +50,10 @@ import com.android.launcher3.Launcher
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.notification.NotificationListener
-import java.util.concurrent.Semaphore
 import java.util.concurrent.TimeUnit
 
 class LawnchairSmartspaceController(val context: Context) {
 
-    var smartspaceData = DataContainer()
     var weatherData: WeatherData? = null
     var cardData: CardData? = null
     private val listeners = ArrayList<Listener>()
@@ -68,9 +66,45 @@ class LawnchairSmartspaceController(val context: Context) {
     private val stockProviderClasses = listOf(OnboardingProvider::class.java)
     private val stockProviders = mutableListOf<DataProvider>()
 
+    var requiresSetup = false
+
     init {
         onProviderChanged()
         initStockProviders()
+    }
+
+    fun startSetup(onFinish: () -> Unit) {
+        if (!requiresSetup) {
+            onFinish()
+            return
+        }
+
+        val provider = (listOf(weatherDataProvider) + eventDataProviders)
+                .firstOrNull { !it.listening && it.requiresSetup() }
+
+        if (provider != null) {
+            provider.startSetup { success ->
+                if (success) {
+                    provider.startListening()
+                    provider.forceUpdate()
+                    forceUpdate()
+                } else {
+                    if (weatherDataProvider == provider) {
+                        weatherProviderPref.set(BlankDataProvider::class.java.name)
+                    }
+                    if (eventDataProviders.contains(provider)) {
+                        eventProvidersPref.setAll(eventDataProviders
+                                                          .filter { it != provider }
+                                                          .map { it::class.java.name })
+                    }
+                    onProviderChanged()
+                }
+                startSetup(onFinish)
+            }
+        } else {
+            requiresSetup = false
+            onFinish()
+        }
     }
 
     private fun updateWeatherData(weather: WeatherData?) {
@@ -85,7 +119,6 @@ class LawnchairSmartspaceController(val context: Context) {
     private fun updateData(weather: WeatherData?, card: CardData?) {
         weatherData = weather
         cardData = card
-        smartspaceData = DataContainer(weather, card)
         notifyListeners()
     }
 
@@ -100,14 +133,12 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     private fun notifyListeners() {
-        runOnMainThread {
-            listeners.forEach { it.onDataUpdated(smartspaceData) }
-        }
+        listeners.forEach { it.onDataUpdated(weatherData, cardData) }
     }
 
     fun addListener(listener: Listener) {
         listeners.add(listener)
-        listener.onDataUpdated(smartspaceData)
+        listener.onDataUpdated(weatherData, cardData)
     }
 
     fun removeListener(listener: Listener) {
@@ -140,18 +171,20 @@ class LawnchairSmartspaceController(val context: Context) {
                     .filterTo(eventDataProviders) { it !is BlankDataProvider }
                     .forEach { it.cardUpdateListener = ::updateCardData }
 
-            val allProviders = providerCache.values.toSet()
-            val newProviders = setOf(weatherDataProvider) + eventDataProviders
-            val needsDestroy = allProviders - newProviders
-            val needsUpdate = newProviders - activeProviders
+        val allProviders = providerCache.values.toSet()
+        val newProviders = setOf(weatherDataProvider) + eventDataProviders
+        val needsDestroy = allProviders - newProviders
+        val needsUpdate = newProviders - activeProviders
 
-            needsDestroy.forEach {
-                eventDataMap.remove(it)
-                it.onDestroy()
+        needsDestroy.forEach {
+            eventDataMap.remove(it)
+            if (it.listening) {
+                it.stopListening()
             }
+        }
 
-            weatherProviderPref.set(weatherDataProvider::class.java.name)
-            eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
+        weatherProviderPref.set(weatherDataProvider::class.java.name)
+        eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
 
             runOnMainThread {
                 if (eventProvidersPref.contains(
@@ -178,24 +211,19 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     private fun initStockProviders() {
-        runOnUiWorkerThread {
-            val providers = mutableListOf<DataProvider>()
-            stockProviderClasses.map { createDataProvider(it.name) }
-                    .filterTo(providers) { it !is BlankDataProvider }
-                    .forEach { it.cardUpdateListener = ::updateCardData }
+        val providers = mutableListOf<DataProvider>()
+        stockProviderClasses
+                .map { createDataProvider(it.name) }
+                .filterTo(providers) { it !is BlankDataProvider }
+                .forEach { it.cardUpdateListener = ::updateCardData }
 
-            runOnMainThread {
-                stockProviders.addAll(providers)
-                providers.forEach { it.forceUpdate() }
-                forceUpdate()
-            }
-        }
+        stockProviders.addAll(providers)
+        providers.forEach { it.forceUpdate() }
+        forceUpdate()
     }
 
     fun updateWeatherData() {
-        runOnMainThread {
-            weatherDataProvider.forceUpdate()
-        }
+        weatherDataProvider.forceUpdate()
     }
 
     fun openWeather(v: View) {
@@ -210,18 +238,10 @@ class LawnchairSmartspaceController(val context: Context) {
         }
     }
 
-    fun openEvent(v: View) {
-        cardData?.onClickListener?.onClick(v)
-    }
-
     private fun createDataProvider(className: String): DataProvider {
         return try {
-            (Class.forName(className).getConstructor(
-                    LawnchairSmartspaceController::class.java).newInstance(this) as DataProvider)
-                    .apply {
-                        runOnMainThread(::performSetup)
-                        waitForSetup()
-                    }
+            (Class.forName(className).getConstructor(LawnchairSmartspaceController::class.java)
+                    .newInstance(this) as DataProvider)
         } catch (t: Throwable) {
             Log.d("LSC", "couldn't create provider", t)
             BlankDataProvider(this)
@@ -229,47 +249,44 @@ class LawnchairSmartspaceController(val context: Context) {
     }
 
     abstract class DataProvider(val controller: LawnchairSmartspaceController) {
-        private var waiter: Semaphore? = Semaphore(0)
+        var listening = false
+            private set
 
         var weatherUpdateListener: ((WeatherData?) -> Unit)? = null
         var cardUpdateListener: ((DataProvider, CardData?) -> Unit)? = null
 
-        private var currentData: DataContainer? = null
+        private var currentWeather: WeatherData? = null
+        private var currentCard: CardData? = null
 
         protected val context = controller.context
         protected val resources = context.resources
 
-        open fun performSetup() {
-            onSetupComplete()
+        open fun requiresSetup() = false
+
+        open fun startSetup(onFinish: (Boolean) -> Unit) {
+            onFinish(true)
         }
 
-        protected fun onSetupComplete() {
-            waiter?.release()
+        open fun startListening() {
+            listening = true
         }
 
-        @Synchronized
-        open fun waitForSetup() {
-            waiter?.run {
-                acquireUninterruptibly()
-                release()
-                waiter = null
-            }
-        }
-
-        open fun onDestroy() {
+        open fun stopListening() {
+            listening = false
             weatherUpdateListener = null
             cardUpdateListener = null
         }
 
         fun updateData(weather: WeatherData?, card: CardData?) {
-            currentData = DataContainer(weather, card)
+            currentWeather = weather
+            currentCard = card
             weatherUpdateListener?.invoke(weather)
             cardUpdateListener?.invoke(this, card)
         }
 
         open fun forceUpdate() {
-            if (currentData != null) {
-                updateData(currentData?.weather, currentData?.card)
+            if (currentWeather != null || currentCard != null) {
+                updateData(currentWeather, currentCard)
             }
         }
 
@@ -313,8 +330,8 @@ class LawnchairSmartspaceController(val context: Context) {
 
         open val timeout = TimeUnit.MINUTES.toMillis(30)
 
-        override fun performSetup() {
-            super.performSetup()
+        override fun startListening() {
+            super.startListening()
             handler.post(update)
         }
 
@@ -327,8 +344,8 @@ class LawnchairSmartspaceController(val context: Context) {
             handler.postDelayed(update, timeout)
         }
 
-        override fun onDestroy() {
-            super.onDestroy()
+        override fun stopListening() {
+            super.stopListening()
             handlerThread.quit()
         }
 
@@ -358,9 +375,9 @@ class LawnchairSmartspaceController(val context: Context) {
     abstract class NotificationBasedDataProvider(controller: LawnchairSmartspaceController) :
             DataProvider(controller) {
 
-        override fun performSetup() {
+        override fun startSetup(onFinish: (Boolean) -> Unit) {
             if (checkNotificationAccess()) {
-                onSetupComplete()
+                onFinish(true)
                 return
             }
 
@@ -383,11 +400,13 @@ class LawnchairSmartspaceController(val context: Context) {
                 msg = context.getString(R.string.event_provider_missing_notification_access,
                                         context.getString(providerName),
                                         context.getString(R.string.derived_app_name))
-                BlankActivity.startActivityWithDialog(context, intent, 1030, context.getString(
-                        R.string.title_missing_notification_access), msg, context.getString(
-                        R.string.title_change_settings)) {
-                    onSetupComplete()
-                }
+            }
+            BlankActivity.startActivityWithDialog(
+                    context, intent, 1030,
+                    context.getString(R.string.title_missing_notification_access),
+                    msg,
+                    context.getString(R.string.title_change_settings)) {
+                onFinish(checkNotificationAccess())
             }
         }
 
@@ -405,18 +424,7 @@ class LawnchairSmartspaceController(val context: Context) {
             return listenerEnabled && badgingEnabled
         }
 
-        override fun waitForSetup() {
-            super.waitForSetup()
-
-            if (!checkNotificationAccess()) error("Notification access needed")
-        }
-    }
-
-    data class DataContainer(val weather: WeatherData? = null, val card: CardData? = null) {
-
-        val isDoubleLine get() = card?.isDoubleLine ?: false
-        val isWeatherAvailable get() = weather != null
-        val isCardAvailable get() = card != null
+        override fun requiresSetup() = !checkNotificationAccess()
     }
 
     data class WeatherData(val icon: Bitmap, val temperature: Temperature,
@@ -512,15 +520,16 @@ class LawnchairSmartspaceController(val context: Context) {
         }
     }
 
-    data class Line(val text: CharSequence,
-                    val ellipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END) {
+    data class Line @JvmOverloads constructor(
+            val text: CharSequence,
+            val ellipsize: TextUtils.TruncateAt? = TextUtils.TruncateAt.END) {
 
         constructor(context: Context, textRes: Int) : this(context.getString(textRes))
     }
 
     interface Listener {
 
-        fun onDataUpdated(data: DataContainer)
+        fun onDataUpdated(weather: WeatherData?, card: CardData?)
     }
 
     companion object {
@@ -560,8 +569,8 @@ class LawnchairSmartspaceController(val context: Context) {
 class BlankDataProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
 
-    override fun performSetup() {
-        super.performSetup()
+    override fun startListening() {
+        super.startListening()
 
         updateData(null, null)
     }

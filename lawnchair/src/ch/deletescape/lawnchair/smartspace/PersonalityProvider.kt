@@ -61,8 +61,8 @@ class PersonalityProvider(controller: LawnchairSmartspaceController) :
 
     private fun currentTime() = Calendar.getInstance()
 
-    override fun performSetup() {
-        super.performSetup()
+    override fun startListening() {
+        super.startListening()
         context.registerReceiver(
                 timeReceiver,
                 IntentFilter().apply {
@@ -83,8 +83,8 @@ class PersonalityProvider(controller: LawnchairSmartspaceController) :
         handler.postDelayed(onUpdateRunnable, updateInterval - now % updateInterval)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun stopListening() {
+        super.stopListening()
         handler.removeCallbacks(onUpdateRunnable)
     }
 
