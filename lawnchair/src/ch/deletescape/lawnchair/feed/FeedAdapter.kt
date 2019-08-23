@@ -42,14 +42,13 @@ import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
-import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
 
-class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
-                  backgroundColor: Int, private val context: Context,
-                  private val feed: LauncherFeed?) : RecyclerView.Adapter<CardViewHolder>() {
+class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
+                  private val context: Context, private val feed: LauncherFeed?) :
+        RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {

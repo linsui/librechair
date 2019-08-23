@@ -42,7 +42,6 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
-import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
@@ -68,8 +67,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
 
     private val context = ContextThemeWrapper(contex2t,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
-    private val adapter = FeedAdapter(getFeedController(context).getProviders(),
-                                      ThemeManager.getInstance(context), backgroundColor,
+    private val adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                                       context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
