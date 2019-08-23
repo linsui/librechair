@@ -42,7 +42,7 @@
         launcher:numColumns="5"
         launcher:numMinRows="1"
         launcher:numMinColumns="3"
-        launcher:providerId="1"
+        launcher:providerId="2"
         launcher:noPadding="true"
         launcher:customizeTitle="@string/title_pref_feed"
         launcher:customizeScreen="@xml/lawnchair_feed_preferences"
