@@ -585,4 +585,8 @@
     <string name="dialog_button_select_icon">Select icon</string>
 
     <string name="pref_category_providers">Providers</string>
+    <string name="clipart_microphone">Microphone</string>
+    <string name="clipart_bug">Bug</string>
+    <string name="clipart_information">Information</string>
+    <string name="clipart_goolag">Goolag</string>
 </resources>
