@@ -26,10 +26,7 @@ import android.content.IntentFilter
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
-import ch.deletescape.lawnchair.feed.CalendarEventProvider
-import ch.deletescape.lawnchair.feed.FeedAdapter
-import ch.deletescape.lawnchair.feed.FeedForecastProvider
-import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider
+import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.runOnNewThread
 
 class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
@@ -51,7 +48,8 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
     init {
         adapter = FeedAdapter(
                 listOf(FeedWeatherStatsProvider(context), FeedForecastProvider(context),
-                       CalendarEventProvider(context)), 0, context, null);
+                       CalendarEventProvider(context), TheGuardianFeedProvider(context)), 0,
+                context, null);
         layoutManager = LinearLayoutManager(context)
 
         postDelayed({
