@@ -47,9 +47,9 @@ class OnboardingProvider(c: Context) : FeedProvider(c) {
                         it.findViewById<Button>(R.id.customize_feed).setOnClickListener {
                             Intent(v.context, SettingsActivity::class.java)
                                     .putExtra(SettingsActivity.SubSettingsFragment.TITLE,
-                                              v.context.getString(R.string.home_widget))
+                                              v.context.getString(R.string.title_pref_feed))
                                     .putExtra(SettingsActivity.SubSettingsFragment.CONTENT_RES_ID,
-                                              R.xml.lawnchair_smartspace_preferences)
+                                              R.xml.lawnchair_feed_preferences)
                                     .putExtra(SettingsActivity.SubSettingsFragment.HAS_PREVIEW,
                                               true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                     .also { v.context.startActivity(it) }
