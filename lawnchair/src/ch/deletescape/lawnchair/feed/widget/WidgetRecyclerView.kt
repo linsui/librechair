@@ -23,11 +23,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
+import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.*
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
+import ch.deletescape.lawnchair.setAlpha
+import kotlin.math.roundToInt
 
 class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
     val tickReciever = object : BroadcastReceiver() {
@@ -46,9 +51,14 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
     }
 
     init {
+        background = ColorDrawable(
+                ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
+                        (context.lawnchairPrefs.feedBackgroundOpacity * (255f / 100f)).roundToInt()))
         adapter = FeedAdapter(
                 listOf(FeedWeatherStatsProvider(context), FeedForecastProvider(context),
-                       CalendarEventProvider(context), TheGuardianFeedProvider(context)), 0,
+                       CalendarEventProvider(context), TheGuardianFeedProvider(context)),
+                ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
+                        (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
                 context, null);
         layoutManager = LinearLayoutManager(context)
 
