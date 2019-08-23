@@ -50,6 +50,8 @@ public class RemoteDemoService extends Service {
                                 RemoteViews views = new RemoteViews(
                                         getApplicationContext().getPackageName(),
                                         R.layout.appwidget_error);
+                                views.setTextViewText(R.id.appwidget_error,
+                                        "This is a demonstration feed provider that you should not pay attention to. It serves to demonstrate the remote feed provider API.");
                                 return views;
                             }
                         }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode());
