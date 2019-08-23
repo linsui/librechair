@@ -344,9 +344,6 @@ public class DragView extends View {
     private Drawable getFullDrawable(ItemInfo info, LauncherAppState appState, Object[] outObj) {
         IconPackManager.CustomIconEntry customIconEntry = (info instanceof ShortcutInfo) ?
                 ((ShortcutInfo) info).customIconEntry : null;
-        if (info.getIntent().getPackage() == null) {
-            return null;
-        }
         if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION || customIconEntry != null) {
             LauncherActivityInfo activityInfo = LauncherAppsCompat.getInstance(mLauncher)
                     .resolveActivity(info.getIntent(), info.user);
