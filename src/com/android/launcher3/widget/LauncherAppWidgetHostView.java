@@ -24,6 +24,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -153,7 +154,7 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView
     }
 
     private boolean checkScrollableRecursively(ViewGroup viewGroup) {
-        if (viewGroup instanceof AdapterView) {
+        if (viewGroup instanceof AdapterView || viewGroup instanceof RecyclerView) {
             return true;
         } else {
             for (int i=0; i < viewGroup.getChildCount(); i++) {
