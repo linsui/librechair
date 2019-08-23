@@ -41,8 +41,9 @@ public class FeedProviderContainer {
         this.clazz = clazz;
         if (arguments == null) {
             this.arguments = Collections.emptyMap();
+        } else {
+            this.arguments = arguments;
         }
-        ;
     }
 
     public FeedProviderContainer(String clazz, @Nullable Map<String, String> arguments,

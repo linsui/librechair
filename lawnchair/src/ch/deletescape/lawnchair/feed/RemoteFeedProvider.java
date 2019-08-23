@@ -70,6 +70,8 @@ public class RemoteFeedProvider extends FeedProvider {
 
     public RemoteFeedProvider(Context c, Map<String, String> arguments) {
         super(c, arguments);
+        ComponentName name = ComponentName.unflattenFromString(getArguments().get(COMPONENT_KEY));
+        refreshIPCBindings(name);
     }
 
     public void refreshIPCBindings(ComponentName toRefresh) {

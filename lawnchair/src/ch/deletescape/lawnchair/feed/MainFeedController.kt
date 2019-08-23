@@ -134,17 +134,17 @@ class MainFeedController(val context: Context) {
                                             METADATA_CONTROLLER_PACKAGE to it.packageName,
                                             RemoteFeedProvider.COMPONENT_CATEGORY to run {
                                                 try {
-                                                    context.packageManager.getServiceInfo(it,
-                                                                                          0).metaData?.getString(
+                                                    return@run context.packageManager.getServiceInfo(
+                                                            it, 0)?.metaData?.getString(
                                                             METADATA_CATEGORY) ?: "other"
                                                 } catch (e: Resources.NotFoundException) {
-                                                    "other"
+                                                    return@run "other"
                                                 } catch (e: ClassCastException) {
                                                     e.printStackTrace()
-                                                    "other"
+                                                    return@run "other"
                                                 } catch (e: NullPointerException) {
                                                     e.printStackTrace()
-                                                    "other"
+                                                    return@run "other"
                                                 }
                                             }),
                                       context.packageManager.getServiceInfo(it, 0).loadLabel(

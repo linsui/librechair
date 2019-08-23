@@ -27,7 +27,6 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
 import ch.deletescape.lawnchair.feed.RemoteCard.Types;
-import com.android.launcher3.BuildConfig;
 import com.android.launcher3.R;
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +47,10 @@ public class RemoteDemoService extends Service {
                         new RemoteInflateHelper.Stub() {
                             @Override
                             public RemoteViews inflate(boolean darkText) throws RemoteException {
-                                return new RemoteViews(getApplicationContext().getPackageName(),
+                                RemoteViews views = new RemoteViews(
+                                        getApplicationContext().getPackageName(),
                                         R.layout.appwidget_error);
+                                return views;
                             }
                         }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode());
                 demoCard.setActionOnCardActionSelectedListener(
