@@ -126,68 +126,57 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             }
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
-                                if (feed != null) {
-                                    feed.displayView({ parent2 ->
-                                                         val articleView = LayoutInflater.from(
-                                                                 context).inflate(
-                                                                 R.layout.overlay_article, parent2,
-                                                                 false) as ViewGroup
-                                                         articleView.setBackgroundColor(
-                                                                 backgroundColor.setAlpha(255))
-                                                         val titleView = articleView
-                                                                 .findViewById<TextView>(R.id.title)
-                                                         val contentView = articleView
-                                                                 .findViewById<TextView>(
-                                                                         R.id.content)
-                                                         articleView.findViewById<View>(
-                                                                 R.id.open_externally)
-                                                                 .setOnClickListener { v3 ->
-                                                                     Utilities.openURLinBrowser(
-                                                                             context, entry.uri)
-                                                                 }
-                                                         val categoriesView = articleView
-                                                                 .findViewById<TextView>(
-                                                                         R.id.article_categories)
-                                                         categoriesView.text = categories.text
-                                                         titleView.text = entry.title
-                                                         Executors.newSingleThreadExecutor()
-                                                                 .submit {
-                                                                     try {
-                                                                         val urlConnection =
-                                                                                 URL(entry.uri.replace(
-                                                                                         "http://",
-                                                                                         "https://"))
-                                                                                         .openConnection()
-                                                                         if (urlConnection is HttpURLConnection) {
-                                                                             urlConnection
-                                                                                     .instanceFollowRedirects =
-                                                                                     true
-                                                                         }
-                                                                         var text: CharSequence =
-                                                                                 Essence.extract(
-                                                                                         IOUtils.toString(
-                                                                                                 urlConnection.getInputStream(),
-                                                                                                 Charset.defaultCharset()))
-                                                                                         .text
-                                                                         if (text.trim().isEmpty()) {
-                                                                             text = Html.fromHtml(
-                                                                                     entry.description.value,
-                                                                                     0);
-                                                                         }
-                                                                         contentView.post {
-                                                                             contentView.text = text
-                                                                         }
-                                                                     } catch (e: IOException) {
-                                                                         e.printStackTrace()
-                                                                     }
-                                                                 }
-                                                         articleView
-                                                     },
-                                                     (v2.getPostionOnScreen().first + v2.width / 2).toFloat(),
-                                                     (v2.getPostionOnScreen().second + v2.height / 2).toFloat())
-                                } else {
-                                    Utilities.openURLinBrowser(parent.context, entry.uri)
-                                }
+                                displayView({ parent2 ->
+                                                val articleView =
+                                                        LayoutInflater.from(context).inflate(
+                                                                R.layout.overlay_article, parent2,
+                                                                false) as ViewGroup
+                                                articleView.setBackgroundColor(
+                                                        backgroundColor.setAlpha(255))
+                                                val titleView = articleView
+                                                        .findViewById<TextView>(R.id.title)
+                                                val contentView = articleView
+                                                        .findViewById<TextView>(R.id.content)
+                                                articleView.findViewById<View>(R.id.open_externally)
+                                                        .setOnClickListener { v3 ->
+                                                            Utilities.openURLinBrowser(context,
+                                                                                       entry.uri)
+                                                        }
+                                                val categoriesView = articleView
+                                                        .findViewById<TextView>(
+                                                                R.id.article_categories)
+                                                categoriesView.text = categories.text
+                                                titleView.text = entry.title
+                                                Executors.newSingleThreadExecutor().submit {
+                                                    try {
+                                                        val urlConnection =
+                                                                URL(entry.uri.replace("http://",
+                                                                                      "https://"))
+                                                                        .openConnection()
+                                                        if (urlConnection is HttpURLConnection) {
+                                                            urlConnection.instanceFollowRedirects =
+                                                                    true
+                                                        }
+                                                        var text: CharSequence = Essence.extract(
+                                                                IOUtils.toString(
+                                                                        urlConnection.getInputStream(),
+                                                                        Charset.defaultCharset()))
+                                                                .text
+                                                        if (text.trim().isEmpty()) {
+                                                            text = Html.fromHtml(
+                                                                    entry.description.value, 0);
+                                                        }
+                                                        contentView.post {
+                                                            contentView.text = text
+                                                        }
+                                                    } catch (e: IOException) {
+                                                        e.printStackTrace()
+                                                    }
+                                                }
+                                                articleView
+                                            },
+                                            (v2.getPostionOnScreen().first + v2.width / 2).toFloat(),
+                                            (v2.getPostionOnScreen().second + v2.height / 2).toFloat())
                             }
 
                             date.text = entry.publishedDate?.toLocaleString()

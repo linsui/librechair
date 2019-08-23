@@ -20,10 +20,17 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import ch.deletescape.lawnchair.theme.ThemeOverride;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kotlin.jvm.functions.Function1;
 
 public abstract class FeedProvider {
 
@@ -33,14 +40,16 @@ public abstract class FeedProvider {
     private LauncherFeed feed;
     private boolean requestedRefresh;
     private FeedProviderContainer container;
+    private WindowManager windowService;
 
     public FeedProvider(Context c) {
         this(c, new HashMap<>());
     }
 
     public FeedProvider(Context c, Map<String, String> arguments) {
-        context = c;
+        this.context = c;
         this.arguments = arguments;
+        this.windowService = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
     }
 
     public Context getContext() {
@@ -83,6 +92,16 @@ public abstract class FeedProvider {
 
     public void setFeed(LauncherFeed feed) {
         this.feed = feed;
+    }
+
+    protected void displayView(Function1<? super ViewGroup, ? extends View> inflateHelper, float x,
+            float y) {
+        if (feed != null) {
+            feed.displayView(inflateHelper, x, y);
+        } else {
+            new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
+                    .setView(inflateHelper.invoke(new LinearLayout(context))).show();
+        }
     }
 
     public Map<String, String> getArguments() {
