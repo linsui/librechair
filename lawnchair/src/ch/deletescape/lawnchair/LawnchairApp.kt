@@ -31,6 +31,8 @@ import android.webkit.WebView
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
+import ch.deletescape.lawnchair.clipart.ClipartCache
+import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
@@ -75,6 +77,7 @@ class LawnchairApp : Application() {
         }
         overlayWidgetHost = OverlayWidgetHost(this, LauncherAppWidgetHost.APPWIDGET_HOST_ID)
                 .also { it.startListening() }
+        ClipartCache.providers += ResourceClipartResolver(this)
     }
 
     fun onLauncherAppStateCreated() {

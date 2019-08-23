@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
+import ch.deletescape.lawnchair.clipart.ClipartCache;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -37,13 +38,15 @@ public class CustomTabbingController extends TabController {
 
     public CustomTabbingController(@NotNull Context context) {
         super(context);
-        MISC_TAB = new Item(null, context.getString(R.string.pref_category_misc));
+        MISC_TAB = new Item(context.getDrawable(R.drawable.ic_spa_black_24dp),
+                context.getString(R.string.pref_category_misc));
     }
 
     @Override
     public List<Item> getAllTabs() {
         List<Item> tabs = Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs().stream()
-                .map(it -> new Item(null, it.name)).collect(
+                .map(it -> new Item(ClipartCache.INSTANCE.resolveDrawable(it.iconToken), it.name))
+                .collect(
                         Collectors.toList());
         if (Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab()) {
             tabs.add(MISC_TAB);
@@ -62,7 +65,8 @@ public class CustomTabbingController extends TabController {
                         .filter(it -> Arrays.asList(tab.providers)
                                 .contains(it.getContainer())).collect(
                                 Collectors.toList());
-                result.put(new Item(null, tab.name), sorted);
+                result.put(new Item(ClipartCache.INSTANCE.resolveDrawable(tab.iconToken), tab.name),
+                        sorted);
             }
             if (Utilities.getLawnchairPrefs(getContext()).getFeedShowOtherTab()) {
                 result.put(MISC_TAB, providers.stream().filter(provider -> result.values().stream()

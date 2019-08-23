@@ -32,6 +32,9 @@ public class CustomTab {
     @SerializedName("b")
     public FeedProviderContainer[] providers;
 
+    @SerializedName("c")
+    public String iconToken;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
