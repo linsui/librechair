@@ -38,6 +38,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.clipart.ClipartCache
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.CustomTabbingController
@@ -194,16 +195,15 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                             .setTitle(R.string.title_dialog_select_tab_providers)
                             .setMultiChoiceItems(
                                     MainFeedController.getFeedProviders(context!!).map {
-                                MainFeedController.getDisplayName(it, context!!)
+                                        MainFeedController.getDisplayName(it, context!!)
                                     }.toTypedArray(),
                                     MainFeedController.getFeedProviders(context!!).map {
-                                app.providers.contains(it)
-                            }.toBooleanArray()) { dialog, which, isChecked ->
+                                        app.providers.contains(it)
+                                    }.toBooleanArray()) { dialog, which, isChecked ->
                                 if (!isChecked) {
                                     app.providers = app.providers.filter {
                                         it != MainFeedController.getFeedProviders(context!!)[which]
-                                    }
-                                            .toTypedArray()
+                                    }.toTypedArray()
                                 } else {
                                     app.providers =
                                             app.providers + MainFeedController.getFeedProviders(
@@ -214,8 +214,29 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                                         context!!.lawnchairPrefs.feedCustomTabs.toMutableList()
                                                 .apply {
                                                     set(holder.adapterPosition, app)
-                                        }
-                            }.setPositiveButton(android.R.string.ok) { dialog, which -> }.show()
+                                                }
+                            }.setPositiveButton(android.R.string.ok) { dialog, which -> }
+                            .setNeutralButton(R.string.dialog_button_select_icon) { dialog, which ->
+                                AlertDialog.Builder(context!!,
+                                                    ThemeOverride.AlertDialog().getTheme(context!!))
+                                        .setTitle(R.string.dialog_button_select_icon)
+                                        .setSingleChoiceItems((listOf(R.string.none.fromStringRes(
+                                                context!!)) + ClipartCache.all.map {
+                                            it.userFacingName
+                                        }).toTypedArray(),
+                                                              ClipartCache.all.indexOfFirst { it.token == app.iconToken } + 1) { dialog2, which2 ->
+                                            if (which2 > 1) {
+                                                app.iconToken = ClipartCache.all[which2 - 1].token
+                                            } else {
+                                                app.iconToken = null
+                                            }
+                                            context!!.lawnchairPrefs.feedCustomTabs =
+                                                    context!!.lawnchairPrefs.feedCustomTabs
+                                                            .toMutableList().also {
+                                                                it[holder.adapterPosition] = app
+                                                            }
+                                        }.setPositiveButton(android.R.string.ok) { _, _ -> }.show()
+                            }.show()
                 }
             }
 

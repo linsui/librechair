@@ -44,7 +44,7 @@ public class ResourceClipartResolver implements ClipartResolver {
 
             @Override
             public String getUserFacingName() {
-                return context.getString(R.string.title_pref_feed_widgets_tab);
+                return context.getString(R.string.widget_button_text);
             }
 
             @Override
