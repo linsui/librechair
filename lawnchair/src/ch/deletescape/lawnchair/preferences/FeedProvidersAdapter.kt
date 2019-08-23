@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import ch.deletescape.lawnchair.feed.FeedProviderContainer
+import ch.deletescape.lawnchair.feed.METADATA_CONTROLLER_PACKAGE
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
@@ -205,6 +206,13 @@ class FeedProvidersAdapter(private val context: Context)
             title.text = packItem.info.displayName
             itemView.isClickable = !packItem.isStatic
             dragHandle.isVisible = !packItem.isStatic
+            summary.isVisible =
+                    packItem.info.name.arguments?.get(METADATA_CONTROLLER_PACKAGE) != null
+            if (summary.isVisible) {
+                summary.text = context.packageManager.getApplicationLabel(
+                        context.packageManager.getApplicationInfo(
+                                packItem.info.name.arguments?.get(METADATA_CONTROLLER_PACKAGE), 0))
+            }
         }
 
         override fun onClick(v: View) {

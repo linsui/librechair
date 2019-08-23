@@ -475,6 +475,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     }
                     windowService.addView(feedController, layoutParams)
                 } else {
+                    feedController.alpha = 0f
                     windowService.removeView(feedController)
                 }
             }
