@@ -64,21 +64,21 @@ enum class WeatherTypes {
             var clear = 0
             var clouds = 0
             conditionCodes.forEach {
-                when {
-                    it in 200..299 -> {
+                when (it) {
+                    in 200..299 -> {
                         thunder += if (it - 200 < 10) 1 else if (it - 200 < 20) 5 else 10
                         rain += 5
                     }
-                    it in 300..399 -> {
+                    in 300..399 -> {
                         rain += 1
                     }
-                    it in 500..599 -> {
+                    in 500..599 -> {
                         rain += if (it - 400 < 10) 1 else if (it - 400 < 20) 2 else 5
                     }
-                    it in 600..699 -> {
+                    in 600..699 -> {
                         snow += if (it - 600 < 10) 3 else if (it - 600 < 20) 5 else 10
                     }
-                    it in 800..899 -> {
+                    in 800..899 -> {
                         if (it != 800) {
                             if (it - 800 < 2) {
                                 clear += 2

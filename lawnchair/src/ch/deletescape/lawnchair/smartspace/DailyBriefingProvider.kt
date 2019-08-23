@@ -33,7 +33,6 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.PeriodicDataProvider(controller) {
     override val timeout = TimeUnit.SECONDS.toMillis(10)
     var briefingShown = false to 0L
-
     override fun updateData() {
         var currentTime = GregorianCalendar()
         val (hour, minute) = context.lawnchairPrefs.wakeUpCallTime.split(":").map { it.toInt() }
@@ -50,59 +49,48 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                         d("updateData: retrieved current weather $currentWeather")
                         val hourlyForecast = context.forecastProvider.getHourlyForecast(lat, lon)
                         d("updateData: retrieved forecasts $currentWeather and $hourlyForecast")
-
                         val lines = mutableListOf(LawnchairSmartspaceController.Line(
                                 context.getString(
                                         R.string.daily_briefing_current_conditions_prefix) + " " + currentWeather.temperature.toString(
                                         context.lawnchairPrefs.weatherUnit),
-                                TextUtils.TruncateAt.MARQUEE),
-                                                  LawnchairSmartspaceController.Line(
-                                                          context.getString(
-                                                                  R.string.daily_breifing_today_prefix) + " " + run {
-                                                              val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                                                                      run {
-                                                                          val list = newList<Int>()
-                                                                          hourlyForecast.data
-                                                                                  .filter {
-                                                                                      it.date
-                                                                                              .before(tomorrow())
-                                                                                  }.forEach {
-                                                                                      list += it.condCode?.toList()
-                                                                                              ?: listOf(
-                                                                                                      1)
-                                                                                  }
-                                                                          d("updateData: parsed condition codes $list")
-                                                                          list.toTypedArray()
-                                                                      })
-                                                              d("updateData: parsed condition type ${WeatherTypes.getStringResource(
-                                                                      WeatherTypes.getWeatherTypeFromStatistics(
-                                                                              clear, clouds, rain,
-                                                                              snow,
-                                                                              thunder))
-                                                                      .fromStringRes(context)
-                                                                      .toLowerCase()}")
-                                                              WeatherTypes.getStringResource(
-                                                                      WeatherTypes.getWeatherTypeFromStatistics(
-                                                                              clear, clouds, rain,
-                                                                              snow,
-                                                                              thunder))
-                                                                      .fromStringRes(context)
-                                                                      .toLowerCase()
-                                                          }, TextUtils.TruncateAt.MARQUEE))
-
+                                TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
+                                context.getString(
+                                        R.string.daily_breifing_today_prefix) + " " + run {
+                                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                                            run {
+                                                val list = newList<Int>()
+                                                hourlyForecast.data.filter {
+                                                    it.date.before(tomorrow())
+                                                }.forEach {
+                                                    list += it.condCode?.toList() ?: listOf(1)
+                                                }
+                                                d("updateData: parsed condition codes $list")
+                                                list.toTypedArray()
+                                            })
+                                    d("updateData: parsed condition type ${WeatherTypes.getStringResource(
+                                            WeatherTypes.getWeatherTypeFromStatistics(clear, clouds,
+                                                                                      rain, snow,
+                                                                                      thunder)).fromStringRes(
+                                            context).toLowerCase()}")
+                                    WeatherTypes.getStringResource(
+                                            WeatherTypes.getWeatherTypeFromStatistics(clear, clouds,
+                                                                                      rain, snow,
+                                                                                      thunder))
+                                            .fromStringRes(context).toLowerCase()
+                                }, TextUtils.TruncateAt.MARQUEE))
                         val query =
                                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + tomorrow().time + " ))"
-
-                        val eventCursor: Cursor = context.contentResolver
-                                .query(CalendarContract.Events.CONTENT_URI,
-                                       arrayOf(CalendarContract.Instances.TITLE,
-                                               CalendarContract.Instances.DTSTART,
-                                               CalendarContract.Instances.DTEND,
-                                               CalendarContract.Instances.DESCRIPTION,
-                                               CalendarContract.Events._ID,
-                                               CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                               CalendarContract.Events.EVENT_LOCATION), query, null,
-                                       CalendarContract.Instances.DTSTART + " ASC")!!
+                        val eventCursor: Cursor =
+                                context.contentResolver.query(CalendarContract.Events.CONTENT_URI,
+                                                              arrayOf(CalendarContract.Instances.TITLE,
+                                                                      CalendarContract.Instances.DTSTART,
+                                                                      CalendarContract.Instances.DTEND,
+                                                                      CalendarContract.Instances.DESCRIPTION,
+                                                                      CalendarContract.Events._ID,
+                                                                      CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                                                      CalendarContract.Events.EVENT_LOCATION),
+                                                              query, null,
+                                                              CalendarContract.Instances.DTSTART + " ASC")!!
 
                         if (eventCursor.count >= 1) {
                             lines += LawnchairSmartspaceController
@@ -117,9 +105,9 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                             val updateDataNoEvents: () -> Unit = {
                                 currentTime = GregorianCalendar()
                                 if (currentTime.hourOfDay == hour && currentTime.minuteOfHour >= minute - 10 && currentTime.minuteOfHour <= minute + 10) {
-                                    updateData(null, LawnchairSmartspaceController.CardData(null,
-                                                                                            lines,
-                                                                                            forceSingleLine = false))
+                                    updateData(null,
+                                               LawnchairSmartspaceController.CardData(null, lines,
+                                                                                      forceSingleLine = false))
                                     if (eventCursor.count > 0) {
                                         mainHandler.postDelayed(updateDataWithEvents, 1000 * 2)
                                     } else {
@@ -149,6 +137,8 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                         }
                     } catch (e: ForecastProvider.ForecastException) {
                         e.printStackTrace()
+                    } catch (e: NullPointerException) {
+                        e.printStackTrace();
                     }
                 }
             }
