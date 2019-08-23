@@ -31,12 +31,12 @@ import java.util.*
 class LocaleOverridePreference(context: Context, attrs: AttributeSet?) :
         ListPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
     init {
+        setDefaultValue("")
         this.entries = arrayOf(R.string.none.fromStringRes(
                 context)) + Locale.getISOCountries().map {
             Locale("", it).displayCountry
         }.toTypedArray()
         this.entryValues = arrayOf("") + Locale.getISOCountries()
-        setDefaultValue("")
         context.lawnchairPrefs.addOnPreferenceChangeListener(key, this)
         summary = entry
     }
