@@ -23,21 +23,26 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.reflection.ReflectionUtils;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class FeedProviderContainer {
 
     public final String clazz;
-    @Nullable
-    public final Map<String, String> arguments;
+    @NotNull
+    public Map<String, String> arguments = Collections.emptyMap();
     @Nullable
     public String name;
 
     public FeedProviderContainer(String clazz,
             @Nullable Map<String, String> arguments) {
         this.clazz = clazz;
-        this.arguments = arguments;
+        if (arguments == null) {
+            this.arguments = Collections.emptyMap();
+        }
+        ;
     }
 
     public FeedProviderContainer(String clazz, @Nullable Map<String, String> arguments,

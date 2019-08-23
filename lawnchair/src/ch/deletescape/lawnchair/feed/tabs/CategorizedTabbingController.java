@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.feed.FeedForecastProvider;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider;
 import ch.deletescape.lawnchair.feed.NoteListProvider;
+import ch.deletescape.lawnchair.feed.RemoteFeedProvider;
 import ch.deletescape.lawnchair.feed.WebApplicationsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
@@ -39,6 +40,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -88,7 +90,6 @@ public class CategorizedTabbingController extends TabController {
 
     @Override
     public Map<Item, List<FeedProvider>> sortFeedProviders(List<FeedProvider> providers) {
-        Map<Item, List<FeedProvider>> map = new HashMap<>();
         List<FeedProvider> tools, news, events, misc, widgets;
         tools = providers.stream().filter(it -> it instanceof FeedWeatherStatsProvider
                 || it instanceof FeedForecastProvider
@@ -96,11 +97,19 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof DailySummaryFeedProvider
                 || it instanceof WikipediaFunFactsProvider
                 || it instanceof NoteListProvider
-                || it instanceof WebApplicationsProvider).collect(Collectors.toList());
+                || it instanceof WebApplicationsProvider
+                || Objects
+                .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
+                        "tools")).collect(Collectors.toList());
         news = providers.stream().filter(it -> it instanceof AbstractRSSFeedProvider
-                || it instanceof WikipediaNewsProvider).collect(
+                || it instanceof WikipediaNewsProvider
+                || Objects
+                .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
+                        "news")).collect(
                 Collectors.toList());
-        events = providers.stream().filter(it -> it instanceof CalendarEventProvider).collect(
+        events = providers.stream().filter(it -> it instanceof CalendarEventProvider || Objects
+                .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
+                        "events")).collect(
                 Collectors.toList());
         widgets = providers.stream().filter(it -> it instanceof FeedWidgetsProvider).collect(
                 Collectors.toList());

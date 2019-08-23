@@ -43,6 +43,8 @@ import java.util.stream.Collectors;
 public class RemoteFeedProvider extends FeedProvider {
 
     public static final String SERVICE_ACTION = "ch.deletescape.lawnchair.FEED_PROVIDER";
+    public static final String COMPONENT_CATEGORY = "RemoteFeedProvider::component_category";
+    public static final String METADATA_CATEGORY = "ch.deletescape.lawnchair.feed.RemoteFeedProvider.CATEGORY";
     public static final String COMPONENT_KEY = "RemoteFeedProvider::component_key";
 
     private Map<ComponentName, IFeedProvider> providerMap = new HashMap<>();

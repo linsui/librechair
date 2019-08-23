@@ -21,7 +21,9 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Resources
 import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -129,7 +131,19 @@ class MainFeedController(val context: Context) {
             } + RemoteFeedProvider.allProviders(context).map {
                 FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
                                       mapOf(RemoteFeedProvider.COMPONENT_KEY to it.flattenToString(),
-                                            METADATA_CONTROLLER_PACKAGE to it.packageName),
+                                            METADATA_CONTROLLER_PACKAGE to it.packageName,
+                                            RemoteFeedProvider.COMPONENT_CATEGORY to run {
+                                                try {
+                                                    context.packageManager.getServiceInfo(it,
+                                                                                          0).metaData.getString(
+                                                            METADATA_CATEGORY) ?: "other"
+                                                } catch (e: Resources.NotFoundException) {
+                                                    "other"
+                                                } catch (e: ClassCastException) {
+                                                    e.printStackTrace()
+                                                    "other"
+                                                }
+                                            }),
                                       context.packageManager.getServiceInfo(it, 0).loadLabel(
                                               context.packageManager).toString())
             }.also { d("getFeedProvidersLegacy: feed providers are $it ") }

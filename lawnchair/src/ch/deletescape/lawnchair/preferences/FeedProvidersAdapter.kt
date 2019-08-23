@@ -207,11 +207,11 @@ class FeedProvidersAdapter(private val context: Context)
             itemView.isClickable = !packItem.isStatic
             dragHandle.isVisible = !packItem.isStatic
             summary.isVisible =
-                    packItem.info.name.arguments?.get(METADATA_CONTROLLER_PACKAGE) != null
+                    packItem.info.name.arguments.get(METADATA_CONTROLLER_PACKAGE) != null
             if (summary.isVisible) {
                 summary.text = context.packageManager.getApplicationLabel(
                         context.packageManager.getApplicationInfo(
-                                packItem.info.name.arguments?.get(METADATA_CONTROLLER_PACKAGE), 0))
+                                packItem.info.name.arguments.get(METADATA_CONTROLLER_PACKAGE), 0))
             }
         }
 

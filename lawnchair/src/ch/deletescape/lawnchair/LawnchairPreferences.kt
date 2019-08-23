@@ -204,13 +204,7 @@ class LawnchairPreferences(val context: Context) :
                                   NowPlayingProvider::class.java.name,
                                   BatteryStatusProvider::class.java.name,
                                   PersonalityProvider::class.java.name))
-    var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay,
-                                             listOf(FeedWeatherStatsProvider::class.java.name,
-                                              FeedForecastProvider::class.java.name,
-                                              DeviceStateProvider::class.java.name,
-                                              CalendarEventProvider::class.java.name,
-                                              WikipediaNewsProvider::class.java.name,
-                                              WikinewsFeedProvider::class.java.name))
+    var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay, emptyList())
     var feedProviders = object :
             MutableListPref<FeedProviderContainer>(sharedPrefs, "pref_feed_provider_containers",
                                                    ::restartOverlay,
@@ -223,7 +217,11 @@ class LawnchairPreferences(val context: Context) :
                                                        FeedProviderContainer(it, null)
                                                    }) {
         override fun unflattenValue(value: String) = Gson().fromJson(value,
-                                                                     FeedProviderContainer::class.java)
+                                                                     FeedProviderContainer::class.java).apply {
+            if (arguments == null) {
+                arguments = Collections.emptyMap();
+            }
+        }
 
         override fun flattenValue(value: FeedProviderContainer) = Gson().toJson(value)
     }
