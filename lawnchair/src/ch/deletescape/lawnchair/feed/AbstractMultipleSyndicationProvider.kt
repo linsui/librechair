@@ -185,6 +185,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                      },
                                                      (v2.getPostionOnScreen().first + v2.width / 2).toFloat(),
                                                      (v2.getPostionOnScreen().second + v2.height / 2).toFloat())
+                                } else {
+                                    Utilities.openURLinBrowser(parent.context, entry.uri)
                                 }
                             }
 

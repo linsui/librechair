@@ -49,7 +49,7 @@ import com.github.mmin18.widget.RealtimeBlurView
 
 class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: ThemeManager,
                   backgroundColor: Int, private val context: Context,
-                  private val feed: LauncherFeed) : RecyclerView.Adapter<CardViewHolder>() {
+                  private val feed: LauncherFeed?) : RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {
@@ -101,7 +101,7 @@ class FeedAdapter(var providers: List<FeedProvider>, private val themeManager: T
         cards.clear()
         val toSort: MutableList<List<Card>> = ArrayList()
         providers.iterator().forEach {
-            if (it.feed == null) {
+            if (it.feed == null && feed != null) {
                 it.feed = feed
             }
             toSort += mutableListOf(it.cards)
