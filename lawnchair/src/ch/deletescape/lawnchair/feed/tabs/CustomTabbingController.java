@@ -60,7 +60,7 @@ public class CustomTabbingController extends TabController {
             for (CustomTab tab : Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs()) {
                 List<FeedProvider> sorted = providers.stream()
                         .filter(it -> Arrays.asList(tab.providers)
-                                .contains(it.getClass().getName())).collect(
+                                .contains(it.getContainer())).collect(
                                 Collectors.toList());
                 result.put(new Item(null, tab.name), sorted);
             }
