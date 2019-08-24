@@ -37,6 +37,7 @@ package ch.deletescape.lawnchair.smartspace
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
@@ -46,19 +47,16 @@ import android.support.annotation.Keep
 import android.text.TextUtils
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
-import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Keep
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
-        LawnchairSmartspaceController.PeriodicDataProvider(controller) {
+        BroadcastDataProvider(controller) {
     private var silentlyFail: Boolean = false
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
-    override val timeout = TimeUnit.SECONDS.toMillis(5)
 
     private fun updateInformation() {
         silentlyFail = controller.context.checkSelfPermission(
@@ -133,7 +131,18 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         }
     }
 
-    override fun updateData() {
+    override fun getIntentFilter(): IntentFilter {
+        return IntentFilter().apply {
+            addAction(Intent.ACTION_PROVIDER_CHANGED)
+            addAction(Intent.ACTION_TIME_TICK)
+            addAction(Intent.ACTION_TIMEZONE_CHANGED)
+            addAction(Intent.ACTION_TIME_CHANGED)
+            addDataScheme("content");
+            addDataAuthority("com.android.calendar", null);
+        }
+    }
+
+    override fun onBroadcastRecieved(intent: Intent) {
         updateInformation()
     }
 
