@@ -50,7 +50,9 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
             postDelayed({
                             runOnNewThread {
                                 (adapter as? FeedAdapter)?.refresh()
-                                post { adapter?.notifyDataSetChanged() }
+                                post {
+                                    adapter?.notifyDataSetChanged()
+                                }
                             }
                         }, 4000)
     }
@@ -60,6 +62,7 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
             runOnNewThread {
                 (adapter as? FeedAdapter)?.refresh()
                 post {
+                    scrollToPosition(0)
                     isLayoutFrozen = true
                     postDelayed({
                                     adapter?.notifyDataSetChanged()
