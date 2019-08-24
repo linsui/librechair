@@ -589,4 +589,7 @@
     <string name="clipart_bug">Bug</string>
     <string name="clipart_information">Information</string>
     <string name="clipart_goolag">Goolag</string>
+
+    <string name="title_pref_feed_card_margin_horizontal">Horizontal card margin</string>
+    <string name="title_pref_feed_card_margin_vertical">Vertical card margin</string>
 </resources>

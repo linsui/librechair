@@ -90,9 +90,19 @@
             app:summaryFormat="%.0f"
             app:summaryMultiplier="1" />
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
-            android:key="pref_feed_decoration_margin"
+            android:key="pref_feed_decoration_margin_vertical"
             android:persistent="true"
-            android:title="@string/title_pref_feed_card_margin"
+            android:title="@string/title_pref_feed_card_margin_vertical"
+            app:defaultSeekbarValue="16"
+            app:maxValue="128"
+            app:minValue="0"
+            app:steps="128"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            android:key="pref_feed_decoration_margin_horizontal"
+            android:persistent="true"
+            android:title="@string/title_pref_feed_card_margin_horizontal"
             app:defaultSeekbarValue="16"
             app:maxValue="128"
             app:minValue="0"

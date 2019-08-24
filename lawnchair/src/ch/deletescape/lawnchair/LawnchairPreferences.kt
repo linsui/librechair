@@ -103,6 +103,13 @@ class LawnchairPreferences(val context: Context) :
                                          OLEDBlackColorResolver::class.qualifiedName)
                     .putBoolean("pref_oled_feed_cards", false).commit();
         }
+        if (sharedPrefs.all["pref_feed_decoration_margin"] is Float) {
+            sharedPrefs.edit().putFloat("pref_feed_decoration_margin_vertical",
+                                        sharedPrefs.all["pref_feed_decoration_margin"] as Float)
+                    .putFloat("pref_feed_decoration_margin_horizontal",
+                              sharedPrefs.all["pref_feed_decoration_margin"] as Float)
+                    .remove("pref_feed_decoration_margin").commit()
+        }
     }
 
     init {
@@ -438,7 +445,12 @@ class LawnchairPreferences(val context: Context) :
         }
     }
     val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
-    var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", 16f, ::restartOverlay)
+    var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", -1f, ::restartOverlay)
+    var cardDecorationMarginVertical by FloatPref("pref_feed_decoration_margin_vertical", 16f,
+                                                  ::restartOverlay)
+    var cardDecorationMarginHorizontal by FloatPref("pref_feed_decoration_margin_horizontal", 16f,
+                                                    ::restartOverlay)
+
     var feedNotes by object :
             MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay, emptyList()) {
         override fun unflattenValue(value: String): Note {

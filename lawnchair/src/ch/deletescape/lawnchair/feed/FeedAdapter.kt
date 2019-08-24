@@ -83,7 +83,10 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                          recyclerView.context.lawnchairPrefs.cardDecorationMargin,
+                                          recyclerView.context.lawnchairPrefs.cardDecorationMarginVertical,
+                                          recyclerView.context.resources.displayMetrics).toInt(),
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                          recyclerView.context.lawnchairPrefs.cardDecorationMarginHorizontal,
                                           recyclerView.context.resources.displayMetrics).toInt()))
         this.recyclerView = recyclerView
     }
@@ -105,7 +108,6 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             }
             toSort += mutableListOf(it.cards)
         }
-
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
                 LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
         d("refresh: sorting algorithm is $algorithm")
@@ -331,16 +333,17 @@ class CardViewHolder : RecyclerView.ViewHolder {
     }
 }
 
-private class Decoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
+private class Decoration(private val spaceHeightVertical: Int,
+                         private val spaceHeightHorizontal: Int) : RecyclerView.ItemDecoration() {
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
                                 state: RecyclerView.State) {
         with(outRect) {
             if (parent.getChildAdapterPosition(view) == 0) {
-                top = spaceHeight
+                top = spaceHeightVertical
             }
-            left = spaceHeight
-            right = spaceHeight
-            bottom = spaceHeight
+            left = spaceHeightHorizontal
+            right = spaceHeightHorizontal
+            bottom = spaceHeightVertical
         }
     }
 }
