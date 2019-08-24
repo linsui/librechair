@@ -52,7 +52,6 @@ import com.google.android.apps.nexuslauncher.graphics.DoubleShadowTextView;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import java.util.ArrayList;
 import java.util.List;
-import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -259,38 +258,36 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
 
     @SuppressWarnings("ConstantConditions")
     private void loadSingleLine(@Nullable WeatherData weather, @Nullable CardData card) {
-        mSubtitleText.post(() -> {
-            setOnClickListener(null);
-            setBackgroundResource(0);
-            bindWeather(weather, mTitleWeatherContent, mTitleWeatherText, mTitleWeatherIcon);
-            bindClockAndSeparator(false);
-            int clockAboveTextSize;
-            if (card != null) {
-                mSubtitleLine.setVisibility(View.VISIBLE);
-                mSubtitleText.setText(card.getTitle());
-                mSubtitleText.setEllipsize(card.getTitleEllipsize());
-                mSubtitleText.setOnClickListener(mEventClickListener);
+        setOnClickListener(null);
+        setBackgroundResource(0);
+        bindWeather(weather, mTitleWeatherContent, mTitleWeatherText, mTitleWeatherIcon);
+        bindClockAndSeparator(false);
+        int clockAboveTextSize;
+        if (card != null) {
+            mSubtitleLine.setVisibility(View.VISIBLE);
+            mSubtitleText.setText(card.getTitle());
+            mSubtitleText.setEllipsize(card.getTitleEllipsize());
+            mSubtitleText.setOnClickListener(mEventClickListener);
 
-                Bitmap icon = card.getIcon();
-                if (icon != null) {
-                    mSubtitleIcon.setVisibility(View.VISIBLE);
-                    mSubtitleIcon.setImageTintList(dH);
-                    mSubtitleIcon.setImageBitmap(icon);
-                    mSubtitleIcon.setOnClickListener(mEventClickListener);
-                } else {
-                    mSubtitleIcon.setVisibility(View.GONE);
-                }
-
-                clockAboveTextSize = R.dimen.smartspace_title_size;
+            Bitmap icon = card.getIcon();
+            if (icon != null) {
+                mSubtitleIcon.setVisibility(View.VISIBLE);
+                mSubtitleIcon.setImageTintList(dH);
+                mSubtitleIcon.setImageBitmap(icon);
+                mSubtitleIcon.setOnClickListener(mEventClickListener);
             } else {
-                mSubtitleLine.setVisibility(View.GONE);
-                mSubtitleText.setOnClickListener(null);
-                mSubtitleIcon.setOnClickListener(null);
-                clockAboveTextSize = R.dimen.smartspace_clock_above_size;
+                mSubtitleIcon.setVisibility(View.GONE);
             }
-            mClockAboveView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                    getResources().getDimensionPixelSize(clockAboveTextSize));
-        });
+
+            clockAboveTextSize = R.dimen.smartspace_title_size;
+        } else {
+            mSubtitleLine.setVisibility(View.GONE);
+            mSubtitleText.setOnClickListener(null);
+            mSubtitleIcon.setOnClickListener(null);
+            clockAboveTextSize = R.dimen.smartspace_clock_above_size;
+        }
+        mClockAboveView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimensionPixelSize(clockAboveTextSize));
     }
 
     private void bindClockAndSeparator(boolean forced) {
@@ -326,20 +323,17 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
     }
 
     private void bindWeather(@Nullable WeatherData weather, View container, TextView title, ImageView icon) {
-        LawnchairUtilsKt.runOnMainThread(() -> {
-            mWeatherAvailable = weather != null;
-            if (mWeatherAvailable) {
-                container.setVisibility(View.VISIBLE);
-                container.setOnClickListener(mWeatherClickListener);
-                container.setOnLongClickListener(co());
-                title.setText(weather.getTitle(
-                        Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()));
-                icon.setImageBitmap(addShadowToBitmap(weather.getIcon()));
-            } else {
-                container.setVisibility(View.GONE);
-            }
-            return Unit.INSTANCE;
-        });
+        mWeatherAvailable = weather != null;
+        if (mWeatherAvailable) {
+            container.setVisibility(View.VISIBLE);
+            container.setOnClickListener(mWeatherClickListener);
+            container.setOnLongClickListener(co());
+            title.setText(weather.getTitle(
+                    Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()));
+            icon.setImageBitmap(addShadowToBitmap(weather.getIcon()));
+        } else {
+            container.setVisibility(View.GONE);
+        }
     }
 
     public void reloadCustomizations() {
