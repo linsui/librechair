@@ -39,9 +39,8 @@ import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS") class CalendarEventProvider(
-    context: Context) : FeedProvider(context) {
-
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val calendarDrawable by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!.duplicateAndSetColour(
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
@@ -70,7 +69,7 @@ import kotlin.collections.ArrayList
     override fun getCards(): List<Card> {
         d("getCards: retrieving calendar cards...")
         if (context.checkSelfPermission(
-                    android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                        android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
             return emptyList()
         }
         val cards = ArrayList<Card>()
@@ -125,45 +124,47 @@ import kotlin.collections.ArrayList
                                 .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
                     } else if (diffDays >= 1) {
                         text = if (diffDays < 1 || diffDays > 1) context.getString(
-                            R.string.title_text_calendar_feed_provider_in_d_days,
-                            diffDays) else context.getString(R.string.tomorrow)
+                                R.string.title_text_calendar_feed_provider_in_d_days,
+                                diffDays) else context.getString(R.string.tomorrow)
                     } else if (diffHours > 4) {
-                        text = context.getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
+                        text = context
+                                .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
                     } else {
                         text = if (diffMinutes <= 0) context.getString(
-                            R.string.reusable_str_now) else context.getString(
-                            if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                            diffMinutes)
+                                R.string.reusable_str_now) else context.getString(
+                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                                diffMinutes)
                     }
                     val intent = Intent(Intent.ACTION_VIEW)
                     if (eventCursor.getString(5) != null) {
                         if (context.packageManager.getApplicationEnabledSetting(
-                                    eventCursor.getString(
-                                        5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
+                                        eventCursor.getString(
+                                                5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
                             intent.`package` = eventCursor.getString(5)!!
                         }
                     }
                     val address = eventCursor.getString(6)
-                    intent.data = Uri.parse(
-                        "content://com.android.calendar/events/" + eventCursor.getLong(
-                            4).toString())
+                    intent.data = Uri
+                            .parse("content://com.android.calendar/events/" + eventCursor.getLong(
+                                    4).toString())
                     cards.add(Card(
                             if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.duplicateAndSetColour(
                                     eventCursor.getInt(7).setAlpha(
                                             255)) else calendarDrawableColoured,
-                                   (if (title.trim().isEmpty()) context.getString(
-                                           R.string.placeholder_empty_title) else "$title • ") + text,
+                            (if (title.trim().isEmpty()) context.getString(
+                                    R.string.placeholder_empty_title) else "$title • ") + text,
                             object : Card.Companion.InflateHelper {
-                                       override fun inflate(parent: ViewGroup): View {
-                                           return getCalendarFeedView(description, address, parent.context,
-                                                                      parent)
-                                       }
-                                   }, Card.RAISE, if (diffMinutes < 120) "nosort,top" else ""))
+                                override fun inflate(parent: ViewGroup): View {
+                                    return getCalendarFeedView(description, address, parent.context,
+                                                               parent)
+                                }
+                            },
+                            if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE else Card.RAISE or Card.TEXT_ONLY,
+                            if (diffMinutes < 120) "nosort,top" else ""))
                     eventCursor.moveToNext()
                 }
                 eventCursor.close()
             } catch (e: Throwable) {
-
             }
         }
         run {
@@ -199,9 +200,9 @@ import kotlin.collections.ArrayList
                     eventEndTime.timeInMillis = eventCursor.getLong(2)
                     Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
                     val text = if (title == null || title.trim().isEmpty()) context.getString(
-                        R.string.placeholder_empty_title) else "$title • ${context.getString(
-                        if (eventCursor.getInt(
-                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
+                            R.string.placeholder_empty_title) else "$title • ${context.getString(
+                            if (eventCursor.getInt(
+                                            4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
 
                     eventCursor.moveToNext()
                     cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
@@ -211,9 +212,7 @@ import kotlin.collections.ArrayList
                     }, Card.TEXT_ONLY, "nosort,top"))
                 }
                 eventCursor.close()
-
             } catch (e: CursorIndexOutOfBoundsException) {
-
             }
         }
         return cards
