@@ -33,15 +33,10 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.setAlpha
-import com.android.launcher3.widget.LauncherAppWidgetHostView
-import com.android.launcher3.widget.custom.CustomAppWidgetProviderInfo
 import kotlin.math.roundToInt
 
-class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs),
-                                                                   LauncherAppWidgetHostView.CustomWidgetView {
-    var bound = false
-    override fun bindWidget(info: CustomAppWidgetProviderInfo) {
-        if (!bound) {
+class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
+    init {
             background = ColorDrawable(
                     ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
                             (context.lawnchairPrefs.feedBackgroundOpacity * (255f / 100f)).roundToInt()))
@@ -58,8 +53,6 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
                                 post { adapter?.notifyDataSetChanged() }
                             }
                         }, 4000)
-            bound = true;
-        }
     }
 
     val tickReciever = object : BroadcastReceiver() {
