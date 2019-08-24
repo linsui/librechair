@@ -38,7 +38,6 @@ public class NexusLauncherOverlay implements Launcher.LauncherOverlay, ISerializ
     public void onServiceStateChanged(boolean overlayAttached) {
         if (overlayAttached != mAttached) {
             mAttached = overlayAttached;
-            mClient.reconnect();
         }
     }
 

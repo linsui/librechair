@@ -207,7 +207,7 @@ public class LauncherClient {
         }
     }
 
-    public void reconnect() {
+    private void reconnect() {
         if (!mDestroyed && (!mLauncherService.connect() || !mBaseService.connect())) {
             mActivity.runOnUiThread(new Runnable() {
                 @Override
