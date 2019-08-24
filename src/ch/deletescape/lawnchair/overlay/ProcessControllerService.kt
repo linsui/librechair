@@ -22,11 +22,12 @@ package ch.deletescape.lawnchair.overlay
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import android.os.Process
 
 class ProcessControllerService : Service() {
     override fun onBind(intent: Intent): IBinder = object : ProcessController.Stub() {
         override fun killOverlayProcess() {
-            System.exit(0)
+            Process.killProcess(Process.myPid());
         }
     }
 }

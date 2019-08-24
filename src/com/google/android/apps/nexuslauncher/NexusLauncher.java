@@ -28,7 +28,6 @@ import com.google.android.apps.nexuslauncher.smartspace.SmartspaceController;
 import com.google.android.apps.nexuslauncher.smartspace.SmartspaceView;
 import com.google.android.apps.nexuslauncher.utils.ActionIntentFilter;
 import com.google.android.libraries.gsa.launcherclient.LauncherClient;
-import com.google.android.libraries.gsa.launcherclient.LauncherClientService;
 import com.google.android.libraries.gsa.launcherclient.StaticInteger;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -185,25 +184,12 @@ public class NexusLauncher {
             LauncherClient launcherClient = mClient;
 
             launcherClient.mDestroyed = true;
-            launcherClient.mBaseService.disconnect();
 
             if (launcherClient.mOverlayCallback != null) {
                 launcherClient.mOverlayCallback.mClient = null;
                 launcherClient.mOverlayCallback.mWindowManager = null;
                 launcherClient.mOverlayCallback.mWindow = null;
                 launcherClient.mOverlayCallback = null;
-            }
-
-            LauncherClientService service = launcherClient.mLauncherService;
-            LauncherClient client = service.getClient();
-            if (client != null && client.equals(launcherClient)) {
-                service.mClient = null;
-                if (!launcherClient.mActivity.isChangingConfigurations()) {
-                    service.disconnect();
-                    if (LauncherClientService.sInstance == service) {
-                        LauncherClientService.sInstance = null;
-                    }
-                }
             }
 
             Utilities.getPrefs(mLauncher).unregisterOnSharedPreferenceChangeListener(this);
@@ -276,7 +262,6 @@ public class NexusLauncher {
 
         public void onStop() {
             mStarted = false;
-            mClient.onStop();
             if (!mRunning) {
                 mFeedRunning = false;
             }

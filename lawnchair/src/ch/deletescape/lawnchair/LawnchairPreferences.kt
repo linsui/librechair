@@ -33,7 +33,6 @@ import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
-import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
@@ -540,19 +539,11 @@ class LawnchairPreferences(val context: Context) :
                                     try {
                                         ProcessController.Stub.asInterface(service)
                                                 .killOverlayProcess()
-                                        runOnNewThread {
-                                            Thread.sleep(1000)
-                                            runOnMainThread {
-                                                context.startService(
-                                                        Intent(context, OverlayService::class.java))
-                                            }
-                                        }
                                     } catch (e: DeadObjectException) {
                                         e.printStackTrace();
                                     }
                                 }
                             }, Context.BIND_AUTO_CREATE)
-        restart()
     }
 
     fun refreshGrid() {

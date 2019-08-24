@@ -22,7 +22,6 @@ import com.android.launcher3.Utilities;
 import com.google.android.apps.nexuslauncher.NexusLauncherActivity;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
-import java.lang.ref.WeakReference;
 
 public class LauncherClient {
 
@@ -32,7 +31,6 @@ public class LauncherClient {
     private final IScrollCallback mScrollCallback;
 
     public final BaseClientService mBaseService;
-    public final LauncherClientService mLauncherService;
 
     private int mActivityState = 0;
     private int mServiceState = 0;
@@ -109,12 +107,8 @@ public class LauncherClient {
         mActivity = activity;
         mScrollCallback = scrollCallback;
         mBaseService = new BaseClientService(activity,
-                Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+                Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT, this);
         mFlags = flags.mData;
-
-        mLauncherService = LauncherClientService.getInstance(activity);
-        mLauncherService.mClient = new WeakReference<>(this);
-        mOverlay = mLauncherService.mOverlay;
 
         if (apiVersion <= 0) {
             loadApiVersion(activity);
@@ -181,8 +175,7 @@ public class LauncherClient {
 
     public final void onStart() {
         if (!mDestroyed) {
-            mLauncherService.setStopped(false);
-            reconnect();
+            mBaseService.connect();
             mActivityState |= 1;
             if (mOverlay != null && mLayoutParams != null) {
                 try {
@@ -195,7 +188,6 @@ public class LauncherClient {
 
     public final void onStop() {
         if (!mDestroyed) {
-            mLauncherService.setStopped(true);
             mBaseService.disconnect();
             mActivityState &= -2;
             if (!(mOverlay == null || mLayoutParams == null)) {
@@ -207,8 +199,8 @@ public class LauncherClient {
         }
     }
 
-    private void reconnect() {
-        if (!mDestroyed && (!mLauncherService.connect() || !mBaseService.connect())) {
+    public void reconnect() {
+        if (!mDestroyed && (!mBaseService.connect())) {
             mActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

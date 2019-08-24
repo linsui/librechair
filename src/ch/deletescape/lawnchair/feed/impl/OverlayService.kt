@@ -23,15 +23,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
-import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.extensions.d
 
 class OverlayService : Service(), () -> Unit {
     lateinit var feed: LauncherFeed;
-    override fun onCreate() {
-        super.onCreate()
-        this()
-        ThemeManager.getInstance(applicationContext).changeCallbacks += this
-    }
 
     override fun onBind(intent: Intent): IBinder {
         if (!::feed.isInitialized) {
@@ -45,6 +40,7 @@ class OverlayService : Service(), () -> Unit {
     }
 
     override fun onDestroy() {
+        d("onDestroy: killing overlay process", Throwable())
         Process.killProcess(Process.myPid());
         super.onDestroy()
     }
