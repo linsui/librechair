@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
+import ch.deletescape.lawnchair.feed.AlarmEventProvider;
 import ch.deletescape.lawnchair.feed.CalendarEventProvider;
 import ch.deletescape.lawnchair.feed.DailySummaryFeedProvider;
 import ch.deletescape.lawnchair.feed.FeedDailyForecastProvider;
@@ -107,7 +108,9 @@ public class CategorizedTabbingController extends TabController {
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "news")).collect(
                 Collectors.toList());
-        events = providers.stream().filter(it -> it instanceof CalendarEventProvider || Objects
+        events = providers.stream().filter(it -> it instanceof CalendarEventProvider
+                || it instanceof AlarmEventProvider
+                || Objects
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "events")).collect(
                 Collectors.toList());

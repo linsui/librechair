@@ -92,6 +92,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_web_applications)
                     NoteListProvider::class.java.name -> context.getString(
                             R.string.title_feed_provider_note_list)
+                    AlarmEventProvider::class.java.name -> R.string.resuable_text_alarm.fromStringRes(
+                            context)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -126,7 +128,8 @@ class MainFeedController(val context: Context) {
                           FeedWidgetsProvider::class.java.name,
                           DailySummaryFeedProvider::class.java.name,
                           PredictedAppsProvider::class.java.name,
-                          WebApplicationsProvider::class.java.name).map {
+                          WebApplicationsProvider::class.java.name,
+                          AlarmEventProvider::class.java.name).map {
                 FeedProviderContainer(it, null)
             } + RemoteFeedProvider.allProviders(context).map {
                 FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
