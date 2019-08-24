@@ -276,7 +276,7 @@ class LawnchairSmartspaceController(val context: Context) {
             cardUpdateListener = null
         }
 
-        fun updateData(weather: WeatherData?, card: CardData?) {
+        fun updateData(weather: WeatherData?, card: CardData?) = runOnMainThread {
             currentWeather = weather
             currentCard = card
             weatherUpdateListener?.invoke(weather)
