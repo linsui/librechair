@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.*
 import android.graphics.Color
 import android.net.Uri
+import android.os.DeadObjectException
 import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
@@ -536,13 +537,18 @@ class LawnchairPreferences(val context: Context) :
 
                                 override fun onServiceConnected(name: ComponentName?,
                                                                 service: IBinder?) {
-                                    ProcessController.Stub.asInterface(service).killOverlayProcess()
-                                    runOnNewThread {
-                                        Thread.sleep(1000)
-                                        runOnMainThread {
-                                            context.startService(
-                                                    Intent(context, OverlayService::class.java))
+                                    try {
+                                        ProcessController.Stub.asInterface(service)
+                                                .killOverlayProcess()
+                                        runOnNewThread {
+                                            Thread.sleep(1000)
+                                            runOnMainThread {
+                                                context.startService(
+                                                        Intent(context, OverlayService::class.java))
+                                            }
                                         }
+                                    } catch (e: DeadObjectException) {
+                                        e.printStackTrace();
                                     }
                                 }
                             }, Context.BIND_AUTO_CREATE)
