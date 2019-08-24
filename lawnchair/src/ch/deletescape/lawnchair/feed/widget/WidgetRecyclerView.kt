@@ -66,7 +66,13 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
         override fun onReceive(context: Context?, intent: Intent?) {
             runOnNewThread {
                 (adapter as? FeedAdapter)?.refresh()
-                post { adapter?.notifyDataSetChanged() }
+                post {
+                    isLayoutFrozen = true
+                    postDelayed({
+                                    adapter?.notifyDataSetChanged()
+                                    isLayoutFrozen = false
+                                }, 100)
+                }
             }
         }
     }.also {
