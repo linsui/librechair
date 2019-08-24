@@ -45,6 +45,7 @@ import android.support.annotation.Keep
 import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
+import ch.deletescape.lawnchair.runOnMainThread
 import com.android.launcher3.R
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -63,7 +64,7 @@ import kotlin.collections.ArrayList
         forceUpdate()
     }
 
-    private fun updateInformation() {
+    private fun updateInformation() = runOnMainThread {
         val alarmManager =
                 controller.context.getSystemService(Context.ALARM_SERVICE) as AlarmManager;
         if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
