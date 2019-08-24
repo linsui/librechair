@@ -19,7 +19,10 @@
 
 package ch.deletescape.lawnchair.shade;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils.TruncateAt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
@@ -56,6 +59,10 @@ public class CompatSmartspaceProvider extends LawnchairSmartspaceController.Data
 
     @Override
     public void onChange() {
-        forceUpdate();
+        if (VERSION.SDK_INT >= VERSION_CODES.P) {
+            getContext().getMainExecutor().execute(this::forceUpdate);
+        } else {
+            new Handler(getContext().getMainLooper()).post(this::forceUpdate);
+        }
     }
 }

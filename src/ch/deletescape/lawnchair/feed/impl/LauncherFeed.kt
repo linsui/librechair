@@ -599,19 +599,18 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    fun refresh(sleep: Long): Unit = synchronized(this) {
-        Thread.sleep(sleep)
+    fun refresh(sleep: Long, count: Int = 0): Unit = synchronized(this) {
+        Thread.sleep(sleep + 150)
         recyclerView.apply {
             post {
-                scrollToPosition(0)
                 recyclerView.isLayoutFrozen = true
             }
         }
         val oldCards = adapter.immutableCards
         adapter.refresh()
         val cards = adapter.immutableCards
-        if (oldCards.isEmpty()) {
-            this.refresh(0)
+        if (oldCards.isEmpty() && count == 0) {
+            this.refresh(150, 1)
         } else {
             val patch = DiffUtils.diff(oldCards, cards)
 

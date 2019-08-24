@@ -49,6 +49,7 @@ import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
 import com.android.launcher3.R
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Keep
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
@@ -92,9 +93,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             eventEndTime.timeInMillis = eventCursor.getLong(2)
             val description = eventCursor.getString(3);
             val diff = startTime.timeInMillis - currentTime.timeInMillis
-            val diffSeconds = diff / 1000
-            val diffMinutes = diff / (60 * 1000)
-            val diffHours = diff / (60 * 60 * 1000)
+            val diffSeconds = TimeUnit.MILLISECONDS.toSeconds(diff)
+            val diffMinutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+            val diffHours = TimeUnit.MILLISECONDS.toHours(diff)
             val text = if (diffMinutes <= 0) controller.context.getString(
                     R.string.reusable_str_now) else controller.context.getString(
                     if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
