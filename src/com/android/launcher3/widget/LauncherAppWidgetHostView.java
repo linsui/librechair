@@ -169,6 +169,18 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView
         return false;
     }
 
+    private void notifyCustomHandlers(ViewGroup group) {
+        if (group instanceof CustomWidgetView) {
+            ((CustomWidgetView) group).bindWidget((CustomAppWidgetProviderInfo) getAppWidgetInfo());
+        } else {
+            for (int i = 0; i < group.getChildCount(); ++i) {
+                if (group.getChildAt(i) instanceof ViewGroup) {
+                    notifyCustomHandlers((ViewGroup) group.getChildAt(i));
+                }
+            }
+        }
+    }
+
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         // Just in case the previous long press hasn't been cleared, we make sure to start fresh
         // on touch down.
@@ -390,6 +402,9 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView
         }
 
         mIsScrollable = checkScrollableRecursively(this);
+        if (getAppWidgetInfo() instanceof CustomAppWidgetProviderInfo) {
+            notifyCustomHandlers(this);
+        }
     }
 
     @Override
@@ -513,5 +528,10 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView
         // orientation), but don't delete it from the database
         mLauncher.removeItem(this, info, false  /* deleteFromDb */);
         mLauncher.bindAppWidget(info);
+    }
+
+    public interface CustomWidgetView {
+
+        void bindWidget(CustomAppWidgetProviderInfo info);
     }
 }

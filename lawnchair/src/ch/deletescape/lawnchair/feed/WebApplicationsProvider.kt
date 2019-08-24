@@ -47,7 +47,6 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     }
 
     override fun onDestroy() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     @SuppressLint("SetJavaScriptEnabled")

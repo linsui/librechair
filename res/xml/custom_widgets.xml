@@ -38,7 +38,7 @@
         android:initialLayout="@layout/activity_feed"
         android:icon="@mipmap/ic_launcher"
         android:resizeMode="horizontal|vertical"
-        launcher:numRows="1"
+        launcher:numRows="8"
         launcher:numColumns="5"
         launcher:numMinRows="1"
         launcher:numMinColumns="3"
