@@ -296,6 +296,13 @@
             </intent-filter>
             -->
         </service>
+
+        <service android:name="ch.deletescape.lawnchair.notes.NoteAppNoteProvider$Service">
+            <intent-filter>
+                <action android:name="ch.deletescape.lawnchair.todo.TODO_PROVIDER" />
+            </intent-filter>
+        </service>
+
         <service
             android:exported="false"
             android:name="com.android.launcher3.uioverrides.WallpaperManagerCompat$ColorExtractionService"
