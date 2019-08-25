@@ -26,7 +26,10 @@ public abstract class NoteDao {
 
     @Query("update note set note_content = :content where id like :id")
     public abstract void setContent(long id, String content);
-    
+
+    @Query("update note set note_color = :color where id like :id")
+    public abstract void setColor(long id, int color);
+
     @Delete
     public abstract void remove(Note note);
 }

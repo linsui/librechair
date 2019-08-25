@@ -37,6 +37,8 @@ import ch.deletescape.lawnchair.views.SelectableRoundedView
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import me.priyesh.chroma.ChromaView
+import me.priyesh.chroma.ColorMode
 
 class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>() {
     private lateinit var notes: MutableList<Note>
@@ -137,6 +139,34 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 }.invokeOnCompletion {
                     runOnMainThread { notifyItemChanged(holder.adapterPosition) }
                 }
+            }
+            editDialog.setButton(Dialog.BUTTON_NEUTRAL,
+                                 R.string.title_dialog_select_color.fromStringRes(
+                                         context)) { dialog2, which2 ->
+                val dialog = object : android.app.AlertDialog(context,
+                                                              ThemeOverride.AlertDialog().getTheme(
+                                                                      context)) {}
+                dialog.setView(ChromaView(notes[holder.adapterPosition].colour, ColorMode.ARGB,
+                                          context).apply {
+                    id = R.id.color_view
+                })
+                dialog.setTitle(R.string.title_dialog_select_color);
+                dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
+                        context)) { dialogInterface, which ->
+                    GlobalScope.launch {
+                        DatabaseStore.getAccessObject(context)
+                                .setColor(notes[holder.adapterPosition].id,
+                                          dialog.findViewById<ChromaView>(
+                                                  R.id.color_view).currentColor)
+                        notes[holder.adapterPosition].colour =
+                                dialog.findViewById<ChromaView>(R.id.color_view).currentColor
+                    }.invokeOnCompletion {
+                        runOnMainThread {
+                            notifyItemChanged(holder.adapterPosition)
+                        }
+                    }
+                }
+                dialog.show()
             }
             editDialog.show()
             true
