@@ -23,6 +23,7 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.ui.AppCategorizationTypeItem
 import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
@@ -62,6 +63,8 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
+        holder.item.setup(AppGroupsManager.CategorizationType.Tabs, notes[position].title,
+                          notes[position].content);
     }
 }
 
