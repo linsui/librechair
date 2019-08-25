@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.R;
@@ -68,7 +69,7 @@ public class NewNoteActivity extends SettingsBaseActivity {
         } else {
             setResult(RESULT_OK, new Intent().putExtra(RETURN_NOTE,
                     new Note(title.getText().toString(), message.getText().toString(),
-                            getColor(R.color.colorAccent))));
+                            LawnchairUtilsKt.getColorEngineAccent(this))));
             super.onBackPressed();
         }
     }

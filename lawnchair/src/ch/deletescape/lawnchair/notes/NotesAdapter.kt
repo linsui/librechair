@@ -30,10 +30,10 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.fromStringRes
-import ch.deletescape.lawnchair.groups.ui.AppCategorizationTypeItem
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
+import ch.deletescape.lawnchair.views.SelectableRoundedView
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -106,6 +106,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 runOnMainThread { notifyItemChanged(holder.adapterPosition) }
             }
         }
+        holder.item.tintBackground(notes[position].colour)
         holder.item.setOnLongClickListener {
             val editDialog =
                     object : AlertDialog(context, ThemeOverride.AlertDialog().getTheme(context)) {}
@@ -144,7 +145,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
 }
 
 class NotesViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.app_categorization_type_item, parent,
+        LayoutInflater.from(parent.context).inflate(R.layout.generic_selectable_item, parent,
                                                     false)) {
-    val item: AppCategorizationTypeItem by lazy { itemView as AppCategorizationTypeItem }
+    val item: SelectableRoundedView by lazy { itemView as SelectableRoundedView }
 }

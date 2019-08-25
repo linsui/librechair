@@ -61,7 +61,7 @@ public class Note implements Parcelable {
         title = in.readString();
         content = in.readString();
         colour = in.readInt();
-        selected = in.readByte() == 1 ? true : false;
+        selected = in.readByte() == 1;
     }
 
     @Override
