@@ -22,16 +22,16 @@ package ch.deletescape.lawnchair.util
 import kotlinx.coroutines.channels.Channel
 
 class SingleUseHold(private val channel: Channel<Unit> = Channel(0)) {
+    private var triggered = false;
     suspend fun waitFor() {
-        if (!channel.isClosedForReceive) {
+        if (!triggered) {
             channel.receive()
             channel.close()
         }
     }
 
     fun trigger() {
-        if (!channel.isClosedForSend) {
-            channel.offer(Unit)
-        }
+        triggered = true;
+        channel.offer(Unit)
     }
 }

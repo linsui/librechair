@@ -25,6 +25,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.ui.AppCategorizationTypeItem
+import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
@@ -38,8 +39,10 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         GlobalScope.launch {
             notes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
         }.invokeOnCompletion {
-            notifyItemRangeInserted(0, notes.size)
-            hold.trigger()
+            runOnMainThread {
+                notifyItemRangeInserted(0, notes.size)
+                hold.trigger()
+            }
         }
     }
 
@@ -50,7 +53,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         DatabaseStore.getAccessObject(context).insert(note);
     }.invokeOnCompletion {
         notes.add(note)
-        notifyItemInserted(notes.size)
+        runOnMainThread { notifyItemInserted(notes.size) }
     }
 
     fun remove(note: Note) = GlobalScope.launch {
@@ -59,7 +62,9 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     }.invokeOnCompletion {
         val oldIndex = notes.indexOf(note)
         notes.minusAssign(note)
-        notifyItemRemoved(oldIndex)
+        runOnMainThread {
+            notifyItemRemoved(oldIndex)
+        }
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {

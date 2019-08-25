@@ -29,7 +29,9 @@ import ch.deletescape.lawnchair.duplicateAndSetColour
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.getColorAttr
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.google.gson.Gson
 
 @Suppress("TypeParameterFindViewById")
 class NotesActivity : SettingsBaseActivity() {
@@ -58,6 +60,8 @@ class NotesActivity : SettingsBaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (data?.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE) != null) {
+            d("onActivityResult: creating note ${Gson().toJson(
+                    data.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE))}")
             adapter.add(data.getParcelableExtra(NewNoteActivity.RETURN_NOTE))
         }
     }
