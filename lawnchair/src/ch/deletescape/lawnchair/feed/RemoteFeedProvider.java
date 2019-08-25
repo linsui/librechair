@@ -24,7 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.ServiceInfo;
+import android.content.pm.ResolveInfo;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -53,19 +53,17 @@ public class RemoteFeedProvider extends FeedProvider {
         List<ComponentName> infos = new ArrayList<>();
         for (ApplicationInfo packageInfo : context.getPackageManager()
                 .getInstalledApplications(0)) {
-            if (resolveFeedProvider(packageInfo.packageName, context) != null
-                    && packageInfo.enabled) {
-                ServiceInfo service = resolveFeedProvider(packageInfo.packageName, context);
-                infos.add(new ComponentName(service.packageName, service.name));
+            for (ResolveInfo info : resolveFeedProviders(packageInfo.packageName, context)) {
+                infos.add(new ComponentName(info.serviceInfo.packageName, info.serviceInfo.name));
             }
         }
         return infos;
     }
 
-    public static ServiceInfo resolveFeedProvider(String packageName, Context context) {
-        Intent intent = new Intent(SERVICE_ACTION).setPackage(packageName);
-        return context.getPackageManager().resolveService(intent, 0) == null ? null
-                : context.getPackageManager().resolveService(intent, 0).serviceInfo;
+    public static List<ResolveInfo> resolveFeedProviders(String packageName, Context context) {
+        return context.getPackageManager()
+                .queryIntentServices(new Intent().setPackage(packageName).setAction(SERVICE_ACTION),
+                        0);
     }
 
     public RemoteFeedProvider(Context c, Map<String, String> arguments) {
