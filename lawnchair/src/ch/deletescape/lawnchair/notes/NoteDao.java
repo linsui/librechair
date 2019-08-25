@@ -12,15 +12,18 @@ public abstract class NoteDao {
     @Insert
     public abstract void insert(Note... notes);
 
-    @Query("SELECT * from note")
+    @Query("select * from note")
     public abstract List<Note> getAllNotes();
 
-    @Query("SELECT * from note WHERE id LIKE :id LIMIT 1")
+    @Query("select * from note where id like :id limit 1")
     public abstract Note findNoteById(int id);
 
-    @Query("SELECT * from NOTE where note_title LIKE :title LIMIT 1")
+    @Query("select * from note where note_title like :title limit 1")
     public abstract Note findNoteByTitle(String title);
 
+    @Query("update note set note_selected = :selected where id like :id ")
+    public abstract void setSelected(long id, boolean selected);
+    
     @Delete
     public abstract void remove(Note note);
 }

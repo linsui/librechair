@@ -20,15 +20,26 @@
 package ch.deletescape.lawnchair.notes;
 
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 public final class DatabaseStore {
 
     private static NoteDatabase sDbInstance;
+    private static Migration MIGRATOR_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL(
+                    "alter table note add column note_selected INTEGER default 0 not null");
+        }
+    };
 
     public static NoteDatabase getDbInstance(Context context) {
         if (sDbInstance == null) {
             return sDbInstance = Room.databaseBuilder(context, NoteDatabase.class, "notes")
+                    .addMigrations(MIGRATOR_1_2)
                     .enableMultiInstanceInvalidation().allowMainThreadQueries().build();
         } else {
             return sDbInstance;

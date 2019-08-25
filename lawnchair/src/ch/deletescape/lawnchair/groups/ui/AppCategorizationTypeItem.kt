@@ -69,14 +69,15 @@ class AppCategorizationTypeItem(context: Context, attrs: AttributeSet?) : Linear
         summary.setText(summaryRes)
     }
 
-    fun setup(type: AppGroupsManager.CategorizationType, title: String, summary: String) {
-        this.type = type
+    fun setup(title: String, summary: String) {
         this.title.text = title
         this.summary.text = summary
     }
 
     override fun onClick(v: View) {
-        manager.categorizationType = type
+        if (::type.isInitialized) {
+            manager.categorizationType = type
+        }
     }
 
     override fun setSelected(selected: Boolean) {
@@ -97,6 +98,6 @@ class AppCategorizationTypeItem(context: Context, attrs: AttributeSet?) : Linear
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
-        isSelected = type == manager.categorizationType
+        isSelected = if (::type.isInitialized) type == manager.categorizationType else isSelected
     }
 }

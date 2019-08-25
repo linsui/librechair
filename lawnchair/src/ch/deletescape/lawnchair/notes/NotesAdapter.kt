@@ -23,7 +23,6 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.ui.AppCategorizationTypeItem
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.SingleUseHold
@@ -68,10 +67,18 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
-        holder.item.setup(AppGroupsManager.CategorizationType.Tabs, notes[position].title,
-                          notes[position].content);
-        holder.item.isSelected = false
-        holder.item.setOnClickListener {}
+        holder.item.setup(notes[position].title, notes[position].content);
+        holder.item.isSelected = notes[position].selected
+        holder.item.setOnClickListener {
+            GlobalScope.launch {
+                hold.waitFor()
+                DatabaseStore.getAccessObject(context).setSelected(notes[holder.adapterPosition].id,
+                                                                   notes[holder.adapterPosition].selected.not());
+                notes[holder.adapterPosition].selected = !notes[holder.adapterPosition].selected
+            }.invokeOnCompletion {
+                runOnMainThread { notifyItemChanged(holder.adapterPosition) }
+            }
+        }
     }
 }
 

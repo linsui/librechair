@@ -25,15 +25,17 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 public class Note implements Parcelable {
 
     public Note() {
-
+        this.id = UUID.randomUUID().hashCode();
     }
 
     public Note(String title, String content, int colour) {
+        this();
         this.title = title;
         this.content = content;
         this.colour = colour;
@@ -51,11 +53,15 @@ public class Note implements Parcelable {
     @ColumnInfo(name = "note_color")
     public int colour;
 
+    @ColumnInfo(name = "note_selected")
+    public boolean selected;
+
     protected Note(Parcel in) {
         id = in.readLong();
         title = in.readString();
         content = in.readString();
         colour = in.readInt();
+        selected = in.readByte() == 1 ? true : false;
     }
 
     @Override
@@ -64,6 +70,7 @@ public class Note implements Parcelable {
         dest.writeString(title);
         dest.writeString(content);
         dest.writeInt(colour);
+        dest.writeByte(selected ? (byte) 1 : (byte) 0);
     }
 
     @Override
