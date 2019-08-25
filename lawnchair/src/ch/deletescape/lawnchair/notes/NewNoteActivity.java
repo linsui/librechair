@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.notes;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -56,7 +55,7 @@ public class NewNoteActivity extends SettingsBaseActivity {
         } else {
             setResult(RESULT_OK, new Intent().putExtra(RETURN_NOTE,
                     new Note(title.getText().toString(), message.getText().toString(),
-                            Color.CYAN)));
+                            LawnchairUtilsKt.getColorEngineAccent(this))));
             finish();
             return true;
         }
