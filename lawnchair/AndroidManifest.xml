@@ -9,6 +9,7 @@
         <activity
             android:exported="true"
             android:label="@string/title_pref_feed_notes"
+            android:icon="@mipmap/ic_edit_adaptive"
             android:name="ch.deletescape.lawnchair.notes.NotesActivity"
             android:taskAffinity=":notes"
             android:theme="@style/SettingsTheme.V2">

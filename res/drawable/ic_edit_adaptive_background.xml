@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Copyright (c) 2017-2019 the Lawnchair team
+  ~     Copyright (c)  2019 oldosfan (would)
+  ~     This file is part of Lawnchair Launcher.
+  ~
+  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="192"
+    android:viewportHeight="192">
+    <path
+        android:fillColor="#ff34a853"
+        android:pathData="M160,60a12,12 0 1,0 24,0a12,12 0 1,0 -24,0z" />
+    <path
+        android:fillColor="#ffea4335"
+        android:pathData="M112,88a24,24 0 1,0 48,0a24,24 0 1,0 -48,0z" />
+    <path
+        android:fillColor="#fffbbc05"
+        android:pathData="M108,148a28,28 0 1,0 56,0a28,28 0 1,0 -56,0" />
+    <path
+        android:fillColor="#ff4285f4"
+        android:pathData="M8,64a48,48 0 1,0 96,0a48,48 0 1,0 -96,0z" />
+</vector>
