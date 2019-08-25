@@ -592,4 +592,7 @@
 
     <string name="title_pref_feed_card_margin_horizontal">Horizontal card margin</string>
     <string name="title_pref_feed_card_margin_vertical">Vertical card margin</string>
+    <string name="hint_text_title">Title</string>
+    <string name="title_snackbar_empty_note">This note must have a title and message</string>
+    <string name="title_menu_item_new_note">Create note</string>
 </resources>

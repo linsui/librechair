@@ -19,9 +19,15 @@
 
 package ch.deletescape.lawnchair.notes
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
+import ch.deletescape.lawnchair.duplicateAndSetColour
+import ch.deletescape.lawnchair.fromDrawableRes
+import ch.deletescape.lawnchair.getColorAttr
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import com.android.launcher3.R
 
@@ -34,5 +40,25 @@ class NotesActivity : SettingsBaseActivity() {
         setContentView(R.layout.activity_notes)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.add(getString(R.string.title_menu_item_new_note)).apply {
+            icon = R.drawable.ic_add.fromDrawableRes(this@NotesActivity)
+                    .duplicateAndSetColour(this@NotesActivity.getColorAttr(R.attr.colorAccent))
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setOnMenuItemClickListener {
+                startActivityForResult(Intent(this@NotesActivity, NewNoteActivity::class.java), 0)
+                true
+            }
+        }
+        return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (data?.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE) != null) {
+            adapter.add(data.getParcelableExtra(NewNoteActivity.RETURN_NOTE))
+        }
     }
 }

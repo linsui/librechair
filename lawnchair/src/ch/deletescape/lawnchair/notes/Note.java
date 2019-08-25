@@ -33,6 +33,12 @@ public class Note implements Parcelable {
 
     }
 
+    public Note(String title, String content, int colour) {
+        this.title = title;
+        this.content = content;
+        this.colour = colour;
+    }
+
     @PrimaryKey
     public long id;
 
