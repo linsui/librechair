@@ -19,12 +19,19 @@
 
 package ch.deletescape.lawnchair.notes
 
+import android.app.Dialog
 import android.content.Context
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
+import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.groups.ui.AppCategorizationTypeItem
 import ch.deletescape.lawnchair.runOnMainThread
+import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
@@ -73,11 +80,45 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
             GlobalScope.launch {
                 hold.waitFor()
                 DatabaseStore.getAccessObject(context).setSelected(notes[holder.adapterPosition].id,
-                                                                   notes[holder.adapterPosition].selected.not());
+                                                                   notes[holder.adapterPosition].selected.not())
                 notes[holder.adapterPosition].selected = !notes[holder.adapterPosition].selected
             }.invokeOnCompletion {
                 runOnMainThread { notifyItemChanged(holder.adapterPosition) }
             }
+        }
+        holder.item.setOnLongClickListener {
+            val editDialog =
+                    object : AlertDialog(context, ThemeOverride.AlertDialog().getTheme(context)) {}
+            val editText = EditText(context).apply {
+                layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                         LinearLayout.LayoutParams.WRAP_CONTENT)
+                        .apply {
+                            marginStart = TypedValue
+                                    .applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f,
+                                                    context.resources.displayMetrics).toInt()
+                            marginEnd = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f,
+                                                                  context.resources.displayMetrics)
+                                    .toInt()
+                        }
+                setText(notes[holder.adapterPosition].content)
+            }
+            editDialog.setTitle(notes[holder.adapterPosition].title)
+            editDialog.setView(LinearLayout(context).apply {
+                addView(editText)
+            })
+            editDialog.setButton(Dialog.BUTTON_POSITIVE,
+                                 android.R.string.ok.fromStringRes(context)) { dialog, which ->
+                GlobalScope.launch {
+                    hold.waitFor()
+                    DatabaseStore.getAccessObject(context)
+                            .setContent(notes[holder.adapterPosition].id, editText.text.toString())
+                    notes[holder.adapterPosition].content = editText.text.toString()
+                }.invokeOnCompletion {
+                    runOnMainThread { notifyItemChanged(holder.adapterPosition) }
+                }
+            }
+            editDialog.show()
+            true
         }
     }
 }

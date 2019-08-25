@@ -23,6 +23,9 @@ public abstract class NoteDao {
 
     @Query("update note set note_selected = :selected where id like :id ")
     public abstract void setSelected(long id, boolean selected);
+
+    @Query("update note set note_content = :content where id like :id")
+    public abstract void setContent(long id, String content);
     
     @Delete
     public abstract void remove(Note note);
