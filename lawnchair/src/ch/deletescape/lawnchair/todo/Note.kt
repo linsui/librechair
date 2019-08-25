@@ -69,8 +69,8 @@ object NoteUtils {
 
     fun getTodoProviders(
             context: Context): List<ServiceInfo> = context.packageManager.getInstalledApplications(
-            0).mapNotNull {
-        context.packageManager.resolveService(Intent(INTENT_ACTION).setPackage(it.packageName), 0)
-                ?.serviceInfo
-    }
+            0).flatMap {
+        context.packageManager
+                .queryIntentServices(Intent(INTENT_ACTION).setPackage(it.packageName), 0)
+    }.map { it.serviceInfo }
 }
