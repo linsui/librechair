@@ -23,6 +23,7 @@ import android.app.Dialog
 import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -71,6 +72,25 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         runOnMainThread {
             notifyItemRemoved(oldIndex)
         }
+    }
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        ItemTouchHelper(object : ItemTouchHelper.Callback() {
+            override fun getMovementFlags(recyclerView: RecyclerView,
+                                          viewHolder: RecyclerView.ViewHolder) = makeMovementFlags(
+                    0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT)
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                                target: RecyclerView.ViewHolder): Nothing = error(
+                    "reorganization has not yet been implemented")
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                remove(notes[viewHolder.adapterPosition])
+            }
+
+            override fun isItemViewSwipeEnabled() = true
+        }).attachToRecyclerView(recyclerView);
     }
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
