@@ -68,7 +68,7 @@ public class NewNoteActivity extends SettingsBaseActivity {
         } else {
             setResult(RESULT_OK, new Intent().putExtra(RETURN_NOTE,
                     new Note(title.getText().toString(), message.getText().toString(),
-                            Color.CYAN)));
+                            getColor(R.color.colorAccent))));
             super.onBackPressed();
         }
     }
