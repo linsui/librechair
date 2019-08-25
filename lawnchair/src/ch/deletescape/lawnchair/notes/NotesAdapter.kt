@@ -70,6 +70,8 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.item.setup(AppGroupsManager.CategorizationType.Tabs, notes[position].title,
                           notes[position].content);
+        holder.item.isSelected = false
+        holder.item.setOnClickListener {}
     }
 }
 
