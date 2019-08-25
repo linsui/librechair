@@ -675,13 +675,68 @@
     <string name="crash_report_notif_title">%1$s crashed!</string>
 
     <string name="personality_provider">Contextual messages</string>
+    <string name="title_preference_feed_sorting_algorithm">Feed sorting algorithm</string>
+    <string name="onbording">Onboarding</string>
+    <string name="onbording_settings_title">Set-up %s</string>
+    <string name="onbording_settings_summary">Long press your home screen</string>
+
+    <string name="onboarding_swipe_up">Swipe up to see all your apps</string>
+    <string name="web_search_google">Google (web)</string>
+    <string name="web_search_ddg">DuckDuckGo (web)</string>
+    <string name="web_search_startpage">Startpage.com (web)</string>
+
+    <string name="web_search_bing">Bing (web)</string>
+    <string name="web_search_qwant">Qwant (web)</string>
+    <string name="web_search_ecosia">Ecosia (web)</string>
+    <string name="web_search_yandex">Yandex (web)</string>
+    <string name="web_search_naver">Naver (web)</string>
+    <string name="web_search_baidu">Baidu (web)</string>
+    <string name="icon_shape_override_miui_explaination">Due to a restriction in MIUI, your icon shape might not change and remain square.\nPlease don\'t report this as a bug.</string>
+    <string name="button_organize_screens">Organize screens</string>
+    <string name="weather_icons_default">Default</string>
+
+    <string name="pref_weather_icon_pack">Weather Icons</string>
+
+    <string name="weather_icon_packs_not_supported">Not supported by your current weather source</string>
+
+    <string name="lawnchair_settings">Librechair Settings</string>
+    <string name="librechair_settings">Librechair Settings</string>
+    <string name="description_pref_feed_algorithm">The feed will be displayed in the selected algorithm</string>
+
+    <string name="customnavbar">Custom Navigation Bar</string>
+    <string name="customnavbar_install">Tap to install Custom Navigation Bar</string>
+    <string name="customnavbar_back_hiding">Back button hiding</string>
+
+    <string name="customnavbar_back_hiding_desc">Hide the back button when not needed</string>
+    <string name="icon_shape_top_left">Top left</string>
+    <string name="icon_shape_top_right">Top right</string>
+    <string name="icon_shape_bottom_left">Bottom left</string>
+    <string name="icon_shape_bottom_right">Bottom right</string>
+    <string name="icon_shape_corner_round">Round</string>
+    <string name="icon_shape_corner_squircle">Squircle</string>
+    <string name="icon_shape_corner_cut">Cut</string>
+    <string name="smartspace_add_to_home">Add to homescreen</string>
+    <string name="title_pref_icon_contrast">Icon contrast</string>
+    <string name="title_pref_icon_brightness">Icon brightness</string>
+
+    <string name="title_pref_oled_feed_cards">OLED black feed cards</string>
+
+    <string name="summary_pref_oled_feed_cards">Cards will be tinted pure black when in a dark theme</string>
+    <string name="title_pref_card_background">Card background</string>
+
+    <string name="service_label">Smartspace widget</string>
+    <string name="service_desc">This displays smartspace information in Smart Unread</string>
+
+    <string name="pref_hide_statusbar_clock">Hide statusbar clock</string>
+
+    <string name="root_access_required">Root access required</string>
+    <string name="smartspace_setup_text">Tap to set-up</string>
     <string-array name="greetings_morning">
         <item>Good morning!</item>
         <item>What a beautiful day!</item>
         <item>Have you looked outside yet?</item>
         <item>Have a great day!</item>
     </string-array>
-    <string name="title_preference_feed_sorting_algorithm">Feed sorting algorithm</string>
     <string-array name="greetings_evening">
         <item>How was your day?</item>
         <item>What did you do today?</item>
@@ -693,59 +748,4 @@
         <item>Sweet dreams!</item>
         <item>Don\'t stay up too long</item>
     </string-array>
-
-    <string name="onbording">Onboarding</string>
-    <string name="onbording_settings_title">Set-up %s</string>
-    <string name="onbording_settings_summary">Long press your home screen</string>
-    <string name="onboarding_swipe_up">Swipe up to see all your apps</string>
-
-    <string name="web_search_google">Google (web)</string>
-    <string name="web_search_ddg">DuckDuckGo (web)</string>
-    <string name="web_search_startpage">Startpage.com (web)</string>
-    <string name="web_search_bing">Bing (web)</string>
-    <string name="web_search_qwant">Qwant (web)</string>
-    <string name="web_search_ecosia">Ecosia (web)</string>
-    <string name="web_search_yandex">Yandex (web)</string>
-    <string name="web_search_naver">Naver (web)</string>
-    <string name="web_search_baidu">Baidu (web)</string>
-
-    <string name="icon_shape_override_miui_explaination">Due to a restriction in MIUI, your icon shape might not change and remain square.\nPlease don\'t report this as a bug.</string>
-
-    <string name="button_organize_screens">Organize screens</string>
-
-    <string name="weather_icons_default">Default</string>
-    <string name="pref_weather_icon_pack">Weather Icons</string>
-    <string name="weather_icon_packs_not_supported">Not supported by your current weather source</string>
-
-    <string name="lawnchair_settings">Librechair Settings</string>
-    <string name="librechair_settings">Librechair Settings</string>
-    <string name="description_pref_feed_algorithm">The feed will be displayed in the selected algorithm</string>
-
-    <string name="customnavbar">Custom Navigation Bar</string>
-    <string name="customnavbar_install">Tap to install Custom Navigation Bar</string>
-    <string name="customnavbar_back_hiding">Back button hiding</string>
-    <string name="customnavbar_back_hiding_desc">Hide the back button when not needed</string>
-    <string name="icon_shape_top_left">Top left</string>
-    <string name="icon_shape_top_right">Top right</string>
-    <string name="icon_shape_bottom_left">Bottom left</string>
-    <string name="icon_shape_bottom_right">Bottom right</string>
-    <string name="icon_shape_corner_round">Round</string>
-    <string name="icon_shape_corner_squircle">Squircle</string>
-    <string name="icon_shape_corner_cut">Cut</string>
-
-    <string name="smartspace_add_to_home">Add to homescreen</string>
-
-    <string name="title_pref_icon_contrast">Icon contrast</string>
-    <string name="title_pref_icon_brightness">Icon brightness</string>
-
-    <string name="title_pref_oled_feed_cards">OLED black feed cards</string>
-    <string name="summary_pref_oled_feed_cards">Cards will be tinted pure black when in a dark theme</string>
-
-    <string name="title_pref_card_background">Card background</string>
-
-    <string name="service_label">Smartspace widget</string>
-    <string name="service_desc">This displays smartspace information in Smart Unread</string>
-    <string name="pref_hide_statusbar_clock">Hide statusbar clock</string>
-    <string name="root_access_required">Root access required</string>
-    <string name="smartspace_setup_text">Tap to set-up</string>
 </resources>

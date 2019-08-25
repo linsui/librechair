@@ -5,8 +5,21 @@
     <application
         android:name="ch.deletescape.lawnchair.LawnchairApp"
         android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name="ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider$Trampoline" />
+        <activity
+            android:name="ch.deletescape.lawnchair.notes.NotesActivity"
+            android:theme="@style/SettingsTheme.V2"
+            android:label="@string/title_pref_feed_notes"
+            android:exported="true"
+            android:taskAffinity=":notes">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.MONKEY" />
+            </intent-filter>
+        </activity>
+        <activity android:name="ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider$Trampoline" />
         <activity
             android:label="@string/pref_category_weather"
             android:name="ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity"
@@ -33,6 +46,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:label="@string/pref_integrations"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsIntegrationActivity"
@@ -45,7 +59,6 @@
             android:name="ch.deletescape.lawnchair.settings.ui.search.SettingsSearchActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
             android:theme="@style/SettingsTheme.V2" />
-
         <activity
             android:autoRemoveFromRecents="true"
             android:label="@string/about"
@@ -77,17 +90,17 @@
                     android:mimeType="vnd.android.cursor.dir/vnd.android.search.suggest"
                     android:scheme="content" />
             </intent-filter>
-        </activity> <!-- Apply directly from iconpack -->
+        </activity>
         <activity
             android:label="@string/backups"
             android:name="ch.deletescape.lawnchair.backup.BackupListActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
-            android:theme="@style/SettingsTheme.V2" />
+            android:theme="@style/SettingsTheme.V2" /> <!-- Apply directly from iconpack -->
         <activity
             android:label="@string/new_backup"
             android:name="ch.deletescape.lawnchair.backup.NewBackupActivity"
             android:parentActivityName="ch.deletescape.lawnchair.backup.BackupListActivity"
-            android:theme="@style/SettingsTheme.V2" /> <!-- Pixel -->
+            android:theme="@style/SettingsTheme.V2" />
         <activity
             android:label="@string/restore_backup"
             android:name="ch.deletescape.lawnchair.backup.RestoreBackupActivity"
@@ -122,12 +135,12 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.shed" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.shed" />
             </intent-filter>
-        </activity> <!-- TODO: Display only inside Lawnchair -->
+        </activity> <!-- Pixel -->
         <activity
             android:label="@string/search"
             android:name="ch.deletescape.lawnchair.settings.ui.SettingsSearchActivity"
             android:parentActivityName="ch.deletescape.lawnchair.settings.ui.SettingsActivity"
-            android:theme="@style/SettingsTheme.V2" />
+            android:theme="@style/SettingsTheme.V2" /> <!-- TODO: Display only inside Lawnchair -->
         <activity
             android:name="ch.deletescape.lawnchair.iconpack.ApplyIconPackActivity"
             android:theme="@style/SettingsTheme.V2.Transparent">
@@ -197,6 +210,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" /> <!-- Pixel -->
@@ -204,7 +218,6 @@
             android:authorities="${applicationId}.appssearch"
             android:exported="true"
             android:name="com.google.android.apps.nexuslauncher.search.AppSearchProvider" />
-
         <provider
             android:authorities="${applicationId}.provider"
             android:exported="false"
@@ -221,10 +234,7 @@
             android:name="ch.deletescape.lawnchair.FiveSecsProvider" /> <!-- Icon picker -->
         <receiver
             android:name="ch.deletescape.lawnchair.smartspace.LauncherEventChangeListener"
-            android:priority="1000">
-
-        </receiver>
-
+            android:priority="1000"></receiver>
         <receiver
             android:description="@string/dt2s_admin_hint"
             android:name="ch.deletescape.lawnchair.gestures.handlers.SleepMethodDeviceAdmin$SleepDeviceAdmin"
@@ -245,7 +255,6 @@
                 <action android:name="ch.deletescape.lawnchair.todo.TODO_PROVIDER" />
             </intent-filter>
         </service>
-
         <service
             android:enabled="true"
             android:exported="true"
@@ -296,13 +305,11 @@
             </intent-filter>
             -->
         </service>
-
         <service android:name="ch.deletescape.lawnchair.notes.NoteAppNoteProvider$Service">
             <intent-filter>
                 <action android:name="ch.deletescape.lawnchair.todo.TODO_PROVIDER" />
             </intent-filter>
         </service>
-
         <service
             android:exported="false"
             android:name="com.android.launcher3.uioverrides.WallpaperManagerCompat$ColorExtractionService"
@@ -326,12 +333,11 @@
             android:exported="false"
             android:name="ch.deletescape.lawnchair.bugreport.DogbinUploadService"
             android:process=":bugReport" />
-
         <service
-            android:name="ch.deletescape.lawnchair.shade.SmartspaceShadespacePlugin$Service"
+            android:description="@string/service_desc"
             android:exported="true"
             android:label="@string/service_label"
-            android:description="@string/service_desc">
+            android:name="ch.deletescape.lawnchair.shade.SmartspaceShadespacePlugin$Service">
             <intent-filter>
                 <action android:name="com.android.launcher3.PLUGIN" />
             </intent-filter>
@@ -343,18 +349,18 @@
                 android:name="interface.version"
                 android:value="1" />
         </service>
-    </application>
+    </application> <!-- Pixel -->
     <permission
         android:name="${applicationId}.permission.QSB"
         android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
-        android:protectionLevel="signatureOrSystem" /> <!-- Pixel -->
+        android:protectionLevel="signatureOrSystem" />
+
     <permission
         android:name="${applicationId}.permission.BROADCAST_BUGREPORT"
-        android:protectionLevel="signature" />
-
+        android:protectionLevel="signature" /> <!-- Custom -->
     <uses-feature
         android:name="android.hardware.telephony"
-        android:required="false" /> <!-- Custom -->
+        android:required="false" />
     <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
     <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
     <uses-permission android:name="com.google.android.apps.nexuslauncher.permission.READ_SETTINGS" />
@@ -362,10 +368,10 @@
     <uses-permission android:name="${applicationId}.permission.READ_SETTINGS" />
     <uses-permission android:name="${applicationId}.permission.WRITE_SETTINGS" />
     <uses-permission android:name="${applicationId}.permission.QSB" />
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- For weather / sunset/-rise -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- EMUI specific permissions -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- The following is NOT a typo, it is actually called wallpaperservcie ¯\_(ツ)_/¯ -->
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" /> <!-- For weather / sunset/-rise -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- EMUI specific permissions -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- The following is NOT a typo, it is actually called wallpaperservcie ¯\_(ツ)_/¯ -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.INSTALL_SHORTCUT" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
@@ -386,8 +392,8 @@
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
     <uses-permission android:name="android.permission.READ_FRAME_BUFFER" />
     <uses-permission android:name="android.permission.GET DETAILED TASKS" />
-    <uses-permission android:name="android.permission.ACCESS_INSTANT_APPS" />
-    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS" /> <!-- Used for Google/Lawnchair predictions, solely used to read bt connection state -->
+    <uses-permission android:name="android.permission.ACCESS_INSTANT_APPS" /> <!-- Used for Google/Lawnchair predictions, solely used to read bt connection state -->
+    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS" />
     <uses-permission android:name="android.permission.START_TASKS_FROM_RECENTS" />
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission android:name="android.permission.CREATE_USERS" />
