@@ -99,6 +99,14 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     var navigationBarHeight: Int? = null
 
     init {
+        if (!useTabbedMode) {
+            recyclerView.apply {
+                setPadding(paddingStart, toolbar.also {
+                    it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                }.height + context.resources.getDimension(
+                        R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
+            }
+        }
         var oldToolbarPadding: Pair<Int, Int>? = null
         var oldRecyclerViewPadding: Pair<Int, Int>? = null
         if (backgroundColor.alpha == 255) {
