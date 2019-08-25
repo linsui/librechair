@@ -40,7 +40,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
             notes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
         }.invokeOnCompletion {
             runOnMainThread {
-                notifyItemRangeInserted(0, notes.size)
+                notifyItemRangeInserted(0, notes.size - 1)
                 hold.trigger()
             }
         }
