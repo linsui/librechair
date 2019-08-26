@@ -27,12 +27,12 @@ import androidx.annotation.NonNull;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
 import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
-import ch.deletescape.lawnchair.smartspace.weather.forecast.AccuWeatherForecastProvider.CachedResponse;
 import ch.deletescape.lawnchair.util.Temperature;
 import ch.deletescape.lawnchair.util.Temperature.Unit;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import kotlin.Pair;
@@ -48,9 +48,13 @@ public class OWMForecastProvider implements ForecastProvider {
 
     private final Context context;
     private final OWM owm;
-    private CachedResponse<DailyForecast> dailyForecastCachedResponse;
-    private CachedResponse<Forecast> forecastCachedResponse;
-    private CachedResponse<CurrentWeather> currentWeatherCachedResponse;
+    private long dailyForecastCacheExpiry;
+    private long hourlyForecastCacheExpiry;
+    private long currentWeatherCacheExpiry;
+
+    private DailyForecast dailyForecastCachedResponse;
+    private Forecast forecastCachedResponse;
+    private CurrentWeather currentWeatherCachedResponse;
 
     public OWMForecastProvider(Context context) {
         this.context = context;
@@ -62,10 +66,11 @@ public class OWMForecastProvider implements ForecastProvider {
     public Forecast getHourlyForecast(double lat, double lon) throws ForecastException {
         Log.d(getClass().getName(),
                 "getHourlyForecast: retrieving forecast, " + forecastCachedResponse);
-        if (forecastCachedResponse != null && !forecastCachedResponse.getExpired()) {
+        if (forecastCachedResponse != null && hourlyForecastCacheExpiry >= System
+                .currentTimeMillis()) {
             Log.d(getClass().getName(),
                     "getHourlyForecast(double, double): returning cached forecast");
-            return forecastCachedResponse.getValue();
+            return forecastCachedResponse;
         }
         try {
             Log.d(getClass().getName(), "getHourlyForecast(double, double): retrieving forecasts");
@@ -85,10 +90,9 @@ public class OWMForecastProvider implements ForecastProvider {
                         weather.getDateTime(),
                         Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class)));
             }
-            forecastCachedResponse = new CachedResponse<>(
-                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(25),
-                    new Forecast(dataList));
-            return forecastCachedResponse.getValue();
+            forecastCachedResponse = new Forecast(dataList);
+            hourlyForecastCacheExpiry = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(25);
+            return forecastCachedResponse;
         } catch (Throwable e) {
             e.printStackTrace();
             throw new ForecastException(e);
@@ -98,8 +102,9 @@ public class OWMForecastProvider implements ForecastProvider {
     @NonNull
     @Override
     public DailyForecast getDailyForecast(double lat, double lon) throws ForecastException {
-        if (dailyForecastCachedResponse != null && !dailyForecastCachedResponse.getExpired()) {
-            return dailyForecastCachedResponse.getValue();
+        if (dailyForecastCachedResponse != null && dailyForecastCacheExpiry >= System
+                .currentTimeMillis()) {
+            return dailyForecastCachedResponse;
         }
         try {
             DailyWeatherForecast forecast = new OWMPro(owm.getApiKey())
@@ -114,8 +119,9 @@ public class OWMForecastProvider implements ForecastProvider {
                                 .getIcon(weather.getWeatherList().get(0).getIconCode()), null));
             }
             return LawnchairUtilsKt.also(new DailyForecast(dataList), it -> {
-                dailyForecastCachedResponse = new CachedResponse<>(
-                        System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(40), it);
+                dailyForecastCachedResponse = it;
+                dailyForecastCacheExpiry =
+                        System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(40);
                 return kotlin.Unit.INSTANCE;
             });
         } catch (Throwable e) {
@@ -128,29 +134,31 @@ public class OWMForecastProvider implements ForecastProvider {
     public CurrentWeather getCurrentWeather(double lat, double lon) throws ForecastException {
         Log.d(getClass().getName(),
                 "getCurrentWeather: retrieving current weather, " + currentWeatherCachedResponse);
-        if (currentWeatherCachedResponse != null && !currentWeatherCachedResponse.getExpired()) {
+        if (currentWeatherCachedResponse != null && currentWeatherCacheExpiry >= System
+                .currentTimeMillis()) {
             Log.d(getClass().getName(),
                     "getCurrentWeather(double, double): returning cached forecast");
-            return currentWeatherCachedResponse.getValue();
+            return currentWeatherCachedResponse;
         }
+        Log.d(getClass().getName(),
+                "getCurrentWeather: fetching latest weather information");
         try {
             net.aksingh.owmjapis.model.CurrentWeather weather = owm
                     .currentWeatherByCoords(lat, lon);
-            List<Integer> integers = LawnchairUtilsKt.newList();
-            for (Weather weather1 : weather.getWeatherList()) {
-                integers.add(weather1.getConditionId());
-            }
-            return LawnchairUtilsKt.also(new CurrentWeather(
+            Log.d(getClass().getName(),
+                    "getCurrentWeather: retrieved raw weather data: " + weather);
+            List<Integer> integers = Collections
+                    .singletonList(weather.getWeatherList().get(0).getConditionId());
+            currentWeatherCachedResponse = new CurrentWeather(
                     Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class),
                     weather.getDateTime(), new Temperature(
                     weather.getMainData().getTemp().intValue(), Unit.Kelvin),
                     new WeatherIconProvider(context)
                             .getIcon(weather.getWeatherList().get(0).getIconCode()),
-                    weather.getRainData().getPrecipVol3h()), it -> {
-                currentWeatherCachedResponse = new CachedResponse<>(
-                        System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10), it);
-                return kotlin.Unit.INSTANCE;
-            });
+                    null);
+            currentWeatherCacheExpiry =
+                    System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(10);
+            return currentWeatherCachedResponse;
         } catch (Throwable e) {
             throw new ForecastException(e);
         }
@@ -166,7 +174,7 @@ public class OWMForecastProvider implements ForecastProvider {
                 /*
                  * Since the OpenWeatherMap library used here is written in exception-unsafe Kotlin,
                  * random IOExceptions may be thrown separate from APIException.
-                 * These are compiler tricks to enable compilation of exceptions catch blocks not made known to Java
+                 * These are compiler tricks to enable compilation of exception catch blocks not made known to Java
                  */
                 throw new IOException();
             }
