@@ -73,7 +73,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
     }
 
     override fun getCards(): List<Card> {
-        return if (weatherData != null && forecastHigh != null && forecastLow != null && weatherTypeResource != null) listOf(
+        return if (weatherData != null) listOf(
                 Card(null, null, object : Card.Companion.InflateHelper {
                     @SuppressLint("SetTextI18n")
                     override fun inflate(parent: ViewGroup): View {
@@ -153,9 +153,11 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
 
                         d("inflate: set text for current data text view")
 
-                        highLow.text =
-                                "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
-                        information.text = context.getString(weatherTypeResource!!)
+                        if (forecastHigh != null && forecastLow != null) {
+                            highLow.text =
+                                    "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
+                        }
+                        information.text = weatherTypeResource?.let { context.getString(it) }
 
                         d("inflate: set thext for rest of views")
                         if (useWhiteText(backgroundColor, parent.context)) {
@@ -181,10 +183,18 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
 
                 try {
                     d("onDataUpdated: fetching weather data")
-                    hourlyWeatherForecast = context.forecastProvider
-                            .getHourlyForecast(weatherData.coordLat, weatherData.coordLon)
-                    dailyForecast = context.forecastProvider
-                            .getDailyForecast(weatherData.coordLat, weatherData.coordLon)
+                    try {
+                        hourlyWeatherForecast = context.forecastProvider
+                                .getHourlyForecast(weatherData.coordLat, weatherData.coordLon)
+                    } catch (e: ForecastProvider.ForecastException) {
+                        e.printStackTrace()
+                    }
+                    try {
+                        dailyForecast = context.forecastProvider
+                                .getDailyForecast(weatherData.coordLat, weatherData.coordLon)
+                    } catch (e: ForecastProvider.ForecastException) {
+                        e.printStackTrace()
+                    }
                     d("onDataUpdated: data retrieved")
                     val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
                         if (it.date.before(tomorrow())) {
