@@ -595,4 +595,6 @@
     <string name="hint_text_title">Title</string>
     <string name="title_snackbar_empty_note">This note must have a title and message</string>
     <string name="title_menu_item_new_note">Create note</string>
+    <string name="title_pref_forecast_item_count">Forecast card item count</string>
+    <string name="title_pref_daily_forecast_item_count">Daily forecast card item count</string>
 </resources>

@@ -40,6 +40,7 @@ import java.time.ZoneId
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
+import kotlin.math.roundToInt
 
 class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
     private var weatherData: WeatherData? = null
@@ -89,7 +90,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 v.findViewById(R.id.unified_weather_forecast) as LinearLayout
                         val dailyLayout = v.findViewById(R.id.unified_weather_daily) as LinearLayout
 
-                        hourlyWeatherForecast?.data?.take(6)?.forEach {
+                        hourlyWeatherForecast?.data?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())?.forEach {
                             hourlyLayout.addView(LayoutInflater.from(hourlyLayout.context).inflate(
                                     R.layout.narrow_forecast_item, parent, false).apply {
                                 val temperature =
@@ -116,7 +117,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                             })
                         }
 
-                        dailyForecast?.dailyForecastData?.take(4)?.forEach {
+                        dailyForecast?.dailyForecastData?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())?.forEach {
                             dailyLayout.addView(LayoutInflater.from(hourlyLayout.context).inflate(
                                     R.layout.narrow_forecast_item, parent, false).apply {
                                 val temperature =

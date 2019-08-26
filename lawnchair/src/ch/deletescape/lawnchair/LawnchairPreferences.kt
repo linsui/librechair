@@ -426,6 +426,8 @@ class LawnchairPreferences(val context: Context) :
     var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
+    var feedForecastItemCount by FloatPref("pref_forecast_item_count", 6f, ::restartOverlay)
+    var feedDailyForecastItemCount by FloatPref("pref_daily_forecast_item_count", 4f, ::restartOverlay)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
                                           restart)
     var feedTabController by StringPref("pref_feed_tab_controller", TabController::class.java.name,

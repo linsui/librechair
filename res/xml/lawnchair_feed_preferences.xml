@@ -129,16 +129,38 @@
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:title="@string/pref_category_providers"
         android:dependency="pref_swipe_feed">
-        <ch.deletescape.lawnchair.preferences.RSSSourcesPreference
-            android:key="pref_rss_sources"
-            android:summary="%s"
-            android:title="@string/title_pref_rss_sources" />
-
         <ch.deletescape.lawnchair.preferences.FeedProvidersPreference
             android:dependency="pref_swipe_feed"
             android:key="pref_feed_providers"
             android:summary="%s"
             android:title="@string/title_preference_feed_providers" />
+
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            android:key="pref_forecast_item_count"
+            android:persistent="true"
+            android:title="@string/title_pref_forecast_item_count"
+            app:defaultSeekbarValue="6"
+            app:maxValue="20"
+            app:minValue="0"
+            app:steps="20"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1" />
+
+        <ch.deletescape.lawnchair.preferences.SeekbarPreference
+            android:key="pref_daily_forecast_item_count"
+            android:persistent="true"
+            android:title="@string/title_pref_daily_forecast_item_count"
+            app:defaultSeekbarValue="4"
+            app:maxValue="20"
+            app:minValue="0"
+            app:steps="20"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1" />
+
+        <ch.deletescape.lawnchair.preferences.RSSSourcesPreference
+            android:key="pref_rss_sources"
+            android:summary="%s"
+            android:title="@string/title_pref_rss_sources" />
 
         <ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference
             android:title="@string/title_preference_feed_widgets"
