@@ -35,18 +35,13 @@
 
 package ch.deletescape.lawnchair.smartspace
 
-import android.app.PendingIntent
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
-import android.net.Uri
 import android.provider.CalendarContract
 import android.support.annotation.Keep
 import android.text.TextUtils
 import ch.deletescape.lawnchair.drawableToBitmap
-import ch.deletescape.lawnchair.formatTime
-import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -101,9 +96,11 @@ class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
             eventCursor.close();
             updateData(null, card)
+            return;
         } catch (e: CursorIndexOutOfBoundsException) {
             updateData(null, card = null)
         }
+        updateData(null, null)
     }
 
     override fun updateData() {
