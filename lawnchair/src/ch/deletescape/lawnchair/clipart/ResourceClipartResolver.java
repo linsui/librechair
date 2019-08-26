@@ -64,7 +64,7 @@ public class ResourceClipartResolver implements ClipartResolver {
 
             @Override
             public Drawable resolveClipart() {
-                return context.getDrawable(R.drawable.ic_featured_play_list_black_24dp);
+                return context.getDrawable(R.drawable.ic_tooltip_image_outline_24dp);
             }
         }, new ClipartData() {
             @Override
@@ -79,7 +79,7 @@ public class ResourceClipartResolver implements ClipartResolver {
 
             @Override
             public Drawable resolveClipart() {
-                return context.getDrawable(R.drawable.ic_assessment_black_24dp);
+                return context.getDrawable(R.drawable.ic_newspaper_24dp);
             }
         }, new ClipartData() {
             @Override
