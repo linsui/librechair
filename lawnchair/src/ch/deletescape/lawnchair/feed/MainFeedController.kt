@@ -94,6 +94,7 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_note_list)
                     AlarmEventProvider::class.java.name -> R.string.resuable_text_alarm.fromStringRes(
                             context)
+                    FeedJoinedWeatherProvider::class.java.name -> "Weather card"
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -118,6 +119,7 @@ class MainFeedController(val context: Context) {
             }
             return listOf(CalendarEventProvider::class.java.name,
                           FeedWeatherStatsProvider::class.java.name,
+                          FeedJoinedWeatherProvider::class.qualifiedName,
                           FeedDailyForecastProvider::class.java.name,
                           FeedForecastProvider::class.java.name, NoteListProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
