@@ -32,8 +32,10 @@ import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
+import ch.deletescape.lawnchair.feed.AlarmEventProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
@@ -69,6 +71,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
+import kotlin.reflect.full.isSuperclassOf
 
 class LawnchairPreferences(val context: Context) :
         SharedPreferences.OnSharedPreferenceChangeListener {
@@ -431,8 +434,41 @@ class LawnchairPreferences(val context: Context) :
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     var feedCustomTabs by object :
-            MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay,
-                                       emptyList()) {
+            MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
+                val providerList = MainFeedController.getFeedProviders(context, true)
+                return@run listOf(CustomTab().apply {
+                    iconToken = "resource_utility"
+                    name = R.string.category_tools.fromStringRes(context)
+                    providers = providerList.filter {
+                        it.clazz.let {
+                            it == FeedWeatherStatsProvider::class.qualifiedName || it == FeedForecastProvider::class.qualifiedName || it == FeedDailyForecastProvider::class.qualifiedName || it == DailySummaryFeedProvider::class.qualifiedName || it == WikipediaFunFactsProvider::class.qualifiedName || it == NoteListProvider::class.qualifiedName || it == WebApplicationsProvider::class.qualifiedName
+                        } || it.arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY) == "tools"
+                    }.toTypedArray()
+                }, CustomTab().apply {
+                    iconToken = "resource_news"
+                    name = R.string.category_news.fromStringRes(context)
+                    providers = providerList.filter {
+                        it.clazz.let {
+                            it == WikipediaNewsProvider::class.qualifiedName || AbstractRSSFeedProvider::class.isSuperclassOf(
+                                    Class.forName(it).kotlin)
+                        } || it.arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY) == "news"
+                    }.toTypedArray()
+                }, CustomTab().apply {
+                    iconToken = "resource_events"
+                    name = R.string.feed_category_events.fromStringRes(context)
+                    providers = providerList.filter {
+                        it.clazz.let {
+                            it == CalendarEventProvider::class.qualifiedName || it == AlarmEventProvider::class.qualifiedName
+                        } || it.arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY) == "events"
+                    }.toTypedArray()
+                }, CustomTab().apply {
+                    iconToken = "resource_widgets"
+                    name = R.string.widget_button_text.fromStringRes(context)
+                    providers = providerList.filter {
+                        it.clazz == FeedWidgetsProvider::class.qualifiedName
+                    }.toTypedArray()
+                })
+            }) {
         override fun unflattenValue(value: String): CustomTab {
             return Gson().fromJson(value, CustomTab::class.java)
         }

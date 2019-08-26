@@ -40,7 +40,7 @@ public class ProviderTabbingController extends TabController {
         super(context);
         this.providerItemMap = new LinkedHashMap<>();
         for (FeedProviderContainer provider : MainFeedController.Companion
-                .getFeedProviders(context)) {
+                .getFeedProviders(context, false)) {
             providerItemMap.put(provider,
                     new Item(null, MainFeedController.Companion.getDisplayName(provider, context)));
         }

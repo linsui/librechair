@@ -111,8 +111,11 @@ class MainFeedController(val context: Context) {
             }
         }
 
-        fun getFeedProviders(context: Context): List<FeedProviderContainer> {
-            migrateToContainerSystem(context)
+        fun getFeedProviders(context: Context,
+                             calledFromPrefs: Boolean = false): List<FeedProviderContainer> {
+            if (!calledFromPrefs) {
+                migrateToContainerSystem(context)
+            }
             return listOf(CalendarEventProvider::class.java.name,
                           FeedWeatherStatsProvider::class.java.name,
                           FeedDailyForecastProvider::class.java.name,
