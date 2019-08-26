@@ -75,7 +75,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
                                 Temperature(it.temp.toInt(), Temperature.Unit.Celsius), null, null,
                                 null, lat, lon, it.weather.icon.toString()),
                         Date.from(Instant.ofEpochSecond(it.ts.toLong())),
-                        arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]!!.first))
+                        arrayOf(WeatherbitDataProvider.COND_IDS[it.weather.icon]?.first ?: 0))
             }
             return ForecastProvider.Forecast(weatherData)
         } catch (e: IOException) {

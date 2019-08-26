@@ -128,7 +128,7 @@ class WeatherbitDataProvider(controller: LawnchairSmartspaceController) :
                              "c03d" to (WeatherIconManager.Icon.PARTLY_CLOUDY to false),
                              "c03n" to (WeatherIconManager.Icon.PARTLY_CLOUDY to true),
                              "c04d" to (WeatherIconManager.Icon.MOSTLY_CLOUDY to false),
-                             "c04d" to (WeatherIconManager.Icon.MOSTLY_CLOUDY to true),
+                             "c04n" to (WeatherIconManager.Icon.MOSTLY_CLOUDY to true),
                              "c05d" to (WeatherIconManager.Icon.OVERCAST to false),
                              "c05n" to (WeatherIconManager.Icon.OVERCAST to true),
                              "u00d" to (WeatherIconManager.Icon.NA to false),
