@@ -70,8 +70,7 @@ import kotlin.collections.ArrayList
         if (alarmManager.nextAlarmClock != null && alarmManager.nextAlarmClock!!.triggerTime - System.currentTimeMillis() <= TimeUnit.MINUTES.toMillis(
                     30)) {
             val alarmClock = alarmManager.nextAlarmClock!!
-            val string: MutableList<LawnchairSmartspaceController.Line> =
-                    ArrayList<LawnchairSmartspaceController.Line>();
+            val string: MutableList<LawnchairSmartspaceController.Line> = ArrayList();
             string.add(LawnchairSmartspaceController.Line(
                 controller.context.getString(R.string.resuable_text_alarm)));
             string.add(LawnchairSmartspaceController.Line(
