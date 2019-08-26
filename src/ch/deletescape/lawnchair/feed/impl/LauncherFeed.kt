@@ -332,33 +332,37 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
-        tabView.tabsEnabled = false
-        oldIconTint = tabView.tabIconTint!!
-        oldIndicatorTint = if (backgroundColor.alpha > 35) getColorForIndex(
-                tabView.selectedTabPosition) else if (useWhiteText(backgroundColor,
-                                                                   context)) R.color.textColorPrimary.fromColorRes(
-                context) else R.color.textColorPrimaryInverse.fromColorRes(context)
-        oldTextColor = tabView.tabTextColors!!
-        if (useWhiteText(backgroundColor, context) && !dark) {
-            tabView.tabIconTint = ColorStateList(
-                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
-                            R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
-            tabView.tabSelectedIndicator!!.setTint(getColorForIndex(tabView.selectedTabPosition))
-            tabView.tabTextColors = ColorStateList(
-                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
-                            R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
-        } else if (!useWhiteText(backgroundColor, context) && dark) {
-            tabView.tabIconTint = ColorStateList(
-                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
-                            R.color.textColorPrimary.fromColorRes(context)).toIntArray())
-            tabView.tabSelectedIndicator!!.setTint(getColorForIndex(tabView.selectedTabPosition))
-            tabView.tabTextColors = ColorStateList(
-                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(getColorForIndex(tabView.selectedTabPosition),
-                            R.color.textColorPrimary.fromColorRes(context)).toIntArray())
+        if (useTabbedMode) {
+            tabView.tabsEnabled = false
+            oldIconTint = tabView.tabIconTint!!
+            oldIndicatorTint = if (backgroundColor.alpha > 35) getColorForIndex(
+                    tabView.selectedTabPosition) else if (useWhiteText(backgroundColor,
+                                                                       context)) R.color.textColorPrimary.fromColorRes(
+                    context) else R.color.textColorPrimaryInverse.fromColorRes(context)
+            oldTextColor = tabView.tabTextColors!!
+            if (useWhiteText(backgroundColor, context) && !dark) {
+                tabView.tabIconTint = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                        arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                                R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
+                tabView.tabSelectedIndicator!!
+                        .setTint(getColorForIndex(tabView.selectedTabPosition))
+                tabView.tabTextColors = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                        arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                                R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
+            } else if (!useWhiteText(backgroundColor, context) && dark) {
+                tabView.tabIconTint = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                        arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                                R.color.textColorPrimary.fromColorRes(context)).toIntArray())
+                tabView.tabSelectedIndicator!!
+                        .setTint(getColorForIndex(tabView.selectedTabPosition))
+                tabView.tabTextColors = ColorStateList(
+                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                        arrayOf(getColorForIndex(tabView.selectedTabPosition),
+                                R.color.textColorPrimary.fromColorRes(context)).toIntArray())
+            }
         }
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
@@ -421,13 +425,14 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeDisplayedView(x: Float, y: Float) {
-        tabView.tabIconTint = oldIconTint
-        tabView.tabTextColors = oldTextColor
-        tabView.tabSelectedIndicator?.setTint(oldIndicatorTint)
-        for (i in 0 until toolbar.menu.size()) {
-            toolbar.menu.getItem(i).icon?.setTint(oldTextColor.defaultColor)
+        if (useTabbedMode) {
+            tabView.tabIconTint = oldIconTint
+            tabView.tabTextColors = oldTextColor
+            tabView.tabSelectedIndicator?.setTint(oldIndicatorTint)
+            for (i in 0 until toolbar.menu.size()) {
+                toolbar.menu.getItem(i).icon?.setTint(oldTextColor.defaultColor)
+            }
         }
-
         tabView.tabsEnabled = true
         recyclerView.isLayoutFrozen = false
         frame.findViewById<View>(R.id.feed_overlay_view)?.apply {
