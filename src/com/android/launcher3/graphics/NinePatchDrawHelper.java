@@ -93,6 +93,8 @@ public class NinePatchDrawHelper {
 
         mDst.left = dstLeft;
         mDst.right = dstRight;
-        c.drawBitmap(bitmap, mSrc, mDst, paint);
+        if (c.isHardwareAccelerated()) {
+            c.drawBitmap(bitmap, mSrc, mDst, paint);
+        }
     }
 }
