@@ -35,13 +35,18 @@ class OverlayService : Service(), () -> Unit {
         return feed;
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        Process.killProcess(Process.myPid());
+        onDestroy()
+        return true
+    }
+
     override fun invoke() {
         feed = LauncherFeed(applicationContext)
     }
 
     override fun onDestroy() {
         d("onDestroy: killing overlay process", Throwable())
-        Process.killProcess(Process.myPid());
         super.onDestroy()
     }
 }

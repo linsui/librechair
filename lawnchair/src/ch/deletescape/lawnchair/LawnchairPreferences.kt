@@ -20,11 +20,10 @@
 package ch.deletescape.lawnchair
 
 import android.annotation.SuppressLint
-import android.content.*
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.Uri
-import android.os.DeadObjectException
-import android.os.IBinder
 import android.os.Looper
 import android.provider.Settings
 import android.text.TextUtils
@@ -42,8 +41,6 @@ import ch.deletescape.lawnchair.globalsearch.SearchProviderController
 import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.DrawerTabs
 import ch.deletescape.lawnchair.iconpack.IconPackManager
-import ch.deletescape.lawnchair.overlay.ProcessController
-import ch.deletescape.lawnchair.overlay.ProcessControllerService
 import ch.deletescape.lawnchair.preferences.DockStyle
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
@@ -529,21 +526,13 @@ class LawnchairPreferences(val context: Context) :
     }
 
     fun restartOverlay() {
-        context.bindService(Intent(context, ProcessControllerService::class.java),
-                            object : ServiceConnection {
-                                override fun onServiceDisconnected(name: ComponentName?) {
-                                }
-
-                                override fun onServiceConnected(name: ComponentName?,
-                                                                service: IBinder?) {
-                                    try {
-                                        ProcessController.Stub.asInterface(service)
-                                                .killOverlayProcess()
-                                    } catch (e: DeadObjectException) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, Context.BIND_AUTO_CREATE)
+        try {
+            LawnchairLauncher.getLauncher(context).googleNow!!.mBaseService.disconnect()
+        } catch (e: NullPointerException) {
+            e.printStackTrace();
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace();
+        }
     }
 
     fun refreshGrid() {

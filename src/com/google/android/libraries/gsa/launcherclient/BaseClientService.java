@@ -8,8 +8,9 @@ import android.util.Log;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 
 public class BaseClientService implements ServiceConnection {
+
     private boolean mConnected;
-    private final Context mContext;
+    public final Context mContext;
     private final int mFlags;
     private LauncherClient client;
     private int connectRetries = 0;
@@ -22,13 +23,11 @@ public class BaseClientService implements ServiceConnection {
 
     public final boolean connect() {
         if (connectRetries < 5) {
-            if (!mConnected) {
-                try {
-                    mConnected = mContext
-                            .bindService(LauncherClient.getIntent(mContext), this, mFlags);
-                } catch (Throwable e) {
-                    Log.e("LauncherClient", "Unable to connect to overlay service", e);
-                }
+            try {
+                mConnected = mContext
+                        .bindService(LauncherClient.getIntent(mContext), this, mFlags);
+            } catch (Throwable e) {
+                Log.e("LauncherClient", "Unable to connect to overlay service", e);
             }
             connectRetries = 0;
             return mConnected;
