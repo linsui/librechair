@@ -45,7 +45,10 @@ import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
 
-class LawnchairApp : Application() {
+class LawnchairApp : Application(), () -> Unit {
+    override fun invoke() {
+        lawnchairPrefs.restartOverlay()
+    }
 
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
@@ -80,6 +83,8 @@ class LawnchairApp : Application() {
                 .also { it.startListening() }
         ClipartCache.providers += ResourceClipartResolver(this)
         ClipartCache.providers += FancyClipartResolver(this)
+
+        ThemeManager.getInstance(this).changeCallbacks += this
     }
 
     fun onLauncherAppStateCreated() {
@@ -93,8 +98,6 @@ class LawnchairApp : Application() {
             BugReportClient.getInstance(this)
             BugReportService.registerNotificationChannel(this)
         }
-
-        // LIBRE_CHANGED: Remove Sesame integration, as it depends on a non-free library
     }
 
     fun restart(recreateLauncher: Boolean = true) {
