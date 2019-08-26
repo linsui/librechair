@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
+import com.android.launcher3.Launcher;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 
 public class BaseClientService implements ServiceConnection {
@@ -55,6 +56,9 @@ public class BaseClientService implements ServiceConnection {
         Log.d("LauncherClient",
                 "onServiceDisconnected: disconnected from overlay " + name.flattenToShortString());
         if (mConnected) {
+            if (Launcher.getLauncher(mContext) != null) {
+                Launcher.getLauncher(mContext).getWorkspace().onOverlayScrollChanged(0);
+            }
             ++connectRetries;
             connect();
         }
