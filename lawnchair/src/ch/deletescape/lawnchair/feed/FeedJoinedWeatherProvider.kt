@@ -35,8 +35,8 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
@@ -99,9 +99,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 val icon = findViewById(R.id.forecast_weather_icon) as ImageView
 
                                 icon.setImageBitmap(it.data.icon)
-                                val zonedDateTime = LocalDateTime
+                                val zonedDateTime = ZonedDateTime
                                         .ofInstant(it.date.toInstant(), ZoneId.of("UTC"))
-                                        .atZone(ZoneId.systemDefault())
+                                        .withZoneSameInstant(ZoneId.systemDefault())
                                 time.text = formatTime(zonedDateTime, context)
                                 temperature.text = it.data.temperature
                                         .toString(context.lawnchairPrefs.weatherUnit)
@@ -126,9 +126,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 val icon = findViewById(R.id.forecast_weather_icon) as ImageView
 
                                 icon.setImageBitmap(it.icon)
-                                val zonedDateTime = LocalDateTime
+                                val zonedDateTime = ZonedDateTime
                                         .ofInstant(it.date.toInstant(), ZoneId.of("UTC"))
-                                        .atZone(ZoneId.systemDefault())
+                                        .withZoneSameInstant(ZoneId.systemDefault())
                                 time.text = "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
                                 temperature.text = "${it.low.toString(
                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
