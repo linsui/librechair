@@ -90,60 +90,87 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 v.findViewById(R.id.unified_weather_forecast) as LinearLayout
                         val dailyLayout = v.findViewById(R.id.unified_weather_daily) as LinearLayout
 
-                        hourlyWeatherForecast?.data?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())?.forEach {
-                            hourlyLayout.addView(LayoutInflater.from(hourlyLayout.context).inflate(
-                                    R.layout.narrow_forecast_item, parent, false).apply {
-                                val temperature =
-                                        findViewById(R.id.forecast_current_temperature) as TextView
-                                val time = findViewById(R.id.forecast_current_time) as TextView
-                                val icon = findViewById(R.id.forecast_weather_icon) as ImageView
+                        hourlyWeatherForecast?.data
+                                ?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
+                                ?.forEach {
+                                    hourlyLayout.addView(
+                                            LayoutInflater.from(hourlyLayout.context).inflate(
+                                                    R.layout.narrow_forecast_item, parent,
+                                                    false).apply {
+                                                val temperature = findViewById(
+                                                        R.id.forecast_current_temperature) as TextView
+                                                val time = findViewById(
+                                                        R.id.forecast_current_time) as TextView
+                                                val icon = findViewById(
+                                                        R.id.forecast_weather_icon) as ImageView
 
-                                icon.setImageBitmap(it.data.icon)
-                                val zonedDateTime = ZonedDateTime
-                                        .ofInstant(it.date.toInstant(), ZoneId.of("UTC"))
-                                        .withZoneSameInstant(ZoneId.systemDefault())
-                                time.text = formatTime(zonedDateTime, context)
-                                temperature.text = it.data.temperature
-                                        .toString(context.lawnchairPrefs.weatherUnit)
+                                                icon.setImageBitmap(it.data.icon)
+                                                val zonedDateTime = ZonedDateTime
+                                                        .ofInstant(it.date.toInstant(),
+                                                                   ZoneId.of("UTC"))
+                                                        .withZoneSameInstant(ZoneId.systemDefault())
+                                                time.text = formatTime(zonedDateTime, context)
+                                                temperature.text = it.data.temperature.toString(
+                                                        context.lawnchairPrefs.weatherUnit)
 
-                                if (useWhiteText(backgroundColor, context)) {
-                                    time.setTextColor(Color.WHITE)
-                                    temperature.setTextColor(Color.WHITE)
+                                                if (useWhiteText(backgroundColor, context)) {
+                                                    time.setTextColor(Color.WHITE)
+                                                    temperature.setTextColor(Color.WHITE)
+                                                }
+                                                layoutParams = LinearLayout
+                                                        .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                                        .apply {
+                                                            weight = 1f
+                                                        }
+                                            })
                                 }
-                                layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                                        .apply {
-                                            weight = 1f
-                                        }
-                            })
-                        }
 
-                        dailyForecast?.dailyForecastData?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())?.forEach {
-                            dailyLayout.addView(LayoutInflater.from(hourlyLayout.context).inflate(
-                                    R.layout.narrow_forecast_item, parent, false).apply {
-                                val temperature =
-                                        findViewById(R.id.forecast_current_temperature) as TextView
-                                val time = findViewById(R.id.forecast_current_time) as TextView
-                                val icon = findViewById(R.id.forecast_weather_icon) as ImageView
+                        dailyForecast?.dailyForecastData
+                                ?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
+                                ?.forEach {
+                                    if (context.lawnchairPrefs.showVerticalDailyForecast) {
+                                        dailyLayout.orientation = LinearLayout.VERTICAL
+                                    }
+                                    dailyLayout.addView(
+                                            LayoutInflater.from(hourlyLayout.context).inflate(
+                                                    if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
+                                                    dailyLayout, false).apply {
+                                                viewTreeObserver.addOnGlobalLayoutListener {
+                                                    if (context.lawnchairPrefs.showVerticalDailyForecast) {
+                                                        layoutParams = LinearLayout.LayoutParams(
+                                                                dailyLayout.also {it.measure(
+                                                                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)}.width, WRAP_CONTENT)
+                                                    }
+                                                }
+                                                val temperature = findViewById(
+                                                        R.id.forecast_current_temperature) as TextView
+                                                val time = findViewById(
+                                                        R.id.forecast_current_time) as TextView
+                                                val icon = findViewById(
+                                                        R.id.forecast_weather_icon) as ImageView
 
-                                icon.setImageBitmap(it.icon)
-                                val zonedDateTime = ZonedDateTime
-                                        .ofInstant(it.date.toInstant(), ZoneId.of("UTC"))
-                                        .withZoneSameInstant(ZoneId.systemDefault())
-                                time.text = "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
-                                temperature.text = "${it.low.toString(
-                                        context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
-                                        context.lawnchairPrefs.weatherUnit)}"
+                                                icon.setImageBitmap(it.icon)
+                                                val zonedDateTime = ZonedDateTime
+                                                        .ofInstant(it.date.toInstant(),
+                                                                   ZoneId.of("UTC"))
+                                                        .withZoneSameInstant(ZoneId.systemDefault())
+                                                time.text =
+                                                        "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                temperature.text = "${it.low.toString(
+                                                        context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
+                                                        context.lawnchairPrefs.weatherUnit)}"
 
-                                if (useWhiteText(backgroundColor, context)) {
-                                    time.setTextColor(Color.WHITE)
-                                    temperature.setTextColor(Color.WHITE)
+                                                if (useWhiteText(backgroundColor, context)) {
+                                                    time.setTextColor(Color.WHITE)
+                                                    temperature.setTextColor(Color.WHITE)
+                                                }
+                                                layoutParams = LinearLayout
+                                                        .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                                        .apply {
+                                                            weight = 1f
+                                                        }
+                                            })
                                 }
-                                layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
-                                        .apply {
-                                    weight = 1f
-                                }
-                            })
-                        }
 
                         d("inflate: initialized views")
 

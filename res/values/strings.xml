@@ -598,4 +598,7 @@
     <string name="title_pref_forecast_item_count">Forecast card item count</string>
     <string name="title_pref_daily_forecast_item_count">Daily forecast card item count</string>
     <string name="clipart_add">Plus symbol</string>
+
+    <string name="title_pref_show_vertical_daily_forecast">Display vertical daily forecast</string>
+    <string name="summary_pref_show_vertical_daily_forecast">The daily forecast will be as horizontal rows</string>
 </resources>

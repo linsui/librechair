@@ -486,6 +486,8 @@ class LawnchairPreferences(val context: Context) :
     var cardDecorationMarginHorizontal by FloatPref("pref_feed_decoration_margin_horizontal", 16f,
                                                     ::restartOverlay)
 
+    var showVerticalDailyForecast by BooleanPref("pref_show_vertical_daily_forecast", false, ::restartOverlay)
+
     var feedNotes by object :
             MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay, emptyList()) {
         override fun unflattenValue(value: String): Note {
