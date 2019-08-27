@@ -25,6 +25,7 @@ import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
 import android.support.v4.graphics.ColorUtils
 import android.util.AttributeSet
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.getColorAttr
 import ch.deletescape.lawnchair.getColorEngineAccent
@@ -38,7 +39,7 @@ class SelectableRoundedView(context: Context, attrs: AttributeSet?) : LinearLayo
     init {
         val tintSelected = context.getColorEngineAccent()
         val tintNormal = ColorUtils
-                .setAlphaComponent(context.getColorAttr(android.R.attr.colorControlHighlight), 255)
+                .setAlphaComponent(context.getColorAttr(R.attr.colorControlHighlight), 255)
         val tintList = ColorStateList(arrayOf(intArrayOf(R.attr.state_selected), intArrayOf()),
                                       intArrayOf(tintSelected, tintNormal))
         background.setTintList(tintList)
@@ -59,6 +60,12 @@ class SelectableRoundedView(context: Context, attrs: AttributeSet?) : LinearLayo
                                intArrayOf(ColorUtils.setAlphaComponent(selected, 31),
                                           ColorUtils.setAlphaComponent(normal, 31)))
         (background as RippleDrawable).setColor(rippleTintList)
+        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                checkMark.imageTintList = ColorStateList.valueOf(selected)
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
     }
 
     override fun onFinishInflate() {
