@@ -602,4 +602,6 @@
     <string name="title_pref_show_vertical_daily_forecast">Display vertical daily forecast</string>
     <string name="summary_pref_show_vertical_daily_forecast">The daily forecast will be as horizontal rows</string>
     <string name="title_feed_provider_joined_weather">Weather card</string>
+
+    <string name="title_pref_feed_card_elevation">Card elevation</string>
 </resources>

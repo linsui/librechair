@@ -267,10 +267,16 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
-                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(context.lawnchairPrefs.feedCardOpacity.roundToInt()))
-                if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255) {
-                    holder.itemView.cardElevation = 0f
-                }
+                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
+                                context.lawnchairPrefs.feedCardOpacity.roundToInt()))
+            }
+            if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255 || context.lawnchairPrefs.feedCardBlur) {
+                holder.itemView.cardElevation = 0f
+            } else {
+                holder.itemView.cardElevation = TypedValue
+                        .applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                                        context.lawnchairPrefs.feedCardElevation,
+                                        context.resources.displayMetrics)
             }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                                LawnchairPreferences.getInstance(
@@ -307,7 +313,6 @@ class CardViewHolder : RecyclerView.ViewHolder {
                 Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
                 else -> error("invalid bitmask")
             }, parent, false)) {
-
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = GONE
         }
