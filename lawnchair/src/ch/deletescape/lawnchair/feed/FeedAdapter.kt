@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
+import kotlin.math.roundToInt
 
 class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                   private val context: Context, private val feed: LauncherFeed?) :
@@ -266,7 +267,10 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
-                        context.colorEngine.getResolver(FEED_CARD).resolveColor())
+                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(context.lawnchairPrefs.feedCardOpacity.roundToInt()))
+                if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255) {
+                    holder.itemView.cardElevation = 0f
+                }
             }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                                                LawnchairPreferences.getInstance(
@@ -303,9 +307,6 @@ class CardViewHolder : RecyclerView.ViewHolder {
                 Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
                 else -> error("invalid bitmask")
             }, parent, false)) {
-        if (type and Card.RAISE != 0) {
-            (itemView as CardView).alpha = itemView.context.lawnchairPrefs.feedCardOpacity
-        }
 
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = GONE
