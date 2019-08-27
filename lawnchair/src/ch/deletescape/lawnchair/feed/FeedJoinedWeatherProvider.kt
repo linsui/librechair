@@ -35,6 +35,8 @@ import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
+import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -154,8 +156,14 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         .ofInstant(it.date.toInstant(),
                                                                    ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
-                                                time.text =
-                                                        "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                if (context.lawnchairPrefs.showVerticalDailyForecast) {
+                                                    time.text = IcuDateTextView.getDateFormat(context, false, null, false).format(Date.from(
+                                                            Instant.ofEpochSecond(zonedDateTime.toEpochSecond())))
+
+                                                } else {
+                                                    time.text =
+                                                            "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                }
                                                 temperature.text = "${it.low.toString(
                                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
                                                         context.lawnchairPrefs.weatherUnit)}"
