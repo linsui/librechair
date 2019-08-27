@@ -33,7 +33,6 @@ import com.android.launcher3.R
 @SuppressLint("StaticFieldLeak")
 private var theController: MainFeedController? = null
 public var METADATA_CONTROLLER_PACKAGE = "special::controller_package";
-
 fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
         theController = MainFeedController(c)
@@ -94,7 +93,10 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_note_list)
                     AlarmEventProvider::class.java.name -> R.string.resuable_text_alarm.fromStringRes(
                             context)
-                    FeedJoinedWeatherProvider::class.java.name -> "Weather card"
+                    FeedJoinedWeatherProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_joined_weather)
+                    WeatherBarFeedProvider::class.java.name -> context.getString(
+                            R.string.title_feed_provider_weather)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -121,7 +123,9 @@ class MainFeedController(val context: Context) {
                           FeedWeatherStatsProvider::class.java.name,
                           FeedJoinedWeatherProvider::class.qualifiedName,
                           FeedDailyForecastProvider::class.java.name,
-                          FeedForecastProvider::class.java.name, NoteListProvider::class.java.name,
+                          FeedForecastProvider::class.java.name,
+                          NoteListProvider::class.java.name,
+                          WeatherBarFeedProvider::class.java.name,
                           WikipediaNewsProvider::class.java.name,
                           WikipediaFunFactsProvider::class.java.name,
                           WikinewsFeedProvider::class.java.name,
