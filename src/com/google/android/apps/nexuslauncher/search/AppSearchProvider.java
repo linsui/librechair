@@ -22,6 +22,8 @@ import com.android.launcher3.AppInfo;
 import com.android.launcher3.BuildConfig;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.search.DefaultAppSearchAlgorithm;
 import com.android.launcher3.compat.UserManagerCompat;
 import com.android.launcher3.model.BgDataModel;
 import com.android.launcher3.model.LoaderResults;
@@ -39,9 +41,10 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class AppSearchProvider extends ContentProvider
-{
-    private static final String[] eK = new String[] { "_id", "suggest_text_1", "suggest_icon_1", "suggest_intent_action", "suggest_intent_data" };
+public class AppSearchProvider extends ContentProvider {
+
+    private static final String[] eK = new String[]{"_id", "suggest_text_1", "suggest_icon_1",
+            "suggest_intent_action", "suggest_intent_data"};
     private final PipeDataWriter<Future> mPipeDataWriter;
     private LooperExecutor mLooper;
     private LauncherAppState mApp;
@@ -51,7 +54,8 @@ public class AppSearchProvider extends ContentProvider
     public AppSearchProvider() {
         mPipeDataWriter = new PipeDataWriter<Future>() {
             @Override
-            public void writeDataToPipe(@NonNull ParcelFileDescriptor output, @NonNull Uri uri, @NonNull String mimeType, @Nullable Bundle opts, @Nullable Future args) {
+            public void writeDataToPipe(@NonNull ParcelFileDescriptor output, @NonNull Uri uri,
+                    @NonNull String mimeType, @Nullable Bundle opts, @Nullable Future args) {
                 ParcelFileDescriptor.AutoCloseOutputStream outStream = null;
                 try {
                     outStream = new ParcelFileDescriptor.AutoCloseOutputStream(output);
@@ -70,8 +74,10 @@ public class AppSearchProvider extends ContentProvider
     }
 
     public static ComponentKey uriToComponent(final Uri uri, final Context context) {
-        return new ComponentKey(ComponentName.unflattenFromString(uri.getQueryParameter("component")),
-                UserManagerCompat.getInstance(context).getUserForSerialNumber(Long.parseLong(uri.getQueryParameter("user"))));
+        return new ComponentKey(
+                ComponentName.unflattenFromString(uri.getQueryParameter("component")),
+                UserManagerCompat.getInstance(context)
+                        .getUserForSerialNumber(Long.parseLong(uri.getQueryParameter("user"))));
     }
 
     public static Uri buildUri(final AppInfo appInfo, final UserManagerCompat userManagerCompat) {
@@ -79,7 +85,8 @@ public class AppSearchProvider extends ContentProvider
                 .scheme("content")
                 .authority(BuildConfig.APPLICATION_ID + ".appssearch")
                 .appendQueryParameter("component", appInfo.componentName.flattenToShortString())
-                .appendQueryParameter("user", Long.toString(userManagerCompat.getSerialNumberForUser(appInfo.user)))
+                .appendQueryParameter("user",
+                        Long.toString(userManagerCompat.getSerialNumberForUser(appInfo.user)))
                 .build();
     }
 
@@ -91,7 +98,8 @@ public class AppSearchProvider extends ContentProvider
         for (AppInfo appInfo : list) {
             final String uri = buildUri(appInfo, instance).toString();
             final MatrixCursor.RowBuilder row = matrixCursor.newRow();
-            row.add(n++).add(appInfo.title.toString()).add(uri).add("com.google.android.apps.nexuslauncher.search.APP_LAUNCH").add(uri);
+            row.add(n++).add(appInfo.title.toString()).add(uri)
+                    .add("com.google.android.apps.nexuslauncher.search.APP_LAUNCH").add(uri);
         }
 
         return matrixCursor;
@@ -102,22 +110,24 @@ public class AppSearchProvider extends ContentProvider
             Log.d("AppSearchProvider", "Content provider accessed on main thread");
             return null;
         }
-        if ("loadIcon".equals(s)) try {
-            final Uri parse = Uri.parse(s2);
-            final ComponentKey dl = uriToComponent(parse, this.getContext());
-            final Callable<Bitmap> g = new Callable<Bitmap>() {
-                public Bitmap call() {
-                    final AppItemInfoWithIcon d = new AppItemInfoWithIcon(dl);
-                    mApp.getIconCache().getTitleAndIcon(d, false);
-                    return d.iconBitmap;
-                }
-            };
-            final Bundle bundle2 = new Bundle();
-            bundle2.putParcelable("suggest_icon_1", mLooper.submit(g).get());
-            return bundle2;
-        } catch (Exception ex) {
-            Log.e("AppSearchProvider", "Unable to load iconView " + ex);
-            return null;
+        if ("loadIcon".equals(s)) {
+            try {
+                final Uri parse = Uri.parse(s2);
+                final ComponentKey dl = uriToComponent(parse, this.getContext());
+                final Callable<Bitmap> g = new Callable<Bitmap>() {
+                    public Bitmap call() {
+                        final AppItemInfoWithIcon d = new AppItemInfoWithIcon(dl);
+                        mApp.getIconCache().getTitleAndIcon(d, false);
+                        return d.iconBitmap;
+                    }
+                };
+                final Bundle bundle2 = new Bundle();
+                bundle2.putParcelable("suggest_icon_1", mLooper.submit(g).get());
+                return bundle2;
+            } catch (Exception ex) {
+                Log.e("AppSearchProvider", "Unable to load iconView " + ex);
+                return null;
+            }
         }
         return super.call(s, s2, bundle);
     }
@@ -140,7 +150,8 @@ public class AppSearchProvider extends ContentProvider
         return true;
     }
 
-    public ParcelFileDescriptor openFile(final Uri uri, final String s) throws FileNotFoundException {
+    public ParcelFileDescriptor openFile(final Uri uri, final String s)
+            throws FileNotFoundException {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Log.e("AppSearchProvider", "Content provider accessed on main thread");
             return null;
@@ -156,41 +167,43 @@ public class AppSearchProvider extends ContentProvider
                 }
             };
             return openPipeHelper(uri, s2, null, mLooper.submit(g), this.mPipeDataWriter);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new FileNotFoundException(ex.getMessage());
         }
     }
 
-    public Cursor query(@NonNull Uri uri, final String[] array, final String s, final String[] array2, final String s2) {
+    public Cursor query(@NonNull Uri uri, final String[] array, final String s,
+            final String[] array2, final String s2) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             Log.e("AppSearchProvider", "Content provider accessed on main thread");
             return new MatrixCursor(AppSearchProvider.eK, 0);
         }
         List<AppInfo> list;
         try {
-            final f f = new f(uri.getLastPathSegment());
-            this.mApp.getModel().enqueueModelUpdateTask(f);
-            list = f.eN.get(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException | ExecutionException | TimeoutException ex) {
+            final SearchModel SearchModel = new SearchModel(uri.getLastPathSegment());
+            this.mApp.getModel().enqueueModelUpdateTask(SearchModel);
+            list = SearchModel.eN.get(5, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
             Log.d("AppSearchProvider", "Error searching apps", ex);
             list = new ArrayList<>();
         }
         return this.listToCursor(list);
     }
 
-    public int update(final Uri uri, final ContentValues contentValues, final String s, final String[] array) {
+    public int update(final Uri uri, final ContentValues contentValues, final String s,
+            final String[] array) {
         throw new UnsupportedOperationException();
     }
 
     public AppFilter getBaseFilter() {
-        if (mBaseFilter == null) mBaseFilter = new LawnchairAppFilter(getContext());
+        if (mBaseFilter == null) {
+            mBaseFilter = new LawnchairAppFilter(getContext());
+        }
         return mBaseFilter;
     }
 
-    class f implements Callable<List<AppInfo>>, LauncherModel.ModelUpdateTask
-    {
+    class SearchModel implements Callable<List<AppInfo>>, LauncherModel.ModelUpdateTask {
+
         private final FutureTask<List<AppInfo>> eN;
         private AllAppsList mAllAppsList;
         private LauncherAppState mApp;
@@ -198,7 +211,7 @@ public class AppSearchProvider extends ContentProvider
         private LauncherModel mModel;
         private final String mQuery;
 
-        f(final String s) {
+        SearchModel(final String s) {
             this.mQuery = s.toLowerCase();
             this.eN = new FutureTask<>(this);
         }
@@ -206,11 +219,29 @@ public class AppSearchProvider extends ContentProvider
         public List<AppInfo> call() {
             if (!this.mModel.isModelLoaded()) {
                 Log.d("AppSearchProvider", "Workspace not loaded, loading now");
-                this.mModel.startLoaderForResults(new LoaderResults(this.mApp, this.mBgDataModel, this.mAllAppsList, 0, null));
+                this.mModel.startLoaderForResults(
+                        new LoaderResults(this.mApp, this.mBgDataModel, this.mAllAppsList, 0,
+                                null));
             }
             if (!this.mModel.isModelLoaded()) {
                 Log.d("AppSearchProvider", "Loading workspace failed");
                 return Collections.emptyList();
+            }
+            if (Utilities.getLawnchairPrefs(getContext()).getLowPerformanceMode() || BuildConfig.FLAVOR_go.equals("l3go")) {
+                final ArrayList<AppInfo> list = new ArrayList<>();
+                final List<AppInfo> data = DefaultAppSearchAlgorithm.getApps(mApp.getContext(), mAllAppsList.data, getBaseFilter());
+                final DefaultAppSearchAlgorithm.StringMatcher instance = DefaultAppSearchAlgorithm.StringMatcher.getInstance();
+
+                for (final AppInfo appInfo : data) {
+                    if (DefaultAppSearchAlgorithm.matches(appInfo, this.mQuery, instance)) {
+                        list.add(appInfo);
+                        if (!appInfo.usingLowResIcon) {
+                            continue;
+                        }
+                        this.mApp.getIconCache().getTitleAndIcon(appInfo, false);
+                    }
+                }
+                return list;
             }
             final List<AppInfo> results = FuzzyAppSearchAlgorithm.query(mApp.getContext(), mQuery, mAllAppsList.data, getBaseFilter());
             for (AppInfo appInfo : results) {
@@ -221,7 +252,9 @@ public class AppSearchProvider extends ContentProvider
             return results;
         }
 
-        public void init(final LauncherAppState mApp, final LauncherModel mModel, final BgDataModel mBgDataModel, final AllAppsList mAllAppsList, final Executor executor) {
+        public void init(final LauncherAppState mApp, final LauncherModel mModel,
+                final BgDataModel mBgDataModel, final AllAppsList mAllAppsList,
+                final Executor executor) {
             this.mApp = mApp;
             this.mModel = mModel;
             this.mBgDataModel = mBgDataModel;
