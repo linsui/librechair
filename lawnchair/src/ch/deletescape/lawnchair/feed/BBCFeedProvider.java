@@ -41,6 +41,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
     private static final String IL = "https://feeds.bbci.co.uk/news/northern_ireland/rss.xml";
     private static final String AS = "https://feeds.bbci.co.uk/news/world/asia/rss.xml";
     private static final String WD = "https://feeds.bbci.co.uk/news/world/rss.xml";
+    private static final String AF = "http://feeds.bbci.co.uk/news/world/africa/rss.xml"
 
     static {
         feeds.put("GBR", GB);
@@ -51,6 +52,9 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
         feeds.put("JPN", AS);
         feeds.put("PRK", AS);
         feeds.put("KOR", AS);
+        feeds.put("KEN", AF);
+        feeds.put("ZAF", AF);
+        feeds.put("DZA", AF);
         feeds.put("WORLD", WD);
     }
 
