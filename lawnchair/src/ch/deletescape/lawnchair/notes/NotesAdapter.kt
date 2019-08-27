@@ -104,31 +104,40 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         it.colour
     }.distinct().sorted()
 
-    fun add(note: Note) = GlobalScope.launch {
-        hold.waitFor()
-        DatabaseStore.getAccessObject(context).insert(note);
-    }.invokeOnCompletion {
-        allNotes.add(note)
-        if (note.colour == currentColor) {
-            runOnMainThread { notifyItemInserted(notes.size) }
-        } else {
-            runOnMainThread { bindToTabLayout(tabLayout) }
+    fun add(note: Note) {
+        val oldColors = getColorList()
+        GlobalScope.launch {
+            hold.waitFor()
+            DatabaseStore.getAccessObject(context).insert(note);
+        }.invokeOnCompletion {
+            allNotes.add(note)
+            if (note.colour == currentColor) {
+                runOnMainThread { notifyItemInserted(notes.size) }
+            } else {
+                runOnMainThread {
+                    if (oldColors != getColorList()) {
+                        tabLayout.addTab(tabLayout.newTab().apply {
+                            icon = ColorDrawable(note.colour)
+                        }, getColorList().indexOf(note.colour))
+                    }
+                }
+            }
         }
     }
 
-    fun remove(note: Note) = GlobalScope.launch {
-        hold.waitFor()
-        DatabaseStore.getAccessObject(context).remove(note);
-    }.invokeOnCompletion {
-        val oldIndex = notes.indexOf(note)
-        allNotes.minusAssign(note)
-        if (note.colour == currentColor) {
+    fun remove(note: Note) {
+        val oldColors = getColorList()
+        GlobalScope.launch {
+            hold.waitFor()
+            DatabaseStore.getAccessObject(context).remove(note);
+        }.invokeOnCompletion {
+            val oldIndex = notes.indexOf(note)
+            allNotes.minusAssign(note)
             runOnMainThread {
                 notifyItemRemoved(oldIndex)
-            }
-        } else {
-            runOnMainThread {
-                bindToTabLayout(tabLayout)
+                if (oldColors != getColorList()) {
+                    tabLayout.removeTabAt(oldColors.indexOf(currentColor))
+                }
             }
         }
     }
