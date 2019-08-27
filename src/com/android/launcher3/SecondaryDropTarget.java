@@ -231,6 +231,9 @@ public class SecondaryDropTarget extends ButtonDropTarget implements OnAlarmList
         if (widgetInfo instanceof CustomAppWidgetProviderInfo) {
             CustomAppWidgetProviderInfo customInfo = (CustomAppWidgetProviderInfo) widgetInfo;
             Context context = getContext();
+            if (customInfo.customizeScreen == 0) {
+                return null;
+            }
             return new Intent(context, SettingsActivity.class)
                     .putExtra(SettingsActivity.SubSettingsFragment.TITLE, context.getString(customInfo.customizeTitle))
                     .putExtra(SettingsActivity.SubSettingsFragment.CONTENT_RES_ID, customInfo.customizeScreen)
