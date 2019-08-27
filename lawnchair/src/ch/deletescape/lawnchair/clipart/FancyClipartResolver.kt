@@ -31,7 +31,9 @@ class FancyClipartResolver(val context: Context) : ClipartResolver {
                           "ic_edit_no_shadow" to R.string.action_edit,
                           "ic_information" to R.string.clipart_information,
                           "ic_google" to R.string.clipart_goolag,
-                          "opa_assistant_logo" to R.string.pref_show_assistant_title)
+                          "opa_assistant_logo" to R.string.pref_show_assistant_title,
+                          "ic_add" to R.string.clipart_add,
+                          "ic_folder_outline" to R.string.drawer_folders)
     }
 
     override fun getAllClipart(): List<ClipartResolver.ClipartData> {
