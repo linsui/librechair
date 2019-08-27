@@ -53,7 +53,9 @@ class NotesActivity : SettingsBaseActivity() {
                     .duplicateAndSetColour(this@NotesActivity.getColorAttr(R.attr.colorAccent))
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             setOnMenuItemClickListener {
-                startActivityForResult(Intent(this@NotesActivity, NewNoteActivity::class.java), 0)
+                startActivityForResult(
+                        Intent(this@NotesActivity, NewNoteActivity::class.java).putExtra(
+                                "current_color", adapter.currentColor), 0)
                 true
             }
         }

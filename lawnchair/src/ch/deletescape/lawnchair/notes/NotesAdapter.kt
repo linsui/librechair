@@ -48,8 +48,20 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     private val notes: List<Note>
         get() = allNotes.filter { it.colour == currentColor }
     private val hold = SingleUseHold()
-    private var currentColor = context.getColorAccent();
-    private lateinit var tabLayout: TabLayout;
+    private lateinit var tabLayout: TabLayout
+    private val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabReselected(tab: TabLayout.Tab) {
+        }
+
+        override fun onTabUnselected(tab: TabLayout.Tab) {
+        }
+
+        override fun onTabSelected(tab: TabLayout.Tab) {
+            currentColor = getColorList()[tab.position]
+            notifyDataSetChanged()
+        }
+    }
+    var currentColor = context.getColorAccent()
 
     init {
         GlobalScope.launch {
@@ -64,7 +76,6 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
     override fun getItemCount() = if (::allNotes.isInitialized) notes.size else 0
-
     fun bindToTabLayout(tabLayout: TabLayout) {
         this.tabLayout = tabLayout
         GlobalScope.launch {
@@ -76,35 +87,33 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                         icon = ColorDrawable(it)
                     })
                 }
-                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                    override fun onTabReselected(tab: TabLayout.Tab) {
-
-                    }
-                    override fun onTabUnselected(tab: TabLayout.Tab) {
-
-                    }
-                    override fun onTabSelected(tab: TabLayout.Tab) {
-                        currentColor = getColorList()[tab.position]
-                        notifyDataSetChanged()
-                    }
-                })
             }
-            if (getColorList().contains(currentColor)) {
-                tabLayout.getTabAt(getColorList().indexOf(currentColor))?.select()
-            } else {
-                currentColor = getColorList()[0]
+            tabLayout.post {
+                tabLayout.removeOnTabSelectedListener(tabSelectedListener)
+                if (getColorList().contains(currentColor)) {
+                    tabLayout.getTabAt(getColorList().indexOf(currentColor))!!.select()
+                } else {
+                    currentColor = getColorList()[0]
+                }
+                tabLayout.addOnTabSelectedListener(tabSelectedListener)
             }
         }
     }
 
-    private fun getColorList() = (emptyList<Int>() + context.getColorAccent() + allNotes.map { it.colour }).distinct()
+    private fun getColorList() = listOf(context.getColorAccent()) + allNotes.map {
+        it.colour
+    }.distinct().sorted()
 
     fun add(note: Note) = GlobalScope.launch {
         hold.waitFor()
         DatabaseStore.getAccessObject(context).insert(note);
     }.invokeOnCompletion {
         allNotes.add(note)
-        runOnMainThread { notifyItemInserted(notes.size) }
+        if (note.colour == currentColor) {
+            runOnMainThread { notifyItemInserted(notes.size) }
+        } else {
+            runOnMainThread { bindToTabLayout(tabLayout) }
+        }
     }
 
     fun remove(note: Note) = GlobalScope.launch {
@@ -116,6 +125,10 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         if (note.colour == currentColor) {
             runOnMainThread {
                 notifyItemRemoved(oldIndex)
+            }
+        } else {
+            runOnMainThread {
+                bindToTabLayout(tabLayout)
             }
         }
     }
@@ -199,6 +212,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 dialog.setTitle(R.string.title_dialog_select_color);
                 dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
                         context)) { dialogInterface, which ->
+                    val oldColors = getColorList()
                     GlobalScope.launch {
                         DatabaseStore.getAccessObject(context)
                                 .setColor(notes[holder.adapterPosition].id,
@@ -208,11 +222,14 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                                 dialog.findViewById<ChromaView>(R.id.color_view).currentColor
                     }.invokeOnCompletion {
                         runOnMainThread {
-                            if (dialog.findViewById<ChromaView>(R.id.color_view).currentColor == currentColor) {
+                            if (dialog.findViewById<ChromaView>(
+                                            R.id.color_view).currentColor == currentColor) {
                                 notifyItemChanged(holder.adapterPosition)
                             } else {
                                 notifyItemRemoved(holder.adapterPosition)
-                                bindToTabLayout(tabLayout)
+                                if (getColorList() != oldColors) {
+                                    bindToTabLayout(tabLayout)
+                                }
                             }
                         }
                     }
