@@ -181,8 +181,12 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         }
         information.text = weatherTypeResource?.let { context.getString(it) }
     } else {
-        val information = findViewById(R.id.weather_hud_information) as TextView
+        val information = findViewById(R.id.weather_hud_day_night) as TextView
         information.setText(R.string.loading)
+        if (!ThemeManager.getInstance(context).supportsDarkText) {
+            information.setTextColor(context.resources.getColor(R.color.textColorPrimary))
+        }
+        Unit
     }
 
     fun onTick() {
