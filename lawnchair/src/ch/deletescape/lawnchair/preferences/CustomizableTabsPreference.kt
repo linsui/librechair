@@ -55,7 +55,7 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
         isVisible =
                 context.lawnchairPrefs.feedTabController == CustomTabbingController::class.qualifiedName
         context.lawnchairPrefs
-                .addOnPreferenceChangeListener(this, "pref_feed_tab_controller", "pref_feed_tabs")
+                .addOnPreferenceChangeListener(this, "pref_feed_tab_controller", "pref_feed_custom_tabs")
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
