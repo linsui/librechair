@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.notes
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
@@ -36,12 +37,14 @@ import com.google.gson.Gson
 @Suppress("TypeParameterFindViewById")
 class NotesActivity : SettingsBaseActivity() {
     val recycler by lazy { findViewById(R.id.notes_recycler) as RecyclerView }
+    val tabLayout by lazy { findViewById(R.id.note_tabs) as TabLayout }
     val adapter by lazy { NotesAdapter(this) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+        adapter.bindToTabLayout(tabLayout)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -21,6 +21,8 @@ package ch.deletescape.lawnchair.notes
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
+import android.support.design.widget.TabLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -30,6 +32,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.fromStringRes
+import ch.deletescape.lawnchair.getColorAccent
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
@@ -41,12 +44,16 @@ import me.priyesh.chroma.ChromaView
 import me.priyesh.chroma.ColorMode
 
 class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>() {
-    private lateinit var notes: MutableList<Note>
+    private lateinit var allNotes: MutableList<Note>
+    private val notes: List<Note>
+        get() = allNotes.filter { it.colour == currentColor }
     private val hold = SingleUseHold()
+    private var currentColor = context.getColorAccent();
+    private lateinit var tabLayout: TabLayout;
 
     init {
         GlobalScope.launch {
-            notes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
+            allNotes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
         }.invokeOnCompletion {
             runOnMainThread {
                 notifyDataSetChanged()
@@ -56,12 +63,47 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
-    override fun getItemCount() = if (::notes.isInitialized) notes.size else 0
+    override fun getItemCount() = if (::allNotes.isInitialized) notes.size else 0
+
+    fun bindToTabLayout(tabLayout: TabLayout) {
+        this.tabLayout = tabLayout
+        GlobalScope.launch {
+            hold.waitFor()
+            tabLayout.post {
+                tabLayout.removeAllTabs()
+                getColorList().forEach {
+                    tabLayout.addTab(tabLayout.newTab().apply {
+                        icon = ColorDrawable(it)
+                    })
+                }
+                tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabReselected(tab: TabLayout.Tab) {
+
+                    }
+                    override fun onTabUnselected(tab: TabLayout.Tab) {
+
+                    }
+                    override fun onTabSelected(tab: TabLayout.Tab) {
+                        currentColor = getColorList()[tab.position]
+                        notifyDataSetChanged()
+                    }
+                })
+            }
+            if (getColorList().contains(currentColor)) {
+                tabLayout.getTabAt(getColorList().indexOf(currentColor))?.select()
+            } else {
+                currentColor = getColorList()[0]
+            }
+        }
+    }
+
+    private fun getColorList() = (emptyList<Int>() + context.getColorAccent() + allNotes.map { it.colour }).distinct()
+
     fun add(note: Note) = GlobalScope.launch {
         hold.waitFor()
         DatabaseStore.getAccessObject(context).insert(note);
     }.invokeOnCompletion {
-        notes.add(note)
+        allNotes.add(note)
         runOnMainThread { notifyItemInserted(notes.size) }
     }
 
@@ -70,9 +112,11 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         DatabaseStore.getAccessObject(context).remove(note);
     }.invokeOnCompletion {
         val oldIndex = notes.indexOf(note)
-        notes.minusAssign(note)
-        runOnMainThread {
-            notifyItemRemoved(oldIndex)
+        allNotes.minusAssign(note)
+        if (note.colour == currentColor) {
+            runOnMainThread {
+                notifyItemRemoved(oldIndex)
+            }
         }
     }
 
@@ -137,7 +181,9 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                             .setContent(notes[holder.adapterPosition].id, editText.text.toString())
                     notes[holder.adapterPosition].content = editText.text.toString()
                 }.invokeOnCompletion {
-                    runOnMainThread { notifyItemChanged(holder.adapterPosition) }
+                    runOnMainThread {
+                        notifyItemChanged(holder.adapterPosition)
+                    }
                 }
             }
             editDialog.setButton(Dialog.BUTTON_NEUTRAL,
@@ -162,7 +208,12 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                                 dialog.findViewById<ChromaView>(R.id.color_view).currentColor
                     }.invokeOnCompletion {
                         runOnMainThread {
-                            notifyItemChanged(holder.adapterPosition)
+                            if (dialog.findViewById<ChromaView>(R.id.color_view).currentColor == currentColor) {
+                                notifyItemChanged(holder.adapterPosition)
+                            } else {
+                                notifyItemRemoved(holder.adapterPosition)
+                                bindToTabLayout(tabLayout)
+                            }
                         }
                     }
                 }
