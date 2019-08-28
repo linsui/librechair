@@ -127,10 +127,10 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
                                 displayView({ parent2 ->
-                                                val articleView =
-                                                        LayoutInflater.from(context).inflate(
-                                                                R.layout.overlay_article, parent2,
-                                                                false) as ViewGroup
+                                                val articleView = LayoutInflater.from(
+                                                        parent2.context).inflate(
+                                                        R.layout.overlay_article, parent2,
+                                                        false) as ViewGroup
                                                 articleView.setBackgroundColor(
                                                         backgroundColor.setAlpha(255))
                                                 val titleView = articleView

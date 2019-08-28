@@ -4,7 +4,6 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import ch.deletescape.lawnchair.flights.Flight;
 import java.util.List;
 
 @Dao
@@ -32,7 +31,7 @@ public abstract class NoteDao {
     public abstract void setColor(long id, int color);
 
     @Query("update note set note_flight = :flight where id like :id")
-    public abstract void setFlight(long id, Flight flight);
+    public abstract void setFlight(long id, String flight);
 
     @Delete
     public abstract void remove(Note note);

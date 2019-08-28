@@ -139,7 +139,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     readMore.setOnClickListener(v2 -> {
                         displayView((parent2) -> {
                                     ViewGroup articleView = (ViewGroup) LayoutInflater
-                                            .from(getContext())
+                                            .from(parent2.getContext())
                                             .inflate(R.layout.overlay_article, parent2, false);
                                     articleView.setBackgroundColor(
                                             LawnchairUtilsKt.setAlpha(getBackgroundColor(), 255));
