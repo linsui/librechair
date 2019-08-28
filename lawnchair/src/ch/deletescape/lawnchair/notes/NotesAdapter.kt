@@ -81,15 +81,13 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         GlobalScope.launch {
             hold.waitFor()
             tabLayout.post {
+                tabLayout.removeOnTabSelectedListener(tabSelectedListener)
                 tabLayout.removeAllTabs()
                 getColorList().forEach {
                     tabLayout.addTab(tabLayout.newTab().apply {
                         icon = ColorDrawable(it)
                     })
                 }
-            }
-            tabLayout.post {
-                tabLayout.removeOnTabSelectedListener(tabSelectedListener)
                 if (getColorList().contains(currentColor)) {
                     tabLayout.getTabAt(getColorList().indexOf(currentColor))!!.select()
                 } else {
@@ -100,9 +98,9 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
 
-    private fun getColorList() = listOf(context.getColorAccent()) + allNotes.map {
+    private fun getColorList() = (listOf(context.getColorAccent()) + allNotes.map {
         it.colour
-    }.distinct().sorted()
+    }.sorted()).distinct()
 
     fun add(note: Note) {
         val oldColors = getColorList()
