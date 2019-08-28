@@ -132,8 +132,8 @@ public abstract class FeedProvider {
             overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
                 overlayView.setPadding(overlayView.getPaddingLeft(),
                         overlayView.getPaddingTop() + insets.getStableInsetTop(),
-                        insets.getStableInsetBottom() + overlayView.getPaddingBottom(),
-                        overlayView.getPaddingRight());
+                        overlayView.getPaddingRight(),
+                        insets.getStableInsetBottom() + overlayView.getPaddingBottom());
                 return insets;
             });
             overlayView.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
