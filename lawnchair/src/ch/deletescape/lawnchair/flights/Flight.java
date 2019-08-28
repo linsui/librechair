@@ -55,6 +55,7 @@ package ch.deletescape.lawnchair.flights;
  */
 
 import com.android.launcher3.Utilities;
+import com.google.gson.Gson;
 import java.io.Serializable;
 import kotlin.jvm.functions.Function2;
 
@@ -89,6 +90,15 @@ public class Flight implements Serializable  {
     public String fldSizeFlwStctrdMsg;
     public String airNumCd;
     public String docFormSerialNumber;
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
+    }
+
+    public static Flight fromJson(String string) {
+        return new Gson().fromJson(string, Flight.class);
+    }
 
     public enum Types {
         M(1, true, ((flight, s) -> {

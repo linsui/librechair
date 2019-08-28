@@ -24,6 +24,7 @@ import android.os.Parcelable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import ch.deletescape.lawnchair.flights.Flight;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -58,6 +59,14 @@ public class Note implements Parcelable {
 
     @ColumnInfo(name = "note_flight")
     public String serializedFlight;
+
+    public Flight getFlight() {
+        return Flight.fromJson(serializedFlight);
+    }
+
+    public void setFlight(Flight flight) {
+        serializedFlight = flight.toString();
+    }
 
     protected Note(Parcel in) {
         id = in.readLong();
