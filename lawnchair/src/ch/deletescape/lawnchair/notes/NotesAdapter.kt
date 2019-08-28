@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.notes
 import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.support.design.widget.TabLayout
@@ -64,6 +65,8 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
     var currentColor = context.getColorAccent()
+    private val googleColours = arrayOf(currentColor, Color.parseColor("#DB4437"),
+                                        Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
 
     init {
         GlobalScope.launch {
@@ -112,7 +115,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
 
-    public fun getColorList() = (listOf(context.getColorAccent()) + allNotes.map {
+    public fun getColorList() = (googleColours + allNotes.map {
         it.colour
     }.sorted()).distinct()
 
