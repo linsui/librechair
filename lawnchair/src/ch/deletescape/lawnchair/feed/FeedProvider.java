@@ -109,7 +109,7 @@ public abstract class FeedProvider {
         if (feed != null) {
             feed.displayView(inflateHelper, x, y);
         } else if (Launcher.getLauncherOrNull(context) != null) {
-            Launcher.getLauncherOrNull(context).getStateManager().goToState(LauncherState.OPTIONS);
+            Launcher.getLauncher(context).getStateManager().goToState(LauncherState.NEWS_OVERLAY, false);
             LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT,
                     TYPE_APPLICATION_ATTACHED_DIALOG,
@@ -124,6 +124,7 @@ public abstract class FeedProvider {
             ((LawnchairLauncher) Launcher.getLauncherOrNull(context)).setBackPressedCallback(() -> {
                 windowService.removeView(overlayView);
                 ((LawnchairLauncher) Launcher.getLauncherOrNull(context)).setBackPressedCallback(null);
+                Launcher.getLauncher(context).getStateManager().goToState(LauncherState.NORMAL, false);
                 return Unit.INSTANCE;
             });
         } else {
