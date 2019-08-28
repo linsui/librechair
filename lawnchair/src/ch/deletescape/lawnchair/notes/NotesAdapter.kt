@@ -61,6 +61,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
 
         override fun onTabSelected(tab: TabLayout.Tab) {
             currentColor = getColorList()[tab.position]
+            tabLayout.setSelectedTabIndicatorColor(getColorList()[tab.position])
             notifyDataSetChanged()
         }
     }
