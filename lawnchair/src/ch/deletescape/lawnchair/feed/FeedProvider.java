@@ -20,7 +20,9 @@
 package ch.deletescape.lawnchair.feed;
 
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.view.ContextThemeWrapper;
@@ -29,11 +31,15 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
+import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 public abstract class FeedProvider {
@@ -102,20 +108,28 @@ public abstract class FeedProvider {
             float y) {
         if (feed != null) {
             feed.displayView(inflateHelper, x, y);
-        } else {
-            /* new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
-                    .setView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
-                            new ThemeOverride.AlertDialog().getTheme(context))))).show(); */
+        } else if (Launcher.getLauncherOrNull(context) != null) {
+            Launcher.getLauncherOrNull(context).getStateManager().goToState(LauncherState.OPTIONS);
             LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    TYPE_APPLICATION_ATTACHED_DIALOG,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                     PixelFormat.TRANSLUCENT);
             params.type = TYPE_APPLICATION;
+            View overlayView = inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
+                    new ThemeOverride.AlertDialog().getTheme(context))));
             windowService
-                    .addView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
-                            new ThemeOverride.AlertDialog().getTheme(context)))), params);
+                    .addView(overlayView, params);
+            ((LawnchairLauncher) Launcher.getLauncherOrNull(context)).setBackPressedCallback(() -> {
+                windowService.removeView(overlayView);
+                ((LawnchairLauncher) Launcher.getLauncherOrNull(context)).setBackPressedCallback(null);
+                return Unit.INSTANCE;
+            });
+        } else {
+            new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
+                    .setView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
+                            new ThemeOverride.AlertDialog().getTheme(context))))).show();
         }
     }
 

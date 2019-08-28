@@ -81,6 +81,7 @@ open class LawnchairLauncher : PluginLauncher(),
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
+    var backPressedCallback: (() -> Unit)? = null
 
     private val customLayoutInflater by lazy {
         LawnchairLayoutInflater(
@@ -227,7 +228,11 @@ open class LawnchairLauncher : PluginLauncher(),
             // Handled
             return
         }
-        super.onBackPressed()
+        if (backPressedCallback != null) {
+            backPressedCallback!!()
+        } else {
+            super.onBackPressed()
+        }
     }
 
     override fun onResume() {

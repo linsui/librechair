@@ -2544,6 +2544,16 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return ((Launcher) ((ContextWrapper) context).getBaseContext());
     }
 
+    @org.jetbrains.annotations.Nullable
+    @Nullable
+    public static Launcher getLauncherOrNull(Context context) {
+        try {
+            return getLauncher(context);
+        } catch (ClassCastException e) {
+            return instance;
+        }
+    }
+
     /**
      * Callback for listening for onResume
      */

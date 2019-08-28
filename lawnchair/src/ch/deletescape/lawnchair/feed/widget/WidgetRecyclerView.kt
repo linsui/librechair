@@ -28,8 +28,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.CalendarEventProvider
 import ch.deletescape.lawnchair.feed.FeedAdapter
-import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider
+import ch.deletescape.lawnchair.feed.TheGuardianFeedProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.setAlpha
@@ -40,7 +42,7 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
             background = ColorDrawable(
                     ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
                             (context.lawnchairPrefs.feedBackgroundOpacity * (255f / 100f)).roundToInt()))
-            adapter = FeedAdapter(getFeedController(context).getProviders(),
+            adapter = FeedAdapter(listOf(FeedWeatherStatsProvider(context), CalendarEventProvider(context), TheGuardianFeedProvider(context)),
                                   ColorEngine.getInstance(
                                           context).feedBackground.value.resolveColor().setAlpha(
                                           (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
