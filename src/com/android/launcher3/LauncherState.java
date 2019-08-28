@@ -89,7 +89,7 @@ public class LauncherState {
     public static final LauncherState FAST_OVERVIEW = new FastOverviewState(3);
     public static final LauncherState ALL_APPS = new AllAppsState(4);
     public static final LauncherState OPTIONS = new OptionsState(5);
-    public static final LauncherState NEWS_OVERLAY = new LauncherState(6, ContainerType.DEFAULT_CONTAINERTYPE, 0, FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED | FLAG_HAS_SYS_UI_SCRIM);
+    public static final LauncherState NEWS_OVERLAY = new LauncherState(6, ContainerType.WORKSPACE, 0, FLAG_DISABLE_RESTORE | FLAG_WORKSPACE_ICONS_CAN_BE_DRAGGED);
 
     protected static final Rect sTempRect = new Rect();
 

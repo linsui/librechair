@@ -155,7 +155,6 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
     }
 
     fun updateTheme() {
-        changeCallbacks.forEach { it() }
         val theme = updateTwilightState(prefs.launcherTheme)
         val isBlack = isBlack(theme)
 
@@ -178,6 +177,11 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
         if (isDark) newFlags = newFlags or THEME_DARK
         if (isBlack) newFlags = newFlags or THEME_USE_BLACK
         if (newFlags == themeFlags) return
+
+        if (newFlags != themeFlags) {
+            changeCallbacks.forEach { it() }
+        }
+
         themeFlags = newFlags
         reloadActivities()
         synchronized(listeners) {

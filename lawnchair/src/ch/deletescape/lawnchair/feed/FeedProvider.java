@@ -20,7 +20,7 @@
 package ch.deletescape.lawnchair.feed;
 
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 
 import android.animation.Animator;
 import android.app.AlertDialog;
@@ -116,15 +116,26 @@ public abstract class FeedProvider {
                     .goToState(LauncherState.NEWS_OVERLAY, false);
             LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT,
-                    TYPE_APPLICATION_ATTACHED_DIALOG,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                            | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE
+                            | LayoutParams.FLAG_NOT_TOUCH_MODAL
+                            | LayoutParams.FLAG_LAYOUT_IN_OVERSCAN
+                            | LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                            | LayoutParams.FLAG_TRANSLUCENT_STATUS
+                            | LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
                     PixelFormat.TRANSLUCENT);
             params.type = TYPE_APPLICATION;
             View overlayView = inflateHelper
                     .invoke(new LinearLayout(new ContextThemeWrapper(context,
                             new ThemeOverride.AlertDialog().getTheme(context))));
             overlayView.setVisibility(View.INVISIBLE);
+            overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
+                overlayView.setPadding(overlayView.getPaddingLeft(),
+                        overlayView.getPaddingTop() + insets.getStableInsetTop(),
+                        insets.getStableInsetBottom() + overlayView.getPaddingBottom(),
+                        overlayView.getPaddingRight());
+                return insets;
+            });
             overlayView.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
@@ -132,11 +143,11 @@ public abstract class FeedProvider {
                      * There must be a better, cleaner way of doing this!
                      */
                     int radius = (int) Math.hypot(Integer.MAX_VALUE / 32,
-                           Integer.MAX_VALUE / 32);
+                            Integer.MAX_VALUE / 32);
                     overlayView.getViewTreeObserver().removeOnPreDrawListener(this);
                     Animator animator = ViewAnimationUtils
                             .createCircularReveal(overlayView, (int) x, (int) y, 0, radius);
-                    animator.setDuration(500000);
+                    animator.setDuration(50000);
                     overlayView.setVisibility(View.VISIBLE);
                     animator.start();
                     return true;
