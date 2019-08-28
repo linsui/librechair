@@ -218,7 +218,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 val dialog = object : android.app.AlertDialog(context,
                                                               ThemeOverride.AlertDialog().getTheme(
                                                                       context)) {}
-                dialog.setView(ChromaView(notes[holder.adapterPosition].colour, ColorMode.ARGB,
+                dialog.setView(ChromaView(notes[holder.adapterPosition].colour, ColorMode.RGB,
                                           context).apply {
                     id = R.id.color_view
                 })
