@@ -360,6 +360,15 @@
         <item name="tabIndicatorFullWidth">false</item>
     </style>
 
+    <style name="Widget.Notes.Tabs" parent="@style/Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/TextAppearance.Feed.Tab</item>
+        <item name="tabIndicator">@drawable/tab_indicator_feed</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="tabIndicatorColor">?attr/colorAccent</item>
+        <item name="tabIndicatorFullWidth">false</item>
+    </style>
+
     <style name="DialogAlert" parent="@android:style/Theme.Material.Light.Dialog.Alert">
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
         <item name="android:textColorSecondary">@color/secondary_text_material_light</item>
