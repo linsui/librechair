@@ -36,9 +36,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
     <ScrollView
+        android:id="@+id/note_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/color_picker"
         app:layout_constraintTop_toBottomOf="@+id/title">
         <com.android.launcher3.ExtendedEditText
             android:id="@+id/note_content"
@@ -52,4 +53,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </ScrollView>
+    <Spinner
+        android:id="@+id/color_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/note_content_wrapper" />
 </android.support.constraint.ConstraintLayout>

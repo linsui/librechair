@@ -98,7 +98,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
 
-    private fun getColorList() = (listOf(context.getColorAccent()) + allNotes.map {
+    public fun getColorList() = (listOf(context.getColorAccent()) + allNotes.map {
         it.colour
     }.sorted()).distinct()
 

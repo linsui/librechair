@@ -33,6 +33,7 @@ import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.gson.Gson
+import java.io.Serializable
 
 @Suppress("TypeParameterFindViewById")
 class NotesActivity : SettingsBaseActivity() {
@@ -54,8 +55,9 @@ class NotesActivity : SettingsBaseActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             setOnMenuItemClickListener {
                 startActivityForResult(
-                        Intent(this@NotesActivity, NewNoteActivity::class.java).putExtra(
-                                "current_color", adapter.currentColor), 0)
+                        Intent(this@NotesActivity, NewNoteActivity::class.java)
+                                .putExtra("current_color", adapter.currentColor)
+                                .putExtra("color_list", adapter.getColorList().toMutableList() as Serializable), 0)
                 true
             }
         }

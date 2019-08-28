@@ -21,12 +21,20 @@ package ch.deletescape.lawnchair.notes;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.R;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @SuppressLint("Registered")
 public class NewNoteActivity extends SettingsBaseActivity {
@@ -36,12 +44,45 @@ public class NewNoteActivity extends SettingsBaseActivity {
     private ExtendedEditText title;
     private ExtendedEditText message;
 
+    private Spinner colorSpinner;
+
+    private ArrayList<Integer> colors;
+
+    @SuppressWarnings({"unchecked"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_note);
         title = findViewById(R.id.title);
         message = findViewById(R.id.note_content);
+        colorSpinner = findViewById(R.id.color_picker);
+
+        colors = (ArrayList<Integer>) Objects
+                .requireNonNull(getIntent().getSerializableExtra("color_list"));
+        if (colors.isEmpty()) {
+            throw new AssertionError();
+        }
+        colorSpinner.setAdapter(
+                new ArrayAdapter<String>(this, android.R.layout.simple_selectable_list_item,
+                        colors.stream().map(it -> "     ").toArray(String[]::new)) {
+                    @NonNull
+                    @Override
+                    public View getView(int position, @Nullable View convertView,
+                            @NonNull ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+                        view.setBackground(new ColorDrawable(colors.get(position)));
+                        return view;
+                    }
+
+                    @Override
+                    public View getDropDownView(int position, @Nullable View convertView,
+                            @NonNull ViewGroup parent) {
+                        View view = super.getDropDownView(position, convertView, parent);
+                        view.setBackground(new ColorDrawable(colors.get(position)));
+                        return view;
+                    }
+                });
+        colorSpinner.setSelection(colors.indexOf(getIntent().getIntExtra("current_color", -1)));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -55,7 +96,7 @@ public class NewNoteActivity extends SettingsBaseActivity {
         } else {
             setResult(RESULT_OK, new Intent().putExtra(RETURN_NOTE,
                     new Note(title.getText().toString(), message.getText().toString(),
-                            getIntent().getIntExtra("current_color", LawnchairUtilsKt.getColorEngineAccent(this)))));
+                            colors.get(colorSpinner.getSelectedItemPosition()))));
             finish();
             return true;
         }
@@ -68,7 +109,7 @@ public class NewNoteActivity extends SettingsBaseActivity {
         } else {
             setResult(RESULT_OK, new Intent().putExtra(RETURN_NOTE,
                     new Note(title.getText().toString(), message.getText().toString(),
-                            getIntent().getIntExtra("current_color", LawnchairUtilsKt.getColorEngineAccent(this)))));
+                            colors.get(colorSpinner.getSelectedItemPosition()))));
             super.onBackPressed();
         }
     }

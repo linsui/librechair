@@ -1069,4 +1069,8 @@ public final class Utilities {
         return ContextCompat.checkSelfPermission(context,
                 android.Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED;
     }
+
+    public static <T> T error(String message) {
+        throw new IllegalArgumentException(message);
+    }
 }
