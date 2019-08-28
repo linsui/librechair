@@ -56,6 +56,9 @@ public class Note implements Parcelable {
     @ColumnInfo(name = "note_selected")
     public boolean selected;
 
+    @ColumnInfo(name = "note_flight")
+    public String serializedFlight;
+
     protected Note(Parcel in) {
         id = in.readLong();
         title = in.readString();

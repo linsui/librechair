@@ -35,11 +35,17 @@ public final class DatabaseStore {
                     "alter table note add column note_selected INTEGER default 0 not null");
         }
     };
+    private static Migration MIGRATOR_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("alter table note add column note_flight STRING default null");
+        }
+    };
 
     public static NoteDatabase getDbInstance(Context context) {
         if (sDbInstance == null) {
             return sDbInstance = Room.databaseBuilder(context, NoteDatabase.class, "notes")
-                    .addMigrations(MIGRATOR_1_2)
+                    .addMigrations(MIGRATOR_1_2, MIGRATOR_2_3)
                     .enableMultiInstanceInvalidation().allowMainThreadQueries().build();
         } else {
             return sDbInstance;
