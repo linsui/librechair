@@ -21,6 +21,8 @@ package ch.deletescape.lawnchair.notes
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AlertDialog
@@ -85,7 +87,19 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 tabLayout.removeAllTabs()
                 getColorList().forEach {
                     tabLayout.addTab(tabLayout.newTab().apply {
-                        icon = ColorDrawable(it)
+                        icon = object : ColorDrawable(it) {
+                            override fun setTint(tintColor: Int) {
+
+                            }
+
+                            override fun setTintList(tint: ColorStateList?) {
+
+                            }
+
+                            override fun setTintMode(tintMode: PorterDuff.Mode) {
+
+                            }
+                        }
                     })
                 }
                 if (getColorList().contains(currentColor)) {
@@ -115,7 +129,19 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 runOnMainThread {
                     if (oldColors != getColorList()) {
                         tabLayout.addTab(tabLayout.newTab().apply {
-                            icon = ColorDrawable(note.colour)
+                            icon = object : ColorDrawable(note.colour) {
+                                override fun setTint(tintColor: Int) {
+
+                                }
+
+                                override fun setTintList(tint: ColorStateList?) {
+
+                                }
+
+                                override fun setTintMode(tintMode: PorterDuff.Mode) {
+
+                                }
+                            }
                         }, getColorList().indexOf(note.colour))
                     }
                 }
