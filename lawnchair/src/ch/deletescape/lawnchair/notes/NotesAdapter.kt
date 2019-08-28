@@ -21,10 +21,8 @@ package ch.deletescape.lawnchair.notes
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.drawable.ColorDrawable
 import android.support.design.widget.TabLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
@@ -34,9 +32,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
-import ch.deletescape.lawnchair.fromStringRes
-import ch.deletescape.lawnchair.getColorAccent
-import ch.deletescape.lawnchair.runOnMainThread
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.views.SelectableRoundedView
@@ -91,18 +87,8 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 tabLayout.removeAllTabs()
                 getColorList().forEach {
                     tabLayout.addTab(tabLayout.newTab().apply {
-                        icon = object : ColorDrawable(it) {
-                            override fun setTint(tintColor: Int) {
-
-                            }
-
-                            override fun setTintList(tint: ColorStateList?) {
-
-                            }
-
-                            override fun setTintMode(tintMode: PorterDuff.Mode) {
-
-                            }
+                        icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(it).apply {
+                            setColorFilter(it, PorterDuff.Mode.SRC_OVER)
                         }
                     })
                 }
@@ -133,18 +119,8 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 runOnMainThread {
                     if (oldColors != getColorList()) {
                         tabLayout.addTab(tabLayout.newTab().apply {
-                            icon = object : ColorDrawable(note.colour) {
-                                override fun setTint(tintColor: Int) {
-
-                                }
-
-                                override fun setTintList(tint: ColorStateList?) {
-
-                                }
-
-                                override fun setTintMode(tintMode: PorterDuff.Mode) {
-
-                                }
+                            icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(note.colour).apply {
+                                setColorFilter(note.colour, PorterDuff.Mode.SRC_OVER)
                             }
                         }, getColorList().indexOf(note.colour))
                     }
