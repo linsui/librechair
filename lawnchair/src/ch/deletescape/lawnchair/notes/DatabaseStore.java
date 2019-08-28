@@ -38,7 +38,7 @@ public final class DatabaseStore {
     private static Migration MIGRATOR_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("alter table note add column note_flight STRING default null");
+            database.execSQL("alter table note add column note_flight TEXT default null");
         }
     };
 
