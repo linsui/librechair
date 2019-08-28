@@ -19,12 +19,14 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
+
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
@@ -100,9 +102,13 @@ public abstract class FeedProvider {
         if (feed != null) {
             feed.displayView(inflateHelper, x, y);
         } else {
-            new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
+            /* new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
                     .setView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
-                            new ThemeOverride.AlertDialog().getTheme(context))))).show();
+                            new ThemeOverride.AlertDialog().getTheme(context))))).show(); */
+            LayoutParams params = new WindowManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            params.type = TYPE_APPLICATION;
+            windowService.addView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
+                    new ThemeOverride.AlertDialog().getTheme(context)))), params);
         }
     }
 
