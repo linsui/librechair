@@ -45,7 +45,7 @@ import me.priyesh.chroma.ColorMode
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
-class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>() {
+class NotesAdapter(val context: Context, savedInstanceColor: Int = context.getColorEngineAccent()) : RecyclerView.Adapter<NotesViewHolder>() {
     private lateinit var allNotes: MutableList<Note>
     private val notes: List<Note>
         get() = allNotes.filter { it.colour == currentColor }
@@ -65,7 +65,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
             notifyDataSetChanged()
         }
     }
-    var currentColor = context.getColorAccent()
+    var currentColor = savedInstanceColor
     var onTabChangeListeners = mutableListOf<(color: Int) -> Unit>()
     private lateinit var tabNameMap: MutableMap<Int, String>
     private val googleColours =
@@ -93,6 +93,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
     override fun getItemCount() = if (::allNotes.isInitialized && ::tabNameMap.isInitialized) notes.size else 0
+
     fun bindToTabLayout(tabLayout: TabLayout) {
         this.tabLayout = tabLayout
         GlobalScope.launch {

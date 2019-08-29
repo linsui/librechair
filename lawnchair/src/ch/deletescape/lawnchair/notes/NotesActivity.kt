@@ -29,6 +29,7 @@ import android.view.MenuItem
 import ch.deletescape.lawnchair.duplicateAndSetColour
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.getColorAttr
+import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -46,6 +47,7 @@ class NotesActivity : SettingsBaseActivity() {
         setContentView(R.layout.activity_notes)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+        adapter.currentColor = savedInstanceState?.getInt("persist_color") ?: getColorEngineAccent()
         adapter.bindToTabLayout(tabLayout)
         adapter.onTabChangeListeners.add {
             if (::addItem.isInitialized) {
@@ -78,5 +80,10 @@ class NotesActivity : SettingsBaseActivity() {
                     data.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE))}")
             adapter.add(data.getParcelableExtra(NewNoteActivity.RETURN_NOTE))
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("persist_color", adapter.currentColor)
     }
 }
