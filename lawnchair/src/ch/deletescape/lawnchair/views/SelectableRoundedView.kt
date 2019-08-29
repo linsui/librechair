@@ -30,7 +30,6 @@ import android.widget.LinearLayout
 import ch.deletescape.lawnchair.getColorAttr
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
-import ch.deletescape.lawnchair.tintDrawable
 import kotlinx.android.synthetic.lawnchair.app_categorization_type_item.view.*
 
 class SelectableRoundedView(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
@@ -70,8 +69,6 @@ class SelectableRoundedView(context: Context, attrs: AttributeSet?) : LinearLayo
 
     override fun onFinishInflate() {
         super.onFinishInflate()
-
-        checkMark.tintDrawable(context.getColorEngineAccent())
     }
 
     fun setup(title: String, summary: String) {
