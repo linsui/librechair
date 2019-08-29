@@ -32,6 +32,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
@@ -41,6 +42,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.priyesh.chroma.ChromaView
 import me.priyesh.chroma.ColorMode
+import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.jvm.isAccessible
 
 class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>() {
     private lateinit var allNotes: MutableList<Note>
@@ -110,6 +113,66 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                     currentColor = getColorList()[0]
                 }
                 tabLayout.addOnTabSelectedListener(tabSelectedListener)
+                updateTabLayout(tabLayout)
+            }
+        }
+    }
+
+    fun updateTabLayout(layout: TabLayout) {
+        val view = layout.getChildAt(0) as ViewGroup;
+        for (i in 0 until view.childCount) {
+            val tab = view.getChildAt(i);
+            tab.setOnLongClickListener {
+                val dialog = object :
+                        AlertDialog(context, ThemeOverride.AlertDialog().getTheme(context)) {}
+                val editText: EditText
+                dialog.setTitle(R.string.name)
+                dialog.setView(LinearLayout(context).apply {
+                    addView(EditText(context).apply {
+                        editText = this
+                        setText(tabNameMap[getColorList()[i]])
+                        layoutParams = LinearLayout
+                                .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                              ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                            marginEnd = 16f.applyAsDip(context).toInt()
+                            marginStart = 16f.applyAsDip(context).toInt()
+                        }
+                    })
+                })
+                dialog.setButton(Dialog.BUTTON_POSITIVE,
+                                 android.R.string.ok.fromStringRes(context)) { dialog, which ->
+                    GlobalScope.launch {
+                        if (DatabaseStore.getTabNameDbInstance(context).access().findEntryForColor(
+                                        getColorList()[i]) != null) {
+                            DatabaseStore.getTabNameDbInstance(context).access()
+                                    .updateTabName(getColorList()[i],
+                                                   editText.text.trim().toString());
+                        } else {
+                            DatabaseStore.getTabNameDbInstance(context).access()
+                                    .insert(TabDatabaseEntry().apply {
+                                        color = getColorList()[i]
+                                        name = editText.text.trim().toString()
+                                    })
+                        }
+                        synchronized(tabNameMap) {
+                            tabNameMap[getColorList()[i]] = editText.text.trim().toString()
+                        }
+                        tabLayout.post {
+                            tabLayout.apply {
+                                getTabAt(i)!!.text = editText.text.trim().toString()
+                                updateTabLayout(tabLayout)
+                            }
+                        }
+                    }
+                }
+                dialog.show()
+                true
+            }
+            if (tab::class.declaredMembers.any { it.name == "textView" }) {
+                val textView = tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                    isAccessible = true
+                }.call(tab) as TextView
+                textView.setTextColor(getColorList()[i])
             }
         }
     }
@@ -149,6 +212,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                                             }
                                     text = tabNameMap[note.colour]
                                 }, getColorList().indexOf(note.colour))
+                                updateTabLayout(this)
                             }
                         }
                     }
@@ -169,6 +233,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 notifyItemRemoved(oldIndex)
                 if (oldColors != getColorList()) {
                     tabLayout.removeTabAt(oldColors.indexOf(currentColor))
+                    updateTabLayout(tabLayout)
                     GlobalScope.launch {
                         DatabaseStore.getTabNameDbInstance(context).access().remove(note.colour)
                         synchronized(tabNameMap) {

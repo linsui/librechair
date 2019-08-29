@@ -1191,3 +1191,11 @@ val Context.lawnchairLocationManager: ch.deletescape.lawnchair.location.Location
     }
 val Context.colorEngine
     get() = ColorEngine.getInstance(this)
+
+fun Float.applyAsDip(c: Context): Float {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, this, c.resources.displayMetrics)
+}
+
+fun Float.applyAsSip(c: Context): Float {
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, c.resources.displayMetrics)
+}
