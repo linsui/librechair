@@ -123,7 +123,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             readMore.setOnClickListener { v2 ->
                                 ArticleViewerScreen(context, entry.title,
                                                     entry.categories.map { it.name }.joinToString(),
-                                                    entry.description.toString(), entry.uri)
+                                                    entry.uri, entry.description.value)
                                         .display(this@AbstractMultipleSyndicationProvider,
                                                  v2.getPostionOnScreen().first + v2.width / 2,
                                                  v2.getPostionOnScreen().second + v2.height / 2)
