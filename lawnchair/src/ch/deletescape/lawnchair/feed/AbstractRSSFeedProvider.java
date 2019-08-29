@@ -25,30 +25,20 @@ import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
 import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
-import io.github.cdimascio.essence.Essence;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import kotlin.Unit;
-import org.apache.commons.io.IOUtils;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
@@ -137,49 +127,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     }
                     description.setText(spanned);
                     readMore.setOnClickListener(v2 -> {
-                        displayView((parent2) -> {
-                                    ViewGroup articleView = (ViewGroup) LayoutInflater
-                                            .from(parent2.getContext())
-                                            .inflate(R.layout.overlay_article, parent2, false);
-                                    articleView.setBackgroundColor(
-                                            LawnchairUtilsKt.setAlpha(getBackgroundColor(), 255));
-                                    TextView titleView = articleView.findViewById(R.id.title);
-                                    TextView contentView = articleView.findViewById(R.id.content);
-                                    articleView.findViewById(R.id.open_externally)
-                                            .setOnClickListener(v3 -> Utilities
-                                                    .openURLinBrowser(getContext(), entry.getUri()));
-                                    titleView.setText(entry.getTitle());
-                                    TextView categoriesView = articleView
-                                            .findViewById(R.id.article_categories);
-                                    categoriesView.setText(categories.getText());
-                                    Executors.newSingleThreadExecutor().submit(() -> {
-                                        try {
-                                            URLConnection urlConnection = new URL(
-                                                    entry.getUri().replace("http://", "https://"))
-                                                    .openConnection();
-                                            if (urlConnection instanceof HttpURLConnection) {
-                                                ((HttpURLConnection) urlConnection)
-                                                        .setInstanceFollowRedirects(true);
-                                            }
-                                            CharSequence text = Essence
-                                                    .extract(IOUtils.toString(urlConnection
-                                                            .getInputStream(), Charset
-                                                            .defaultCharset())).getText();
-                                            if (text.toString().trim().isEmpty()) {
-                                                text = Html
-                                                        .fromHtml(entry.getDescription().getValue(), 0);
-                                            }
-                                            CharSequence finalText = text;
-                                            contentView.post(() -> contentView.setText(finalText));
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                    return articleView;
-                                }, (float) (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
-                                        + v2.getWidth() / 2),
-                                (float) (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
-                                        + v2.getHeight() / 2));
+                        new ArticleViewerScreen(getContext(), entry.getTitle(),
+                                entry.getCategories().stream().map(it -> it.getName())
+                                        .collect(Collectors.joining(", ")),
+                                entry.getDescription().toString(), entry.getUri())
+                                .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
+                                                + v2.getWidth() / 2),
+                                        (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
+                                                + v2.getHeight() / 2));
                     });
 
                     if (entry.getCategories().isEmpty()) {

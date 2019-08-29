@@ -29,21 +29,16 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker
+import ch.deletescape.lawnchair.getPostionOnScreen
+import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
-import io.github.cdimascio.essence.Essence
-import org.apache.commons.io.IOUtils
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
@@ -126,57 +121,12 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             }
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
-                                displayView({ parent2 ->
-                                                val articleView = LayoutInflater.from(
-                                                        parent2.context).inflate(
-                                                        R.layout.overlay_article, parent2,
-                                                        false) as ViewGroup
-                                                articleView.setBackgroundColor(
-                                                        backgroundColor.setAlpha(255))
-                                                val titleView = articleView
-                                                        .findViewById<TextView>(R.id.title)
-                                                val contentView = articleView
-                                                        .findViewById<TextView>(R.id.content)
-                                                articleView.findViewById<View>(R.id.open_externally)
-                                                        .setOnClickListener { v3 ->
-                                                            Utilities.openURLinBrowser(context,
-                                                                                       entry.uri)
-                                                        }
-                                                val categoriesView = articleView
-                                                        .findViewById<TextView>(
-                                                                R.id.article_categories)
-                                                categoriesView.text = categories.text
-                                                titleView.text = entry.title
-                                                Executors.newSingleThreadExecutor().submit {
-                                                    try {
-                                                        val urlConnection =
-                                                                URL(entry.uri.replace("http://",
-                                                                                      "https://"))
-                                                                        .openConnection()
-                                                        if (urlConnection is HttpURLConnection) {
-                                                            urlConnection.instanceFollowRedirects =
-                                                                    true
-                                                        }
-                                                        var text: CharSequence = Essence.extract(
-                                                                IOUtils.toString(
-                                                                        urlConnection.getInputStream(),
-                                                                        Charset.defaultCharset()))
-                                                                .text
-                                                        if (text.trim().isEmpty()) {
-                                                            text = Html.fromHtml(
-                                                                    entry.description.value, 0);
-                                                        }
-                                                        contentView.post {
-                                                            contentView.text = text
-                                                        }
-                                                    } catch (e: IOException) {
-                                                        e.printStackTrace()
-                                                    }
-                                                }
-                                                articleView
-                                            },
-                                            (v2.getPostionOnScreen().first + v2.width / 2).toFloat(),
-                                            (v2.getPostionOnScreen().second + v2.height / 2).toFloat())
+                                ArticleViewerScreen(context, entry.title,
+                                                    entry.categories.map { it.name }.joinToString(),
+                                                    entry.description.toString(), entry.uri)
+                                        .display(this@AbstractMultipleSyndicationProvider,
+                                                 v2.getPostionOnScreen().first + v2.width / 2,
+                                                 v2.getPostionOnScreen().second + v2.height / 2)
                             }
 
                             date.text = entry.publishedDate?.toLocaleString()
