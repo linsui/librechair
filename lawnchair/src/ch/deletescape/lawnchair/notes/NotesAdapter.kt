@@ -34,13 +34,13 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.colors.SingleUseColorDialog
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.views.SelectableRoundedView
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.priyesh.chroma.ChromaView
 import me.priyesh.chroma.ColorMode
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
@@ -316,7 +316,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
             editDialog.setButton(Dialog.BUTTON_NEUTRAL,
                                  R.string.title_dialog_select_color.fromStringRes(
                                          context)) { dialog2, which2 ->
-                val dialog = object : android.app.AlertDialog(context,
+                /* val dialog = object : android.app.AlertDialog(context,
                                                               ThemeOverride.AlertDialog().getTheme(
                                                                       context)) {}
                 dialog.setView(ChromaView(notes[holder.adapterPosition].colour, ColorMode.RGB,
@@ -348,7 +348,27 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                         }
                     }
                 }
-                dialog.show()
+                dialog.show() */
+                val dialog = SingleUseColorDialog(context, notes[holder.adapterPosition].colour, context.resources.getStringArray(R.array.resolvers_accent).toList(), ColorMode.RGB) {
+                    val oldColors = getColorList()
+                    GlobalScope.launch {
+                        DatabaseStore.getAccessObject(context)
+                                .setColor(notes[holder.adapterPosition].id, it)
+                        notes[holder.adapterPosition].colour = it
+                    }.invokeOnCompletion {_ ->
+                        runOnMainThread {
+                            if (it == currentColor) {
+                                notifyItemChanged(holder.adapterPosition)
+                            } else {
+                                notifyItemRemoved(holder.adapterPosition)
+                                if (getColorList() != oldColors) {
+                                    bindToTabLayout(tabLayout)
+                                }
+                            }
+                        }
+                    }
+                }
+                dialog.show();
             }
             editDialog.show()
             true
