@@ -62,12 +62,22 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
     var currentColor = context.getColorAccent()
-    private val googleColours = arrayOf(currentColor, Color.parseColor("#DB4437"),
-                                        Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
+    private lateinit var tabNameMap: MutableMap<Int, String>
+    private val googleColours =
+            arrayOf(currentColor, Color.parseColor("#DB4437"), Color.parseColor("#F4B400"),
+                    Color.parseColor("#0F9D58"))
 
     init {
         GlobalScope.launch {
             allNotes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
+            tabNameMap = DatabaseStore.getTabNameDbInstance(context).access().all
+                    .map { it.color to it.name }.toMap().toMutableMap().also {
+                        getColorList().forEach { color ->
+                            if (!it.containsKey(color)) {
+                                it.put(color, "")
+                            }
+                        }
+                    }
         }.invokeOnCompletion {
             runOnMainThread {
                 notifyDataSetChanged()
@@ -77,7 +87,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
-    override fun getItemCount() = if (::allNotes.isInitialized) notes.size else 0
+    override fun getItemCount() = if (::allNotes.isInitialized && ::tabNameMap.isInitialized) notes.size else 0
     fun bindToTabLayout(tabLayout: TabLayout) {
         this.tabLayout = tabLayout
         GlobalScope.launch {
@@ -87,9 +97,11 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 tabLayout.removeAllTabs()
                 getColorList().forEach {
                     tabLayout.addTab(tabLayout.newTab().apply {
-                        icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(it).apply {
-                            setColorFilter(it, PorterDuff.Mode.SRC_OVER)
-                        }
+                        icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(it)
+                                .apply {
+                                    setColorFilter(it, PorterDuff.Mode.SRC_OVER)
+                                }
+                        text = tabNameMap[it]
                     })
                 }
                 if (getColorList().contains(currentColor)) {
@@ -102,7 +114,7 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         }
     }
 
-    public fun getColorList() = (googleColours + allNotes.map {
+    fun getColorList() = (googleColours + allNotes.map {
         it.colour
     }.sorted()).distinct()
 
@@ -116,13 +128,29 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
             if (note.colour == currentColor) {
                 runOnMainThread { notifyItemInserted(notes.size) }
             } else {
-                runOnMainThread {
-                    if (oldColors != getColorList()) {
-                        tabLayout.addTab(tabLayout.newTab().apply {
-                            icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(note.colour).apply {
-                                setColorFilter(note.colour, PorterDuff.Mode.SRC_OVER)
+                if (oldColors != getColorList()) {
+                    GlobalScope.launch {
+                        DatabaseStore.getTabNameDbInstance(context).access()
+                                .insert(TabDatabaseEntry().apply {
+                                    color = note.colour
+                                    name = ""
+                                })
+                    }.invokeOnCompletion {
+                        if (!tabNameMap.containsKey(note.colour)) {
+                            tabNameMap[note.colour] = "";
+                        }
+                        tabLayout.apply {
+                            post {
+                                addTab(tabLayout.newTab().apply {
+                                    icon = R.drawable.circle.fromDrawableRes(context)
+                                            .duplicateAndSetColour(note.colour).apply {
+                                                setColorFilter(note.colour,
+                                                               PorterDuff.Mode.SRC_OVER)
+                                            }
+                                    text = tabNameMap[note.colour]
+                                }, getColorList().indexOf(note.colour))
                             }
-                        }, getColorList().indexOf(note.colour))
+                        }
                     }
                 }
             }
@@ -141,6 +169,12 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
                 notifyItemRemoved(oldIndex)
                 if (oldColors != getColorList()) {
                     tabLayout.removeTabAt(oldColors.indexOf(currentColor))
+                    GlobalScope.launch {
+                        DatabaseStore.getTabNameDbInstance(context).access().remove(note.colour)
+                        synchronized(tabNameMap) {
+                            tabNameMap.remove(note.colour)
+                        }
+                    }
                 }
             }
         }

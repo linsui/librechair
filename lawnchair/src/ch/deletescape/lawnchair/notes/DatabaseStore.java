@@ -28,6 +28,8 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 public final class DatabaseStore {
 
     private static NoteDatabase sDbInstance;
+    private static TabNameDatabase sNameDbInstance;
+
     private static Migration MIGRATOR_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
@@ -49,6 +51,17 @@ public final class DatabaseStore {
                     .enableMultiInstanceInvalidation().allowMainThreadQueries().build();
         } else {
             return sDbInstance;
+        }
+    }
+
+    public static TabNameDatabase getTabNameDbInstance(Context context) {
+        if (sNameDbInstance == null) {
+            return sNameDbInstance = Room.databaseBuilder(context, TabNameDatabase.class, "color_names")
+                    .enableMultiInstanceInvalidation()
+                    .allowMainThreadQueries()
+                    .build();
+        } else {
+            return sNameDbInstance;
         }
     }
 
