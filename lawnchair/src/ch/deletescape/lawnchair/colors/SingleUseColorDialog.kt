@@ -33,7 +33,9 @@ import me.priyesh.chroma.screenDimensions
 class SingleUseColorDialog(c: Context, val initialColor: Int, val resolvers: List<String>,
                            val colorMode: ColorMode, val onColorSelected: (i: Int) -> Unit) :
         AlertDialog(c, ThemeOverride.AlertDialog().getTheme(c)) {
-    private lateinit var tabbedPickerView: PickerView
+    private var tabbedPickerView: PickerView
+    private var height: Int
+    private var width: Int
 
     init {
         val context = context
@@ -45,8 +47,6 @@ class SingleUseColorDialog(c: Context, val initialColor: Int, val resolvers: Lis
             onColorSelected(it);
         }
         setView(tabbedPickerView)
-        val width: Int;
-        val height: Int
         if (orientation(context) == ORIENTATION_LANDSCAPE) {
             height = WindowManager.LayoutParams.WRAP_CONTENT
             width = 80 percentOf screenDimensions(context).widthPixels
@@ -54,8 +54,6 @@ class SingleUseColorDialog(c: Context, val initialColor: Int, val resolvers: Lis
             height = WindowManager.LayoutParams.WRAP_CONTENT
             width = context.resources.getDimensionPixelSize(R.dimen.chroma_dialog_width)
         }
-        window?.setLayout(width, height)
-        window?.setBackgroundDrawable(context.getDrawable(R.drawable.dialog_material_background))
     }
 
 
@@ -65,6 +63,8 @@ class SingleUseColorDialog(c: Context, val initialColor: Int, val resolvers: Lis
 
     override fun onStart() {
         super.onStart()
+        window?.setLayout(width, height)
+        window?.setBackgroundDrawable(context.getDrawable(R.drawable.dialog_material_background))
         applyAccent()
         window?.clearFlags(
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
