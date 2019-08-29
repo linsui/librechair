@@ -61,10 +61,12 @@ class NotesAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>
         override fun onTabSelected(tab: TabLayout.Tab) {
             currentColor = getColorList()[tab.position]
             tabLayout.setSelectedTabIndicatorColor(getColorList()[tab.position])
+            onTabChangeListeners.forEach { it(getColorList()[tab.position] ) }
             notifyDataSetChanged()
         }
     }
     var currentColor = context.getColorAccent()
+    var onTabChangeListeners = mutableListOf<(color: Int) -> Unit>()
     private lateinit var tabNameMap: MutableMap<Int, String>
     private val googleColours =
             arrayOf(currentColor, Color.parseColor("#DB4437"), Color.parseColor("#F4B400"),

@@ -40,16 +40,23 @@ class NotesActivity : SettingsBaseActivity() {
     val recycler by lazy { findViewById(R.id.notes_recycler) as RecyclerView }
     val tabLayout by lazy { findViewById(R.id.note_tabs) as TabLayout }
     val adapter by lazy { NotesAdapter(this) }
+    lateinit var addItem: MenuItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
         adapter.bindToTabLayout(tabLayout)
+        adapter.onTabChangeListeners.add {
+            if (::addItem.isInitialized) {
+                addItem.icon = addItem.icon.duplicateAndSetColour(it)
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menu.add(getString(R.string.title_menu_item_new_note)).apply {
+            addItem = this;
             icon = R.drawable.ic_add.fromDrawableRes(this@NotesActivity)
                     .duplicateAndSetColour(this@NotesActivity.getColorAttr(R.attr.colorAccent))
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
