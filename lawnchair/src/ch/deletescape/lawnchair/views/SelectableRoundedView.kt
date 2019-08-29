@@ -59,16 +59,14 @@ class SelectableRoundedView(context: Context, attrs: AttributeSet?) : LinearLayo
                                intArrayOf(ColorUtils.setAlphaComponent(selected, 31),
                                           ColorUtils.setAlphaComponent(normal, 31)))
         (background as RippleDrawable).setColor(rippleTintList)
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
+        viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+            override fun onPreDraw(): Boolean {
                 checkMark.imageTintList = ColorStateList.valueOf(selected)
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                viewTreeObserver.removeOnPreDrawListener(this)
+                return true
             }
         })
-    }
-
-    override fun onFinishInflate() {
-        super.onFinishInflate()
+        checkMark?.imageTintList = ColorStateList.valueOf(selected)
     }
 
     fun setup(title: String, summary: String) {
