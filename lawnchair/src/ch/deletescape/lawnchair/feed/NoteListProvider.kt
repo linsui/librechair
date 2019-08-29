@@ -24,10 +24,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.view.ViewGroup
 import android.widget.TextView
-import ch.deletescape.lawnchair.duplicateAndSetColour
-import ch.deletescape.lawnchair.fromDrawableRes
-import ch.deletescape.lawnchair.getColorAttr
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.todo.INoteProvider
 import ch.deletescape.lawnchair.todo.NoteUtils
 import com.android.launcher3.R
@@ -77,7 +76,17 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
         if (providerMap.isEmpty()) {
             updateBindings()
         }
-        return providerMap.map { it.value.notes }.flatten().map {
+        return listOf(Card(null, null, { parent, _ ->
+            (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
+                setOnClickListener {
+                    NoteProviderScreen(context).display(this@NoteListProvider, it.getPostionOnScreen().first,
+                                                        it.getPostionOnScreen().second)
+                }
+            }
+        }, Card.RAISE or Card.NO_HEADER, "nosort, top",
+                           "manageNotes".hashCode())) + providerMap.map {
+            it.value.notes
+        }.flatten().map {
             Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).duplicateAndSetColour(
                     if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
                  it.title, { parent, _ ->

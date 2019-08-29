@@ -63,6 +63,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Interpolator
 import android.widget.*
+import androidx.annotation.LayoutRes
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
@@ -1199,3 +1200,5 @@ fun Float.applyAsDip(c: Context): Float {
 fun Float.applyAsSip(c: Context): Float {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, c.resources.displayMetrics)
 }
+
+fun ViewGroup.inflate(@LayoutRes res: Int): View = LayoutInflater.from(context).inflate(res, this, false)

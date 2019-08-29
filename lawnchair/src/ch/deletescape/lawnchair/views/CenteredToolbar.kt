@@ -18,11 +18,11 @@
 package ch.deletescape.lawnchair.views
 
 import android.content.Context
-import android.support.v7.widget.AppCompatTextView
 import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.TextView
 import ch.deletescape.lawnchair.isVisible
 import com.android.launcher3.R
 
@@ -46,8 +46,8 @@ class CenteredToolbar @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = R.attr.toolbarStyle
 ) : Toolbar(context, attrs, defStyleAttr) {
 
-    private var mTitleTextView: AppCompatTextView? = null
-    private var mSubtitleTextView: AppCompatTextView? = null
+    private var mTitleTextView: TextView? = null
+    private var mSubtitleTextView: TextView? = null
     private var mTitleText: CharSequence? = null
     private var mSubtitleText: CharSequence? = null
 

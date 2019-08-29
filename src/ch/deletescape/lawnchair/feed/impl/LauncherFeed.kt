@@ -50,6 +50,7 @@ import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import kotlin.math.hypot
+import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
@@ -366,6 +367,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
         frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
+            background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
             id = R.id.feed_overlay_view
             visibility = View.INVISIBLE
             fitsSystemWindows = false

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Copyright (c) 2017-2019 the Lawnchair team
+  ~     Copyright (c)  2019 oldosfan (would)
+  ~     This file is part of Lawnchair Launcher.
+  ~
+  ~     Lawnchair Launcher is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Lawnchair Launcher is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/title_pref_feed_notes"
+        android:minHeight="?actionBarSize"
+        android:background="@android:color/transparent"
+        app:titleTextColor="?colorAccent"
+        android:theme="?actionBarTheme">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/note_tabs"
+            style="@style/Widget.Notes.Tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </android.support.v7.widget.Toolbar>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/notes_recycler" />
+</LinearLayout>
