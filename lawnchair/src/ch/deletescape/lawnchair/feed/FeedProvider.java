@@ -19,31 +19,12 @@
 
 package ch.deletescape.lawnchair.feed;
 
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-
-import android.animation.Animator;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.graphics.PixelFormat;
-import android.view.ContextThemeWrapper;
-import android.view.View;
-import android.view.ViewAnimationUtils;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager;
-import android.view.WindowManager.LayoutParams;
-import android.widget.LinearLayout;
-import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
-import ch.deletescape.lawnchair.theme.ThemeOverride;
-import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherState;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 public abstract class FeedProvider {
 
@@ -107,66 +88,9 @@ public abstract class FeedProvider {
         this.feed = feed;
     }
 
-    protected void displayView(Function1<? super ViewGroup, ? extends View> inflateHelper, float x,
+    protected void displayScreen(ProviderScreen screen, float x,
             float y) {
-        if (feed != null) {
-            feed.displayView(inflateHelper, x, y);
-        } else if (Launcher.getLauncherOrNull(context) != null) {
-            Launcher.getLauncher(context).getStateManager()
-                    .goToState(LauncherState.NEWS_OVERLAY, false);
-            LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT,
-                    TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE
-                            | LayoutParams.FLAG_NOT_TOUCH_MODAL
-                            | LayoutParams.FLAG_LAYOUT_IN_OVERSCAN
-                            | LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                            | LayoutParams.FLAG_TRANSLUCENT_STATUS
-                            | LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
-                    PixelFormat.TRANSLUCENT);
-            params.type = TYPE_APPLICATION;
-            View overlayView = inflateHelper
-                    .invoke(new LinearLayout(new ContextThemeWrapper(context,
-                            new ThemeOverride.AlertDialog().getTheme(context))));
-            overlayView.setVisibility(View.INVISIBLE);
-            overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
-                overlayView.setPadding(overlayView.getPaddingLeft(),
-                        overlayView.getPaddingTop() + insets.getStableInsetTop(),
-                        overlayView.getPaddingRight(),
-                        insets.getStableInsetBottom() + overlayView.getPaddingBottom());
-                return insets;
-            });
-            overlayView.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
-                @Override
-                public boolean onPreDraw() {
-                    /*
-                     * There must be a better, cleaner way of doing this!
-                     */
-                    int radius = (int) Math.hypot(Integer.MAX_VALUE / 32,
-                            Integer.MAX_VALUE / 32);
-                    overlayView.getViewTreeObserver().removeOnPreDrawListener(this);
-                    Animator animator = ViewAnimationUtils
-                            .createCircularReveal(overlayView, (int) x, (int) y, 0, radius);
-                    animator.setDuration(50000);
-                    overlayView.setVisibility(View.VISIBLE);
-                    animator.start();
-                    return true;
-                }
-            });
-            windowService.addView(overlayView, params);
-            ((LawnchairLauncher) Launcher.getLauncherOrNull(context)).setBackPressedCallback(() -> {
-                windowService.removeView(overlayView);
-                ((LawnchairLauncher) Launcher.getLauncherOrNull(context))
-                        .setBackPressedCallback(null);
-                Launcher.getLauncher(context).getStateManager()
-                        .goToState(LauncherState.NORMAL, false);
-                return Unit.INSTANCE;
-            });
-        } else {
-            new AlertDialog.Builder(context, new ThemeOverride.AlertDialog().getTheme(context))
-                    .setView(inflateHelper.invoke(new LinearLayout(new ContextThemeWrapper(context,
-                            new ThemeOverride.AlertDialog().getTheme(context))))).show();
-        }
+        screen.display(this, (int) x, (int) y);
     }
 
     public Map<String, String> getArguments() {
@@ -179,5 +103,9 @@ public abstract class FeedProvider {
 
     public void setContainer(FeedProviderContainer container) {
         this.container = container;
+    }
+
+    public WindowManager getWindowService() {
+        return windowService;
     }
 }

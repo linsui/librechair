@@ -39,6 +39,7 @@ import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
@@ -54,19 +55,19 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
+class LauncherFeed(originalContext: Context) : ILauncherOverlay.Stub() {
     private var backgroundColor: Int = ColorUtils.setAlphaComponent(
-            ColorEngine.getInstance(contex2t).feedBackground.value.resolveColor(),
+            ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
-                    contex2t).feedBackgroundOpacity * (255f / 100f)).roundToInt())
-    private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), contex2t)
+                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+    private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
 
     init {
         d("init: dark ${dark}")
     }
 
-    private val context = ContextThemeWrapper(contex2t,
+    private val context = ContextThemeWrapper(originalContext,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private val adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                                       context.applicationContext, this)
@@ -94,8 +95,9 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
-    private val tabsOnBottom = contex2t.lawnchairPrefs.feedTabsOnBottom
+    private val tabsOnBottom = originalContext.lawnchairPrefs.feedTabsOnBottom
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
+    private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
 
@@ -332,7 +334,21 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
+    fun displayPreferenceScreen(screen: ProviderScreen, x: Float, y: Float,
+                                inflater: (parent: ViewGroup) -> View) {
+        var view: View? = null
+        displayView({
+                        inflater(it).also { view = it }
+                    }, x, y)
+        preferenceScreens.add(screen to ScreenData(x, y, view!!))
+    }
+
+    fun removeLastPrefereceScreen() {
+        removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x, preferenceScreens.last().second.y);
+        preferenceScreens.remove(preferenceScreens.last())
+    }
+
+    private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
         if (useTabbedMode) {
             tabView.tabsEnabled = false
             oldIconTint = tabView.tabIconTint!!
@@ -365,10 +381,8 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                                 R.color.textColorPrimary.fromColorRes(context)).toIntArray())
             }
         }
-        frame.findViewById<View>(R.id.feed_overlay_view)?.also { content.removeView(it) }
         frame.addView(inflater(frame).apply {
             background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
-            id = R.id.feed_overlay_view
             visibility = View.INVISIBLE
             fitsSystemWindows = false
             if (useTabbedMode) {
@@ -409,16 +423,20 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                 }
             })
         })
-        toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
-            icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
-                    if (useWhiteText(backgroundColor,
-                                     context)) R.color.textColorPrimary.fromColorRes(
-                            context) else R.color.textColorPrimaryInverse.fromColorRes(context))
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            setOnMenuItemClickListener {
-                toolbar.menu.removeItem(R.id.cancel)
-                removeDisplayedView(x, y)
-                true
+        if (toolbar.menu.findItem(R.id.cancel) == null) {
+            toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
+                icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
+                        if (useWhiteText(backgroundColor,
+                                         context)) R.color.textColorPrimary.fromColorRes(
+                                context) else R.color.textColorPrimaryInverse.fromColorRes(context))
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setOnMenuItemClickListener {
+                    if (preferenceScreens.isEmpty() || preferenceScreens.size == 1) {
+                        toolbar.menu.removeItem(R.id.cancel)
+                    }
+                    removeLastPrefereceScreen()
+                    true
+                }
             }
         }
         for (i in 0 until toolbar.menu.size()) {
@@ -426,7 +444,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
     }
 
-    fun removeDisplayedView(x: Float, y: Float) {
+    fun removeDisplayedView(v: View, x: Float, y: Float) {
         if (useTabbedMode) {
             tabView.tabIconTint = oldIconTint
             tabView.tabTextColors = oldTextColor
@@ -437,8 +455,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
         }
         tabView.tabsEnabled = true
         recyclerView.isLayoutFrozen = false
-        frame.findViewById<View>(R.id.feed_overlay_view)?.apply {
-            val view = this
+        v.apply {
             val (height, width) = measuredHeight to measuredWidth
             val radius = hypot(height.toDouble(), width.toDouble())
             val animator = ViewAnimationUtils
@@ -451,7 +468,7 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
                     }
 
                     override fun onAnimationEnd(animation: Animator?) {
-                        frame.removeView(view)
+                        frame.removeView(v)
                     }
 
                     override fun onAnimationCancel(animation: Animator?) {
@@ -646,4 +663,6 @@ class LauncherFeed(contex2t: Context) : ILauncherOverlay.Stub() {
             }
         }
     }
+
+    private data class ScreenData(val x: Float, val y: Float, val view: View)
 }

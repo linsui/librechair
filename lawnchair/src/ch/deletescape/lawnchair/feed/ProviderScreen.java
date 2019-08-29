@@ -19,10 +19,27 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+
+import android.animation.Animator;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.graphics.PixelFormat;
+import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnPreDrawListener;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.widget.LinearLayout;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.theme.ThemeOverride;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
+import kotlin.Unit;
 
 public abstract class ProviderScreen extends ContextWrapper {
 
@@ -34,10 +51,68 @@ public abstract class ProviderScreen extends ContextWrapper {
     protected abstract void bindView(View view);
 
     public final void display(FeedProvider provider, int touchX, int touchY) {
-        provider.displayView(parent -> {
-            View v = getView(parent);
-            bindView(v);
-            return v;
-        }, touchX, touchY);
+        if (provider.getFeed() != null) {
+            provider.getFeed().displayPreferenceScreen(this, touchX, touchY, viewGroup -> {
+                View v = getView(viewGroup);
+                bindView(v);
+                return v;
+            });
+        } else if (Launcher.getLauncherOrNull(provider.getContext()) != null) {
+            Launcher.getLauncher(provider.getContext()).getStateManager()
+                    .goToState(LauncherState.NEWS_OVERLAY, false);
+            LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE
+                            | LayoutParams.FLAG_NOT_TOUCH_MODAL
+                            | LayoutParams.FLAG_LAYOUT_IN_OVERSCAN
+                            | LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                            | LayoutParams.FLAG_TRANSLUCENT_STATUS
+                            | LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+                    PixelFormat.TRANSLUCENT);
+            params.type = TYPE_APPLICATION;
+            View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
+                    new ThemeOverride.AlertDialog().getTheme(this))));
+            overlayView.setVisibility(View.INVISIBLE);
+            overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
+                overlayView.setPadding(overlayView.getPaddingLeft(),
+                        overlayView.getPaddingTop() + insets.getStableInsetTop(),
+                        overlayView.getPaddingRight(),
+                        insets.getStableInsetBottom() + overlayView.getPaddingBottom());
+                return insets;
+            });
+            overlayView.getViewTreeObserver().addOnPreDrawListener(new OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    /*
+                     * There must be a better, cleaner way of doing this!
+                     */
+                    int radius = (int) Math.hypot(Integer.MAX_VALUE / 32,
+                            Integer.MAX_VALUE / 32);
+                    overlayView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    Animator animator = ViewAnimationUtils
+                            .createCircularReveal(overlayView, (int) touchX, (int) touchY, 0, radius);
+                    animator.setDuration(50000);
+                    overlayView.setVisibility(View.VISIBLE);
+                    animator.start();
+                    return true;
+                }
+            });
+            provider.getWindowService().addView(overlayView, params);
+            ((LawnchairLauncher) Launcher.getLauncherOrNull(provider.getContext())).setBackPressedCallback(() -> {
+                provider.getWindowService().removeView(overlayView);
+                ((LawnchairLauncher) Launcher.getLauncherOrNull(provider.getContext()))
+                        .setBackPressedCallback(null);
+                Launcher.getLauncher(provider.getContext()).getStateManager()
+                        .goToState(LauncherState.NORMAL, false);
+                return Unit.INSTANCE;
+            });
+        } else {
+            View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
+                    new ThemeOverride.AlertDialog().getTheme(this))));
+            overlayView.setVisibility(View.INVISIBLE);
+            new AlertDialog.Builder(this, new ThemeOverride.AlertDialog().getTheme(this))
+                    .setView(overlayView).show();
+        }
     }
 }
