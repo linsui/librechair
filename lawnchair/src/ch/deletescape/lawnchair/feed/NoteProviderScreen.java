@@ -27,17 +27,16 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.notes.NotesAdapter;
+import ch.deletescape.lawnchair.notes.SimpleNoteAdapter;
 import com.android.launcher3.R;
 
 public class NoteProviderScreen extends ProviderScreen {
 
-    private NotesAdapter adapter;
+    private SimpleNoteAdapter adapter;
 
     public NoteProviderScreen(Context base) {
         super(base);
-        adapter = new NotesAdapter(this, LawnchairUtilsKt.getColorEngineAccent(this));
+        adapter = new SimpleNoteAdapter(base);
     }
 
     @Override
@@ -53,6 +52,5 @@ public class NoteProviderScreen extends ProviderScreen {
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter.bindToTabLayout(tabLayout);
     }
 }
