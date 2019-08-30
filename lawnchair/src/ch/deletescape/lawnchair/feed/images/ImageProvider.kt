@@ -19,14 +19,23 @@
 
 package ch.deletescape.lawnchair.feed.images
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Bitmap
+import android.os.IBinder
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.room.InvalidationTracker
+import ch.deletescape.lawnchair.IImageSelector
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.feed.IImageStoreCallback
+import ch.deletescape.lawnchair.inflate
+import ch.deletescape.lawnchair.runOnMainThread
+import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -67,14 +76,50 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
     }
 
     override fun getCards(): List<Card> {
-        return images.map {
+        return listOf(Card(null, null, { parent, _ ->
+            (parent as ViewGroup).inflate(R.layout.add_image).apply {
+                setOnClickListener {
+                    context.bindService(Intent(context, ImageSelectorService::class.java),
+                                        object : ServiceConnection {
+                                            override fun onServiceDisconnected(
+                                                    name: ComponentName) = {}()
+
+                                            override fun onServiceConnected(name: ComponentName,
+                                                                            service: IBinder) {
+                                                IImageSelector.Stub.asInterface(service)
+                                                        .selectImage(object :
+                                                                             IImageStoreCallback.Stub() {
+                                                            override fun onImageRetrieved(
+                                                                    id: String?) {
+                                                                if (id != null) {
+                                                                    GlobalScope.launch {
+                                                                        ImageDatabase.getInstance(
+                                                                                context).access()
+                                                                                .insert(Image(id,
+                                                                                              "normal"))
+                                                                    }.invokeOnCompletion {
+                                                                        runOnMainThread {
+                                                                            if (feed != null) {
+                                                                                feed.refresh(10)
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        })
+                                            }
+                                        }, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT);
+                }
+            }
+        }, Card.RAISE or Card.NO_HEADER, "nosort, top",
+                           "manageNotes".hashCode())) + images.map {
             Card(null, "", { parent, _ ->
                 ImageView(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                              ViewGroup.LayoutParams.MATCH_PARENT)
                     setImageBitmap(it)
                 }
-            }, Card.RAISE or Card.NO_HEADER, "nosort, top", it.hashCode())
+            }, Card.RAISE or Card.NO_HEADER, "", it.hashCode())
         }
     }
 }

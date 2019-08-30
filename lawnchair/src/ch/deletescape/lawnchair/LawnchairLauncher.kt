@@ -43,7 +43,9 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.feed.ProviderScreen
+import ch.deletescape.lawnchair.feed.images.ImageStore
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -62,11 +64,11 @@ import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
 import java.io.File
 import java.io.FileOutputStream
+import java.util.*
 import java.util.concurrent.Semaphore
 import java.util.concurrent.atomic.AtomicBoolean
 
-open class LawnchairLauncher : PluginLauncher(),
-                               LawnchairPreferences.OnPreferenceChangeListener,
+open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferenceChangeListener,
                                ColorEngine.OnColorChangeListener {
     val hideStatusBarKey = "pref_hideStatusBar"
     val gestureController by lazy { GestureController(this) }
@@ -79,18 +81,16 @@ open class LawnchairLauncher : PluginLauncher(),
     val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
     val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
+    val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
     var providerScreens = mutableListOf<Pair<ProviderScreen, View>>()
-
     private val customLayoutInflater by lazy {
         LawnchairLayoutInflater(
                 super.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater, this)
     }
-
     private val colorsToWatch = arrayOf(ColorEngine.Resolvers.WORKSPACE_ICON_LABEL)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1 && !Utilities.hasStoragePermission(
                         this)) {
@@ -140,6 +140,12 @@ open class LawnchairLauncher : PluginLauncher(),
         return success
     }
 
+    fun selectImage(callback: IImageStoreCallback) {
+        val id = UUID.randomUUID().hashCode();
+        imageResuestCallbacks += id to { imageId -> callback.onImageRetrieved(imageId) }
+        startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
+    }
+
     override fun onStart() {
         super.onStart()
         (launcherAppTransitionManager as LawnchairAppTransitionManagerImpl)
@@ -154,7 +160,6 @@ open class LawnchairLauncher : PluginLauncher(),
 
     private fun verifySignature(): Boolean {
         if (!BuildConfig.SIGNATURE_VERIFICATION) return true
-
         val signatureHash = resources.getInteger(R.integer.lawnchair_signature_hash)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val info = packageManager
@@ -256,7 +261,6 @@ open class LawnchairLauncher : PluginLauncher(),
 
         restartIfPending()
         // lawnchairPrefs.checkFools()
-
         BrightnessManager.getInstance(this).startListening()
         BugReportClient.getInstance(this).rebindIfNeeded()
 
@@ -409,11 +413,8 @@ open class LawnchairLauncher : PluginLauncher(),
     }
 
     fun shouldRecreate() = !sRestart
-
     class Screenshot : LawnchairLauncher() {
-
         override val isScreenshotMode = true
-
         override fun onCreate(savedInstanceState: Bundle?) {
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
@@ -471,18 +472,14 @@ open class LawnchairLauncher : PluginLauncher(),
     }
 
     companion object {
-
         const val REQUEST_PERMISSION_STORAGE_ACCESS = 666
         const val REQUEST_PERMISSION_LOCATION_ACCESS = 667
         const val REQUEST_PERMISSION_CALENDAR_READ_ACCESS = 668
         const val REQUEST_PERMISSION_MODIFY_NAVBAR = 668
         const val CODE_EDIT_ICON = 100
-
         var sRestart = false
-
         var currentEditInfo: ItemInfo? = null
         var currentEditIcon: Drawable? = null
-
         @JvmStatic
         fun getLauncher(context: Context): LawnchairLauncher {
             return context as? LawnchairLauncher
@@ -508,7 +505,6 @@ open class LawnchairLauncher : PluginLauncher(),
             context.startActivity(Intent(context, Screenshot::class.java).apply {
                 putExtra("screenshot", true)
                 putExtra("callback", object : ResultReceiver(handler) {
-
                     override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
                         if (resultCode == Activity.RESULT_OK) {
                             callback(Uri.parse(resultData!!.getString("uri")))
@@ -568,6 +564,17 @@ open class LawnchairLauncher : PluginLauncher(),
         } else if (queuedWidgetCallbacks.any { it.first.first == requestCode }) {
             (applicationContext as LawnchairApp).overlayWidgetHost
                     .deleteAppWidgetId(requestCode shr 1)
+        }
+
+        if (imageResuestCallbacks.containsKey(requestCode)) {
+            if (data == null) {
+                imageResuestCallbacks[requestCode]!!(null)
+            } else if (data.hasExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)) {
+                imageResuestCallbacks[requestCode]!!(data.extras!![ImageStore.ImageStoreActivity.IMAGE_UUID] as String);
+            } else {
+                imageResuestCallbacks[requestCode]!!(null)
+            }
+            imageResuestCallbacks.remove(requestCode)
         }
     }
 }

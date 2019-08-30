@@ -19,12 +19,16 @@
 
 package ch.deletescape.lawnchair.feed.images
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import ch.deletescape.lawnchair.util.LaunchpadActivity
 import ch.deletescape.lawnchair.util.SingletonHolder
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
 class ImageStore private constructor(val context: Context) {
@@ -44,5 +48,31 @@ class ImageStore private constructor(val context: Context) {
 
     companion object : SingletonHolder<ImageStore, Context>(::ImageStore) {
         const val FILE_DIR = "feed_image_store"
+    }
+
+    class ImageStoreActivity : LaunchpadActivity() {
+
+        companion object {
+            const val IMAGE_UUID = "ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity.IMAGE_UUID"
+        }
+
+        override fun getActivity(): Intent = Intent ().apply {
+            type = "image/*";
+            action = Intent.ACTION_GET_CONTENT;
+        }
+
+        override fun onResult(resultCode: Int, data: Intent?) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                val imageStream = contentResolver.openInputStream(intent.data!!)
+                try {
+                    setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID, ImageStore.getInstance(this).storeBitmap(BitmapFactory.decodeStream(imageStream))))
+                } catch (e: IOException) {
+                    setResult(Activity.RESULT_CANCELED)
+                }
+            } else {
+                setResult(Activity.RESULT_CANCELED)
+            }
+            finish()
+        }
     }
 }

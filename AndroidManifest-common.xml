@@ -130,6 +130,7 @@
             </intent-filter>
         </service>
         <service android:name="ch.deletescape.lawnchair.PreferenceSynchronizerService" />
+        <service android:name="ch.deletescape.lawnchair.feed.images.ImageSelectorService" />
 
         <meta-data android:name="android.nfc.disable_beam_default"
             android:value="true" />

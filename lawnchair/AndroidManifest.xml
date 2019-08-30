@@ -187,6 +187,7 @@
         <activity
             android:name="ch.deletescape.lawnchair.BlankActivity"
             android:theme="@style/Theme.Transparent" />
+        <activity android:name="ch.deletescape.lawnchair.feed.images.ImageStore$ImageStoreActivity" />
         <activity
             android:enabled="false"
             android:name="ch.deletescape.lawnchair.FakeLauncher">
