@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.notes
 
 import android.app.Dialog
 import android.content.Context
+import android.support.design.widget.TabLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
@@ -29,6 +30,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.fromStringRes
+import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
@@ -38,7 +40,8 @@ import kotlinx.coroutines.launch
 import me.priyesh.chroma.ChromaView
 import me.priyesh.chroma.ColorMode
 
-class SimpleNoteAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHolder>() {
+class SimpleNoteAdapter(override val context: Context) :
+        NotesAdapter(context, context.getColorEngineAccent()) {
     private lateinit var notes: MutableList<Note>
     private val hold = SingleUseHold()
 
@@ -55,22 +58,26 @@ class SimpleNoteAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
     override fun getItemCount() = if (::notes.isInitialized) notes.size else 0
-    fun add(note: Note) = GlobalScope.launch {
-        hold.waitFor()
-        DatabaseStore.getAccessObject(context).insert(note);
-    }.invokeOnCompletion {
-        notes.add(note)
-        runOnMainThread { notifyItemInserted(notes.size) }
+    override fun add(note: Note) {
+        GlobalScope.launch {
+            hold.waitFor()
+            DatabaseStore.getAccessObject(context).insert(note);
+        }.invokeOnCompletion {
+            notes.add(note)
+            runOnMainThread { notifyItemInserted(notes.size) }
+        }
     }
 
-    fun remove(note: Note) = GlobalScope.launch {
-        hold.waitFor()
-        DatabaseStore.getAccessObject(context).remove(note);
-    }.invokeOnCompletion {
-        val oldIndex = notes.indexOf(note)
-        notes.minusAssign(note)
-        runOnMainThread {
-            notifyItemRemoved(oldIndex)
+    override fun remove(note: Note) {
+        GlobalScope.launch {
+            hold.waitFor()
+            DatabaseStore.getAccessObject(context).remove(note);
+        }.invokeOnCompletion {
+            val oldIndex = notes.indexOf(note)
+            notes.minusAssign(note)
+            runOnMainThread {
+                notifyItemRemoved(oldIndex)
+            }
         }
     }
 
@@ -92,6 +99,8 @@ class SimpleNoteAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHo
             override fun isItemViewSwipeEnabled() = true
         }).attachToRecyclerView(recyclerView);
     }
+
+    override fun bindToTabLayout(tabLayout: TabLayout) = Unit
 
     override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
         holder.item.setup(notes[position].title, notes[position].content);
@@ -138,10 +147,12 @@ class SimpleNoteAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHo
                     runOnMainThread { notifyItemChanged(holder.adapterPosition) }
                 }
             }
-            editDialog.setButton(Dialog.BUTTON_NEUTRAL, R.string.title_dialog_select_color.fromStringRes(context)) {dialog2, which2 ->
-                val dialog = object :
-                        android.app.AlertDialog(context, ThemeOverride.AlertDialog().getTheme(
-                                context)) {}
+            editDialog.setButton(Dialog.BUTTON_NEUTRAL,
+                                 R.string.title_dialog_select_color.fromStringRes(
+                                         context)) { dialog2, which2 ->
+                val dialog = object : android.app.AlertDialog(context,
+                                                              ThemeOverride.AlertDialog().getTheme(
+                                                                      context)) {}
                 dialog.setView(ChromaView(notes[holder.adapterPosition].colour, ColorMode.ARGB,
                                           context).apply {
                     id = R.id.color_view
@@ -150,8 +161,12 @@ class SimpleNoteAdapter(val context: Context) : RecyclerView.Adapter<NotesViewHo
                 dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
                         context)) { dialogInterface, which ->
                     GlobalScope.launch {
-                        DatabaseStore.getAccessObject(context).setColor(notes[holder.adapterPosition].id, dialog.findViewById<ChromaView>(R.id.color_view).currentColor)
-                        notes[holder.adapterPosition].colour = dialog.findViewById<ChromaView>(R.id.color_view).currentColor
+                        DatabaseStore.getAccessObject(context)
+                                .setColor(notes[holder.adapterPosition].id,
+                                          dialog.findViewById<ChromaView>(
+                                                  R.id.color_view).currentColor)
+                        notes[holder.adapterPosition].colour =
+                                dialog.findViewById<ChromaView>(R.id.color_view).currentColor
                     }.invokeOnCompletion {
                         runOnMainThread {
                             notifyItemChanged(holder.adapterPosition)

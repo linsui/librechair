@@ -45,7 +45,7 @@ import me.priyesh.chroma.ColorMode
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
-class NotesAdapter(val context: Context, savedInstanceColor: Int = context.getColorEngineAccent()) : RecyclerView.Adapter<NotesViewHolder>() {
+open class NotesAdapter(open val context: Context, savedInstanceColor: Int = context.getColorEngineAccent()) : RecyclerView.Adapter<NotesViewHolder>() {
     private lateinit var allNotes: MutableList<Note>
     private val notes: List<Note>
         get() = allNotes.filter { it.colour == currentColor }
@@ -94,7 +94,7 @@ class NotesAdapter(val context: Context, savedInstanceColor: Int = context.getCo
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
     override fun getItemCount() = if (::allNotes.isInitialized && ::tabNameMap.isInitialized) notes.size else 0
 
-    fun bindToTabLayout(tabLayout: TabLayout) {
+    open fun bindToTabLayout(tabLayout: TabLayout) {
         this.tabLayout = tabLayout
         GlobalScope.launch {
             hold.waitFor()
@@ -184,7 +184,7 @@ class NotesAdapter(val context: Context, savedInstanceColor: Int = context.getCo
         it.colour
     }.sorted()).distinct()
 
-    fun add(note: Note) {
+    open fun add(note: Note) {
         val oldColors = getColorList()
         GlobalScope.launch {
             hold.waitFor()
@@ -224,7 +224,7 @@ class NotesAdapter(val context: Context, savedInstanceColor: Int = context.getCo
         }
     }
 
-    fun remove(note: Note) {
+    open fun remove(note: Note) {
         val oldColors = getColorList()
         GlobalScope.launch {
             hold.waitFor()

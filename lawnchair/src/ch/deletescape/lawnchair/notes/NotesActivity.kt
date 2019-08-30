@@ -22,10 +22,12 @@ package ch.deletescape.lawnchair.notes
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TabLayout
+import android.support.v7.widget.ActionMenuView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import ch.deletescape.lawnchair.duplicateAndSetColour
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.getColorAttr
@@ -40,18 +42,55 @@ import java.io.Serializable
 class NotesActivity : SettingsBaseActivity() {
     val recycler by lazy { findViewById(R.id.notes_recycler) as RecyclerView }
     val tabLayout by lazy { findViewById(R.id.note_tabs) as TabLayout }
-    val adapter by lazy { NotesAdapter(this) }
+    lateinit var adapter: NotesAdapter
+    var useSimpleNotesAdapter: Boolean = false
+
     lateinit var addItem: MenuItem
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
+        d("onCreate: instance state is $savedInstanceState")
+        useSimpleNotesAdapter = savedInstanceState?.getBoolean("vertical_view") == true
+        if (useSimpleNotesAdapter) {
+            adapter = SimpleNoteAdapter(this)
+            tabLayout.visibility = View.GONE
+        } else {
+            adapter = NotesAdapter(this)
+            tabLayout.visibility = View.VISIBLE
+        }
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
         adapter.currentColor = savedInstanceState?.getInt("persist_color") ?: getColorEngineAccent()
         adapter.bindToTabLayout(tabLayout)
+        var toolbarMenuView: ActionMenuView? = null
+        val count = toolbar.getChildCount()
+        for (i in 0 until count) {
+            val child = toolbar.getChildAt(i)
+            if (child is ActionMenuView) {
+                toolbarMenuView = child
+                break
+            }
+        }
+        if (toolbarMenuView != null) {
+            toolbarMenuView.overflowIcon?.setTint(adapter.currentColor)
+        }
         adapter.onTabChangeListeners.add {
             if (::addItem.isInitialized) {
                 addItem.icon = addItem.icon.duplicateAndSetColour(it)
+            }
+            var menuView: ActionMenuView? = null
+            val count = toolbar.getChildCount()
+            for (i in 0 until count) {
+                val child = toolbar.getChildAt(i)
+                if (child is ActionMenuView) {
+                    menuView = child
+                    break
+                }
+            }
+            if (menuView != null) {
+                menuView.overflowIcon?.setTint(it)
             }
         }
     }
@@ -70,6 +109,12 @@ class NotesActivity : SettingsBaseActivity() {
                 true
             }
         }
+        menu.add(STYLE_GROUP, Menu.NONE, Menu.NONE, R.string.title_menu_item_note_style).setOnMenuItemClickListener { item: MenuItem ->
+            useSimpleNotesAdapter = useSimpleNotesAdapter.not()
+            recreate()
+            true
+        }.setChecked(useSimpleNotesAdapter)
+        menu.setGroupCheckable(STYLE_GROUP, true, false)
         return true
     }
 
@@ -83,7 +128,12 @@ class NotesActivity : SettingsBaseActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         outState.putInt("persist_color", adapter.currentColor)
+        outState.putBoolean("vertical_view", useSimpleNotesAdapter)
+        super.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        const val STYLE_GROUP = 2;
     }
 }

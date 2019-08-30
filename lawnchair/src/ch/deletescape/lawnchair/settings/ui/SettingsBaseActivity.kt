@@ -54,6 +54,9 @@ open class SettingsBaseActivity : AppCompatActivity(), ColorEngine.OnColorChange
 
     private val fromSettings by lazy { intent.getBooleanExtra(EXTRA_FROM_SETTINGS, false) }
 
+    protected val toolbar
+        get() = findViewById<Toolbar>(R.id.toolbar)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         (layoutInflater as LawnchairLayoutInflater).installFactory(delegate)
         themeOverride = ThemeOverride(themeSet, this)
