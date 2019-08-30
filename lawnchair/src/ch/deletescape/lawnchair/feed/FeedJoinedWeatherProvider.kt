@@ -137,12 +137,13 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                viewTreeObserver.addOnGlobalLayoutListener {
+                                                viewTreeObserver.addOnPreDrawListener {
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
                                                                 dailyLayout.also {it.measure(
                                                                         View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)}.width, WRAP_CONTENT)
                                                     }
+                                                    true
                                                 }
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
