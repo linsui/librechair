@@ -49,54 +49,56 @@ class MainFeedController(val context: Context) {
 
     companion object {
         val substitutions =
-                mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to FeedWeatherStatsProvider::class.java.name)
+                mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to FeedWeatherStatsProvider::class.qualifiedName)
 
         fun getDisplayName(provider: FeedProviderContainer, context: Context): String {
             return when {
                 provider.name != null -> provider.name!!
                 else -> when (provider.clazz) {
-                    CalendarEventProvider::class.java.name -> context.getString(
+                    CalendarEventProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_calendar)
-                    FeedWeatherStatsProvider::class.java.name -> context.getString(
+                    FeedWeatherStatsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_weather_stats)
-                    FeedForecastProvider::class.java.name -> context.getString(
+                    FeedForecastProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_forecast)
-                    FeedDailyForecastProvider::class.java.name -> context.getString(
+                    FeedDailyForecastProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_daily_forecast)
-                    RemoteFeedProvider::class.java.name -> context.getString(
+                    RemoteFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_remote_feeds)
-                    WikipediaNewsProvider::class.java.name -> context.getString(
+                    WikipediaNewsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news)
-                    WikipediaFunFactsProvider::class.java.name -> context.getString(
+                    WikipediaFunFactsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_fun_facts)
-                    WikinewsFeedProvider::class.java.name -> context.getString(
+                    WikinewsFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikinews)
-                    TheGuardianFeedProvider::class.java.name -> context.getString(
+                    TheGuardianFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_the_guardian)
-                    BBCFeedProvider::class.java.name -> context.getString(
+                    BBCFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_bbc)
-                    GSyndicationFeedProvider::class.java.name -> context.getString(
+                    GSyndicationFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_google_news)
-                    CustomizableRSSProvider::class.java.name -> context.getString(
+                    CustomizableRSSProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_customizable_rss)
-                    DeviceStateProvider::class.java.name -> R.string.title_feed_provider_device_state.fromStringRes(
+                    DeviceStateProvider::class.qualifiedName -> R.string.title_feed_provider_device_state.fromStringRes(
                             context)
-                    FeedWidgetsProvider::class.java.name -> context.getString(
+                    FeedWidgetsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_widgets)
-                    DailySummaryFeedProvider::class.java.name -> R.string.title_feed_provider_daily_summary.fromStringRes(
+                    DailySummaryFeedProvider::class.qualifiedName -> R.string.title_feed_provider_daily_summary.fromStringRes(
                             context)
-                    PredictedAppsProvider::class.java.name -> R.string.title_card_suggested_apps.fromStringRes(
+                    PredictedAppsProvider::class.qualifiedName -> R.string.title_card_suggested_apps.fromStringRes(
                             context)
-                    WebApplicationsProvider::class.java.name -> context.getString(
+                    WebApplicationsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_web_applications)
-                    NoteListProvider::class.java.name -> context.getString(
+                    NoteListProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_note_list)
-                    AlarmEventProvider::class.java.name -> R.string.resuable_text_alarm.fromStringRes(
+                    AlarmEventProvider::class.qualifiedName -> R.string.resuable_text_alarm.fromStringRes(
                             context)
-                    FeedJoinedWeatherProvider::class.java.name -> context.getString(
+                    FeedJoinedWeatherProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_joined_weather)
-                    WeatherBarFeedProvider::class.java.name -> context.getString(
+                    WeatherBarFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_weather)
+                    TheVergeFeedProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_the_verge)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -119,26 +121,27 @@ class MainFeedController(val context: Context) {
             if (!calledFromPrefs) {
                 migrateToContainerSystem(context)
             }
-            return listOf(CalendarEventProvider::class.java.name,
-                          FeedWeatherStatsProvider::class.java.name,
+            return listOf(CalendarEventProvider::class.qualifiedName,
+                          FeedWeatherStatsProvider::class.qualifiedName,
                           FeedJoinedWeatherProvider::class.qualifiedName,
-                          FeedDailyForecastProvider::class.java.name,
-                          FeedForecastProvider::class.java.name,
-                          NoteListProvider::class.java.name,
-                          WeatherBarFeedProvider::class.java.name,
-                          WikipediaNewsProvider::class.java.name,
-                          WikipediaFunFactsProvider::class.java.name,
-                          WikinewsFeedProvider::class.java.name,
-                          TheGuardianFeedProvider::class.java.name,
-                          BBCFeedProvider::class.java.name,
-                          CustomizableRSSProvider::class.java.name,
-                          GSyndicationFeedProvider::class.java.name,
-                          DeviceStateProvider::class.java.name,
-                          FeedWidgetsProvider::class.java.name,
-                          DailySummaryFeedProvider::class.java.name,
-                          PredictedAppsProvider::class.java.name,
-                          WebApplicationsProvider::class.java.name,
-                          AlarmEventProvider::class.java.name).map {
+                          FeedDailyForecastProvider::class.qualifiedName,
+                          FeedForecastProvider::class.qualifiedName,
+                          NoteListProvider::class.qualifiedName,
+                          WeatherBarFeedProvider::class.qualifiedName,
+                          WikipediaNewsProvider::class.qualifiedName,
+                          WikipediaFunFactsProvider::class.qualifiedName,
+                          WikinewsFeedProvider::class.qualifiedName,
+                          TheGuardianFeedProvider::class.qualifiedName,
+                          BBCFeedProvider::class.qualifiedName,
+                          TheVergeFeedProvider::class.qualifiedName,
+                          CustomizableRSSProvider::class.qualifiedName,
+                          GSyndicationFeedProvider::class.qualifiedName,
+                          DeviceStateProvider::class.qualifiedName,
+                          FeedWidgetsProvider::class.qualifiedName,
+                          DailySummaryFeedProvider::class.qualifiedName,
+                          PredictedAppsProvider::class.qualifiedName,
+                          WebApplicationsProvider::class.qualifiedName,
+                          AlarmEventProvider::class.qualifiedName).map {
                 FeedProviderContainer(it, null)
             } + RemoteFeedProvider.allProviders(context).map {
                 FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
