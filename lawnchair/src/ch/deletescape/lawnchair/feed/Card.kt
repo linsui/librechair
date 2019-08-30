@@ -40,6 +40,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
         get() = internalCategory
     var actionName: String? = null
     var actionListener: ((c: Context) -> Unit)? = null
+    var onRemoveListener: (() -> Unit)? = null
 
     constructor(icon: Drawable?, title: String?,
                 inflateHelper: (parent: View, _: Unit /* This is used to resolve ambiguities in Java and is unused */) -> View,

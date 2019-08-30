@@ -40,13 +40,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ImageProvider(c: Context?) : FeedProvider(c) {
-    val images = mutableListOf<Bitmap>()
+    val images = mutableMapOf<Bitmap, String>()
 
     init {
         GlobalScope.launch {
             ImageDatabase.getInstance(context).apply {
                 access().getAll().forEach {
-                    images.add(ImageStore.getInstance(context).getBitmap(it.id))
+                    images += ImageStore.getInstance(context).getBitmap(it.id) to it.id
                 }
             }
         }
@@ -89,7 +89,7 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                                                                                               "normal"))
                                                                     }.invokeOnCompletion {
                                                                         runOnMainThread {
-                                                                            images += ImageStore.getInstance(context).getBitmap(id)
+                                                                            images += ImageStore.getInstance(context).getBitmap(id) to id
                                                                             if (feed != null) {
                                                                                 feed.refresh(10)
                                                                             }
@@ -103,14 +103,19 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                 }
             }
         }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                           "manageNotes".hashCode())) + images.map {
+                           "manageNotes".hashCode())) + images.keys.map {
             Card(null, "", { parent, _ ->
                 ImageView(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                              ViewGroup.LayoutParams.MATCH_PARENT)
                     setImageBitmap(it)
                 }
-            }, Card.RAISE or Card.NO_HEADER, "", it.hashCode())
+            }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
+                canHide = true
+                onRemoveListener = {
+                    ImageStore.getInstance(context).remove(images[it]!!)
+                }
+            }
         }
     }
 }

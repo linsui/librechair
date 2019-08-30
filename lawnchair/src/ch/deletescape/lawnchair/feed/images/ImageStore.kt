@@ -56,6 +56,11 @@ class ImageStore private constructor(val context: Context) {
         return cache[id] ?: BitmapFactory.decodeFile(File(fileDir, "$[$id].png").path)
     }
 
+    fun remove(id: String) {
+        cache.remove(id)
+        File(fileDir, "$[$id].png").delete()
+    }
+
     companion object : SingletonHolder<ImageStore, Context>(::ImageStore) {
         const val FILE_DIR = "feed_image_store"
     }
