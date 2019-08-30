@@ -359,6 +359,8 @@ class LawnchairPreferences(val context: Context) :
     val drawerTextScale by FloatPref("pref_allAppsIconTextScale", 1f, recreate)
     val searchHiddenApps by BooleanPref(DefaultAppSearchAlgorithm.SEARCH_HIDDEN_APPS, false)
 
+    var noteVerticalDisplay by BooleanPref("pref_vertical_note_adapter", false);
+
     // Dev
     var developerOptionsEnabled by BooleanPref("pref_showDevOptions", false, doNothing)
     private var debugMenuKey by StringPref("pref_debugMenuKey", "", doNothing)

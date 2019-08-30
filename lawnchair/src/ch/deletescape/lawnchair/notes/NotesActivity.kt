@@ -28,10 +28,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import ch.deletescape.lawnchair.duplicateAndSetColour
-import ch.deletescape.lawnchair.fromDrawableRes
-import ch.deletescape.lawnchair.getColorAttr
-import ch.deletescape.lawnchair.getColorEngineAccent
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -44,15 +41,15 @@ class NotesActivity : SettingsBaseActivity() {
     val tabLayout by lazy { findViewById(R.id.note_tabs) as TabLayout }
     lateinit var adapter: NotesAdapter
     var useSimpleNotesAdapter: Boolean = false
-
     lateinit var addItem: MenuItem
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notes)
         d("onCreate: instance state is $savedInstanceState")
-        useSimpleNotesAdapter = savedInstanceState?.getBoolean("vertical_view") == true
+        useSimpleNotesAdapter = savedInstanceState?.getBoolean(
+                "vertical_view") == true || (lawnchairPrefs.noteVerticalDisplay && savedInstanceState?.containsKey(
+                "vertical_view") != true)
+        lawnchairPrefs.noteVerticalDisplay = useSimpleNotesAdapter
         if (useSimpleNotesAdapter) {
             adapter = SimpleNoteAdapter(this)
             tabLayout.visibility = View.GONE
@@ -103,17 +100,19 @@ class NotesActivity : SettingsBaseActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             setOnMenuItemClickListener {
                 startActivityForResult(
-                        Intent(this@NotesActivity, NewNoteActivity::class.java)
-                                .putExtra("current_color", adapter.currentColor)
-                                .putExtra("color_list", adapter.getColorList().toMutableList() as Serializable), 0)
+                        Intent(this@NotesActivity, NewNoteActivity::class.java).putExtra(
+                                "current_color", adapter.currentColor).putExtra("color_list",
+                                                                                adapter.getColorList().toMutableList() as Serializable),
+                        0)
                 true
             }
         }
-        menu.add(STYLE_GROUP, Menu.NONE, Menu.NONE, R.string.title_menu_item_note_style).setOnMenuItemClickListener { item: MenuItem ->
-            useSimpleNotesAdapter = useSimpleNotesAdapter.not()
-            recreate()
-            true
-        }.setChecked(useSimpleNotesAdapter)
+        menu.add(STYLE_GROUP, Menu.NONE, Menu.NONE, R.string.title_menu_item_note_style)
+                .setOnMenuItemClickListener { item: MenuItem ->
+                    useSimpleNotesAdapter = useSimpleNotesAdapter.not()
+                    recreate()
+                    true
+                }.setChecked(useSimpleNotesAdapter)
         menu.setGroupCheckable(STYLE_GROUP, true, false)
         return true
     }
