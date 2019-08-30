@@ -44,7 +44,7 @@ public class CustomTabbingController extends TabController {
 
     @Override
     public List<Item> getAllTabs() {
-        List<Item> tabs = Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs().stream()
+        List<Item> tabs = Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs().getAll().stream()
                 .map(it -> new Item(ClipartCache.INSTANCE.resolveDrawable(it.iconToken), it.name))
                 .collect(
                         Collectors.toList());
@@ -60,7 +60,7 @@ public class CustomTabbingController extends TabController {
             return Collections.singletonMap(null, providers);
         } else {
             Map<Item, List<FeedProvider>> result = new LinkedHashMap<>();
-            for (CustomTab tab : Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs()) {
+            for (CustomTab tab : Utilities.getLawnchairPrefs(getContext()).getFeedCustomTabs().getAll()) {
                 List<FeedProvider> sorted = providers.stream()
                         .filter(it -> Arrays.asList(tab.providers)
                                 .contains(it.getContainer())).collect(

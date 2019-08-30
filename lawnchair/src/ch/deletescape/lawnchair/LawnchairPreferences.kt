@@ -438,7 +438,7 @@ class LawnchairPreferences(val context: Context) :
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
-    var feedCustomTabs by object :
+    var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
                 val providerList = MainFeedController.getFeedProviders(context, true)
                 return@run listOf(CustomTab().apply {
@@ -490,17 +490,6 @@ class LawnchairPreferences(val context: Context) :
                                                     ::restartOverlay)
 
     var showVerticalDailyForecast by BooleanPref("pref_show_vertical_daily_forecast", false, ::restartOverlay)
-
-    var feedNotes by object :
-            MutableListPref<Note>(sharedPrefs, "pref_feed_cards", ::restartOverlay, emptyList()) {
-        override fun unflattenValue(value: String): Note {
-            return Gson().fromJson(value, Note::class.java)
-        }
-
-        override fun flattenValue(value: Note): String {
-            return Gson().toJson(value)
-        }
-    }
     val feedTabsOnBottom by BooleanPref("pref_feed_tabs_on_bottom", false, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)

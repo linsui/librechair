@@ -178,9 +178,6 @@
         <ch.deletescape.lawnchair.preferences.WebApplicationsPreference
             android:key="pref_feed_web_applications"
             android:title="@string/title_pref_feed_web_applications" />
-        <ch.deletescape.lawnchair.preferences.NotesPreference
-            android:key="pref_feed_notes"
-            android:title="@string/title_pref_feed_notes" />
         <ch.deletescape.lawnchair.preferences.LocaleOverridePreference
             android:key="pref_override_locale"
             android:title="@string/title_pref_override_locale" />

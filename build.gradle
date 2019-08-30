@@ -18,7 +18,7 @@
 import org.gradle.api.tasks.wrapper.Wrapper.DistributionType
 
 buildscript {
-    ext.kotlin_version = '1.3.11'
+    ext.kotlin_version = '1.3.50'
     repositories {
         google()
         jcenter()
@@ -69,6 +69,7 @@ def isPublicBuild = System.getenv("CI_BUILD") == "true" && System.getenv("DRONE_
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.protobuf'
 
 android {
@@ -299,9 +300,6 @@ android {
     }
 
     gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs.add('-Xbootclasspath/p:lawnchair/libs/framework.jar')
-        }
     }
 }
 
@@ -338,6 +336,8 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     implementation 'info.bliki.wiki:bliki-core:3.1.0'
     implementation 'commons-io:commons-io:2.6'
+
+    compileOnly fileTree(dir: 'lawnchair/libs', include: '*.jar')
 
     implementation 'io.github.java-diff-utils:java-diff-utils:4.0'
 
@@ -431,4 +431,3 @@ protobuf {
 }
 
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'

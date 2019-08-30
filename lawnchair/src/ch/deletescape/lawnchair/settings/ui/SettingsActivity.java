@@ -82,7 +82,6 @@ import ch.deletescape.lawnchair.preferences.CustomizableTabsPreference;
 import ch.deletescape.lawnchair.preferences.FeedProvidersFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersPreference;
 import ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference;
-import ch.deletescape.lawnchair.preferences.NotesPreference;
 import ch.deletescape.lawnchair.preferences.RSSSourcesFragment;
 import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
@@ -855,8 +854,6 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = TimePickerFragment.Companion.newInstance(preference.getKey());
             } else if (preference instanceof WebApplicationsPreference) {
                 f = WebApplicationsPreference.Fragment.Companion.make();
-            } else if (preference instanceof NotesPreference) {
-                f = NotesPreference.Fragment.Companion.make();
             } else if (preference instanceof CustomizableTabsPreference) {
                 f = CustomizableTabsPreference.Fragment.Companion.make();
             } else {
