@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.res.Resources
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
+import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -32,7 +33,7 @@ import com.android.launcher3.R
 
 @SuppressLint("StaticFieldLeak")
 private var theController: MainFeedController? = null
-public var METADATA_CONTROLLER_PACKAGE = "special::controller_package";
+const val METADATA_CONTROLLER_PACKAGE = "special::controller_package";
 fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
         theController = MainFeedController(c)
@@ -99,6 +100,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_weather)
                     TheVergeFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_the_verge)
+                    ImageProvider::class.qualifiedName -> context.getString(
+                                                R.string.title_feed_provider_images)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -126,6 +129,7 @@ class MainFeedController(val context: Context) {
                           FeedJoinedWeatherProvider::class.qualifiedName,
                           FeedDailyForecastProvider::class.qualifiedName,
                           FeedForecastProvider::class.qualifiedName,
+                          ImageProvider::class.qualifiedName,
                           NoteListProvider::class.qualifiedName,
                           WeatherBarFeedProvider::class.qualifiedName,
                           WikipediaNewsProvider::class.qualifiedName,

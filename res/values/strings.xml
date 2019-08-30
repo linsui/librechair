@@ -607,4 +607,5 @@
     <string name="title_card_edit_notes">Edit notes</string>
     <string name="title_menu_item_note_style">Use vertical view</string>
     <string name="title_feed_provider_the_verge">The Verge</string>
+    <string name="title_feed_provider_images">Images</string>
 </resources>

@@ -22,7 +22,7 @@ import ch.deletescape.lawnchair.ensureOnMainThread
 import ch.deletescape.lawnchair.useApplicationContext
 
 // Source: https://medium.com/@BladeCoder/kotlin-singletons-with-argument-194ef06edd9e
-open class SingletonHolder<out T, in A>(creator: (A) -> T) {
+open class  SingletonHolder<out T, in A>(creator: (A) -> T) {
     private var creator: ((A) -> T)? = creator
     @Volatile
     private var instance: T? = null
