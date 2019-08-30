@@ -43,6 +43,7 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -81,7 +82,7 @@ open class LawnchairLauncher : PluginLauncher(),
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
-    var backPressedCallback: (() -> Unit)? = null
+    var providerScreens = mutableListOf<Pair<ProviderScreen, View>>()
 
     private val customLayoutInflater by lazy {
         LawnchairLayoutInflater(
@@ -228,8 +229,13 @@ open class LawnchairLauncher : PluginLauncher(),
             // Handled
             return
         }
-        if (backPressedCallback != null) {
-            backPressedCallback!!()
+        if (!providerScreens.isEmpty()) {
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            windowManager.removeView(providerScreens.last().second)
+            providerScreens.remove(providerScreens.last())
+            if (providerScreens.isEmpty()) {
+                stateManager.goToState(LauncherState.NORMAL, false)
+            }
         } else {
             super.onBackPressed()
         }

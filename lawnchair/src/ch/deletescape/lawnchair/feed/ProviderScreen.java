@@ -27,6 +27,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.ColorDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -36,10 +37,11 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
-import kotlin.Unit;
+import kotlin.Pair;
 
 public abstract class ProviderScreen extends ContextWrapper {
 
@@ -72,8 +74,10 @@ public abstract class ProviderScreen extends ContextWrapper {
                     PixelFormat.TRANSLUCENT);
             params.type = TYPE_APPLICATION;
             View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
-                    new ThemeOverride.AlertDialog().getTheme(this))));
+                    new ThemeOverride.Settings().getTheme(this))));
+            bindView(overlayView);
             overlayView.setVisibility(View.INVISIBLE);
+            overlayView.setBackground(new ColorDrawable(LawnchairUtilsKt.setAlpha(provider.getBackgroundColor(), Math.max(175, LawnchairUtilsKt.getAlpha(provider.getBackgroundColor())))));
             overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
                 overlayView.setPadding(overlayView.getPaddingLeft(),
                         overlayView.getPaddingTop() + insets.getStableInsetTop(),
@@ -99,14 +103,7 @@ public abstract class ProviderScreen extends ContextWrapper {
                 }
             });
             provider.getWindowService().addView(overlayView, params);
-            ((LawnchairLauncher) Launcher.getLauncherOrNull(provider.getContext())).setBackPressedCallback(() -> {
-                provider.getWindowService().removeView(overlayView);
-                ((LawnchairLauncher) Launcher.getLauncherOrNull(provider.getContext()))
-                        .setBackPressedCallback(null);
-                Launcher.getLauncher(provider.getContext()).getStateManager()
-                        .goToState(LauncherState.NORMAL, false);
-                return Unit.INSTANCE;
-            });
+            ((LawnchairLauncher) Launcher.getLauncher(provider.getContext())).getProviderScreens().add(new Pair<>(this, overlayView));
         } else {
             View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
                     new ThemeOverride.AlertDialog().getTheme(this))));
