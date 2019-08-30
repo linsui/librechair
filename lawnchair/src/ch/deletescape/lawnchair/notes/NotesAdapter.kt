@@ -99,6 +99,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
         GlobalScope.launch {
             hold.waitFor()
             tabLayout.post {
+                onTabChangeListeners.forEach { it(getColorList()[0] ) }
                 tabLayout.removeOnTabSelectedListener(tabSelectedListener)
                 tabLayout.removeAllTabs()
                 getColorList().forEach {

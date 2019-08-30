@@ -61,18 +61,6 @@ class NotesActivity : SettingsBaseActivity() {
         recycler.adapter = adapter
         adapter.currentColor = savedInstanceState?.getInt("persist_color") ?: getColorEngineAccent()
         adapter.bindToTabLayout(tabLayout)
-        var toolbarMenuView: ActionMenuView? = null
-        val count = toolbar.getChildCount()
-        for (i in 0 until count) {
-            val child = toolbar.getChildAt(i)
-            if (child is ActionMenuView) {
-                toolbarMenuView = child
-                break
-            }
-        }
-        if (toolbarMenuView != null) {
-            toolbarMenuView.overflowIcon?.setTint(adapter.currentColor)
-        }
         adapter.onTabChangeListeners.add {
             if (::addItem.isInitialized) {
                 addItem.icon = addItem.icon.duplicateAndSetColour(it)
