@@ -129,7 +129,7 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
         inner class Adapter : RecyclerView.Adapter<ProviderItemViewHolder>() {
             private lateinit var itemTouchHelper: ItemTouchHelper
             override fun getItemCount(): Int {
-                return context?.lawnchairPrefs?.feedCustomTabs?.getAll().size ?: 0
+                return context?.lawnchairPrefs?.feedCustomTabs?.getAll()?.size ?: 0
             }
 
             override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {

@@ -40,7 +40,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     protected var mStartState: FeedState? = null
     protected var mFromState: FeedState? = null
     protected var mToState: FeedState? = null
-    protected var mCurrentAnimation: AnimatorPlaybackController? = null
+    protected var mCurrentAnimationPlaybackController: AnimatorPlaybackController? = null
     protected var mPendingAnimation: PendingAnimation? = null
     private val mNoIntercept: Boolean = false
     private var mStartProgress: Float = 0.toFloat()
@@ -165,10 +165,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (mCurrentAnimation != null && mFromState === FeedState.OPEN) {
+        if (mCurrentAnimationPlaybackController != null && mFromState === FeedState.OPEN) {
             return false
         }
-        mDetector.setDetectableScrollConditions(swipeDirection, mCurrentAnimation != null)
+        mDetector.setDetectableScrollConditions(swipeDirection, mCurrentAnimationPlaybackController != null)
         mDetector.onTouchEvent(ev)
         return mDetector.isDraggingOrSettling
     }
@@ -195,7 +195,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         var totalShift = endShift - startShift
 
         cancelPendingAnim()
-        mCurrentAnimation = AnimatorPlaybackController
+        mCurrentAnimationPlaybackController = AnimatorPlaybackController
                 .wrap(createAnim(mToState!!, maxAccuracy), maxAccuracy) { this.clearState() }
 
         if (totalShift == 0f) {
@@ -236,26 +236,26 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         mToState = newToState
 
         mStartProgress = 0f
-        if (mCurrentAnimation != null) {
-            mCurrentAnimation!!.onCancelRunnable = null
+        if (mCurrentAnimationPlaybackController != null) {
+            mCurrentAnimationPlaybackController!!.onCancelRunnable = null
         }
 
         mProgressMultiplier = initCurrentAnimation()
-        mCurrentAnimation!!.dispatchOnStart()
+        mCurrentAnimationPlaybackController!!.dispatchOnStart()
         return true
     }
 
     override fun onDragStart(start: Boolean) {
         mStartState = mCurrentState
-        if (mCurrentAnimation == null) {
+        if (mCurrentAnimationPlaybackController == null) {
             mFromState = mStartState
             mToState = null
             cancelAnimationControllers()
             reinitCurrentAnimation(false, mDetector.wasInitialTouchPositive())
             mDisplacementShift = 0f
         } else {
-            mCurrentAnimation!!.pause()
-            mStartProgress = mCurrentAnimation!!.progressFraction
+            mCurrentAnimationPlaybackController!!.pause()
+            mStartProgress = mCurrentAnimationPlaybackController!!.progressFraction
         }
         mCanBlockFling = false
         mFlingBlockCheck.unblockFling()
@@ -288,7 +288,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     protected fun updateProgress(fraction: Float) {
-        mCurrentAnimation!!.setPlayFraction(fraction)
+        mCurrentAnimationPlaybackController!!.setPlayFraction(fraction)
     }
 
     override fun onDragEnd(velocity: Float, fling: Boolean) {
@@ -299,8 +299,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
 
         val targetState: FeedState?
-        val progress = mCurrentAnimation!!.progressFraction
-        val interpolatedProgress = mCurrentAnimation!!.interpolator.getInterpolation(progress)
+        val progress = mCurrentAnimationPlaybackController!!.progressFraction
+        val interpolatedProgress = mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
         if (fling) {
             targetState = if (java.lang.Float.compare(Math.signum(velocity), Math.signum(
                             mProgressMultiplier)) == 0) mToState
@@ -335,10 +335,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         } else {
             // Let the state manager know that the animation didn't go to the target state,
             // but don't cancel ourselves (we already clean up when the animation completes).
-            val onCancel = mCurrentAnimation!!.onCancelRunnable
-            mCurrentAnimation!!.onCancelRunnable = null
-            mCurrentAnimation!!.dispatchOnCancel()
-            mCurrentAnimation!!.onCancelRunnable = onCancel
+            val onCancel = mCurrentAnimationPlaybackController!!.onCancelRunnable
+            mCurrentAnimationPlaybackController!!.onCancelRunnable = null
+            mCurrentAnimationPlaybackController!!.dispatchOnCancel()
+            mCurrentAnimationPlaybackController!!.onCancelRunnable = onCancel
 
             endProgress = 0f
             if (progress <= 0) {
@@ -353,11 +353,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             }
         }
 
-        mCurrentAnimation!!.setEndAction { onSwipeInteractionCompleted(targetState) }
-        val anim = mCurrentAnimation!!.animationPlayer
+        mCurrentAnimationPlaybackController!!.setEndAction { onSwipeInteractionCompleted(targetState) }
+        val anim = mCurrentAnimationPlaybackController!!.animationPlayer
         anim.setFloatValues(startProgress, endProgress)
         updateSwipeCompleteAnimation(anim, duration, targetState, velocity, fling)
-        mCurrentAnimation!!.dispatchOnStart()
+        mCurrentAnimationPlaybackController!!.dispatchOnStart()
         anim.start()
     }
 
@@ -388,7 +388,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     private fun cancelAnimationControllers() {
-        mCurrentAnimation = null
+        mCurrentAnimationPlaybackController = null
         mDetector.finishedScrolling()
         mDetector.setDetectableScrollConditions(0, false)
     }

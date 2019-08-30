@@ -24,7 +24,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import ch.deletescape.lawnchair.todo.INoteProvider.Stub;
-import com.android.launcher3.Utilities;
+import java.util.Collections;
 import java.util.List;
 
 public class NoteProvider extends Service {
@@ -39,7 +39,7 @@ public class NoteProvider extends Service {
         return service != null ? service : (service = new Stub() {
             @Override
             public List<Note> getNotes() throws RemoteException {
-                return Utilities.getLawnchairPrefs(getApplicationContext()).getFeedNotes();
+                return Collections.emptyList();
             }
         });
     }

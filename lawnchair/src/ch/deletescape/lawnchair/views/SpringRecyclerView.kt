@@ -19,11 +19,11 @@ package ch.deletescape.lawnchair.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.support.v7.widget.RecyclerView
-import android.util.AttributeSet
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.support.annotation.Keep
+import android.support.v7.widget.RecyclerView
+import android.util.AttributeSet
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.getColorAccent
 import ch.deletescape.lawnchair.getColorAttr
@@ -69,7 +69,7 @@ open class SpringRecyclerView @JvmOverloads constructor(
      * Called by Android [android.view.View.onDrawScrollBars]
      */
     @Keep
-    protected fun onDrawHorizontalScrollBar(canvas: Canvas, scrollBar: Drawable, l: Int, t: Int, r: Int, b: Int) {
+    protected override fun onDrawHorizontalScrollBar(canvas: Canvas, scrollBar: Drawable, l: Int, t: Int, r: Int, b: Int) {
         springManager.withSpringNegative(canvas, shouldTranslateSelf) {
             scrollBar.setColorFilter(scrollBarColor, PorterDuff.Mode.SRC_ATOP)
             scrollBar.setBounds(l, t, r, b)
@@ -82,7 +82,7 @@ open class SpringRecyclerView @JvmOverloads constructor(
      * Called by Android [android.view.View.onDrawScrollBars]
      */
     @Keep
-    protected fun onDrawVerticalScrollBar(canvas: Canvas, scrollBar: Drawable, l: Int, t: Int, r: Int, b: Int) {
+    protected override fun onDrawVerticalScrollBar(canvas: Canvas, scrollBar: Drawable, l: Int, t: Int, r: Int, b: Int) {
         springManager.withSpringNegative(canvas, shouldTranslateSelf) {
             scrollBar.setColorFilter(scrollBarColor, PorterDuff.Mode.SRC_ATOP)
             scrollBar.setBounds(l, t, r, b)
