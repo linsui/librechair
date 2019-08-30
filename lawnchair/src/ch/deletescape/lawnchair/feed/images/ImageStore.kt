@@ -26,6 +26,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import ch.deletescape.lawnchair.util.LaunchpadActivity
 import ch.deletescape.lawnchair.util.SingletonHolder
+import ch.deletescape.lawnchair.util.extensions.d
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -35,15 +38,22 @@ class ImageStore private constructor(val context: Context) {
     val fileDir = File(context.filesDir, FILE_DIR)
     val cache: MutableMap<String, Bitmap> = mutableMapOf()
 
+    init {
+        if (!fileDir.exists()) {
+            fileDir.mkdirs()
+        }
+    }
+
     fun storeBitmap(bitmap: Bitmap): String {
         val id = UUID.randomUUID();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(File(fileDir, "$$$id$$.png")))
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100,
+                        FileOutputStream(File(fileDir, "$[$id].png")))
         cache += id.toString() to bitmap
         return id.toString()
     }
 
     fun getBitmap(id: String): Bitmap {
-        return cache[id] ?: BitmapFactory.decodeFile(File(fileDir, "$$$id$$.png").path)
+        return cache[id] ?: BitmapFactory.decodeFile(File(fileDir, "$[$id].png").path)
     }
 
     companion object : SingletonHolder<ImageStore, Context>(::ImageStore) {
@@ -51,28 +61,39 @@ class ImageStore private constructor(val context: Context) {
     }
 
     class ImageStoreActivity : LaunchpadActivity() {
-
         companion object {
-            const val IMAGE_UUID = "ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity.IMAGE_UUID"
+            const val IMAGE_UUID =
+                    "ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity.IMAGE_UUID"
         }
 
-        override fun getActivity(): Intent = Intent ().apply {
+        override fun getActivity(): Intent = Intent().apply {
             type = "image/*";
             action = Intent.ACTION_GET_CONTENT;
         }
 
         override fun onResult(resultCode: Int, data: Intent?) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                val imageStream = contentResolver.openInputStream(intent.data!!)
-                try {
-                    setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID, ImageStore.getInstance(this).storeBitmap(BitmapFactory.decodeStream(imageStream))))
-                } catch (e: IOException) {
-                    setResult(Activity.RESULT_CANCELED)
+            d("onResult: $resultCode, $data")
+            if (data != null && data.data != null) {
+                GlobalScope.launch {
+                    val imageStream = contentResolver.openInputStream(data.data!!)
+                    try {
+                        setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID,
+                                                                        ImageStore.getInstance(
+                                                                                this@ImageStoreActivity).storeBitmap(
+                                                                                BitmapFactory.decodeStream(
+                                                                                        imageStream)).also {
+                                                                            d("onResult: image ID is $it")
+                                                                        }))
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        setResult(Activity.RESULT_CANCELED)
+                    }
+                    finish()
                 }
             } else {
                 setResult(Activity.RESULT_CANCELED)
+                finish()
             }
-            finish()
         }
     }
 }

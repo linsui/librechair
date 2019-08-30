@@ -532,7 +532,10 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        d("onActivityResult: image selector requests are $imageResuestCallbacks")
+
         super.onActivityResult(requestCode, resultCode, data)
+
         if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get().not() } && resultCode == Activity.RESULT_OK) {
             queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
                 it.second.let { callback ->
@@ -567,6 +570,7 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
 
         if (imageResuestCallbacks.containsKey(requestCode)) {
+            d("onActivityResult: image selector activity returned with data ${data?.extras}, $data")
             if (data == null) {
                 imageResuestCallbacks[requestCode]!!(null)
             } else if (data.hasExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)) {

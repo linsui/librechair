@@ -28,13 +28,13 @@ import android.os.IBinder
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.IImageSelector
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.runOnMainThread
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -45,17 +45,6 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
     init {
         GlobalScope.launch {
             ImageDatabase.getInstance(context).apply {
-                this.invalidationTracker.addObserver(object : InvalidationTracker.Observer("image") {
-                    override fun onInvalidated(tables: MutableSet<String>) {
-                        if (tables.contains("image")) {
-                            GlobalScope.launch {
-                                ImageDatabase.getInstance(context).access().getAll().forEach {
-                                    images.add(ImageStore.getInstance(context).getBitmap(it.id))
-                                }
-                            }
-                        }
-                    }
-                })
                 access().getAll().forEach {
                     images.add(ImageStore.getInstance(context).getBitmap(it.id))
                 }
@@ -91,6 +80,7 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                                                                              IImageStoreCallback.Stub() {
                                                             override fun onImageRetrieved(
                                                                     id: String?) {
+                                                                d("onImageRetrieved: retrieved image with uuid $id")
                                                                 if (id != null) {
                                                                     GlobalScope.launch {
                                                                         ImageDatabase.getInstance(
@@ -99,6 +89,7 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                                                                                               "normal"))
                                                                     }.invokeOnCompletion {
                                                                         runOnMainThread {
+                                                                            images += ImageStore.getInstance(context).getBitmap(id)
                                                                             if (feed != null) {
                                                                                 feed.refresh(10)
                                                                             }
