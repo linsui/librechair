@@ -73,20 +73,22 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                     Color.parseColor("#0F9D58"))
 
     init {
-        GlobalScope.launch {
-            allNotes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
-            tabNameMap = DatabaseStore.getTabNameDbInstance(context).access().all
-                    .map { it.color to it.name }.toMap().toMutableMap().also {
-                        getColorList().forEach { color ->
-                            if (!it.containsKey(color)) {
-                                it.put(color, "")
+        if (this !is SimpleNoteAdapter) {
+            GlobalScope.launch {
+                allNotes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
+                tabNameMap = DatabaseStore.getTabNameDbInstance(context).access().all
+                        .map { it.color to it.name }.toMap().toMutableMap().also {
+                            getColorList().forEach { color ->
+                                if (!it.containsKey(color)) {
+                                    it.put(color, "")
+                                }
                             }
                         }
-                    }
-        }.invokeOnCompletion {
-            runOnMainThread {
-                notifyDataSetChanged()
-                hold.trigger()
+            }.invokeOnCompletion {
+                runOnMainThread {
+                    notifyDataSetChanged()
+                    hold.trigger()
+                }
             }
         }
     }
