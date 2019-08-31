@@ -109,6 +109,7 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                              ViewGroup.LayoutParams.MATCH_PARENT)
                     setImageBitmap(it)
+                    scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
                 canHide = true
