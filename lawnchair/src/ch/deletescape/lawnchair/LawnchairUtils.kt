@@ -70,6 +70,7 @@ import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.util.extensions.e
 import ch.deletescape.lawnchair.util.hasFlag
 import com.android.launcher3.*
 import com.android.launcher3.compat.LauncherAppsCompat
@@ -340,6 +341,10 @@ fun runOnUiWorkerThread(r: () -> Unit) {
 fun runOnNewThread(r: () -> Unit) {
     GlobalScope.launch {
         r()
+    }.invokeOnCompletion {
+        if (it != null) {
+            e("", it)
+        }
     }
 }
 
