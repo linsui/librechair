@@ -25,7 +25,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Vibrator
-import android.support.design.widget.Snackbar
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
@@ -229,6 +228,8 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));
                             notifyItemRemoved(holder.adapterPosition)
+                            cards[holder.adapterPosition].onRemoveListener?.invoke()
+                            /*
                             Snackbar.make(holder.itemView, R.string.item_removed,
                                           Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
                                 runOnNewThread {
@@ -242,6 +243,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                     }
                                 }
                             }.show()
+                             */
                         }
                     }
                     return@setOnTouchListener true
