@@ -36,6 +36,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         get() = internalCategory
     var actionName: String? = null
     var actionOnCardActionSelectedListener: RemoteOnCardActionSelectedListener? = null
+    var onRemoveListener: OnRemoveListener? = null
 
     constructor(parcel: Parcel) : this(parcel.readParcelable(Bitmap::class.java.classLoader),
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
@@ -45,6 +46,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         actionName = parcel.readString()
         actionOnCardActionSelectedListener =
                 RemoteOnCardActionSelectedListener.Stub.asInterface(parcel.readStrongBinder())
+        onRemoveListener = OnRemoveListener.Stub.asInterface(parcel.readStrongBinder())
     }
 
     constructor(icon: Bitmap?, title: String?, inflateHelper: RemoteInflateHelper, type: Int,
@@ -80,6 +82,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeStringList(internalCategory)
         parcel.writeString(actionName)
         parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
+        parcel.writeStrongBinder(onRemoveListener?.asBinder())
     }
 
     override fun describeContents(): Int {
@@ -106,6 +109,9 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
             if (actionOnCardActionSelectedListener != null && this@RemoteCard.actionName != null) {
                 actionListener = { actionOnCardActionSelectedListener?.onAction() }
                 actionName = this@RemoteCard.actionName
+            }
+            onRemoveListener = {
+                this@RemoteCard.onRemoveListener?.onRemove()
             }
         }
     }
