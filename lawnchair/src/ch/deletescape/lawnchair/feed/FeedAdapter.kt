@@ -227,8 +227,8 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                         holder.itemView.post {
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));
-                            notifyItemRemoved(holder.adapterPosition)
                             cards[holder.adapterPosition].onRemoveListener?.invoke()
+                            notifyItemRemoved(holder.adapterPosition)
                             /*
                             Snackbar.make(holder.itemView, R.string.item_removed,
                                           Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
