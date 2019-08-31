@@ -26,11 +26,8 @@ import android.content.ServiceConnection
 import android.graphics.Bitmap
 import android.os.IBinder
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import ch.deletescape.lawnchair.IImageSelector
 import ch.deletescape.lawnchair.feed.Card
-import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.runOnMainThread
@@ -39,86 +36,61 @@ import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class ImageProvider(c: Context?) : FeedProvider(c) {
-    val images = mutableMapOf<Bitmap, String>()
+class ImageProvider(c: Context?) : AbstractImageProvider<String>(c) {
+    override val images = mutableMapOf<Bitmap, String>()
+    override val headerCard: Card? = Card(null, null, { parent, _ ->
+        (parent as ViewGroup).inflate(R.layout.add_image).apply {
+            setOnClickListener {
+                context.bindService(Intent(context, ImageSelectorService::class.java),
+                                    object : ServiceConnection {
+                                        override fun onServiceDisconnected(
+                                                name: ComponentName) = {}()
+
+                                        override fun onServiceConnected(name: ComponentName,
+                                                                        service: IBinder) {
+                                            IImageSelector.Stub.asInterface(service)
+                                                    .selectImage(object :
+                                                                         IImageStoreCallback.Stub() {
+                                                        override fun onImageRetrieved(
+                                                                id: String?) {
+                                                            d("onImageRetrieved: retrieved image with uuid $id")
+                                                            if (id != null) {
+                                                                GlobalScope.launch {
+                                                                    ImageDatabase.getInstance(
+                                                                            context).access()
+                                                                            .insert(Image(id,
+                                                                                          "normal"))
+                                                                }.invokeOnCompletion {
+                                                                    runOnMainThread {
+                                                                        images += ImageStore.getInstance(context).getBitmap(id) to id
+                                                                        if (feed != null) {
+                                                                            feed.refresh(0)
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    })
+                                        }
+                                    }, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT);
+            }
+        }
+    }, Card.RAISE or Card.NO_HEADER, "nosort, top",
+                                          "manageNotes".hashCode())
+    override val onRemoveListener: (id: String) -> Unit
+        get() = {
+            d("(id: String) -> Unit: removing image with id $it")
+            ImageStore.getInstance(context).remove(it)
+            GlobalScope.launch {
+                ImageDatabase.getInstance(context).access().remove(it)
+            }
+        }
 
     init {
         GlobalScope.launch {
             ImageDatabase.getInstance(context).apply {
                 access().getAll().forEach {
                     images += ImageStore.getInstance(context).getBitmap(it.id) to it.id
-                }
-            }
-        }
-    }
-
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
-
-    override fun getCards(): List<Card> {
-        return listOf(Card(null, null, { parent, _ ->
-            (parent as ViewGroup).inflate(R.layout.add_image).apply {
-                setOnClickListener {
-                    context.bindService(Intent(context, ImageSelectorService::class.java),
-                                        object : ServiceConnection {
-                                            override fun onServiceDisconnected(
-                                                    name: ComponentName) = {}()
-
-                                            override fun onServiceConnected(name: ComponentName,
-                                                                            service: IBinder) {
-                                                IImageSelector.Stub.asInterface(service)
-                                                        .selectImage(object :
-                                                                             IImageStoreCallback.Stub() {
-                                                            override fun onImageRetrieved(
-                                                                    id: String?) {
-                                                                d("onImageRetrieved: retrieved image with uuid $id")
-                                                                if (id != null) {
-                                                                    GlobalScope.launch {
-                                                                        ImageDatabase.getInstance(
-                                                                                context).access()
-                                                                                .insert(Image(id,
-                                                                                              "normal"))
-                                                                    }.invokeOnCompletion {
-                                                                        runOnMainThread {
-                                                                            images += ImageStore.getInstance(context).getBitmap(id) to id
-                                                                            if (feed != null) {
-                                                                                feed.refresh(10)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        })
-                                            }
-                                        }, Context.BIND_AUTO_CREATE or Context.BIND_IMPORTANT);
-                }
-            }
-        }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                           "manageNotes".hashCode())) + images.keys.map {
-            Card(null, "", { parent, _ ->
-                ImageView(parent.context).apply {
-                    layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                             ViewGroup.LayoutParams.MATCH_PARENT)
-                    setImageBitmap(it)
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                }
-            }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
-                canHide = true
-                onRemoveListener = {
-                    images.remove(it)
-                    ImageStore.getInstance(context).remove(images[it]!!)
-                    GlobalScope.launch {
-                        ImageDatabase.getInstance(context).access().remove(images[it]!!)
-                    }
                 }
             }
         }
