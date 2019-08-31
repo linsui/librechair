@@ -28,7 +28,7 @@ import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.util.extensions.d
 
-abstract class AbstractImageProvider<Id>(c: Context?) : FeedProvider(c) {
+abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     abstract val images: MutableMap<Bitmap, Id>
     abstract val headerCard: Card?
     abstract val onRemoveListener: (id: Id) -> Unit

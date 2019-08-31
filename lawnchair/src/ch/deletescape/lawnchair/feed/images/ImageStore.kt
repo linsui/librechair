@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.images
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -35,7 +36,7 @@ import java.io.IOException
 import java.util.*
 
 class ImageStore private constructor(val context: Context) {
-    val fileDir = File(context.filesDir, FILE_DIR)
+    private val fileDir = File(context.filesDir, FILE_DIR)
     val cache: MutableMap<String, Bitmap> = mutableMapOf()
 
     init {
@@ -45,7 +46,7 @@ class ImageStore private constructor(val context: Context) {
     }
 
     fun storeBitmap(bitmap: Bitmap): String {
-        val id = UUID.randomUUID();
+        val id = UUID.randomUUID()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100,
                         FileOutputStream(File(fileDir, "$[$id].png")))
         cache += id.toString() to bitmap
@@ -65,6 +66,7 @@ class ImageStore private constructor(val context: Context) {
         const val FILE_DIR = "feed_image_store"
     }
 
+    @SuppressLint("Registered")
     class ImageStoreActivity : LaunchpadActivity() {
         companion object {
             const val IMAGE_UUID =
@@ -72,8 +74,8 @@ class ImageStore private constructor(val context: Context) {
         }
 
         override fun getActivity(): Intent = Intent().apply {
-            type = "image/*";
-            action = Intent.ACTION_GET_CONTENT;
+            type = "image/*"
+            action = Intent.ACTION_GET_CONTENT
         }
 
         override fun onResult(resultCode: Int, data: Intent?) {

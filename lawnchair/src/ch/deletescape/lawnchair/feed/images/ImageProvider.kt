@@ -36,7 +36,7 @@ import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class ImageProvider(c: Context?) : AbstractImageProvider<String>(c) {
+class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val images = mutableMapOf<Bitmap, String>()
     override val headerCard: Card? = Card(null, null, { parent, _ ->
         (parent as ViewGroup).inflate(R.layout.add_image).apply {
