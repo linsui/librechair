@@ -113,6 +113,7 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
             }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
                 canHide = true
                 onRemoveListener = {
+                    images.remove(it)
                     ImageStore.getInstance(context).remove(images[it]!!)
                 }
             }
