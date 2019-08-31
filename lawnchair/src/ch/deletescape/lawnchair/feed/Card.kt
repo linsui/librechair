@@ -35,9 +35,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
                 val type: Int, val algoFlags: String? = null,
                 val identifier: Int = title.hashCode()) {
     var canHide = false
-    private var internalCategory: List<String>? = null
-    val categories: List<String>?
-        get() = internalCategory
+    var categories: List<String>? = null
     var actionName: String? = null
     var actionListener: ((c: Context) -> Unit)? = null
     var onRemoveListener: (() -> Unit)? = null
@@ -62,7 +60,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
                 category: List<String>) : this(icon, title, inflateHelper, type, algoFlags,
                                                identifier) {
         this.canHide = canHide
-        this.internalCategory = category
+        this.categories = category
     }
 
     companion object {
@@ -78,7 +76,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     }
 
     override fun toString(): String {
-        return "Card(icon=$icon, title=$title, inflateHelper=$inflateHelper, type=$type, algoFlags=$algoFlags, identifier=$identifier, canHide=$canHide, internalCategory=$internalCategory, actionName=$actionName, actionListener=$actionListener)"
+        return "Card(icon=$icon, title=$title, inflateHelper=$inflateHelper, type=$type, algoFlags=$algoFlags, identifier=$identifier, canHide=$canHide, internalCategory=$categories, actionName=$actionName, actionListener=$actionListener)"
     }
 }
 

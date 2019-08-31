@@ -31,9 +31,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                       val type: Int, val algoFlags: String? = null,
                       val identifier: Int = title.hashCode()) : Parcelable {
     var canHide = false
-    private var internalCategory: List<String>? = null
-    val categories: List<String>?
-        get() = internalCategory
+    var categories: List<String>? = null
     var actionName: String? = null
     var actionOnCardActionSelectedListener: RemoteOnCardActionSelectedListener? = null
     var onRemoveListener: OnRemoveListener? = null
@@ -42,7 +40,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
             parcel.readStrongBinder()), parcel.readInt(), parcel.readString(), parcel.readInt()) {
         canHide = parcel.readByte() != 0.toByte()
-        internalCategory = parcel.createStringArrayList()
+        categories = parcel.createStringArrayList()
         actionName = parcel.readString()
         actionOnCardActionSelectedListener =
                 RemoteOnCardActionSelectedListener.Stub.asInterface(parcel.readStrongBinder())
@@ -60,7 +58,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                 category: List<String>) : this(icon, title, inflateHelper, type, algoFlags,
                                                identifier) {
         this.canHide = canHide
-        this.internalCategory = category
+        this.categories = category
     }
 
     object Types {
@@ -79,7 +77,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeString(algoFlags)
         parcel.writeInt(identifier)
         parcel.writeByte(if (canHide) 1 else 0)
-        parcel.writeStringList(internalCategory)
+        parcel.writeStringList(categories)
         parcel.writeString(actionName)
         parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
         parcel.writeStrongBinder(onRemoveListener?.asBinder())
@@ -105,7 +103,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                     .apply(v.context, v as ViewGroup)
         }, type, algoFlags, identifier).apply {
             canHide = this@RemoteCard.canHide
-            internalCategory = categories
+            this.categories = this@RemoteCard.categories
             if (actionOnCardActionSelectedListener != null && this@RemoteCard.actionName != null) {
                 actionListener = { actionOnCardActionSelectedListener?.onAction() }
                 actionName = this@RemoteCard.actionName
