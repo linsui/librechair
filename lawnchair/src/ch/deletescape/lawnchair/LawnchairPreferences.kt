@@ -33,6 +33,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.AlarmEventProvider
+import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -50,7 +51,6 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
-import ch.deletescape.lawnchair.todo.Note
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.*
@@ -446,7 +446,16 @@ class LawnchairPreferences(val context: Context) :
                     name = R.string.category_tools.fromStringRes(context)
                     providers = providerList.filter {
                         it.clazz.let {
-                            it == FeedWeatherStatsProvider::class.qualifiedName || it == FeedForecastProvider::class.qualifiedName || it == FeedDailyForecastProvider::class.qualifiedName || it == DailySummaryFeedProvider::class.qualifiedName || it == WikipediaFunFactsProvider::class.qualifiedName || it == NoteListProvider::class.qualifiedName || it == WebApplicationsProvider::class.qualifiedName
+                            it == FeedWeatherStatsProvider::class.qualifiedName
+                            || it == FeedForecastProvider::class.qualifiedName
+                            || it == FeedDailyForecastProvider::class.qualifiedName
+                            || it == DailySummaryFeedProvider::class.qualifiedName
+                            || it == WikipediaFunFactsProvider::class.qualifiedName
+                            || it == NoteListProvider::class.qualifiedName
+                            || it == WebApplicationsProvider::class.qualifiedName
+                            || it == FeedJoinedWeatherProvider::class.qualifiedName
+                            || it == WeatherBarFeedProvider::class.qualifiedName
+                            || ImageProvider::class.isSuperclassOf(Class.forName(it).kotlin)
                         } || it.arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY) == "tools"
                     }.toTypedArray()
                 }, CustomTab().apply {

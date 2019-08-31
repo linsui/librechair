@@ -35,7 +35,7 @@ import ch.deletescape.lawnchair.feed.WeatherBarFeedProvider;
 import ch.deletescape.lawnchair.feed.WebApplicationsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
-import ch.deletescape.lawnchair.feed.images.ImageProvider;
+import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -104,7 +104,7 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof WebApplicationsProvider
                 || it instanceof FeedJoinedWeatherProvider
                 || it instanceof WeatherBarFeedProvider
-                || it instanceof ImageProvider
+                || it instanceof AbstractImageProvider
                 || Objects
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "tools")).collect(Collectors.toList());
