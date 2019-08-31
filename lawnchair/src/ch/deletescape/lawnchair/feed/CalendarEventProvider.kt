@@ -155,8 +155,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     R.string.placeholder_empty_title) else "$title • ") + text,
                             object : Card.Companion.InflateHelper {
                                 override fun inflate(parent: ViewGroup): View {
-                                    return getCalendarFeedView(description, address, parent.context,
-                                                               parent)
+                                    return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
+                                            description, address, parent.context, parent) else View(
+                                            parent.getContext())
                                 }
                             },
                             if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE else Card.RAISE or Card.TEXT_ONLY,
