@@ -29,6 +29,9 @@ abstract class ImageDao {
     @Delete
     abstract fun remove(image: Image)
 
+    @Query("delete from image where :id like id")
+    abstract fun remove(id: String)
+
     @Insert
     abstract fun insert(image: Image)
 

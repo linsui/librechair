@@ -115,6 +115,9 @@ class ImageProvider(c: Context?) : FeedProvider(c) {
                 onRemoveListener = {
                     images.remove(it)
                     ImageStore.getInstance(context).remove(images[it]!!)
+                    GlobalScope.launch {
+                        ImageDatabase.getInstance(context).access().remove(images[it]!!)
+                    }
                 }
             }
         }
