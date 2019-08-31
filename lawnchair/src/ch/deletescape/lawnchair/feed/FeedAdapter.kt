@@ -174,7 +174,9 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                 val backupCards = cards.clone() as List<Card>
                                 holder.itemView.context.lawnchairPrefs.feedDisabledCards
                                         .add(cards[holder.adapterPosition].identifier)
-                                cards[holder.adapterPosition].onRemoveListener?.invoke()
+                                if (backupCards[holder.adapterPosition].onRemoveListener != null) {
+                                    backupCards[holder.adapterPosition].onRemoveListener!!()
+                                }
                                 runOnNewThread {
                                     cards.removeAt(holder.adapterPosition)
                                     holder.itemView.post {
@@ -222,12 +224,14 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     val backupCards = cards.clone() as List<Card>
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
                             .add(cards[holder.adapterPosition].identifier)
+                    if (backupCards[holder.adapterPosition].onRemoveListener != null) {
+                        backupCards[holder.adapterPosition].onRemoveListener!!()
+                    }
                     runOnNewThread {
                         cards.removeAt(holder.adapterPosition)
                         holder.itemView.post {
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));
-                            cards[holder.adapterPosition].onRemoveListener?.invoke()
                             notifyItemRemoved(holder.adapterPosition)
                             /*
                             Snackbar.make(holder.itemView, R.string.item_removed,

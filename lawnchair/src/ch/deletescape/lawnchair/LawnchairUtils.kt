@@ -85,6 +85,8 @@ import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
 import com.rometools.rome.feed.synd.SyndEntry
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import org.xmlpull.v1.XmlPullParser
@@ -94,7 +96,6 @@ import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
-import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -337,7 +338,7 @@ fun runOnUiWorkerThread(r: () -> Unit) {
 }
 
 fun runOnNewThread(r: () -> Unit) {
-    Executors.newSingleThreadExecutor().submit {
+    GlobalScope.launch {
         r()
     }
 }

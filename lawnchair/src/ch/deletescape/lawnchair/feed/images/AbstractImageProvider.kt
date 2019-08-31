@@ -26,6 +26,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.util.extensions.d
 
 abstract class AbstractImageProvider<Id>(c: Context?) : FeedProvider(c) {
     abstract val images: MutableMap<Bitmap, Id>
@@ -56,8 +57,9 @@ abstract class AbstractImageProvider<Id>(c: Context?) : FeedProvider(c) {
             }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
                 canHide = true
                 onRemoveListener = {
-                    images.remove(it)
+                    d("onRemoveListener: removing image ${images[it]}")
                     onRemoveListener(images[it]!!)
+                    images.remove(it)
                 }
             }
         }

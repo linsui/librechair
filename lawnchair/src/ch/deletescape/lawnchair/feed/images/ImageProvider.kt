@@ -77,8 +77,7 @@ class ImageProvider(c: Context?) : AbstractImageProvider<String>(c) {
         }
     }, Card.RAISE or Card.NO_HEADER, "nosort, top",
                                           "manageNotes".hashCode())
-    override val onRemoveListener: (id: String) -> Unit
-        get() = {
+    override val onRemoveListener: (id: String) -> Unit = {
             d("(id: String) -> Unit: removing image with id $it")
             ImageStore.getInstance(context).remove(it)
             GlobalScope.launch {
