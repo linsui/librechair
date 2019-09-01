@@ -41,7 +41,7 @@ public class NoteProviderScreen extends ProviderScreen {
 
     @Override
     protected View getView(ViewGroup parent) {
-        return LayoutInflater.from(this).inflate(R.layout.screen_notes, parent, false);
+        return LayoutInflater.from(parent.getContext()).inflate(R.layout.screen_notes, parent, false);
     }
 
     @Override
