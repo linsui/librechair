@@ -51,7 +51,7 @@ class MainFeedController(val context: Context) {
 
     companion object {
         val substitutions =
-                mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to FeedWeatherStatsProvider::class.qualifiedName)
+                mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to WeatherBarFeedProvider::class.qualifiedName)
 
         fun getDisplayName(provider: FeedProviderContainer, context: Context): String {
             return when {
