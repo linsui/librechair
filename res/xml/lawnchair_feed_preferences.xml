@@ -53,7 +53,10 @@
             android:key="pref_feedCardColorResolver"
             android:title="@string/title_pref_card_background"
             app:resolvers="@array/resolvers_feed_card_background" />
-
+        <ch.deletescape.lawnchair.preferences.ImageProviderPreference
+            android:key="pref_feed_background"
+            android:title="@string/title_pref_feed_background"
+            android:summary="%s"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_feed_show_event_color"
             android:title="@string/title_pref_feed_show_event_color"
