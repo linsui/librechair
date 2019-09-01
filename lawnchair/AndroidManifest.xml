@@ -26,7 +26,6 @@
             android:label="@string/pref_category_weather"
             android:name="ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity"
             android:theme="@style/SettingsTheme" />
-        <activity android:name="ch.deletescape.lawnchair.smartspace.BrowserBoxActivity" />
         <activity
             android:exported="true"
             android:name="ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity"

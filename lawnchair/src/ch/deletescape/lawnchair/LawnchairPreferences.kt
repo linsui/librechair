@@ -425,7 +425,6 @@ class LawnchairPreferences(val context: Context) :
     val showFools get() = !noFools && enableFools
 
     val immersiveDesktop by BooleanPref("pref_immersive_desktop", false)
-    var useBrowserBox by BooleanPref("pref_use_integrated_browser", true)
 
     var wakeUpCallTime by StringPref("pref_daily_brief", "7:30")
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
@@ -439,6 +438,7 @@ class LawnchairPreferences(val context: Context) :
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedBackground by ImageProviderPref("pref_feed_background", ImageProvider::class, ::restartOverlay)
+    val feedSearchUrl by StringPref("pref_feed_search_url_template", "https://example.com/search?q=%s", ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {

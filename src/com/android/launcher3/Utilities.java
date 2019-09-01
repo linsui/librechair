@@ -85,7 +85,6 @@ import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
-import ch.deletescape.lawnchair.smartspace.BrowserBoxActivity;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.BitmapInfo;
@@ -899,31 +898,18 @@ public final class Utilities {
         if (url == null) {
             return;
         }
-        if (LawnchairPreferences.Companion.getInstance(context).getUseBrowserBox()) {
-            Intent intent = new Intent(context, BrowserBoxActivity.class);
-            intent.setData(Uri.parse(url));
-            intent.setSourceBounds(sourceBounds);
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setSourceBounds(sourceBounds);
             if (options == null) {
                 context.startActivity(intent);
             } else {
                 context.startActivity(intent, options);
             }
-        } else {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.setSourceBounds(sourceBounds);
-                if(options == null){
-                    context.startActivity(intent);
-                } else {
-                    context.startActivity(intent, options);
-                }
-            } catch (ActivityNotFoundException exc) {
-                Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
-            }
+        } catch (ActivityNotFoundException exc) {
+            Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
         }
-
     }
 
     /**
