@@ -86,8 +86,8 @@ class LauncherFeed(originalContext: Context, bitmap: Bitmap? = null) : ILauncher
                     it.background =
                             if (bitmap == null) ColorDrawable(backgroundColor) else BitmapDrawable(
                                     context.resources,
-                                    Utilities.cropToCenter(bitmap, it.measuredWidth,
-                                                           it.measuredHeight))
+                                    Utilities.cropToCenter(bitmap, it.measuredHeight,
+                                                           it.measuredWidth))
                 }
                 adapter.backgroundColor = backgroundColor
             }

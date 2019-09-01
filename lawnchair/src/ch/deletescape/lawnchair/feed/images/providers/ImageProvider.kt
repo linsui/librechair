@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed.images.providers
 
 import android.content.Context
 import android.graphics.Bitmap
+import ch.deletescape.lawnchair.util.extensions.d
 import kotlin.reflect.KClass
 
 interface ImageProvider {
@@ -28,9 +29,9 @@ interface ImageProvider {
     fun getBitmap(context: Context): Bitmap
 
     companion object {
-        fun inflate(clazz: KClass<ImageProvider>, c: Context): ImageProvider? {
-                return clazz.constructors
-                        .firstOrNull { it.parameters.size == 1 && it.parameters[0].type == Context::class }?.call(c)
+        fun inflate(clazz: KClass<out ImageProvider>, c: Context): ImageProvider? {
+            d("inflate: class constructors ${clazz.constructors}")
+            return clazz.constructors.toList()[0].call(c)
         }
     }
 }

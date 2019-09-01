@@ -991,12 +991,12 @@ class LawnchairPreferences(val context: Context) :
         }
     }
 
-    open inner class ImageProviderPref(key: String, defaultValue: KClass<ImageProvider>,
+    open inner class ImageProviderPref(key: String, defaultValue: KClass<out ImageProvider>,
                                        onChange: () -> Unit = doNothing) :
-            PrefDelegate<KClass<ImageProvider>>(key, defaultValue, onChange) {
-        override fun onGetValue(): KClass<ImageProvider> =
-                Class.forName(sharedPrefs.getString(key, defaultValue::class.qualifiedName)).kotlin as KClass<ImageProvider>
-        override fun onSetValue(value: KClass<ImageProvider>) = edit { putString(key, value.qualifiedName) }
+            PrefDelegate<KClass<out ImageProvider>>(key, defaultValue, onChange) {
+        override fun onGetValue(): KClass<out ImageProvider> =
+                Class.forName(sharedPrefs.getString(key, defaultValue.qualifiedName)).kotlin as KClass<out ImageProvider>
+        override fun onSetValue(value: KClass<out ImageProvider>) = edit { putString(key, value.qualifiedName) }
     }
 
     // ----------------

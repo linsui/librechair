@@ -27,18 +27,17 @@ import ch.deletescape.lawnchair.feed.images.providers.BitmapCache
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class OverlayService : Service(), () -> Unit {
     lateinit var feed: LauncherFeed;
     val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
 
-    override fun onBind(intent: Intent): IBinder {
+    override fun onBind(intent: Intent): IBinder? {
         if (!::feed.isInitialized) {
             this()
         }
-        return feed;
+        return if (::feed.isInitialized) feed else null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -51,12 +50,8 @@ class OverlayService : Service(), () -> Unit {
         if (imageProvider == null) {
             feed = LauncherFeed(this)
         } else {
-            GlobalScope.launch {
+            runBlocking {
                 feed = LauncherFeed(this@OverlayService, BitmapCache.getBitmap(imageProvider!!, this@OverlayService))
-            }.invokeOnCompletion {
-                if (it != null) {
-                    feed = LauncherFeed(this)
-                }
             }
         }
     }
