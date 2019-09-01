@@ -25,9 +25,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object BitmapCache {
-    private val cache: MutableMap<String, Pair<Long, Bitmap>> = mutableMapOf()
+    private val cache: MutableMap<String, Pair<Long, Bitmap?>> = mutableMapOf()
 
-    suspend fun getBitmap(provider: ImageProvider, c: Context): Bitmap = withContext(
+    suspend fun getBitmap(provider: ImageProvider, c: Context): Bitmap? = withContext(
             Dispatchers.Default) {
         synchronized(this@BitmapCache) {
             if (System.currentTimeMillis() - (cache[provider::class.qualifiedName]?.first

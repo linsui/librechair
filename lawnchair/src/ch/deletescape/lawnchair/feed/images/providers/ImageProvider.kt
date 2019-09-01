@@ -26,7 +26,7 @@ import kotlin.reflect.KClass
 
 interface ImageProvider {
     val expiryTime: Long
-    fun getBitmap(context: Context): Bitmap
+    fun getBitmap(context: Context): Bitmap?
 
     companion object {
         fun inflate(clazz: KClass<out ImageProvider>, c: Context): ImageProvider? {

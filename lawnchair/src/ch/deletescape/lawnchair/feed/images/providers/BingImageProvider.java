@@ -58,7 +58,6 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
     }
 
 
-    @NotNull
     @Override
     public Bitmap getBitmap(@NotNull Context context) {
         if (cache.exists()) {
@@ -80,21 +79,17 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
             if (response.isSuccessful() && response.body() != null && response.body().url != null) {
                 return BitmapFactory.decodeStream(new URL(response.body().url).openStream());
             } else {
-                return internalGetBitmap(context);
+                return null;
             }
         } catch (IOException e) {
-            try {
-                Thread.sleep(TimeUnit.MINUTES.toMillis(5));
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
-            return internalGetBitmap(context);
+            e.printStackTrace();
+            return null;
         }
     }
 
     @SuppressLint("DefaultLocale")
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.cache = new File(context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png", TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
+        this.cache = new File(this.context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png", TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
     }
 }
