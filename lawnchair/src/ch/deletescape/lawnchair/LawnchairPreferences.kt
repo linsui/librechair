@@ -33,7 +33,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.AlarmEventProvider
-import ch.deletescape.lawnchair.feed.images.ImageProvider
+import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -70,6 +70,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSuperclassOf
 
@@ -437,6 +438,7 @@ class LawnchairPreferences(val context: Context) :
                                         ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
+    val feedBackground by ImageProviderPref("pref_feed_background", ImageProvider::class, ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
@@ -987,6 +989,14 @@ class LawnchairPreferences(val context: Context) :
         override fun onSetValue(value: Boolean) {
             edit { putBoolean(getKey(), value) }
         }
+    }
+
+    open inner class ImageProviderPref(key: String, defaultValue: KClass<ImageProvider>,
+                                       onChange: () -> Unit = doNothing) :
+            PrefDelegate<KClass<ImageProvider>>(key, defaultValue, onChange) {
+        override fun onGetValue(): KClass<ImageProvider> =
+                Class.forName(sharedPrefs.getString(key, defaultValue::class.qualifiedName)).kotlin as KClass<ImageProvider>
+        override fun onSetValue(value: KClass<ImageProvider>) = edit { putString(key, value.qualifiedName) }
     }
 
     // ----------------

@@ -17,12 +17,20 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed.images.providers;
+package ch.deletescape.lawnchair.feed.images.providers
 
-import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Context
+import android.graphics.Bitmap
+import kotlin.reflect.KClass
 
-public interface ImageProvider {
-    Bitmap getBitmap(Context context);
-    long getExpiryTime();
+interface ImageProvider {
+    val expiryTime: Long
+    fun getBitmap(context: Context): Bitmap
+
+    companion object {
+        fun inflate(clazz: KClass<ImageProvider>, c: Context): ImageProvider? {
+                return clazz.constructors
+                        .firstOrNull { it.parameters.size == 1 && it.parameters[0].type == Context::class }?.call(c)
+        }
+    }
 }

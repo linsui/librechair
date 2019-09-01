@@ -1073,4 +1073,21 @@ public final class Utilities {
     public static <T> T error(String message) {
         throw new IllegalArgumentException(message);
     }
+
+    public static Bitmap cropToCenter(Bitmap source, int newHeight, int newWidth) {
+        int sourceWidth = source.getWidth();
+        int sourceHeight = source.getHeight();
+        float xScale = (float) newWidth / sourceWidth;
+        float yScale = (float) newHeight / sourceHeight;
+        float scale = Math.max(xScale, yScale);
+        float scaledWidth = scale * sourceWidth;
+        float scaledHeight = scale * sourceHeight;
+        float left = (newWidth - scaledWidth) / 2;
+        float top = (newHeight - scaledHeight) / 2;
+        RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
+        Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
+        Canvas canvas = new Canvas(dest);
+        canvas.drawBitmap(source, null, targetRect, null);
+        return dest;
+    }
 }

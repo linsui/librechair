@@ -23,10 +23,16 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import ch.deletescape.lawnchair.feed.images.providers.BitmapCache
+import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class OverlayService : Service(), () -> Unit {
     lateinit var feed: LauncherFeed;
+    val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
 
     override fun onBind(intent: Intent): IBinder {
         if (!::feed.isInitialized) {
@@ -42,7 +48,17 @@ class OverlayService : Service(), () -> Unit {
     }
 
     override fun invoke() {
-        feed = LauncherFeed(applicationContext)
+        if (imageProvider == null) {
+            feed = LauncherFeed(this)
+        } else {
+            GlobalScope.launch {
+                feed = LauncherFeed(this@OverlayService, BitmapCache.getBitmap(imageProvider!!, this@OverlayService))
+            }.invokeOnCompletion {
+                if (it != null) {
+                    feed = LauncherFeed(this)
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

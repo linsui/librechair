@@ -21,15 +21,23 @@ package ch.deletescape.lawnchair.feed.images.providers
 
 import android.content.Context
 import android.graphics.Bitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object BitmapCache {
     private val cache: MutableMap<String, Pair<Long, Bitmap>> = mutableMapOf()
 
-    fun getBitmap(provider: ImageProvider, c: Context): Bitmap {
-        if (System.currentTimeMillis() - (cache[provider::class.qualifiedName]?.first ?: 0 ) >= provider.expiryTime) {
-            return provider.getBitmap(c).also { cache[provider::class.qualifiedName!!] = System.currentTimeMillis() to it }
-        } else {
-            return cache[provider::class.qualifiedName]!!.second
+    suspend fun getBitmap(provider: ImageProvider, c: Context): Bitmap = withContext(
+            Dispatchers.Default) {
+        synchronized(this@BitmapCache) {
+            if (System.currentTimeMillis() - (cache[provider::class.qualifiedName]?.first
+                                              ?: 0) >= provider.expiryTime) {
+                provider.getBitmap(c).also {
+                    cache[provider::class.qualifiedName!!] = System.currentTimeMillis() to it
+                }
+            } else {
+                cache[provider::class.qualifiedName]!!.second
+            }
         }
     }
 }

@@ -25,11 +25,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.*
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.ColorUtils
+import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
@@ -45,6 +48,7 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
@@ -55,11 +59,12 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-class LauncherFeed(originalContext: Context) : ILauncherOverlay.Stub() {
-    private var backgroundColor: Int = ColorUtils.setAlphaComponent(
+class LauncherFeed(originalContext: Context, bitmap: Bitmap? = null) : ILauncherOverlay.Stub() {
+    private var backgroundColor: Int = if (bitmap == null) ColorUtils.setAlphaComponent(
             ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
-                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
+            bitmap).generate().getDominantColor(0)
     private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
 
@@ -77,7 +82,13 @@ class LauncherFeed(originalContext: Context) : ILauncherOverlay.Stub() {
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
-                it.background = ColorDrawable(backgroundColor)
+                it.viewTreeObserver.addOnGlobalLayoutListener {
+                    it.background =
+                            if (bitmap == null) ColorDrawable(backgroundColor) else BitmapDrawable(
+                                    context.resources,
+                                    Utilities.cropToCenter(bitmap, it.measuredWidth,
+                                                           it.measuredHeight))
+                }
                 adapter.backgroundColor = backgroundColor
             }
     private val tabController: TabController =
@@ -344,7 +355,8 @@ class LauncherFeed(originalContext: Context) : ILauncherOverlay.Stub() {
     }
 
     fun removeLastPrefereceScreen() {
-        removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x, preferenceScreens.last().second.y);
+        removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x,
+                            preferenceScreens.last().second.y);
         preferenceScreens.remove(preferenceScreens.last())
     }
 
