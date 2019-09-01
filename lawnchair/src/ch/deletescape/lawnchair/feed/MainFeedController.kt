@@ -83,6 +83,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_customizable_rss)
                     DeviceStateProvider::class.qualifiedName -> R.string.title_feed_provider_device_state.fromStringRes(
                             context)
+                    FeedSearchboxProvider::class.qualifiedName -> R.string.search.fromStringRes(
+                            context)
                     FeedWidgetsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_widgets)
                     DailySummaryFeedProvider::class.qualifiedName -> R.string.title_feed_provider_daily_summary.fromStringRes(
@@ -132,6 +134,7 @@ class MainFeedController(val context: Context) {
                           FeedJoinedWeatherProvider::class.qualifiedName,
                           FeedDailyForecastProvider::class.qualifiedName,
                           FeedForecastProvider::class.qualifiedName,
+                          FeedSearchboxProvider::class.qualifiedName,
                           ImageProvider::class.qualifiedName,
                           BingDailyImageProvider::class.qualifiedName,
                           NoteListProvider::class.qualifiedName,
