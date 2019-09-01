@@ -31,7 +31,11 @@ interface ImageProvider {
     companion object {
         fun inflate(clazz: KClass<out ImageProvider>, c: Context): ImageProvider? {
             d("inflate: class constructors ${clazz.constructors}")
-            return clazz.constructors.toList()[0].call(c)
+            if (clazz.constructors.size > 1) {
+                return clazz.constructors.toList()[0].call(c)
+            } else {
+                return null
+            }
         }
     }
 }
