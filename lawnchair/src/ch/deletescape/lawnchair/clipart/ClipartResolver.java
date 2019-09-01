@@ -27,7 +27,6 @@ public interface ClipartResolver {
 
     List<ClipartData> getAllClipart();
 
-
     interface ClipartData extends Serializable {
 
         String getToken();
