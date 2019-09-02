@@ -1066,7 +1066,7 @@ fun Int.fromDrawableRes(c: Context): Drawable {
     return c.getDrawable(this)!!
 }
 
-fun Drawable.duplicateAndSetColour(colour: Int): Drawable {
+fun Drawable.tint(colour: Int): Drawable {
     return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
 }
 

@@ -106,7 +106,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 tabLayout.removeAllTabs()
                 getColorList().forEach {
                     tabLayout.addTab(tabLayout.newTab().apply {
-                        icon = R.drawable.circle.fromDrawableRes(context).duplicateAndSetColour(it)
+                        icon = R.drawable.circle.fromDrawableRes(context).tint(it)
                                 .apply {
                                     setColorFilter(it, PorterDuff.Mode.SRC_OVER)
                                 }
@@ -212,7 +212,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                             post {
                                 addTab(tabLayout.newTab().apply {
                                     icon = R.drawable.circle.fromDrawableRes(context)
-                                            .duplicateAndSetColour(note.colour).apply {
+                                            .tint(note.colour).apply {
                                                 setColorFilter(note.colour,
                                                                PorterDuff.Mode.SRC_OVER)
                                             }

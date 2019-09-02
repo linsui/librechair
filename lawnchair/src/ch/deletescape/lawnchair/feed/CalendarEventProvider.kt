@@ -42,12 +42,12 @@ import kotlin.collections.ArrayList
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val calendarDrawable by lazy {
-        context.getDrawable(R.drawable.ic_event_black_24dp)!!.duplicateAndSetColour(
+        context.getDrawable(R.drawable.ic_event_black_24dp)!!.tint(
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
     private val calendarDrawableColoured by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!
-                .duplicateAndSetColour(context.getColorAttr(R.attr.colorAccent))
+                .tint(context.getColorAttr(R.attr.colorAccent))
     }
 
     override fun onFeedShown() {
@@ -148,7 +148,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             .parse("content://com.android.calendar/events/" + eventCursor.getLong(
                                     4).toString())
                     cards.add(Card(
-                            if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.duplicateAndSetColour(
+                            if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
                                     eventCursor.getInt(7).setAlpha(
                                             255)) else calendarDrawableColoured,
                             (if (title.trim().isEmpty()) context.getString(

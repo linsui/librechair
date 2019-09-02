@@ -189,7 +189,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             CalendarContract.Instances.DTSTART + " ASC");
             if (calendarEvents.getCount() > 0) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .duplicateAndSetColour(
+                        .tint(
                                 Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_event_black_24dp)),
                                 LawnchairUtilsKt
@@ -202,7 +202,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
             if (feedProvider.sunriseSunset != null) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .duplicateAndSetColour(
+                        .tint(
                                 Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_sunrise_24dp)),
                                 LawnchairUtilsKt
@@ -210,7 +210,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                         LawnchairUtilsKt
                                 .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
                 items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .duplicateAndSetColour(
+                        .tint(
                                 Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_sunset_24dp)),
                                 LawnchairUtilsKt

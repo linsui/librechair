@@ -63,7 +63,7 @@ class NotesActivity : SettingsBaseActivity() {
         adapter.bindToTabLayout(tabLayout)
         adapter.onTabChangeListeners.add {
             if (::addItem.isInitialized) {
-                addItem.icon = addItem.icon.duplicateAndSetColour(it)
+                addItem.icon = addItem.icon.tint(it)
             }
             var menuView: ActionMenuView? = null
             val count = toolbar.getChildCount()
@@ -84,7 +84,7 @@ class NotesActivity : SettingsBaseActivity() {
         menu.add(getString(R.string.title_menu_item_new_note)).apply {
             addItem = this;
             icon = R.drawable.ic_add.fromDrawableRes(this@NotesActivity)
-                    .duplicateAndSetColour(this@NotesActivity.getColorAttr(R.attr.colorAccent))
+                    .tint(this@NotesActivity.getColorAttr(R.attr.colorAccent))
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             setOnMenuItemClickListener {
                 startActivityForResult(

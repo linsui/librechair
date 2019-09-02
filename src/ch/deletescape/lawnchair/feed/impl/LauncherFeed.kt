@@ -141,8 +141,6 @@ class LauncherFeed(val originalContext: Context,
             dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
             context = ContextThemeWrapper(originalContext,
                                           if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
-            adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
-                                  context.applicationContext, this)
             feedAttached = false
             closeOverlay(0)
             feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
@@ -159,6 +157,8 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
             recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+            adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
+                                  context.applicationContext, this)
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
             content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
@@ -293,8 +293,8 @@ class LauncherFeed(val originalContext: Context,
                     if (hasWidgetTab) {
                         toolbar.menu.getItem(0).isVisible = tabs[tab.position]!!.isWidgetTab
                         toolbar.menu.getItem(0).icon = R.drawable.ic_add.fromDrawableRes(context)
-                                .duplicateAndSetColour(if (useWhiteText(backgroundColor,
-                                                                        context)) R.color.textColorPrimary.fromColorRes(
+                                .tint(if (useWhiteText(backgroundColor,
+                                                       context)) R.color.textColorPrimary.fromColorRes(
                                         context)
                                                        else R.color.textColorPrimaryInverse.fromColorRes(
                                         context))
@@ -342,8 +342,8 @@ class LauncherFeed(val originalContext: Context,
         if (!FeatureFlags.GO_DISABLE_WIDGETS) {
             toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
             toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
-                    .duplicateAndSetColour(if (useWhiteText(backgroundColor,
-                                                            context)) R.color.textColorPrimary.fromColorRes(
+                    .tint(if (useWhiteText(backgroundColor,
+                                           context)) R.color.textColorPrimary.fromColorRes(
                             context)
                                            else R.color.textColorPrimaryInverse.fromColorRes(
                             context))
@@ -488,7 +488,7 @@ class LauncherFeed(val originalContext: Context,
         })
         if (toolbar.menu.findItem(R.id.cancel) == null) {
             toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
-                icon = R.drawable.ic_close.fromDrawableRes(context).duplicateAndSetColour(
+                icon = R.drawable.ic_close.fromDrawableRes(context).tint(
                         if (useWhiteText(backgroundColor,
                                          context)) R.color.textColorPrimary.fromColorRes(
                                 context) else R.color.textColorPrimaryInverse.fromColorRes(context))

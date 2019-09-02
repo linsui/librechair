@@ -59,7 +59,7 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
             else -> null
         }
         if (dnd != null) {
-            cards += Card(R.drawable.ic_zen_mode.fromDrawableRes(context).duplicateAndSetColour(
+            cards += Card(R.drawable.ic_zen_mode.fromDrawableRes(context).tint(
                     (if (useWhiteText(backgroundColor,
                                       context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
                             context)), dnd, { _, _ ->
@@ -70,8 +70,8 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                                    Settings.Global.AIRPLANE_MODE_ON,
                                    0) != 0) {
             cards += Card(R.drawable.ic_round_airplanemode_active_24px.fromDrawableRes(
-                    context).duplicateAndSetColour((if (useWhiteText(backgroundColor,
-                                                                     context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
+                    context).tint((if (useWhiteText(backgroundColor,
+                                                    context)) R.color.qsb_background else R.color.qsb_background_dark).fromColorRes(
                     context)), R.string.title_card_airplane_mode_on.fromStringRes(context),
                           { _, _ ->
                               View(context)
@@ -80,7 +80,7 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
         if (!(context.getSystemService(
                         Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo.isConnected) {
             cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
-                                  .duplicateAndSetColour(
+                                  .tint(
                                           (if (useWhiteText(backgroundColor, context))
                                               R.color.qsb_background else R.color.qsb_background_dark)
                                                   .fromColorRes(context)),
@@ -95,7 +95,7 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                               AudioManager.RINGER_MODE_SILENT -> R.drawable.ic_outline_volume_off_24px
                               AudioManager.RINGER_MODE_VIBRATE -> R.drawable.ic_round_vibration_24dp
                               else -> R.drawable.ic_round_vibration_24dp
-                          }.fromDrawableRes(context).duplicateAndSetColour(
+                          }.fromDrawableRes(context).tint(
                     (if (useWhiteText(backgroundColor, context))
                         R.color.qsb_background else R.color.qsb_background_dark)
                             .fromColorRes(context)),
