@@ -23,7 +23,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
-import ch.deletescape.lawnchair.feed.images.providers.BitmapCache
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
@@ -53,10 +52,14 @@ class OverlayService : Service(), () -> Unit {
         } else {
                 feed = LauncherFeed(this@OverlayService) {
                     GlobalScope.launch {
-                        val bitmap = BitmapCache.getBitmap(imageProvider!!, this@OverlayService);
-                        if (bitmap != null) {
-                            it(bitmap)
+                        val refreshBitmap = {
+                            val bitmap = imageProvider?.getBitmap(this@OverlayService)
+                            if (bitmap != null) {
+                                it(bitmap)
+                            }
                         }
+                        refreshBitmap()
+                        imageProvider?.registerOnChangeListener(refreshBitmap)
                     }
                 }
         }

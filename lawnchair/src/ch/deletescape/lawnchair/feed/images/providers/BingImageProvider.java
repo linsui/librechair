@@ -27,6 +27,9 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.SystemClock;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.images.bing.BingResponse;
 import ch.deletescape.lawnchair.feed.images.bing.BingRetrofitServiceFactory;
 import java.io.File;
@@ -34,7 +37,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
@@ -46,7 +52,8 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
     @SuppressLint("DefaultLocale")
     public BingImageProvider(Context context) {
         this.context = context;
-        this.cache = new File(context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png", TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
+        this.cache = new File(context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png",
+                TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_TICK);
         context.registerReceiver(this, filter);
@@ -75,7 +82,8 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     private Bitmap internalGetBitmap(Context context) {
         try {
-            Response<BingResponse> response = BingRetrofitServiceFactory.INSTANCE.getApi(context).getPicOfTheDay().execute();
+            Response<BingResponse> response = BingRetrofitServiceFactory.INSTANCE.getApi(context)
+                    .getPicOfTheDay().execute();
             if (response.isSuccessful() && response.body() != null && response.body().url != null) {
                 return BitmapFactory.decodeStream(new URL(response.body().url).openStream());
             } else {
@@ -90,6 +98,24 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
     @SuppressLint("DefaultLocale")
     @Override
     public void onReceive(Context context, Intent intent) {
-        this.cache = new File(this.context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png", TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
+        this.cache = new File(this.context.getCacheDir(),
+                String.format("bing_daily_epoch_day_%d.png",
+                        TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
+    }
+
+    @Override
+    public void registerOnChangeListener(@NotNull Function0<Unit> listener) {
+        new Handler(context.getMainLooper()).postAtTime(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                listener.invoke();
+                                                                new Handler(context.getMainLooper()).postAtTime(this,
+                                                                        SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date())
+                                                                                .toInstant()
+                                                                                .toEpochMilli() - System.currentTimeMillis());
+                                                            }
+                                                        },
+                SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date()).toInstant()
+                        .toEpochMilli() - System.currentTimeMillis());
     }
 }
