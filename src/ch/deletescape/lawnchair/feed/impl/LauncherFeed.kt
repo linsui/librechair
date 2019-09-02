@@ -233,7 +233,7 @@ class LauncherFeed(val originalContext: Context,
                 }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
-            navigationBarHeight = insets.stableInsetRight
+            navigationBarHeight = insets.stableInsetBottom
             recyclerView.apply {
                 if (oldRecyclerViewPaddingVertical == null) {
                     oldRecyclerViewPaddingVertical = paddingTop to paddingBottom
