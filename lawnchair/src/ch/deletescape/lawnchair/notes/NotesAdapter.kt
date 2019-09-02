@@ -183,9 +183,9 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
         }
     }
 
-    fun getColorList() = (googleColours + allNotes.map {
+    fun getColorList() = if (::allNotes.isInitialized) (googleColours + allNotes.map {
         it.colour
-    }.sorted()).distinct()
+    }.sorted()).distinct() else googleColours.toList()
 
     open fun add(note: Note) {
         val oldColors = getColorList()
