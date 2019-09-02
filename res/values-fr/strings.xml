@@ -367,17 +367,17 @@
 
 
         <!-- Weather helpful tips -->
-    <string name="helpful_tip_01_03">Penses à appliquer de la crème solaire et bois de l'eau!</string>
+    <string name="helpful_tip_01_03">Penses à appliquer de la crème solaire et bois de l\'eau!</string>
     <string name="helpful_tip_01n_03n">Penses à boire du café et ne conduis pas fatigué</string>
-    <string name="helpful_tip_04">Aujourd'\hui, ce sera nuageux</string> <!-- Quick! Think up a helpful tip for cloudy days -->
+    <string name="helpful_tip_04">Aujourd\'hui, ce sera nuageux</string> <!-- Quick! Think up a helpful tip for cloudy days -->
     <string name="helpful_tip_04n">Penses à prendre un insecticide!</string>
     <string name="helpful_tip_09_10">Prends un parapluie et conduis doucement sur route glissante!</string>
     <string name="helpful_tip_10n">Routes glissantes et peu de visibilité, attention!</string>
-    <string name="helpful_tip_11">Attention aux éclairs et dehors, ne t'\abrite pas sous un arbre</string>
-    <string name="helpful_tip_50">Attention à la faible visibilité, les personnes  fragiles dois rester à l'\intérieur.</string>
+    <string name="helpful_tip_11">Attention aux éclairs et dehors, ne t\'abrite pas sous un arbre</string>
+    <string name="helpful_tip_50">Attention à la faible visibilité, les personnes  fragiles dois rester à l\'intérieur.</string>
     <string name="helpful_tip_13">La neige et la glace peuvent ruiner ta journée. Attention aux routes glissantes en voiture et à pied, et reste au chaud</string>
     <string name="helpful_tip_non_available">Aucun conseil disponible</string>
-    <string name="activity_weather_next_three_hours">Aujourd'\hui</string>
+    <string name="activity_weather_next_three_hours">Aujourd\'hui</string>
     <string name="activity_weather_next_twenty_four_hours">Cette semaine</string>
     <string name="placeholder_empty_title">[Aucun titre]</string>
     <string name="subtitle_smartspace_in_minute">Dans %d minutes</string>
@@ -397,18 +397,18 @@
     <string name="title_text_calendar_feed_in_d_hours">Dans %d heures</string>
     <string name="forecast_s">Prévisions météorologiques • %s</string>
     <string name="app_name_go">Librechair Go</string>
-    <string name="title_feed_card_wikipedia_news">Wikipedia • Dans l'\actualité</string>
+    <string name="title_feed_card_wikipedia_news">Wikipedia • Dans l\'actualité</string>
     <string name="title_feed_provider_calendar">Calendrier</string>
     <string name="title_feed_provider_weather">Météo (legacy)</string>
     <string name="title_feed_provider_forecast">Prévisions météorologiques</string>
-    <string name="title_feed_provider_wikipedia_news">Dans l'\actualité (Wikipedia)</string>
+    <string name="title_feed_provider_wikipedia_news">Dans l\'actualité (Wikipedia)</string>
     <string name="title_preference_feed_providers">Éléments du flux de diffusion</string>
     <string name="title_preference_init_leak_canary">LeakCanary debugging</string>
     <string name="title_preference_swipe_feed">Glisser à gauche pour accéder au flux de diffusion</string>
-    <string name="summary_preference_swipe_feed">Voux pouvez glisser à gauche de la page d'\accueil pour afficher le flux de diffusion</string>
+    <string name="summary_preference_swipe_feed">Voux pouvez glisser à gauche de la page d\'accueil pour afficher le flux de diffusion</string>
     <string name="web_search_yahoo">Yahoo (web)</string>
     <string name="fennec_fdroid">Fennec F-Droid</string>
-    <string name="placeholder_rss_item">Des vaches et des poissons se rejoignent et gagnent une bataille d'\eau sous le commandement de notre leader qui vient de modifier ce problème de Pravda</string>
+    <string name="placeholder_rss_item">Des vaches et des poissons se rejoignent et gagnent une bataille d\'eau sous le commandement de notre leader qui vient de modifier ce problème de Pravda</string>
     <string name="title_button_rss_item_read_more">Lire la suite</string>
     <string name="placeholder_rss_card_description">Just as the majestic Pyongyang Grand Mass Gymnastics ended, the great leader, our Supreme Leader, Kim \'Fatty the Third\' Jong-un used his expert diplomatic skills to organize the Cows and the Fishes together against the closing Imperialist forces...</string>
     <string name="title_feed_provider_wikinews">Wikinews</string>
@@ -419,8 +419,8 @@
     <string name="placeholder_text_date_time">Jul 16 2019, 7:21 AM</string>
     <string name="title_feed_provider_bbc">BBC</string>
     <string name="title_feed_provider_google_news">Google News</string>
-    <string name="title_feed_provider_customizable_rss">Flux d'\information personnalisé</string>
-    <string name="title_pref_rss_sources">Sources de flux d'\information</string>
+    <string name="title_feed_provider_customizable_rss">Flux d\'information personnalisé</string>
+    <string name="title_pref_rss_sources">Sources de flux d\'information</string>
     <string name="title_dialog_add_new_rss_source">Ajouter un flux RSS</string>
     <string name="title_button_dialog_ok">OK</string>
     <string name="title_pref_feed_corner_rounding">Rayon des angles</string>
@@ -471,7 +471,7 @@
 
     <string name="title_context_menu_feed_dont_show">Ne plus afficher ce message</string>
     <string name="title_text_feed_empty">Votre page de diffusion est vide</string>
-    <string name="caption_text_feed_empty">Vous pouvez ajouter des flux d'\information ou  revenir plus tard</string>
+    <string name="caption_text_feed_empty">Vous pouvez ajouter des flux d\'information ou  revenir plus tard</string>
     <string name="title_card_incoming_snow">Chute de neige à venir</string>
     <string name="title_card_incoming_thunder">Éclairs à venir</string>
     <string name="title_card_upcoming_rain">Chute de pluie à venir</string>
@@ -482,15 +482,15 @@
     <string name="title_weather_provider_weather_com">Weather.com</string>
     <string name="title_weather_provider_weatherbit_data">Weatherbit.io</string>
 
-    <string name="title_preference_immersive_desktop">Cacher l'\horloge de la page d'\accueil</string>
-    <string name="description_preference_immersive_desktop">Permettra de cacher l'\horloge de la barre d'`tat lorsque vous êtes sur la page d'\accueil ou récents</string>
+    <string name="title_preference_immersive_desktop">Cacher l\'horloge de la page d\'accueil</string>
+    <string name="description_preference_immersive_desktop">Permettra de cacher l\'horloge de la barre d\'`tat lorsque vous êtes sur la page d\'accueil ou récents</string>
 
     <string name="title_weather_provider_unified">Unifié (Fournisseur de prévision météo)</string>
     <string name="placeholder_rss_item_categories">North Korea, DPRK, Miniluv, Minitrue, Miniplenty, Minipeace, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
     <string name="title_pref_integrated_browser">Utiliser le navigateur intégrér</string>
-    <string name="daily_briefing_current_conditions_prefix">En ce moment, c'\est </string>
-    <string name="daily_breifing_today_prefix">Aujourd'\hui sera </string>
+    <string name="daily_briefing_current_conditions_prefix">En ce moment, c\'est </string>
+    <string name="daily_breifing_today_prefix">Aujourd\'hui sera </string>
 
     <string name="title_pref_daily_briefing_time">Heure du message quotidient</string>
     <string name="title_smartspace_provider_daily_briefing">Message du matin</string>
@@ -509,12 +509,12 @@
     <string name="title_option_item_test_resize_view">Essai du redimensionnement</string>
     <string name="title_preference_resize_widget">Redimensionner le widget</string>
     <string name="title_checkbox_widget_background">Ajouter un fond au widget</string>
-    <string name="title_checkbox_widget_display_card_title">Afficher le titre de l'\élément</string>
+    <string name="title_checkbox_widget_display_card_title">Afficher le titre de l\'élément</string>
     <string name="title_card_removal_hint">Lacher pour supprimer</string>
     <string name="subtitle_card_removal_hint">Glisser sur le côté pour annuler</string>
     <string name="placeholder_title_card_daily_summary">Lun Juil 22</string>
     <string name="title_feed_provider_daily_summary">Résumé journalier</string>
-    <string name="placeholder_text_daily_summary">11 événements prévus aujourd'\hui</string>
+    <string name="placeholder_text_daily_summary">11 événements prévus aujourd\'hui</string>
     <string name="title_checkbox_sort_widget">Classer les widgets algorithmiquement</string>
     <string name="hint_edit_text_card_title">Titre de la tuile</string>
 
@@ -523,23 +523,23 @@
 
     <string name="title_pref_feed_card_opacity">Opacité de la tuile</string>
     <string name="title_card_suggested_apps">Applications suggérées</string>
-    <string name="title_feed_provider_remote_feeds">Flux d'information tiers</string>
+    <string name="title_feed_provider_remote_feeds">Flux d\'information tiers</string>
 
-    <string name="title_pref_remote_feed_providers">Fournisseur de flux d'information tiers</string>
+    <string name="title_pref_remote_feed_providers">Fournisseur de flux d\'information tiers</string>
     <string name="title_pref_smartspace_ongoing_events">Afficher les événements à venir</string>
     <string name="summary_pref_smartspace_ongoing_events">Activé, les événements à venir seront affichés dans le fournisseur de calendrier système</string>
     <string name="title_smartspace_provider_ongoing_events">Afficher les événements à venir du calendrier</string>
-    <string name="title_feed_refreshing">Rafraîchir la page d'information</string>
-    <string name="headline_card_feed_welcome">Bienvenue sur votre page d'\information</string>
-    <string name="headline2_card_welcome_feed">votre page d'\information vous informera tout au long de la journéee</string>
-    <string name="body_card_welcome_feed">Votre page d'\information affichera les informations dont vous avez besoin quand vous en avez besoin. Elle affichera les événements à venir, les informations et plus ...</string>
+    <string name="title_feed_refreshing">Rafraîchir la page d\'information</string>
+    <string name="headline_card_feed_welcome">Bienvenue sur votre page d\'information</string>
+    <string name="headline2_card_welcome_feed">votre page d\'information vous informera tout au long de la journéee</string>
+    <string name="body_card_welcome_feed">Votre page d\'information affichera les informations dont vous avez besoin quand vous en avez besoin. Elle affichera les événements à venir, les informations et plus ...</string>
     <string name="title_feed_provider_web_applications">Applications Web</string>
     <string name="negative_button_test_web_applications_preference">Nouveau</string>
 
     <string name="title_pref_feed_web_applications">Sites web intégrés</string>
     <string name="hint_web_app_link">Lien</string>
     <string name="hint_web_app_title">Titre</string>
-    <string name="title_dialog_new_web_app">Sites web intégrés comme tuile d'\information</string>
+    <string name="title_dialog_new_web_app">Sites web intégrés comme tuile d\'information</string>
     <string name="title_toast_url_invalid">URL invalide</string>
     <string name="title_pref_feed_card_margin">Marges de la tuile</string>
     <string name="title_feed_provider_note_list">Notes</string>
@@ -550,14 +550,14 @@
     <string name="title_dialog_select_color">Courleur de la note</string>
     <string name="title_tab_controller_none">Aucune</string>
 
-    <string name="title_pref_feed_tab_controller">Type d'\affichage de la page d'\information</string>
+    <string name="title_pref_feed_tab_controller">Type d\'affichage de la page d\'information</string>
     <string name="feed_category_events">Événements</string>
 
     <string name="title_pref_feed_show_event_color">Colorer les événements du calendrier</string>
     <string name="summary_pref_feed_show_event_color">Les événements provenant du calendrier seront colorés avec la couleur du calendrier</string>
 
-    <string name="title_pref_show_other_tab">Afficher l'\onglet non-catégorisé</string>
-    <string name="summary_pref_show_other_tab">Activé, cet onglet affichera les tuiles non-catégorisées. Tout les éléments du flux d'\information ne fonctionneront pas forcément avec cette option.</string>
+    <string name="title_pref_show_other_tab">Afficher l\'onglet non-catégorisé</string>
+    <string name="summary_pref_show_other_tab">Activé, cet onglet affichera les tuiles non-catégorisées. Tout les éléments du flux d\'information ne fonctionneront pas forcément avec cette option.</string>
     <string name="title_tabbing_controller_custom">Modifiable</string>
     <string name="title_dialog_new_tab">Nouvel onglet</string>
 
@@ -567,27 +567,27 @@
     <string name="title_button_open_externally">Ouvrir dans un navigateur</string>
     <string name="title_checkbox_display_as_article">Afficher comme un article</string>
 
-    <string name="title_pref_feed_hide_toolbar">Cacher la barre d'\outil automatiquement</string>
-    <string name="summary_pref_feed_hide_toolbar">La barre d'\outil sera automatiquement caché lorsque vous déroulerez les tuiles de la page d'\information</string>
+    <string name="title_pref_feed_hide_toolbar">Cacher la barre d\'outil automatiquement</string>
+    <string name="summary_pref_feed_hide_toolbar">La barre d\'outil sera automatiquement caché lorsque vous déroulerez les tuiles de la page d\'information</string>
 
     <string name="title_pref_feed_widgets_tab">Les widgest seront affichés dans un onglet séparé</string>
     <string name="title_smartspace_provider_shade_compat">Plugin de compatibilité pour le launcher shade</string>
 
     <string name="title_pref_override_locale">Forcer une nouvelle langue</string>
 
-    <string name="title_pref_feed_tabs_on_bottom">Afficher la barre de titre en bas de l'\écran</string>
-    <string name="summary_pref_feed_tabs_on_bottom">Les onglets et éléments du menu seront affichés en bas de l'\écran</string>
-    <string name="message_feed_multiple_processes">Ce flux d'\information est utilisé par plusieurs applications, ce qui n'\est pas recommandé et créer un mauvais fonctionnement du launcheur, et doit être redémaré.</string>
+    <string name="title_pref_feed_tabs_on_bottom">Afficher la barre de titre en bas de l\'écran</string>
+    <string name="summary_pref_feed_tabs_on_bottom">Les onglets et éléments du menu seront affichés en bas de l\'écran</string>
+    <string name="message_feed_multiple_processes">Ce flux d\'information est utilisé par plusieurs applications, ce qui n\'est pas recommandé et créer un mauvais fonctionnement du launcheur, et doit être redémaré.</string>
     <string name="title_color_resolver_feed_card">Automatique</string>
     <string name="pref_category_plugins">Plugins</string>
 
-    <string name="title_pref_feed">Flux d'\information</string>
+    <string name="title_pref_feed">Flux d\'information</string>
     <string name="summary_pref_feed">Fournisseurs, opacité, couleur de fond</string>
     <string name="title_pref_no_plugins">Aucun plugins</string>
     <string name="summary_pref_no_plugins">Librechair est compatible avec les plugins du launcher shade.</string>
     <string name="dialog_button_select_icon">Selecttionner un icone</string>
 
-    <string name="pref_category_providers">Fournisseurs d'\information</string>
+    <string name="pref_category_providers">Fournisseurs d\'information</string>
     <string name="clipart_microphone">Microphone</string>
     <string name="clipart_bug">Bug</string>
     <string name="clipart_information">Information</string>
@@ -598,8 +598,8 @@
     <string name="hint_text_title">Titre</string>
     <string name="title_snackbar_empty_note">Cette note doit avoir une titre et du texte</string>
     <string name="title_menu_item_new_note">Créer une note</string>
-    <string name="title_pref_forecast_item_count">Nombre d'élèment de la tuile de prévision météo</string>
-    <string name="title_pref_daily_forecast_item_count">Nombre d'élèment de la tuile de prévision météo (journalière)</string>
+    <string name="title_pref_forecast_item_count">Nombre d\'élèment de la tuile de prévision météo</string>
+    <string name="title_pref_daily_forecast_item_count">Nombre d\'élèment de la tuile de prévision météo (journalière)</string>
     <string name="clipart_add">Symbole plus</string>
 
     <string name="title_pref_show_vertical_daily_forecast">Afficher les prévisions journalière verticalement</string>
@@ -614,7 +614,7 @@
     <string name="title_card_add_image">Ajouter une image</string>
     <string name="title_feed_provider_bing_daily">Image Bing du jour</string>
 
-    <string name="title_pref_feed_background">Fournisseur d'\image de fond</string>
+    <string name="title_pref_feed_background">Fournisseur d\'image de fond</string>
     <string name="title_clipart_web">Internet</string>
 
 </resources>
