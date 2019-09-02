@@ -126,7 +126,7 @@ class LauncherFeed(val originalContext: Context,
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (reinit) {
             val background =
-                    if (!context.lawnchairPrefs.enableBlur) backgroundToProcess else BlurProcessor.Builder(
+                    if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else BlurProcessor.Builder(
                             originalContext)
                             .mode(HokoBlur.MODE_GAUSSIAN)
                             .scheme(HokoBlur.SCHEME_NATIVE)
@@ -185,7 +185,7 @@ class LauncherFeed(val originalContext: Context,
         }
         var oldToolbarPadding: Pair<Int, Int>? = null
         var oldRecyclerViewPadding: Pair<Int, Int>? = null
-        if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.enableBlur || !reinit)) {
+        if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.feedBlur || !reinit)) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
         feedController.setOnApplyWindowInsetsListener { v, insets ->

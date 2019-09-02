@@ -213,6 +213,7 @@ class LawnchairPreferences(val context: Context) :
                                   BatteryStatusProvider::class.java.name,
                                   PersonalityProvider::class.java.name))
     var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay, emptyList())
+    var feedBlur by BooleanPref("pref_feed_blur", true, ::restartOverlay)
     var feedProviders = object :
             MutableListPref<FeedProviderContainer>(sharedPrefs, "pref_feed_provider_containers",
                                                    ::restartOverlay,

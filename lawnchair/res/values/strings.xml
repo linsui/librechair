@@ -748,4 +748,7 @@
         <item>Sweet dreams!</item>
         <item>Don\'t stay up too long</item>
     </string-array>
+
+    <string name="title_pref_feed_blur">Blur feed background</string>
+    <string name="summary_pref_feed_blur">Background blur is unavailable for third-party launchers due to technical restrictions</string>
 </resources>

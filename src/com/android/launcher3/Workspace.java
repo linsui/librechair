@@ -56,7 +56,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
-
 import ch.deletescape.lawnchair.ClockVisibilityManager;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView;
@@ -1284,7 +1283,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         mLauncher.getDragLayer().setTranslationX(transX);
         mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
 
-        if (mLauncher instanceof LawnchairLauncher) {
+        if (mLauncher instanceof LawnchairLauncher && Utilities.getLawnchairPrefs(getContext()).getFeedBlur()) {
             ((LawnchairLauncher) mLauncher).getBackground().getBlurAlphas().getProperty(
                     LawnchairBackgroundView.ALPHA_INDEX_OVERLAY).setValue(1 - alpha);
         }

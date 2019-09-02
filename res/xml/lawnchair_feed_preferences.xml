@@ -133,6 +133,11 @@
             android:summary="@string/summary_pref_feed_hide_toolbar"
             android:title="@string/title_pref_feed_hide_toolbar" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_feed_blur"
+            android:summary="@string/summary_pref_feed_blur"
+            android:title="@string/title_pref_feed_blur" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="pref_feed_tabs_on_bottom"
             android:summary="@string/summary_pref_feed_tabs_on_bottom"
