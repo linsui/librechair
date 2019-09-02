@@ -146,8 +146,8 @@ class LauncherFeed(val originalContext: Context,
             backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
                     ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
                     (LawnchairPreferences.getInstance(
-                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
-                    background).generate().getDominantColor(0).setAlpha(255)
+                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette
+                    .from(backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
 
             d("reinitState: background color: r: ${backgroundColor.red} g: ${backgroundColor.green} b: ${backgroundColor.blue}")
 
