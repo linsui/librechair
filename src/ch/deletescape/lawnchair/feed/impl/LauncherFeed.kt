@@ -76,6 +76,7 @@ class LauncherFeed(val originalContext: Context,
     init {
         d("init: dark ${dark}")
     }
+
     private var context = ContextThemeWrapper(originalContext,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var lastOrientation = context.resources.configuration.orientation
@@ -213,38 +214,49 @@ class LauncherFeed(val originalContext: Context,
                         R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
             }
         }
-        var oldToolbarPadding: Pair<Int, Int>? = null
-        var oldRecyclerViewPadding: Pair<Int, Int>? = null
+        var oldToolbarPaddingVertical: Pair<Int, Int>? = null
+        var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
+        var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
+        var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
         if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.feedBlur || !reinit)) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
-        feedController.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-            if (lastOrientation != context.resources.configuration.orientation) {
-                lastOrientation = context.resources.configuration.orientation
-                if (verticalBackground != null && horizontalBackground != null) {
-                    feedController.background =
-                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+        feedController
+                .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                    if (lastOrientation != context.resources.configuration.orientation) {
+                        lastOrientation = context.resources.configuration.orientation
+                        if (verticalBackground != null && horizontalBackground != null) {
+                            feedController.background =
+                                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                        }
+                    }
                 }
-            }
-        }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
-            navigationBarHeight = insets.stableInsetBottom
+            navigationBarHeight = insets.stableInsetRight
             recyclerView.apply {
-                if (oldRecyclerViewPadding == null) {
-                    oldRecyclerViewPadding = paddingTop to paddingBottom
+                if (oldRecyclerViewPaddingVertical == null) {
+                    oldRecyclerViewPaddingVertical = paddingTop to paddingBottom
                 }
-                setPadding(paddingLeft, oldRecyclerViewPadding!!.first + statusBarHeight!!,
-                           paddingRight, oldRecyclerViewPadding!!.second + navigationBarHeight!!)
+                if (oldRecyclerViewPaddingHorizontal == null) {
+                    oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
+                }
+                setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                           oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
+                           oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                           oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
             }
             toolbar.apply {
-                if (oldToolbarPadding == null) {
-                    oldToolbarPadding = paddingTop to paddingBottom
+                if (oldToolbarPaddingVertical == null) {
+                    oldToolbarPaddingVertical = paddingTop to paddingBottom
                 }
-                setPadding(paddingLeft,
-                           if (!tabsOnBottom) oldToolbarPadding!!.first + statusBarHeight!! else paddingTop,
-                           paddingRight,
-                           if (tabsOnBottom) oldToolbarPadding!!.second + navigationBarHeight!! else paddingBottom)
+                if (oldToolbarPaddingHorizontal == null) {
+                    oldToolbarPaddingHorizontal = paddingLeft to paddingRight
+                }
+                setPadding(oldToolbarPaddingHorizontal!!.first + insets.stableInsetLeft,
+                           if (!tabsOnBottom) oldToolbarPaddingVertical!!.first + statusBarHeight!! else paddingTop,
+                           oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
+                           if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
             }
             insets
         }
