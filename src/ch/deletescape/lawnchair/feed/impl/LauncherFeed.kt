@@ -25,10 +25,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.*
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.ColorUtils
@@ -40,7 +42,6 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
@@ -55,8 +56,6 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
-import com.hoko.blur.HokoBlur
-import com.hoko.blur.processor.BlurProcessor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.math.hypot
@@ -77,21 +76,28 @@ class LauncherFeed(val originalContext: Context,
     init {
         d("init: dark ${dark}")
     }
-
     private var context = ContextThemeWrapper(originalContext,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+    private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                                       context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
+    private var verticalBackground: Drawable? = null
+    private var horizontalBackground: Drawable? = null
     private var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
-                    it.background = ColorDrawable(backgroundColor)
+                    if (horizontalBackground == null || verticalBackground == null) {
+                        verticalBackground = ColorDrawable(backgroundColor)
+                        horizontalBackground = ColorDrawable(backgroundColor)
+                    }
+                    lastOrientation = context.resources.configuration.orientation
+                    it.background =
+                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                 }
-                adapter.backgroundColor = backgroundColor
             }
     private val tabController: TabController =
             TabController.inflate(context.lawnchairPrefs.feedTabController, context)
@@ -127,14 +133,8 @@ class LauncherFeed(val originalContext: Context,
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (reinit) {
             val background =
-                    if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else BlurProcessor.Builder(
+                    if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
                             originalContext)
-                            .mode(HokoBlur.MODE_GAUSSIAN)
-                            .scheme(HokoBlur.SCHEME_JAVA)
-                            .context(originalContext)
-                            .radius(context.lawnchairPrefs.blurRadius.roundToInt() / BlurWallpaperProvider.DOWNSAMPLE_FACTOR)
-                            .processor()
-                            .blur(backgroundToProcess)
             preferenceScreens.iterator().let {
                 it.forEach { screen ->
                     frame.removeView(screen.second.view)
@@ -155,17 +155,46 @@ class LauncherFeed(val originalContext: Context,
                                           if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
             feedAttached = false
             closeOverlay(0)
+            verticalBackground = null
+            horizontalBackground = null
             feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
                                                                    false) as FeedController).also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
-                    it.background = if (background == null) ColorDrawable(
-                            backgroundColor) else BitmapDrawable(context.resources,
-                                                                 Utilities.cropToCenter(background,
-                                                                                        it.measuredHeight,
-                                                                                        it.measuredWidth))
+                    d("onGlobalLayout: global layout called")
+                    if (horizontalBackground == null || verticalBackground == null) {
+                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                            verticalBackground = if (background == null) ColorDrawable(
+                                    backgroundColor) else BitmapDrawable(context.resources,
+                                                                         Utilities.cropToCenter(
+                                                                                 background,
+                                                                                 it.measuredHeight,
+                                                                                 it.measuredWidth))
+                            horizontalBackground = if (background == null) ColorDrawable(
+                                    backgroundColor) else BitmapDrawable(context.resources,
+                                                                         Utilities.cropToCenter(
+                                                                                 background,
+                                                                                 it.measuredWidth,
+                                                                                 it.measuredHeight))
+                        } else {
+                            horizontalBackground = if (background == null) ColorDrawable(
+                                    backgroundColor) else BitmapDrawable(context.resources,
+                                                                         Utilities.cropToCenter(
+                                                                                 background,
+                                                                                 it.measuredHeight,
+                                                                                 it.measuredWidth))
+                            verticalBackground = if (background == null) ColorDrawable(
+                                    backgroundColor) else BitmapDrawable(context.resources,
+                                                                         Utilities.cropToCenter(
+                                                                                 background,
+                                                                                 it.measuredWidth,
+                                                                                 it.measuredHeight))
+                        }
+                    }
+                    lastOrientation = context.resources.configuration.orientation
+                    it.background =
+                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                 }
-                adapter.backgroundColor = backgroundColor
             }
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
             recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
@@ -574,6 +603,14 @@ class LauncherFeed(val originalContext: Context,
                                 }
                             }
                         }
+                        d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
+                        if (lastOrientation != context.resources.configuration.orientation) {
+                            if (horizontalBackground != null && verticalBackground != null) {
+                                feedController.background =
+                                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                            }
+                            lastOrientation = context.resources.configuration.orientation
+                        }
                     }
                     windowService.addView(feedController, layoutParams)
                 } else {
@@ -584,6 +621,11 @@ class LauncherFeed(val originalContext: Context,
         }
 
     override fun startScroll() {
+        lastOrientation = context.resources.configuration.orientation
+        if (verticalBackground != null && horizontalBackground != null) {
+            feedController.background =
+                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+        }
         accessingPackages += context.packageManager.getPackagesForUid(
                 Binder.getCallingUid())?.toSet() ?: emptySet()
         handler.post {

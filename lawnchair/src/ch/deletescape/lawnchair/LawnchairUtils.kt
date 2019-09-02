@@ -64,6 +64,7 @@ import android.view.ViewGroup
 import android.view.animation.Interpolator
 import android.widget.*
 import androidx.annotation.LayoutRes
+import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
@@ -84,6 +85,8 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
+import com.hoko.blur.HokoBlur
+import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
 import org.json.JSONArray
 import org.json.JSONObject
@@ -1200,5 +1203,13 @@ fun Float.applyAsDip(c: Context): Float {
 fun Float.applyAsSip(c: Context): Float {
     return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, this, c.resources.displayMetrics)
 }
+
+fun Bitmap.blur(c: Context): Bitmap = BlurProcessor.Builder(c)
+            .mode(HokoBlur.MODE_GAUSSIAN)
+            .scheme(HokoBlur.SCHEME_JAVA)
+            .context(c)
+            .radius(c.lawnchairPrefs.blurRadius.roundToInt() / BlurWallpaperProvider.DOWNSAMPLE_FACTOR)
+            .processor()
+            .blur(this)
 
 fun ViewGroup.inflate(@LayoutRes res: Int): View = LayoutInflater.from(context).inflate(res, this, false)

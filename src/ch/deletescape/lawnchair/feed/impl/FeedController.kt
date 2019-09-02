@@ -18,7 +18,6 @@ package ch.deletescape.lawnchair.feed.impl
 import android.animation.*
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.util.Property
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -35,7 +34,7 @@ import com.android.launcher3.util.PendingAnimation
 
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
                                                               SwipeDetector.Listener {
-    public var mOpenedCallback: (() -> Unit)? = null
+    var mOpenedCallback: (() -> Unit)? = null
     protected val mDetector: SwipeDetector
     protected var mStartState: FeedState? = null
     protected var mFromState: FeedState? = null
@@ -127,7 +126,6 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     private fun setProgress(progress: Float, notify: Boolean) {
-        Log.d(TAG, "setProgress: $progress")
         mProgress = progress
         if (notify) {
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
