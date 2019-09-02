@@ -19,31 +19,6 @@
 
 package ch.deletescape.lawnchair.feed.images.bing;
 
-import android.content.Context;
-import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-public class BingRetrofitServiceFactory {
-
-    public final static BingRetrofitServiceFactory INSTANCE;
-    public final static String BASE_URL = "http://www.bing.com/";
-    private static BingApi sApiInstance;
-
-    static {
-        INSTANCE = new BingRetrofitServiceFactory();
-    }
-
-    private BingRetrofitServiceFactory() {
-    }
-
-    public synchronized BingApi getApi(Context c) {
-        if (sApiInstance == null) {
-            return sApiInstance = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(
-                    GsonConverterFactory.create()).client(new OkHttpClientBuilder().build(c))
-                    .build().create(BingApi.class);
-        } else {
-            return sApiInstance;
-        }
-    }
+public class BingPictureResponse {
+    public BingPicture[] pictures;
 }

@@ -30,7 +30,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.images.bing.BingResponse;
+import ch.deletescape.lawnchair.feed.images.bing.BingPictureResponse;
 import ch.deletescape.lawnchair.feed.images.bing.BingRetrofitServiceFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -82,10 +82,10 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     private Bitmap internalGetBitmap(Context context) {
         try {
-            Response<BingResponse> response = BingRetrofitServiceFactory.INSTANCE.getApi(context)
-                    .getPicOfTheDay().execute();
-            if (response.isSuccessful() && response.body() != null && response.body().url != null) {
-                return BitmapFactory.decodeStream(new URL(response.body().url).openStream());
+            Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE.getApi(context)
+                    .getPicOfTheDay(null, "json", 0, LawnchairUtilsKt.getLocale(context).getLanguage()).execute();
+            if (response.isSuccessful() && response.body() != null && "https://www.bing.com/" + response.body().pictures[0].url != null) {
+                return BitmapFactory.decodeStream(new URL("https://www.bing.com/" + response.body().pictures[0].url).openStream());
             } else {
                 return null;
             }
@@ -99,7 +99,7 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
     @Override
     public void onReceive(Context context, Intent intent) {
         this.cache = new File(this.context.getCacheDir(),
-                String.format("bing_daily_epoch_day_%d.png",
+                String.format("bing_epoch_%d.png",
                         TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
     }
 

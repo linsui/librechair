@@ -19,31 +19,19 @@
 
 package ch.deletescape.lawnchair.feed.images.bing;
 
-import android.content.Context;
-import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-public class BingRetrofitServiceFactory {
-
-    public final static BingRetrofitServiceFactory INSTANCE;
-    public final static String BASE_URL = "http://www.bing.com/";
-    private static BingApi sApiInstance;
-
-    static {
-        INSTANCE = new BingRetrofitServiceFactory();
-    }
-
-    private BingRetrofitServiceFactory() {
-    }
-
-    public synchronized BingApi getApi(Context c) {
-        if (sApiInstance == null) {
-            return sApiInstance = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(
-                    GsonConverterFactory.create()).client(new OkHttpClientBuilder().build(c))
-                    .build().create(BingApi.class);
-        } else {
-            return sApiInstance;
-        }
-    }
+public class BingPicture {
+    public String startdate;
+    public String fullstartdate;
+    public String fullenddate;
+    public String url;
+    public String urlbase;
+    public String quiz;
+    public String copyright;
+    public String copyrightlink;
+    public boolean wb;
+    public String hsh;
+    public int dark;
+    public int top;
+    public int bot;
+    public Object[] hs; /* TODO figure this out */
 }
