@@ -404,7 +404,7 @@
     <string name="title_feed_provider_wikipedia_news">Dans l\'actualité (Wikipedia)</string>
     <string name="title_preference_feed_providers">Éléments du flux de diffusion</string>
     <string name="title_preference_init_leak_canary">LeakCanary debugging</string>
-    <string name="title_preference_swipe_feed">Glisser à gauche pour accéder au flux de diffusion</string>
+    <string name="title_preference_swipe_feed">Activer le flux de diffusion</string>
     <string name="summary_preference_swipe_feed">Voux pouvez glisser à gauche de la page d\'accueil pour afficher le flux de diffusion</string>
     <string name="web_search_yahoo">Yahoo (web)</string>
     <string name="fennec_fdroid">Fennec F-Droid</string>
@@ -419,8 +419,8 @@
     <string name="placeholder_text_date_time">Jul 16 2019, 7:21 AM</string>
     <string name="title_feed_provider_bbc">BBC</string>
     <string name="title_feed_provider_google_news">Google News</string>
-    <string name="title_feed_provider_customizable_rss">Flux d\'information personnalisé</string>
-    <string name="title_pref_rss_sources">Sources de flux d\'information</string>
+    <string name="title_feed_provider_customizable_rss">Flux d\'information personnel</string>
+    <string name="title_pref_rss_sources">Sources de flux d\'information personnel</string>
     <string name="title_dialog_add_new_rss_source">Ajouter un flux RSS</string>
     <string name="title_button_dialog_ok">OK</string>
     <string name="title_pref_feed_corner_rounding">Rayon des angles</string>
@@ -475,20 +475,20 @@
     <string name="title_card_incoming_snow">Chute de neige à venir</string>
     <string name="title_card_incoming_thunder">Éclairs à venir</string>
     <string name="title_card_upcoming_rain">Chute de pluie à venir</string>
-    <string name="title_smartspace_provider_forecast">Prévisions météorologiques par heure</string>
+    <string name="title_smartspace_provider_forecast">Prévisions météo (heure)</string>
     <string name="placeholder_category_card_title"><![CDATA[Music & Entertainment]]></string>
-    <string name="title_sorting_provider_categorized">Categories</string>
-    <string name="title_feed_provider_daily_forecast">Prévisions météos (Journalière)</string>
+    <string name="title_sorting_provider_categorized">Par catégories</string>
+    <string name="title_feed_provider_daily_forecast">Prévisions météos (Jour)</string>
     <string name="title_weather_provider_weather_com">Weather.com</string>
     <string name="title_weather_provider_weatherbit_data">Weatherbit.io</string>
 
     <string name="title_preference_immersive_desktop">Cacher l\'horloge de la page d\'accueil</string>
-    <string name="description_preference_immersive_desktop">Permettra de cacher l\'horloge de la barre d\'`tat lorsque vous êtes sur la page d\'accueil ou récents</string>
+    <string name="description_preference_immersive_desktop">Permettra de cacher l\'horloge de la barre d\'état lorsque vous êtes sur la page d\'accueil ou récents</string>
 
     <string name="title_weather_provider_unified">Unifié (Fournisseur de prévision météo)</string>
     <string name="placeholder_rss_item_categories">North Korea, DPRK, Miniluv, Minitrue, Miniplenty, Minipeace, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
-    <string name="title_pref_integrated_browser">Utiliser le navigateur intégrér</string>
+    <string name="title_pref_integrated_browser">Utiliser le navigateur intégré</string>
     <string name="daily_briefing_current_conditions_prefix">En ce moment, c\'est </string>
     <string name="daily_breifing_today_prefix">Aujourd\'hui sera </string>
 
@@ -528,7 +528,7 @@
     <string name="title_pref_remote_feed_providers">Fournisseur de flux d\'information tiers</string>
     <string name="title_pref_smartspace_ongoing_events">Afficher les événements à venir</string>
     <string name="summary_pref_smartspace_ongoing_events">Activé, les événements à venir seront affichés dans le fournisseur de calendrier système</string>
-    <string name="title_smartspace_provider_ongoing_events">Afficher les événements à venir du calendrier</string>
+    <string name="title_smartspace_provider_ongoing_events">Événements à venir (Agenda)</string>
     <string name="title_feed_refreshing">Rafraîchir la page d\'information</string>
     <string name="headline_card_feed_welcome">Bienvenue sur votre page d\'information</string>
     <string name="headline2_card_welcome_feed">votre page d\'information vous informera tout au long de la journéee</string>
@@ -558,7 +558,7 @@
 
     <string name="title_pref_show_other_tab">Afficher l\'onglet non-catégorisé</string>
     <string name="summary_pref_show_other_tab">Activé, cet onglet affichera les tuiles non-catégorisées. Tout les éléments du flux d\'information ne fonctionneront pas forcément avec cette option.</string>
-    <string name="title_tabbing_controller_custom">Modifiable</string>
+    <string name="title_tabbing_controller_custom">Personnalisé</string>
     <string name="title_dialog_new_tab">Nouvel onglet</string>
 
     <string name="title_pref_feed_tabs">Modifier les onglets</string>
@@ -570,22 +570,22 @@
     <string name="title_pref_feed_hide_toolbar">Cacher la barre d\'outil automatiquement</string>
     <string name="summary_pref_feed_hide_toolbar">La barre d\'outil sera automatiquement caché lorsque vous déroulerez les tuiles de la page d\'information</string>
 
-    <string name="title_pref_feed_widgets_tab">Les widgest seront affichés dans un onglet séparé</string>
-    <string name="title_smartspace_provider_shade_compat">Plugin de compatibilité pour le launcher shade</string>
+    <string name="title_pref_feed_widgets_tab">Onglet séparé pour les widgets</string>
+    <string name="title_smartspace_provider_shade_compat">Plugin launcher shade</string>
 
     <string name="title_pref_override_locale">Forcer une nouvelle langue</string>
 
-    <string name="title_pref_feed_tabs_on_bottom">Afficher la barre de titre en bas de l\'écran</string>
+    <string name="title_pref_feed_tabs_on_bottom">Afficher la barre de menu en bas de l\'écran</string>
     <string name="summary_pref_feed_tabs_on_bottom">Les onglets et éléments du menu seront affichés en bas de l\'écran</string>
     <string name="message_feed_multiple_processes">Ce flux d\'information est utilisé par plusieurs applications, ce qui n\'est pas recommandé et créer un mauvais fonctionnement du launcheur, et doit être redémaré.</string>
     <string name="title_color_resolver_feed_card">Automatique</string>
     <string name="pref_category_plugins">Plugins</string>
 
-    <string name="title_pref_feed">Flux d\'information</string>
+    <string name="title_pref_feed">Flux de diffusion</string>
     <string name="summary_pref_feed">Fournisseurs, opacité, couleur de fond</string>
     <string name="title_pref_no_plugins">Aucun plugins</string>
     <string name="summary_pref_no_plugins">Librechair est compatible avec les plugins du launcher shade.</string>
-    <string name="dialog_button_select_icon">Selecttionner un icone</string>
+    <string name="dialog_button_select_icon">Selecttionner un icône</string>
 
     <string name="pref_category_providers">Fournisseurs d\'information</string>
     <string name="clipart_microphone">Microphone</string>
@@ -602,7 +602,7 @@
     <string name="title_pref_daily_forecast_item_count">Nombre d\'élèment de la tuile de prévision météo (journalière)</string>
     <string name="clipart_add">Symbole plus</string>
 
-    <string name="title_pref_show_vertical_daily_forecast">Afficher les prévisions journalière verticalement</string>
+    <string name="title_pref_show_vertical_daily_forecast">Prévisions journalière verticales</string>
     <string name="summary_pref_show_vertical_daily_forecast">Les prévisions journalière seront affichées verticalement</string>
     <string name="title_feed_provider_joined_weather">Tuile météo</string>
 
@@ -616,5 +616,6 @@
 
     <string name="title_pref_feed_background">Fournisseur d\'image de fond</string>
     <string name="title_clipart_web">Internet</string>
-
+    
+    <string name="title_pref_feed_search_url_template">URL du moteur de recherche</string>
 </resources>
