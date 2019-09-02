@@ -27,6 +27,7 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -42,7 +43,7 @@ public class WikipediaFunFactsProvider extends FeedProvider {
 
     private Drawable newsIcon;
     private Wiki wikipedia;
-    private String wikiText;
+    private Spanned wikiText;
 
     public WikipediaFunFactsProvider(Context c) {
         super(c);
@@ -53,7 +54,13 @@ public class WikipediaFunFactsProvider extends FeedProvider {
             this.wikipedia = new Wiki("en.wikipedia.org");
             this.wikipedia.conf.userAgent = "Librechair";
             while (wikiText == null) {
-                wikiText = wikipedia.getPageText("Template:Did you know");
+                try {
+                    wikiText = Html.fromHtml(new WikiModel("https://commons.wikipedia.org",
+                            "https://en.wikipedia.org")
+                            .render(wikipedia.getPageText("Template:Did you know")), 0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 try {
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
@@ -91,14 +98,7 @@ public class WikipediaFunFactsProvider extends FeedProvider {
                         item -> {
                             TextView view = new TextView(item.getContext());
                             if (wikiText != null) {
-                                try {
-                                    view.setText(Html.fromHtml(
-                                            new WikiModel("https://commons.wikipedia.org",
-                                                    "https://en.wikipedia.org")
-                                                    .render(wikiText), 0));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
+                                view.setText(wikiText);
                                 return view;
                             }
                             return new View(getContext());
