@@ -87,7 +87,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     public DailyForecast getDailyForecast(double lat, double lon) throws ForecastException {
         try {
             Response<SunV3DailyForecastResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
-                    .getWeatherComWeatherRetrofitServiceForForecast()
+                    .getWeatherComWeatherRetrofitService()
                     .getDailyForecastWithApiV3(7, lat + "," + lon, LawnchairUtilsKt.getLocale(c).getLanguage(), "m")
                     .execute();
 
