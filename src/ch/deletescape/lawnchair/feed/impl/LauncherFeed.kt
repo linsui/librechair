@@ -129,7 +129,7 @@ class LauncherFeed(val originalContext: Context,
             val background =
                     if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else BlurProcessor.Builder(
                             originalContext)
-                            .mode(HokoBlur.MODE_STACK)
+                            .mode(HokoBlur.MODE_GAUSSIAN)
                             .scheme(HokoBlur.SCHEME_JAVA)
                             .context(originalContext)
                             .radius(context.lawnchairPrefs.blurRadius.roundToInt() / BlurWallpaperProvider.DOWNSAMPLE_FACTOR)
