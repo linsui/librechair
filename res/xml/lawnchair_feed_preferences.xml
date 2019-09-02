@@ -189,11 +189,6 @@
         <ch.deletescape.lawnchair.preferences.LocaleOverridePreference
             android:key="pref_override_locale"
             android:title="@string/title_pref_override_locale" />
-        <android.support.v7.preference.EditTextPreference
-            android:defaultValue="https://example.com/search?q=%s"
-            android:key="pref_feed_search_url_template"
-            android:title="@string/title_pref_feed_search_url_template"
-            android:summary="%s"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_show_vertical_daily_forecast"
             android:defaultValue="false"
