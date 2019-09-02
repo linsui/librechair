@@ -20,5 +20,5 @@
 package ch.deletescape.lawnchair.feed.images.bing;
 
 public class BingPictureResponse {
-    public BingPicture[] pictures;
+    public BingPicture[] images;
 }

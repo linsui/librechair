@@ -52,25 +52,25 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
             Log.d(BingDailyImageProvider.this.getClass().getName(),
                     "onResponse: retrieved daily wallpaper " + response);
             if (response.isSuccessful() && response.body() != null
-                    && response.body().pictures.length >= 1) {
+                    && response.body().images.length >= 1) {
                 Executors.newSingleThreadExecutor().submit(() -> {
                     synchronized (images) {
                         Log.d(BingDailyImageProvider.this.getClass().getName(),
                                 "onResponse: retrieved wallpaper URL " + "https://www.bing.com/"
-                                        + response.body().pictures[0].url);
+                                        + response.body().images[0].url);
                         try {
                             URLConnection connection = new URL(
-                                    "https://www.bing.com/" + response.body().pictures[0].url)
+                                    "https://www.bing.com/" + response.body().images[0].url)
                                     .openConnection();
                             Log.d(BingDailyImageProvider.this.getClass().getName(),
                                     "onResponse: opened connection " + "https://www.bing.com/"
-                                            + response.body().pictures[0].url);
+                                            + response.body().images[0].url);
                             images.clear();
                             images.put(BitmapFactory.decodeStream(connection.getInputStream()),
-                                    "https://www.bing.com/" + response.body().pictures[0].url);
+                                    "https://www.bing.com/" + response.body().images[0].url);
                             Log.d(BingDailyImageProvider.this.getClass().getName(),
                                     "onResponse: retrieved bitmap for " + "https://www.bing.com/"
-                                            + response.body().pictures[0].url);
+                                            + response.body().images[0].url);
                             lastRefresh = System.currentTimeMillis();
                         } catch (IOException e) {
                             Log.e(BingDailyImageProvider.this.getClass().getName(),
@@ -87,7 +87,7 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
                 try {
                     Thread.sleep(TimeUnit.MINUTES.toMillis(1));
                     BingRetrofitServiceFactory.INSTANCE.getApi(getContext())
-                            .getPicOfTheDay(null, "json", 0,
+                            .getPicOfTheDay(1, "js", 0,
                                     LawnchairUtilsKt.getLocale(getContext()).getLanguage()).enqueue(this);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -101,7 +101,7 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
     public BingDailyImageProvider(Context c) {
         super(c);
         BingRetrofitServiceFactory.INSTANCE.getApi(c)
-                .getPicOfTheDay(null, "json", 0, LawnchairUtilsKt.getLocale(c).getLanguage())
+                .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(c).getLanguage())
                 .enqueue(callback);
     }
 

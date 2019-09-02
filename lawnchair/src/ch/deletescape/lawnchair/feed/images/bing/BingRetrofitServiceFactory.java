@@ -27,7 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class BingRetrofitServiceFactory {
 
     public final static BingRetrofitServiceFactory INSTANCE;
-    public final static String BASE_URL = "http://www.bing.com/";
+    public final static String BASE_URL = "https://www.bing.com/";
     private static BingApi sApiInstance;
 
     static {

@@ -29,6 +29,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.util.Log;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.images.bing.BingPictureResponse;
 import ch.deletescape.lawnchair.feed.images.bing.BingRetrofitServiceFactory;
@@ -52,7 +53,7 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
     @SuppressLint("DefaultLocale")
     public BingImageProvider(Context context) {
         this.context = context;
-        this.cache = new File(context.getCacheDir(), String.format("bing_daily_epoch_day_%d.png",
+        this.cache = new File(context.getCacheDir(), String.format("bing_epoch_%d.png",
                 TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())));
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_TICK);
@@ -67,13 +68,25 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     @Override
     public Bitmap getBitmap(@NotNull Context context) {
+        Log.d(getClass().getName(), "getBitmap: retrieving bitmap");
         if (cache.exists()) {
-            return BitmapFactory.decodeFile(cache.getAbsolutePath());
+            Bitmap cachedBitmap =  BitmapFactory.decodeFile(cache.getAbsolutePath());
+            if (cachedBitmap == null) {
+                Bitmap map = internalGetBitmap(context);
+                try {
+                    map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
+                } catch (FileNotFoundException | NullPointerException e) {
+                    e.printStackTrace();
+                }
+                return map;
+            } else {
+                return cachedBitmap;
+            }
         } else {
             Bitmap map = internalGetBitmap(context);
             try {
                 map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException | NullPointerException e) {
                 e.printStackTrace();
             }
             return map;
@@ -82,14 +95,17 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     private Bitmap internalGetBitmap(Context context) {
         try {
-            Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE.getApi(context)
-                    .getPicOfTheDay(null, "json", 0, LawnchairUtilsKt.getLocale(context).getLanguage()).execute();
-            if (response.isSuccessful() && response.body() != null && "https://www.bing.com/" + response.body().pictures[0].url != null) {
-                return BitmapFactory.decodeStream(new URL("https://www.bing.com/" + response.body().pictures[0].url).openStream());
-            } else {
-                return null;
-            }
-        } catch (IOException e) {
+            Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE
+                    .getApi(context)
+                    .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
+                    .execute();
+            Log.d(getClass().getName(),
+                    "internalGetBitmap: retrieved URL " + "https://www.bing.com" + response
+                            .body().images[0].url);
+            return BitmapFactory.decodeStream(
+                    new URL("https://www.bing.com" + response.body().images[0].url).openStream());
+        } catch (IOException | NullPointerException e) {
+            Log.d(getClass().getName(), "internalGetBitmap: failed to retrieve bitmap", e);
             e.printStackTrace();
             return null;
         }
