@@ -40,6 +40,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
@@ -128,10 +129,10 @@ class LauncherFeed(val originalContext: Context,
             val background =
                     if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else BlurProcessor.Builder(
                             originalContext)
-                            .mode(HokoBlur.MODE_GAUSSIAN)
-                            .scheme(HokoBlur.SCHEME_NATIVE)
+                            .mode(HokoBlur.MODE_STACK)
+                            .scheme(HokoBlur.SCHEME_JAVA)
                             .context(originalContext)
-                            .radius(context.lawnchairPrefs.blurRadius.roundToInt())
+                            .radius(context.lawnchairPrefs.blurRadius.roundToInt() / BlurWallpaperProvider.DOWNSAMPLE_FACTOR)
                             .processor()
                             .blur(backgroundToProcess)
             preferenceScreens.iterator().let {
