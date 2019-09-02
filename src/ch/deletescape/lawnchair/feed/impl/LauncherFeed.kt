@@ -54,40 +54,39 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
 
-class LauncherFeed(originalContext: Context, bitmap: Bitmap? = null) : ILauncherOverlay.Stub() {
-    private var backgroundColor: Int = if (bitmap == null) ColorUtils.setAlphaComponent(
+class LauncherFeed(val originalContext: Context,
+                   backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
+        ILauncherOverlay.Stub() {
+    private var backgroundColor: Int = ColorUtils.setAlphaComponent(
             ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
-                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
-            bitmap).generate().getDominantColor(0)
-    private val dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
+                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+    private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
 
     init {
         d("init: dark ${dark}")
     }
 
-    private val context = ContextThemeWrapper(originalContext,
+    private var context = ContextThemeWrapper(originalContext,
                                               if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
-    private val adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
+    private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                                       context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
-    private val feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
+    private var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
                                                                        false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
-                    it.background =
-                            if (bitmap == null) ColorDrawable(backgroundColor) else BitmapDrawable(
-                                    context.resources,
-                                    Utilities.cropToCenter(bitmap, it.measuredHeight,
-                                                           it.measuredWidth))
+                    it.background = ColorDrawable(backgroundColor)
                 }
                 adapter.backgroundColor = backgroundColor
             }
@@ -96,12 +95,12 @@ class LauncherFeed(originalContext: Context, bitmap: Bitmap? = null) : ILauncher
     private val useTabbedMode = tabController.allTabs.isNotEmpty()
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
-    private val tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-    private val recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
-    private val toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
-    private val content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
-    private val frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
-    private val googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
+    private var tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
+    private var recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+    private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+    private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
+    private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
+    private var googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
@@ -113,6 +112,58 @@ class LauncherFeed(originalContext: Context, bitmap: Bitmap? = null) : ILauncher
     var navigationBarHeight: Int? = null
 
     init {
+        reinitState(reinit = false)
+        if (backgroundSetupListener != null) {
+            backgroundSetupListener {
+                runBlocking { delay(2) }
+                reinitState(it, true)
+            }
+        }
+    }
+
+    fun reinitState(background: Bitmap? = null, reinit: Boolean = false) = handler.post {
+        if (reinit) {
+            preferenceScreens.iterator().let {
+                it.forEach { screen ->
+                    frame.removeView(screen.second.view)
+                    it.remove()
+                }
+            }
+
+            backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
+                    ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
+                    (LawnchairPreferences.getInstance(
+                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
+                    background).generate().getDominantColor(0).setAlpha(255)
+
+            d("reinitState: background color: r: ${backgroundColor.red} g: ${backgroundColor.green} b: ${backgroundColor.blue}")
+
+            dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
+            context = ContextThemeWrapper(originalContext,
+                                          if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+            adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
+                                  context.applicationContext, this)
+            feedAttached = false
+            closeOverlay(0)
+            feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
+                                                                   false) as FeedController).also {
+                it.setLauncherFeed(this)
+                it.viewTreeObserver.addOnGlobalLayoutListener {
+                    it.background = if (background == null) ColorDrawable(
+                            backgroundColor) else BitmapDrawable(context.resources,
+                                                                 Utilities.cropToCenter(background,
+                                                                                        it.measuredHeight,
+                                                                                        it.measuredWidth))
+                }
+                adapter.backgroundColor = backgroundColor
+            }
+            tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
+            recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+            toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+            content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
+            frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
+        }
+
         if (!useTabbedMode) {
             recyclerView.apply {
                 setPadding(paddingStart, toolbar.also {

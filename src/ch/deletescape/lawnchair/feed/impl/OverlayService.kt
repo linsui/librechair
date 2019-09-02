@@ -27,7 +27,8 @@ import ch.deletescape.lawnchair.feed.images.providers.BitmapCache
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class OverlayService : Service(), () -> Unit {
     lateinit var feed: LauncherFeed;
@@ -50,9 +51,14 @@ class OverlayService : Service(), () -> Unit {
         if (imageProvider == null) {
             feed = LauncherFeed(this)
         } else {
-            runBlocking {
-                feed = LauncherFeed(this@OverlayService, BitmapCache.getBitmap(imageProvider!!, this@OverlayService))
-            }
+                feed = LauncherFeed(this@OverlayService) {
+                    GlobalScope.launch {
+                        val bitmap = BitmapCache.getBitmap(imageProvider!!, this@OverlayService);
+                        if (bitmap != null) {
+                            it(bitmap)
+                        }
+                    }
+                }
         }
     }
 
