@@ -54,6 +54,8 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import com.hoko.blur.HokoBlur
+import com.hoko.blur.processor.BlurProcessor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.math.hypot
@@ -121,8 +123,17 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun reinitState(background: Bitmap? = null, reinit: Boolean = false) = handler.post {
+    fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (reinit) {
+            val background =
+                    if (!context.lawnchairPrefs.enableBlur) backgroundToProcess else BlurProcessor.Builder(
+                            originalContext)
+                            .mode(HokoBlur.MODE_GAUSSIAN)
+                            .scheme(HokoBlur.SCHEME_NATIVE)
+                            .context(originalContext)
+                            .radius(context.lawnchairPrefs.blurRadius.roundToInt())
+                            .processor()
+                            .blur(backgroundToProcess)
             preferenceScreens.iterator().let {
                 it.forEach { screen ->
                     frame.removeView(screen.second.view)
@@ -174,7 +185,7 @@ class LauncherFeed(val originalContext: Context,
         }
         var oldToolbarPadding: Pair<Int, Int>? = null
         var oldRecyclerViewPadding: Pair<Int, Int>? = null
-        if (backgroundColor.alpha == 255) {
+        if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.enableBlur || !reinit)) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
@@ -296,8 +307,7 @@ class LauncherFeed(val originalContext: Context,
                                 .tint(if (useWhiteText(backgroundColor,
                                                        context)) R.color.textColorPrimary.fromColorRes(
                                         context)
-                                                       else R.color.textColorPrimaryInverse.fromColorRes(
-                                        context))
+                                      else R.color.textColorPrimaryInverse.fromColorRes(context))
                     }
                     runOnNewThread { refresh(0) }
                 }
@@ -343,10 +353,8 @@ class LauncherFeed(val originalContext: Context,
             toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
             toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
                     .tint(if (useWhiteText(backgroundColor,
-                                           context)) R.color.textColorPrimary.fromColorRes(
-                            context)
-                                           else R.color.textColorPrimaryInverse.fromColorRes(
-                            context))
+                                           context)) R.color.textColorPrimary.fromColorRes(context)
+                          else R.color.textColorPrimaryInverse.fromColorRes(context))
             toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             toolbar.menu.getItem(0).setOnMenuItemClickListener {
                 context.bindService(Intent(context, WidgetSelectionService::class.java),
@@ -488,9 +496,9 @@ class LauncherFeed(val originalContext: Context,
         })
         if (toolbar.menu.findItem(R.id.cancel) == null) {
             toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
-                icon = R.drawable.ic_close.fromDrawableRes(context).tint(
-                        if (useWhiteText(backgroundColor,
-                                         context)) R.color.textColorPrimary.fromColorRes(
+                icon = R.drawable.ic_close.fromDrawableRes(context)
+                        .tint(if (useWhiteText(backgroundColor,
+                                               context)) R.color.textColorPrimary.fromColorRes(
                                 context) else R.color.textColorPrimaryInverse.fromColorRes(context))
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 setOnMenuItemClickListener {
