@@ -218,6 +218,15 @@ class LauncherFeed(val originalContext: Context,
         if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.feedBlur || !reinit)) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
+        feedController.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (lastOrientation != context.resources.configuration.orientation) {
+                lastOrientation = context.resources.configuration.orientation
+                if (verticalBackground != null && horizontalBackground != null) {
+                    feedController.background =
+                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                }
+            }
+        }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
@@ -621,10 +630,12 @@ class LauncherFeed(val originalContext: Context,
         }
 
     override fun startScroll() {
-        lastOrientation = context.resources.configuration.orientation
-        if (verticalBackground != null && horizontalBackground != null) {
-            feedController.background =
-                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+        if (lastOrientation != context.resources.configuration.orientation) {
+            lastOrientation = context.resources.configuration.orientation
+            if (verticalBackground != null && horizontalBackground != null) {
+                feedController.background =
+                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+            }
         }
         accessingPackages += context.packageManager.getPackagesForUid(
                 Binder.getCallingUid())?.toSet() ?: emptySet()
