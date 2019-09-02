@@ -615,4 +615,5 @@
     <string name="title_clipart_web">Internet</string>
 
     <string name="title_pref_feed_search_url_template">Search URL</string>
+    <string name="title_image_provider_apod">NASA APOD</string>
 </resources>

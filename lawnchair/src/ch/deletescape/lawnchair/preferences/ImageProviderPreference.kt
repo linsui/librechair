@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
+import ch.deletescape.lawnchair.feed.images.providers.ApodImageProvider
 import ch.deletescape.lawnchair.feed.images.providers.BingImageProvider
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.fromStringRes
@@ -38,10 +39,12 @@ class ImageProviderPreference(context: Context, attrs: AttributeSet) :
 
     companion object {
         fun getAllProviders(): List<KClass<out ImageProvider>> = listOf(ImageProvider::class,
-                                                                        BingImageProvider::class)
+                                                                        BingImageProvider::class,
+                                                                        ApodImageProvider::class)
         fun getNameForProvider(clazz: KClass<out ImageProvider>) = when (clazz) {
             ImageProvider::class -> R.string.none
             BingImageProvider::class -> R.string.title_feed_provider_bing_daily
+            ApodImageProvider::class -> R.string.title_image_provider_apod
             else -> error("there's no known name for the provider $clazz")
         }
     }
