@@ -484,6 +484,11 @@ class LauncherFeed(val originalContext: Context,
                 toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
             }
         }
+        if (reinit) {
+            startScroll()
+            feedController.onScroll(1f)
+            feedAttached = true
+        }
     }
 
     fun displayPreferenceScreen(screen: ProviderScreen, x: Float, y: Float,
