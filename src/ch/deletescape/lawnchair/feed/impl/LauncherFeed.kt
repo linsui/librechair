@@ -218,13 +218,14 @@ class LauncherFeed(val originalContext: Context,
                         R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
             }
         }
+        if (context.lawnchairPrefs.feedHighContrastToolbar) {
+            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+        }
+
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
         var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
         var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
         var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
-        if (backgroundColor.alpha == 255 && (!context.lawnchairPrefs.feedBlur || !reinit)) {
-            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
-        }
         feedController
                 .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                     if (lastOrientation != context.resources.configuration.orientation) {
