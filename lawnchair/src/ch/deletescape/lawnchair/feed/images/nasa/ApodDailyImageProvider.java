@@ -49,7 +49,8 @@ public class ApodDailyImageProvider extends AbstractImageProvider<String> {
         public synchronized void onResponse(Call<ApodResponse> call,
                 Response<ApodResponse> response) {
             if (response.isSuccessful() && response.body() != null
-                    && response.body().hdurl != null || response.body().url != null) {
+                    && response.body().hdurl != null || response.body().url != null && response
+                    .body().media_type.equals("image")) {
                 Executors.newSingleThreadExecutor().submit(() -> {
                     synchronized (images) {
                         try {

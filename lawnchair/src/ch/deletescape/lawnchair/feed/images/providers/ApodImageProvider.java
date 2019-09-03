@@ -68,7 +68,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
     @Override
     public Bitmap getBitmap(@NotNull Context context) {
         if (cache.exists()) {
-            Bitmap cachedBitmap =  BitmapFactory.decodeFile(cache.getAbsolutePath());
+            Bitmap cachedBitmap = BitmapFactory.decodeFile(cache.getAbsolutePath());
             if (cachedBitmap == null) {
                 Bitmap map = internalGetBitmap(context);
                 try {
@@ -94,7 +94,11 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
     private Bitmap internalGetBitmap(Context context) {
         try {
             Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
-            return BitmapFactory.decodeStream(new URL(response.body().hdurl).openStream());
+            if (response.body().media_type.equals("image")) {
+                return BitmapFactory.decodeStream(new URL(response.body().hdurl).openStream());
+            } else {
+                return null;
+            }
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
             return null;

@@ -106,6 +106,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             if (it.feed == null && feed != null) {
                 it.feed = feed
             }
+            d("refresh: loading cards for provider ${it::class.qualifiedName}")
             toSort += mutableListOf(it.cards)
         }
         val algorithm = ReflectionUtils.inflateSortingAlgorithm(
