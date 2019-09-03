@@ -235,6 +235,7 @@ class LauncherFeed(val originalContext: Context,
                         }
                     }
                 }
+        upButton.visibility = if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom

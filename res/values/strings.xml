@@ -616,4 +616,7 @@
 
     <string name="title_pref_feed_search_url_template">Search URL</string>
     <string name="title_image_provider_apod">NASA APOD</string>
+    
+    <string name="title_pref_feed_display_back_to_top_button">Display back to top button</string>
+    <string name="summary_pref_feed_display_back_to_top_button">A back to top button will be displayed when scrolling down</string>
 </resources>

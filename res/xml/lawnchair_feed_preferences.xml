@@ -142,6 +142,11 @@
             android:key="pref_feed_tabs_on_bottom"
             android:summary="@string/summary_pref_feed_tabs_on_bottom"
             android:title="@string/title_pref_feed_tabs_on_bottom" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_feed_display_back_to_top_button"
+            android:title="@string/title_pref_feed_display_back_to_top_button"
+            android:summary="@string/summary_pref_feed_display_back_to_top_button"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

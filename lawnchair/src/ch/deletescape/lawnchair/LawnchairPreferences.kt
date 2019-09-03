@@ -438,6 +438,7 @@ class LawnchairPreferences(val context: Context) :
                                         ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
+    val feedBackToTop by BooleanPref("pref_feed_display_back_to_top_button", true, ::restartOverlay)
     val feedBackground by ImageProviderPref("pref_feed_background", ImageProvider::class, ::restartOverlay)
     val feedSearchUrl by StringPref("pref_feed_search_url_template", "https://example.com/search?q=%s", ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
