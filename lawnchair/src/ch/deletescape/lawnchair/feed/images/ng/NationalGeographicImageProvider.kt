@@ -55,7 +55,13 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     }.await()
 
     override fun registerOnChangeListener(listener: () -> Unit) {
-        Handler(c.mainLooper).postAtTime(listener, SystemClock.uptimeMillis() + tomorrow(
+        Handler(c.mainLooper).postAtTime(object : Function0<Unit> {
+            override fun invoke() {
+                listener()
+                Handler(c.mainLooper).postAtTime(this, SystemClock.uptimeMillis() + tomorrow(
+                        Date()).time - System.currentTimeMillis())
+            }
+        }, SystemClock.uptimeMillis() + tomorrow(
                 Date()).time - System.currentTimeMillis())
     }
 }
