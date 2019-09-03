@@ -264,8 +264,11 @@ class LauncherFeed(val originalContext: Context,
                            if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
             }
             (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                marginEnd = if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
-                bottomMargin = if (!tabsOnBottom) insets.stableInsetBottom + 16 else toolbar.measuredHeight + insets.stableInsetBottom + 16
+                marginEnd =
+                        if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
+                bottomMargin = if (!tabsOnBottom) insets.stableInsetBottom + 16 else toolbar.also {
+                    it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                }.measuredHeight / 2 + insets.stableInsetBottom + 16
             }
             upButton.animate().alpha(0f).duration = 1000
             insets
