@@ -395,9 +395,19 @@ class LauncherFeed(val originalContext: Context,
                     if (dy > 0) {
                         toolbar.animate().translationY(
                                 if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
-                        upButton.animate().alpha(255f).duration = 1000
                     } else if (dy < 0) {
                         toolbar.animate().translationY(0f)
+                    }
+                }
+            })
+        }
+        if (context.lawnchairPrefs.feedBackToTop) {
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        upButton.animate().alpha(255f).duration = 1000
+                    } else if (dy < 0) {
                         upButton.animate().alpha(0f).duration = 1000
                     }
                 }
