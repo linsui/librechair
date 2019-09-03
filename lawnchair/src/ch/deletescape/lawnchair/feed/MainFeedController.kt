@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
+import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -104,9 +105,11 @@ class MainFeedController(val context: Context) {
                     TheVergeFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_the_verge)
                     ImageProvider::class.qualifiedName -> context.getString(
-                                                R.string.title_feed_provider_images)
+                            R.string.title_feed_provider_images)
                     BingDailyImageProvider::class.qualifiedName -> context.getString(
-                                                R.string.title_feed_provider_bing_daily)
+                            R.string.title_feed_provider_bing_daily)
+                    ApodDailyImageProvider::class.qualifiedName -> R.string.title_image_provider_apod.fromStringRes(
+                            context)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -137,6 +140,7 @@ class MainFeedController(val context: Context) {
                           FeedSearchboxProvider::class.qualifiedName,
                           ImageProvider::class.qualifiedName,
                           BingDailyImageProvider::class.qualifiedName,
+                          ApodDailyImageProvider::class.qualifiedName,
                           NoteListProvider::class.qualifiedName,
                           WeatherBarFeedProvider::class.qualifiedName,
                           WikipediaNewsProvider::class.qualifiedName,
