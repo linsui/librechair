@@ -314,21 +314,6 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView.visibility = View.GONE
         } else {
-            if (context.lawnchairPrefs.feedAutoHideToolbar) {
-                recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        if (dy > 0) {
-                            toolbar.animate().translationY(
-                                    if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
-                            upButton.animate().alpha(255f).duration = 1000
-                        } else if (dy < 0) {
-                            toolbar.animate().translationY(0f)
-                            upButton.animate().alpha(0f).duration = 1000
-                        }
-                    }
-                })
-            }
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
                     text = it.title
@@ -401,6 +386,21 @@ class LauncherFeed(val originalContext: Context,
                         arrayOf(getColorForIndex(0).setAlpha(50),
                                 tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
             }
+        }
+        if (context.lawnchairPrefs.feedAutoHideToolbar) {
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy > 0) {
+                        toolbar.animate().translationY(
+                                if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
+                        upButton.animate().alpha(255f).duration = 1000
+                    } else if (dy < 0) {
+                        toolbar.animate().translationY(0f)
+                        upButton.animate().alpha(0f).duration = 1000
+                    }
+                }
+            })
         }
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
