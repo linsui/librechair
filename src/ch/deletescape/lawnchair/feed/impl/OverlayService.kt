@@ -53,10 +53,13 @@ class OverlayService : Service(), () -> Unit {
                 feed = LauncherFeed(this@OverlayService) {
                     GlobalScope.launch {
                         val refreshBitmap = {
-                            val bitmap = imageProvider?.getBitmap(this@OverlayService)
-                            if (bitmap != null) {
-                                it(bitmap)
+                            GlobalScope.launch {
+                                val bitmap = imageProvider?.getBitmap(this@OverlayService)
+                                if (bitmap != null) {
+                                    it(bitmap)
+                                }
                             }
+                            Unit
                         }
                         refreshBitmap()
                         imageProvider?.registerOnChangeListener(refreshBitmap)

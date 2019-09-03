@@ -17,27 +17,16 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed.images.providers
+package ch.deletescape.lawnchair.feed.images.ng
 
 import android.content.Context
-import android.graphics.Bitmap
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-object BitmapCache {
-    private val cache: MutableMap<String, Pair<Long, Bitmap?>> = mutableMapOf()
-
-    suspend fun getBitmap(provider: ImageProvider, c: Context): Bitmap? = withContext(
-            Dispatchers.Default) {
-        synchronized(this@BitmapCache) {
-            if (System.currentTimeMillis() - (cache[provider::class.qualifiedName]?.first
-                                              ?: 0) >= provider.expiryTime) {
-                provider.getBitmap(c).also {
-                    cache[provider::class.qualifiedName!!] = System.currentTimeMillis() to it
-                }
-            } else {
-                cache[provider::class.qualifiedName]!!.second
-            }
-        }
-    }
+object NationalGeographicRetrofitServiceFactory {
+    private var api: PotdApi? = null
+    fun getApi(c: Context): PotdApi = api ?: Retrofit.Builder().addConverterFactory(
+            GsonConverterFactory.create()).baseUrl("https://www.nationalgeographic.com/").client(
+            OkHttpClientBuilder().build(c)).build().create(PotdApi::class.java)
 }

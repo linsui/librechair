@@ -37,6 +37,6 @@ class CustomBackgroundProvider(val context: Context) : ImageProvider {
     }
 
     override val expiryTime: Long = 0
-    override fun getBitmap(context: Context): Bitmap? = ImageStore.getInstance(context).getBitmap(
+    override suspend fun getBitmap(context: Context): Bitmap? = ImageStore.getInstance(context).getBitmap(
             context.lawnchairPrefs.feedCustomBackground ?: "000000-0000-0000-fffff")
 }

@@ -40,6 +40,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import kotlin.Unit;
+import kotlin.coroutines.Continuation;
 import kotlin.jvm.functions.Function0;
 import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
@@ -66,7 +67,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
 
 
     @Override
-    public Bitmap getBitmap(@NotNull Context context) {
+    public Object getBitmap(@NotNull Context context, Continuation<? super Bitmap> o) {
         if (cache.exists()) {
             Bitmap cachedBitmap = BitmapFactory.decodeFile(cache.getAbsolutePath());
             if (cachedBitmap == null) {

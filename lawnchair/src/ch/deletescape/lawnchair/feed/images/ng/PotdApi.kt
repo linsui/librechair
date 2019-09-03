@@ -17,26 +17,12 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed.images.providers
+package ch.deletescape.lawnchair.feed.images.ng
 
-import android.content.Context
-import android.graphics.Bitmap
-import ch.deletescape.lawnchair.util.extensions.d
-import kotlin.reflect.KClass
+import retrofit2.Call
+import retrofit2.http.GET
 
-interface ImageProvider {
-    val expiryTime: Long
-    suspend fun getBitmap(context: Context): Bitmap?
-    fun registerOnChangeListener(listener: () -> Unit)
-
-    companion object {
-        fun inflate(clazz: KClass<out ImageProvider>, c: Context): ImageProvider? {
-            d("inflate: class constructors ${clazz.constructors}")
-            if (clazz.constructors.isNotEmpty()) {
-                return clazz.constructors.toList()[0].call(c)
-            } else {
-                return null
-            }
-        }
-    }
+interface PotdApi {
+    @GET("/content/photography/en_US/photo-of-the-day/_jcr_content/.gallery.json")
+    fun getPictureOfTheDay(): Call<Gallery>
 }

@@ -621,4 +621,5 @@
     <string name="summary_pref_feed_display_back_to_top_button">A back to top button will be displayed when scrolling down</string>
     <string name="title_pref_feed_custom_background">Custom background</string>
     <string name="summary_pref_feed_custom_background">You can set an image to be used as the background of the feed</string>
+    <string name="title_image_provider_national_geographic">National Geographic</string>
 </resources>
