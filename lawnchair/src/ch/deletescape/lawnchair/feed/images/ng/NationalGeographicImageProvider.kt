@@ -28,6 +28,9 @@ import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.tomorrow
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
 import java.util.*
@@ -37,20 +40,29 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     override val expiryTime: Long
         get() = TimeUnit.DAYS.toMillis(1)
 
+    val cache: File
+        get() = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+
     override suspend fun getBitmap(context: Context): Bitmap? = GlobalScope.async {
-        try {
-            val response =
-                    NationalGeographicRetrofitServiceFactory.getApi(context).getPictureOfTheDay()
-                            .execute()
-            if (!response.isSuccessful || response.body() == null) {
+        if (cache.exists()) {
+            return@async BitmapFactory.decodeStream(FileInputStream(cache))
+        } else {
+            try {
+                val response = NationalGeographicRetrofitServiceFactory.getApi(context)
+                        .getPictureOfTheDay().execute()
+                if (!response.isSuccessful || response.body() == null) {
+                    return@async null
+                } else {
+                    return@async BitmapFactory
+                            .decodeStream(URL(response.body()!!.items[0].originalUrl).openStream())
+                            .also {
+                                it.compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(cache))
+                            }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
                 return@async null
-            } else {
-                return@async BitmapFactory
-                        .decodeStream(URL(response.body()!!.items[0].originalUrl).openStream())
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            return@async null
         }
     }.await()
 
