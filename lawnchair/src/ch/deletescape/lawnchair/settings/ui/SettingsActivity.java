@@ -74,6 +74,7 @@ import ch.deletescape.lawnchair.colors.overrides.ThemedEditTextPreferenceDialogF
 import ch.deletescape.lawnchair.colors.overrides.ThemedListPreferenceDialogFragment;
 import ch.deletescape.lawnchair.colors.overrides.ThemedMultiSelectListPreferenceDialogFragmentCompat;
 import ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference;
+import ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity;
 import ch.deletescape.lawnchair.gestures.ui.GesturePreference;
 import ch.deletescape.lawnchair.gestures.ui.SelectGestureHandlerFragment;
 import ch.deletescape.lawnchair.globalsearch.ui.SearchProviderPreference;
@@ -159,6 +160,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
 
     public final static String EXTRA_FRAGMENT = "fragment";
     public final static String EXTRA_FRAGMENT_ARGS = "fragmentArgs";
+
+    private final static int SELECT_FEED_BACKGROUND_IMAGE = 3841;
 
     private boolean isSubSettings;
     protected boolean forceSubSettings = false;
@@ -780,6 +783,11 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 if (preferenceMap.isEmpty()) {
                     pluginCategory.addPreference(noPlugins);
                 }
+            } else if (getContent() == R.xml.lawnchair_feed_preferences) {
+                findPreference("pref_feed_custom_background").setOnPreferenceClickListener(preference -> {
+                    getActivity().startActivityForResult(new Intent(getActivity(), ImageStoreActivity.class), SELECT_FEED_BACKGROUND_IMAGE);
+                    return true;
+                });
             }
         }
 
@@ -1175,5 +1183,14 @@ public class SettingsActivity extends SettingsBaseActivity implements
             intent.putExtra(EXTRA_TITLE, title);
         }
         return intent;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SELECT_FEED_BACKGROUND_IMAGE && resultCode == RESULT_OK) {
+            Utilities.getLawnchairPrefs(this).setFeedCustomBackground(data.getStringExtra(
+                    ImageStoreActivity.IMAGE_UUID));
+        }
     }
 }

@@ -57,6 +57,8 @@
             android:key="pref_feed_background"
             android:title="@string/title_pref_feed_background"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.preferences.FeedCustomBackgroundPreference
+            android:key="pref_feed_custom_background"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_feed_show_event_color"
             android:title="@string/title_pref_feed_show_event_color"

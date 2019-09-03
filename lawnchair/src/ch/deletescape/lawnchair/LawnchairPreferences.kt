@@ -277,6 +277,7 @@ class LawnchairPreferences(val context: Context) :
             setAll(getAll().filter { it.first != value.first } + value)
         }
     }
+    var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null, ::restartOverlay)
     var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),
                                              ::restartOverlay);
 
