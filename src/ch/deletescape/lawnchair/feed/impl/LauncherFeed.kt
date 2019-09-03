@@ -32,6 +32,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.*
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.TabLayout
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.graphics.Palette
@@ -110,6 +111,8 @@ class LauncherFeed(val originalContext: Context,
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
+    private var upButton =
+            (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
     private var googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
                                         Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
     private lateinit var oldIconTint: ColorStateList
@@ -146,8 +149,8 @@ class LauncherFeed(val originalContext: Context,
             backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
                     ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
                     (LawnchairPreferences.getInstance(
-                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette
-                    .from(backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
+                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
+                    backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
 
             d("reinitState: background color: r: ${backgroundColor.red} g: ${backgroundColor.green} b: ${backgroundColor.blue}")
 
@@ -204,6 +207,7 @@ class LauncherFeed(val originalContext: Context,
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
             content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
+            upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
         }
 
         if (!useTabbedMode) {
@@ -258,12 +262,22 @@ class LauncherFeed(val originalContext: Context,
                            oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
                            if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
             }
+            (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                marginEnd = if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
+                bottomMargin = if (!tabsOnBottom) insets.stableInsetBottom + 16 else toolbar.measuredHeight + insets.stableInsetBottom + 16
+            }
+            upButton.animate().alpha(0f).duration = 1000
             insets
         }
         feedController.mOpenedCallback = {
             runOnNewThread {
                 refresh(100)
             }
+        }
+        upButton.setOnClickListener {
+            recyclerView.smoothScrollToPosition(0)
+            toolbar.animate().translationY(0f)
+            upButton.animate().alpha(0f).duration = 1000
         }
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
@@ -303,8 +317,10 @@ class LauncherFeed(val originalContext: Context,
                         if (dy > 0) {
                             toolbar.animate().translationY(
                                     if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
+                            upButton.animate().alpha(255f).duration = 1000
                         } else if (dy < 0) {
                             toolbar.animate().translationY(0f)
+                            upButton.animate().alpha(0f).duration = 1000
                         }
                     }
                 })
