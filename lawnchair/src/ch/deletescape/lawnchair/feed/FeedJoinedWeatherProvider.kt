@@ -92,12 +92,18 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 v.findViewById(R.id.unified_weather_forecast) as LinearLayout
                         val dailyLayout = v.findViewById(R.id.unified_weather_daily) as LinearLayout
 
+                        if (context.lawnchairPrefs.showVerticalDailyForecast) {
+                            dailyLayout.orientation = LinearLayout.VERTICAL
+                        }
+                        if (context.lawnchairPrefs.showVerticalHourlyForecast) {
+                            hourlyLayout.orientation = LinearLayout.VERTICAL
+                        }
                         hourlyWeatherForecast?.data
                                 ?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
                                 ?.forEach {
                                     hourlyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
-                                                    R.layout.narrow_forecast_item, parent,
+                                                    if (context.lawnchairPrefs.showVerticalHourlyForecast)  R.layout.narrow_forecast_item else R.layout.straight_forecast_item, parent,
                                                     false).apply {
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
@@ -105,6 +111,15 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         R.id.forecast_current_time) as TextView
                                                 val icon = findViewById(
                                                         R.id.forecast_weather_icon) as ImageView
+
+                                                viewTreeObserver.addOnPreDrawListener {
+                                                    if (context.lawnchairPrefs.showVerticalHourlyForecast) {
+                                                        layoutParams = LinearLayout.LayoutParams(
+                                                                dailyLayout.also {it.measure(
+                                                                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)}.width, WRAP_CONTENT)
+                                                    }
+                                                    true
+                                                }
 
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
@@ -130,9 +145,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                         dailyForecast?.dailyForecastData
                                 ?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
                                 ?.forEach {
-                                    if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                        dailyLayout.orientation = LinearLayout.VERTICAL
-                                    }
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,

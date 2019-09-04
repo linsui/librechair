@@ -600,7 +600,10 @@
     <string name="clipart_add">Plus symbol</string>
 
     <string name="title_pref_show_vertical_daily_forecast">Display vertical daily forecast</string>
-    <string name="summary_pref_show_vertical_daily_forecast">The daily forecast will be displayed as horizontal rows</string>
+    <string name="summary_pref_show_vertical_daily_forecast">The daily forecast will be displayed in horizontal rows</string>
+
+    <string name="title_pref_show_vertical_hourly_forecast">Display hourly daily forecast</string>
+    <string name="summary_pref_show_vertical_hourly_forecast">The hourly forecast will be displayed as horizontal rows</string>
     <string name="title_feed_provider_joined_weather">Weather card</string>
 
     <string name="title_pref_feed_card_elevation">Card elevation</string>
