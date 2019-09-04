@@ -40,6 +40,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/feed_back_to_top"
+            style="@style/Theme.AppCompat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/Theme.AppCompat"
+            app:fabSize="mini"
+            app:backgroundTint="@color/qsb_background_hotseat_white"
+            android:tint="@color/colorAccent"
+            android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
+            android:layout_gravity="bottom|end"/>
         <Toolbar
             android:fitsSystemWindows="false"
             android:id="@+id/feed_title_bar"
@@ -53,16 +64,5 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/SettingsTheme.Base" />
         </Toolbar>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/feed_back_to_top"
-            style="@style/Theme.AppCompat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:theme="@style/Theme.AppCompat"
-            app:fabSize="mini"
-            app:backgroundTint="@color/qsb_background_hotseat_white"
-            android:tint="@color/colorAccent"
-            android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
-            android:layout_gravity="bottom|end"/>
     </FrameLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>
