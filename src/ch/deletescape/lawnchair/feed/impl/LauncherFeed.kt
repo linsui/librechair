@@ -271,7 +271,7 @@ class LauncherFeed(val originalContext: Context,
                     it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
                 }.measuredHeight / 2 + insets.stableInsetBottom + 16
             }
-            upButton.animate().alpha(0f).duration = 1000
+            upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat()).duration = 500
             insets
         }
         feedController.mOpenedCallback = {
@@ -282,7 +282,7 @@ class LauncherFeed(val originalContext: Context,
         upButton.setOnClickListener {
             recyclerView.smoothScrollToPosition(0)
             toolbar.animate().translationY(0f)
-            upButton.animate().alpha(0f).duration = 1000
+            upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
         }
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
@@ -406,9 +406,9 @@ class LauncherFeed(val originalContext: Context,
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
-                        upButton.animate().alpha(255f).duration = 1000
+                        upButton.animate().translationY(0f).duration = 500
                     } else if (dy < 0) {
-                        upButton.animate().alpha(0f).duration = 1000
+                        upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat()).duration = 500
                     }
                 }
             })
