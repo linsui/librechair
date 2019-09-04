@@ -63,7 +63,6 @@ open class IntSeekbarPreference @JvmOverloads constructor(context: Context, attr
     protected var defaultValue: Int = 0
     private var multiplier: Int = 0
     private var format: String? = null
-    protected var steps: Int = 100
     private var lastPersist: Int? = null
 
     private val handlerThread = HandlerThread("debounce").apply { start() }
@@ -83,7 +82,6 @@ open class IntSeekbarPreference @JvmOverloads constructor(context: Context, attr
         multiplier = ta.getInt(R.styleable.SeekbarPreference_summaryMultiplier, 1)
         format = ta.getString(R.styleable.SeekbarPreference_summaryFormat)
         defaultValue = ta.getInt(R.styleable.IntSeekbarPreference_defaultSeekbarValueI, min)
-        steps = ta.getInt(R.styleable.SeekbarPreference_steps, 100)
         if (format == null) {
             format = "%.2d"
         }
@@ -95,7 +93,8 @@ open class IntSeekbarPreference @JvmOverloads constructor(context: Context, attr
         val view = holder.itemView
         mSeekbar = view.findViewById(R.id.seekbar)
         mValueText = view.findViewById(R.id.txtValue)
-        mSeekbar!!.max = steps
+        mSeekbar!!.max = max
+        mSeekbar!!.min = min
 
         current = getPersistedInt(defaultValue)
         updateDisplayedValue()
@@ -128,14 +127,14 @@ open class IntSeekbarPreference @JvmOverloads constructor(context: Context, attr
 
     protected open fun updateDisplayedValue() {
         mSeekbar?.setOnSeekBarChangeListener(null)
-        val progress = (current - min) / (max - min) / steps
+        val progress = current
         mSeekbar!!.progress = progress
         updateSummary()
         mSeekbar?.setOnSeekBarChangeListener(this)
     }
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-        current = (min + (max - min) / steps.toFloat() * progress).roundToInt()
+        current = progress
         updateSummary()
     }
 
