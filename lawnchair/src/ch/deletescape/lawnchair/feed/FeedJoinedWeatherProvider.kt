@@ -103,7 +103,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 ?.forEach {
                                     hourlyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
-                                                    if (context.lawnchairPrefs.showVerticalHourlyForecast)  R.layout.narrow_forecast_item else R.layout.straight_forecast_item, parent,
+                                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item, parent,
                                                     false).apply {
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
