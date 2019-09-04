@@ -625,4 +625,7 @@
 
     <string name="title_pref_high_contrast_toolbar">Display toolbar background</string>
     <string name="summary_pref_high_contrast_toolbar">This increases tab visibility by placing a partially opaque background behind it</string>
+
+    <string name="title_pref_share_background_image">Export background image</string>
+    <string name="summary_pref_share_background_image">This exports the current background image</string>
 </resources>

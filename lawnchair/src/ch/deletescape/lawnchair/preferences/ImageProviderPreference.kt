@@ -39,6 +39,8 @@ class ImageProviderPreference(context: Context, attrs: AttributeSet) :
         setDefaultValue(ImageProvider::class.qualifiedName)
     }
 
+    override fun shouldDisableDependents() = value == ImageProvider::class.qualifiedName
+
     companion object {
         fun getAllProviders(): List<KClass<out ImageProvider>> = listOf(ImageProvider::class,
                                                                         BingImageProvider::class,

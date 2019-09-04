@@ -351,6 +351,11 @@
                 android:name="interface.version"
                 android:value="1" />
         </service>
+        <provider
+            android:authorities="ch.deletescape.lawnchair.feed.FEED_BACKGROUND_IMAGE"
+            android:grantUriPermissions="true"
+            android:exported="true"
+            android:name="ch.deletescape.lawnchair.feed.images.CurrentImageProvider"/>
     </application>
     <permission
         android:name="${applicationId}.permission.QSB"

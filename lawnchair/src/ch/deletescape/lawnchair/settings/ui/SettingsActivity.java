@@ -74,6 +74,7 @@ import ch.deletescape.lawnchair.colors.overrides.ThemedEditTextPreferenceDialogF
 import ch.deletescape.lawnchair.colors.overrides.ThemedListPreferenceDialogFragment;
 import ch.deletescape.lawnchair.colors.overrides.ThemedMultiSelectListPreferenceDialogFragmentCompat;
 import ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference;
+import ch.deletescape.lawnchair.feed.images.CurrentImageProvider;
 import ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity;
 import ch.deletescape.lawnchair.gestures.ui.GesturePreference;
 import ch.deletescape.lawnchair.gestures.ui.SelectGestureHandlerFragment;
@@ -786,6 +787,16 @@ public class SettingsActivity extends SettingsBaseActivity implements
             } else if (getContent() == R.xml.lawnchair_feed_preferences) {
                 findPreference("pref_feed_custom_background").setOnPreferenceClickListener(preference -> {
                     getActivity().startActivityForResult(new Intent(getActivity(), ImageStoreActivity.class), SELECT_FEED_BACKGROUND_IMAGE);
+                    return true;
+                });
+                findPreference("pref_share_background_image").setOnPreferenceClickListener(preference -> {
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.setType("image/png");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Test text");
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CurrentImageProvider.Companion.getAUTHORITY()));
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    getActivity().startActivity(shareIntent);
                     return true;
                 });
             }
