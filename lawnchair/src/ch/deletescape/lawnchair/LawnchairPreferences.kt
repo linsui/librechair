@@ -507,7 +507,7 @@ class LawnchairPreferences(val context: Context) :
                                                     ::restartOverlay)
 
     var showVerticalDailyForecast by BooleanPref("pref_show_vertical_daily_forecast", false, ::restartOverlay)
-    var showVerticalHourlyForecast by BooleanPref("pref_show_hourly_daily_forecast", false, ::restartOverlay)
+    var showVerticalHourlyForecast by BooleanPref("pref_show_vertical_hourly_forecast", false, ::restartOverlay)
     val feedTabsOnBottom by BooleanPref("pref_feed_tabs_on_bottom", false, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
