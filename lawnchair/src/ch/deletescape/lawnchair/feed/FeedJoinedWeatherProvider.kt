@@ -115,8 +115,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 viewTreeObserver.addOnPreDrawListener {
                                                     if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {it.measure(
-                                                                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)}.width, WRAP_CONTENT)
+                                                                dailyLayout.also {
+                                                                    it.measure(
+                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                                                                }.width, WRAP_CONTENT)
                                                     }
                                                     true
                                                 }
@@ -124,13 +126,13 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
-                                                                   ZoneId.of("UTC"))
+                                                                ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
                                                 time.text = formatTime(zonedDateTime, context)
                                                 temperature.text = it.data.temperature.toString(
                                                         context.lawnchairPrefs.weatherUnit)
 
-                                                if (useWhiteText(backgroundColor, context)) {
+                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
@@ -152,8 +154,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 viewTreeObserver.addOnPreDrawListener {
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {it.measure(
-                                                                        View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)}.width, WRAP_CONTENT)
+                                                                dailyLayout.also {
+                                                                    it.measure(
+                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                                                                }.width, WRAP_CONTENT)
                                                     }
                                                     true
                                                 }
@@ -167,7 +171,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 icon.setImageBitmap(it.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
-                                                                   ZoneId.of("UTC"))
+                                                                ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                     time.text = IcuDateTextView.getDateFormat(context, false, null, false).format(Date.from(
@@ -181,7 +185,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
                                                         context.lawnchairPrefs.weatherUnit)}"
 
-                                                if (useWhiteText(backgroundColor, context)) {
+                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
@@ -219,7 +223,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                         d("inflate: returning view")
                         return v
                     }
-                }, Card.NO_HEADER, "nosort,top"))
+                }, Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT, "nosort,top"))
         else mutableListOf()
     }
 

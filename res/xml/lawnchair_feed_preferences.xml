@@ -236,7 +236,11 @@
             android:defaultValue="false"
             android:summary="@string/summary_pref_show_vertical_hourly_forecast"
             android:title="@string/title_pref_show_vertical_hourly_forecast" />
-
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_elevate_weather_card"
+            android:defaultValue="false"
+            android:summary="@string/summary_pref_elevate_weather_card"
+            android:title="@string/title_pref_elevate_weather_card" />
         <android.support.v7.preference.EditTextPreference
             android:defaultValue="https://example.com/search?q=%s"
             android:key="pref_feed_search_url_template"

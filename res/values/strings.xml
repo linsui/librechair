@@ -633,4 +633,7 @@
     <string name="summary_pref_share_background_image">This exports the current background image</string>
 
     <string name="title_pref_feed_calendar_days">Calendar event threshold</string>
+
+    <string name="title_pref_elevate_weather_card">Elevate weather card</string>
+    <string name="summary_pref_elevate_weather_card">The weather card will be raised</string>
 </resources>
