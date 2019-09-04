@@ -1208,7 +1208,7 @@ fun Bitmap.blur(c: Context): Bitmap = BlurProcessor.Builder(c)
             .mode(HokoBlur.MODE_STACK)
             .scheme(HokoBlur.SCHEME_OPENGL)
             .context(c)
-            .radius(c.lawnchairPrefs.blurRadius.roundToInt() / (BlurWallpaperProvider.DOWNSAMPLE_FACTOR / 2))
+            .radius(c.lawnchairPrefs.feedBlurStrength.roundToInt() / (BlurWallpaperProvider.DOWNSAMPLE_FACTOR / 2))
             .processor()
             .blur(this)
 

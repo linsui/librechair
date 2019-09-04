@@ -444,6 +444,7 @@ class LawnchairPreferences(val context: Context) :
     val feedBackground by ImageProviderPref("pref_feed_background", ImageProvider::class, ::restartOverlay)
     val feedSearchUrl by StringPref("pref_feed_search_url_template", "https://example.com/search?q=%s", ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
+    val feedBlurStrength by FloatPref("pref_feed_blur_strength", 255f, ::restartOverlay)
     var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
                 val providerList = MainFeedController.getFeedProviders(context, true)
