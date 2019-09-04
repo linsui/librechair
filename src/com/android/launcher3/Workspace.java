@@ -58,7 +58,6 @@ import android.view.ViewTreeObserver;
 import android.widget.Toast;
 import ch.deletescape.lawnchair.ClockVisibilityManager;
 import ch.deletescape.lawnchair.LawnchairLauncher;
-import ch.deletescape.lawnchair.views.LawnchairBackgroundView;
 import com.android.launcher3.Launcher.LauncherOverlay;
 import com.android.launcher3.LauncherAppWidgetHost.ProviderChangedListener;
 import com.android.launcher3.LauncherStateManager.AnimationConfig;
@@ -1284,8 +1283,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
         mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
 
         if (mLauncher instanceof LawnchairLauncher && Utilities.getLawnchairPrefs(getContext()).getFeedBlur()) {
-            ((LawnchairLauncher) mLauncher).getBackground().getBlurAlphas().getProperty(
-                    LawnchairBackgroundView.ALPHA_INDEX_OVERLAY).setValue(Utilities.getLawnchairPrefs(getContext()).getFeedBlurStrength() * ((1 - alpha) / 255));
+            ((LawnchairLauncher) mLauncher).getBackground()
+                    .setBlurAlpha(Math.round(Utilities.getLawnchairPrefs(getContext()).getFeedBlurStrength() * scroll));
+            ((LawnchairLauncher) mLauncher).getBackground().invalidate();
         }
         mLauncher.mAllAppsController.setOverlayScroll(transX);
 

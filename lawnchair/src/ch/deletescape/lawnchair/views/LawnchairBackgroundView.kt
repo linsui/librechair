@@ -38,7 +38,7 @@ class LawnchairBackgroundView(context: Context, attrs: AttributeSet) : View(cont
         blurAlpha = Math.round(255 * alpha)
         invalidate()
     }, 3)
-    private var blurAlpha = 0
+    var blurAlpha = 0
 
     private val blurDrawableCallback by lazy {
         object : Drawable.Callback {
