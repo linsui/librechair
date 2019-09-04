@@ -123,6 +123,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 import org.jetbrains.annotations.NotNull;
@@ -790,11 +791,12 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     return true;
                 });
                 findPreference("pref_share_background_image").setOnPreferenceClickListener(preference -> {
+                    String shareId = UUID.randomUUID().toString();
+                    CurrentImageProvider.Companion.getSHARE_QUERIES().add(shareId);
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.setType("image/png");
-                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Test text");
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CurrentImageProvider.Companion.getAUTHORITY()));
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CurrentImageProvider.Companion.getAUTHORITY() + "/" + shareId));
                     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     getActivity().startActivity(shareIntent);
                     return true;
