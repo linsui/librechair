@@ -31,7 +31,6 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
@@ -77,7 +76,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             val currentTime = GregorianCalendar()
             val endTime = GregorianCalendar()
             endTime.add(Calendar.DAY_OF_MONTH,
-                        if (context.lawnchairPrefs.feedTabController == TabController::class.qualifiedName) 5 else 60)
+                        context.lawnchairPrefs.feedCalendarEventThreshold)
             Log.v(javaClass.name,
                   "getCards: searching for events between " + currentTime + " and " + endTime.toString())
             val query =

@@ -437,6 +437,7 @@ class LawnchairPreferences(val context: Context) :
                                           restart)
     var feedTabController by StringPref("pref_feed_tab_controller", TabController::class.java.name,
                                         ::restartOverlay)
+    var feedCalendarEventThreshold by IntPref("pref_feed_calendar_days", 30, ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
                                                       ::restartOverlay, listOf(), sharedPrefs)
     val feedHighContrastToolbar by BooleanPref("pref_high_contrast_toolbar", false, ::restartOverlay)

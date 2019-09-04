@@ -22,6 +22,12 @@
         <attr name="steps" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="IntSeekbarPreference">
+        <attr name="minValueI" format="integer" />
+        <attr name="maxValueI" format="integer" />
+        <attr name="defaultSeekbarValueI" format="integer" />
+    </declare-styleable>
+
     <declare-styleable name="ColorPickerPreference">
         <attr name="colorMode" format="integer" >
             <enum name="RGB" value="0" />

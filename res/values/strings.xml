@@ -628,4 +628,6 @@
 
     <string name="title_pref_share_background_image">Export background image</string>
     <string name="summary_pref_share_background_image">This exports the current background image</string>
+
+    <string name="title_pref_feed_calendar_days">Calendar event threshold</string>
 </resources>
