@@ -29,7 +29,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <ch.deletescape.lawnchair.views.SpringRecyclerView
-            android:paddingTop="@dimen/feed_app_bar_height_material"
             android:clipToPadding="false"
             android:id="@+id/feed_recycler"
             android:layout_width="match_parent"

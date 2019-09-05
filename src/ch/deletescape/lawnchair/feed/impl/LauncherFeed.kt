@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.Animator
+import android.appwidget.AppWidgetHostView
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -39,9 +40,7 @@ import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.FrameLayout
-import android.widget.TextView
-import android.widget.Toolbar
+import android.widget.*
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
@@ -123,6 +122,7 @@ class LauncherFeed(val originalContext: Context,
     private val tabsOnBottom = originalContext.lawnchairPrefs.feedTabsOnBottom
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
+    private var searchWidgetView: AppWidgetHostView? = null
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
 
@@ -137,6 +137,10 @@ class LauncherFeed(val originalContext: Context,
     }
 
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
+        if (searchWidgetView != null && reinit &&
+                searchWidgetView?.parent == toolbar) {
+            toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout).removeView(searchWidgetView)
+        }
         if (reinit) {
             val background =
                     if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
@@ -212,16 +216,73 @@ class LauncherFeed(val originalContext: Context,
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
         }
 
-        if (!useTabbedMode) {
-            recyclerView.apply {
-                setPadding(paddingStart, toolbar.also {
-                    it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                }.height + context.resources.getDimension(
-                        R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
+        if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+            val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+            searchWidgetView = (context.applicationContext as LawnchairApp)
+                    .overlayWidgetHost
+                    .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                            context.appWidgetManager
+                                    .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
+            searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,  context.appWidgetManager
+                    .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
+            searchWidgetView!!.setOnLongClickListener {
+                d("onLongClick: starting action mode")
+                it.startActionMode(object : ActionMode.Callback {
+                    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                        context.lawnchairPrefs.feedToolbarWidget = -1
+                        searchWidgetView?.animate()?.scaleY(0f)?.alpha(0f)?.setListener(object : Animator.AnimatorListener {
+                            override fun onAnimationRepeat(animation: Animator?) {
+
+                            }
+
+                            override fun onAnimationEnd(animation: Animator?) {
+                                toolbar.removeView(searchWidgetView)
+                                searchWidgetView = null
+                            }
+
+                            override fun onAnimationCancel(animation: Animator?) {
+
+                            }
+
+                            override fun onAnimationStart(animation: Animator?) {
+
+                            }
+
+                        })
+                        return true
+                    }
+
+                    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                        mode.title = null
+                        mode.subtitle = null
+                        mode.titleOptionalHint = true
+                        menu.add(0, R.id.delete, 0, R.string.delete)
+                        return true
+                    }
+
+                    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
+                        return true
+                    }
+
+                    override fun onDestroyActionMode(mode: ActionMode?) {
+
+                    }
+
+                }, ActionMode.TYPE_FLOATING)
+                true
             }
+            widgetContainer.addView(searchWidgetView, 0)
         }
+
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+        }
+
+        recyclerView.apply {
+            setPadding(paddingStart, toolbar.also {
+                it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            }.measuredHeight + context.resources.getDimension(
+                    R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
         }
 
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
@@ -485,6 +546,79 @@ class LauncherFeed(val originalContext: Context,
 
                                                 runOnNewThread {
                                                     refresh(0)
+                                                }
+                                            }
+                                        })
+                            }
+                        }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+                true
+            }
+            toolbar.setOnLongClickListener {
+                context.bindService(Intent(context, WidgetSelectionService::class.java),
+                        object : ServiceConnection {
+                            override fun onServiceDisconnected(name: ComponentName?) {
+                            }
+
+                            override fun onServiceConnected(name: ComponentName?,
+                                                            service: IBinder?) {
+                                IWidgetSelector.Stub.asInterface(service)
+                                        .pickWidget(object :
+                                                WidgetSelectionCallback.Stub() {
+                                            override fun onWidgetSelected(i: Int) {
+                                                context.lawnchairPrefs.feedToolbarWidget = i
+                                                if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+                                                    val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                                                    searchWidgetView = (context.applicationContext as LawnchairApp)
+                                                            .overlayWidgetHost
+                                                            .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                                                                    context.appWidgetManager
+                                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
+                                                    searchWidgetView?.setOnLongClickListener {
+                                                        it.startActionMode(object : ActionMode.Callback {
+                                                            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                                                                context.lawnchairPrefs.feedToolbarWidget = -1
+                                                                searchWidgetView?.animate()?.scaleY(0f)?.alpha(0f)?.setListener(object : Animator.AnimatorListener {
+                                                                    override fun onAnimationRepeat(animation: Animator?) {
+
+                                                                    }
+
+                                                                    override fun onAnimationEnd(animation: Animator?) {
+                                                                        toolbar.removeView(searchWidgetView)
+                                                                        searchWidgetView = null
+                                                                    }
+
+                                                                    override fun onAnimationCancel(animation: Animator?) {
+
+                                                                    }
+
+                                                                    override fun onAnimationStart(animation: Animator?) {
+
+                                                                    }
+
+                                                                })
+                                                                return true
+                                                            }
+
+                                                            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                                                                mode.title = null
+                                                                mode.subtitle = null
+                                                                mode.titleOptionalHint = true
+                                                                menu.add(0, R.id.delete, 0, R.string.delete)
+                                                                return true
+                                                            }
+
+                                                            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
+                                                                return true
+                                                            }
+
+                                                            override fun onDestroyActionMode(mode: ActionMode?) {
+
+                                                            }
+
+                                                        }, ActionMode.TYPE_FLOATING)
+                                                        true
+                                                    }
+                                                    widgetContainer.addView(searchWidgetView, 0)
                                                 }
                                             }
                                         })
