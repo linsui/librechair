@@ -533,28 +533,30 @@ class LauncherFeed(val originalContext: Context,
                                             override fun onWidgetSelected(i: Int) {
                                                 context.lawnchairPrefs.feedToolbarWidget = i
                                                 if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-                                                    val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
-                                                    if (searchWidgetView?.parent == widgetContainer) {
-                                                        widgetContainer.removeView(searchWidgetView)
-                                                    }
-                                                    searchWidgetView = (context.applicationContext as LawnchairApp)
-                                                            .overlayWidgetHost
-                                                            .createView(context, context.lawnchairPrefs.feedToolbarWidget,
-                                                                    context.appWidgetManager
-                                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-                                                    searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
-                                                        menu.add(R.string.delete).setOnMenuItemClickListener {
-                                                            toolbar.removeView(searchWidgetView)
-                                                            searchWidgetView = null
+                                                    runOnMainThread {
+                                                        val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                                                        if (searchWidgetView?.parent == widgetContainer) {
+                                                            widgetContainer.removeView(searchWidgetView)
+                                                        }
+                                                        searchWidgetView = (context.applicationContext as LawnchairApp)
+                                                                .overlayWidgetHost
+                                                                .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                                                                        context.appWidgetManager
+                                                                                .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
+                                                        searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                                                            menu.add(R.string.delete).setOnMenuItemClickListener {
+                                                                toolbar.removeView(searchWidgetView)
+                                                                searchWidgetView = null
+                                                                true
+                                                            }
                                                             true
                                                         }
-                                                        true
+                                                        searchWidgetView!!.setOnLongClickListener {
+                                                            searchWidgetView!!.showContextMenu(it.x, it.y)
+                                                            true
+                                                        }
+                                                        widgetContainer.addView(searchWidgetView, 0)
                                                     }
-                                                    searchWidgetView!!.setOnLongClickListener {
-                                                        searchWidgetView!!.showContextMenu(it.x, it.y)
-                                                        true
-                                                    }
-                                                    widgetContainer.addView(searchWidgetView, 0)
                                                 }
                                             }
                                         })
