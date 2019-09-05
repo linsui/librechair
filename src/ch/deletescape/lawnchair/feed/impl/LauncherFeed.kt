@@ -240,7 +240,7 @@ class LauncherFeed(val originalContext: Context,
 
                         override fun onAnimationEnd(animation: Animator?) {
                             context.lawnchairPrefs.feedToolbarWidget = -1
-                            toolbar.removeView(searchWidgetView)
+                            widgetContainer.removeView(searchWidgetView)
                             searchWidgetView = null
                         }
 
@@ -578,7 +578,7 @@ class LauncherFeed(val originalContext: Context,
 
                                                                 override fun onAnimationEnd(animation: Animator?) {
                                                                     context.lawnchairPrefs.feedToolbarWidget = -1
-                                                                    toolbar.removeView(searchWidgetView)
+                                                                    widgetContainer.removeView(searchWidgetView)
                                                                     searchWidgetView = null
                                                                 }
 
