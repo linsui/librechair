@@ -642,4 +642,6 @@
 
     <string name="title_pref_feed_hide_tab_text">Hide tab titles</string>
     <string name="summary_pref_feed_hide_tab_text">Tab titles will not be displayed</string>
+
+    <string name="title_pref_remove_feed_widget">Remove title bar widget</string>
 </resources>

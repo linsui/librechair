@@ -801,6 +801,11 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     getActivity().startActivity(shareIntent);
                     return true;
                 });
+                findPreference("pref_remove_feed_widget").setOnPreferenceClickListener(preference -> {
+                    Utilities.getLawnchairPrefs(getContext()).setFeedToolbarWidget(-1);
+                    Utilities.getLawnchairPrefs(getContext()).restartOverlay();
+                    return true;
+                });
             }
         }
 
