@@ -37,6 +37,10 @@ class ImageProviderPreference(context: Context, attrs: AttributeSet) :
         entries = getAllProviders().map { getNameForProvider(it).fromStringRes(context) }.toTypedArray()
         entryValues = getAllProviders().map { it.qualifiedName }.toTypedArray()
         setDefaultValue(ImageProvider::class.qualifiedName)
+        setOnPreferenceChangeListener { preference, newValue ->
+            notifyDependencyChange(newValue != ImageProvider::class.qualifiedName)
+            true
+        }
     }
 
     override fun shouldDisableDependents() = value == ImageProvider::class.qualifiedName
