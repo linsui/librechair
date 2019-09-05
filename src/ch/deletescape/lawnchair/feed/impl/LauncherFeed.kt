@@ -137,6 +137,10 @@ class LauncherFeed(val originalContext: Context,
     }
 
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
+        if (context.appWidgetManager
+                        .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget) == null) {
+            context.lawnchairPrefs.feedToolbarWidget = -1
+        }
         if (searchWidgetView != null && reinit &&
                 searchWidgetView?.parent == toolbar) {
             toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout).removeView(searchWidgetView)

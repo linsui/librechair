@@ -861,7 +861,12 @@ public class LauncherProvider extends ContentProvider {
                 return;
             }
             for (int widgetId : allWidgets) {
-                if (!validWidgets.contains(widgetId)) {
+                if (!validWidgets.contains(widgetId)
+                        && Utilities.getLawnchairPrefs(mContext).getFeedWidgetList()
+                            .getAll()
+                            .stream()
+                            .noneMatch(it -> it == widgetId)
+                        && Utilities.getLawnchairPrefs(mContext).getFeedToolbarWidget() != widgetId) {
                     try {
                         FileLog.d(TAG, "Deleting invalid widget " + widgetId);
                         host.deleteAppWidgetId(widgetId);
