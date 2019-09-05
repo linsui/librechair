@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.Output;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,16 +29,33 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
+
 import com.android.launcher3.R;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.FeedException;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.SyndFeedOutput;
 import com.squareup.picasso.Picasso.Builder;
+
+import org.xml.sax.InputSource;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import ch.deletescape.lawnchair.feed.cache.CacheManager;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
@@ -47,10 +65,53 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
-        bindFeed(feed1 -> {
-            Log.d(getClass().getName(), "constructor: bound to feed");
-            lastUpdate = System.currentTimeMillis();
-            articles = feed1;
+        Executors.newSingleThreadExecutor().submit(() -> {
+            byte[] cache;
+            if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getClass().getName(),
+                    "cached_feed")).length >= 1) {
+                try {
+                    articles = new SyndFeedInput().build(
+                            new InputSource(new ByteArrayInputStream(cache)));
+                } catch (FeedException e) {
+                    bindFeed(feed1 -> {
+                        Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                                "constructor: bound to feed");
+                        lastUpdate = System.currentTimeMillis();
+                        articles = feed1;
+                        ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
+                        SyndFeedOutput output = new SyndFeedOutput();
+                        try {
+                            output.output(feed1, new OutputStreamWriter(cachedFeed));
+                            CacheManager.Companion.getInstance(
+                                    AbstractRSSFeedProvider.this.getContext()).writeCache(
+                                    cachedFeed.toByteArray(),
+                                    AbstractRSSFeedProvider.this.getClass().getName(),
+                                    "cache_feed", TimeUnit.HOURS.toMillis(1));
+                        } catch (IOException | FeedException e2) {
+                            e.printStackTrace();
+                        }
+                    });
+                    e.printStackTrace();
+                }
+            }
+            bindFeed(feed -> {
+                Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                        "constructor: bound to feed");
+                lastUpdate = System.currentTimeMillis();
+                articles = feed;
+                ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
+                SyndFeedOutput output = new SyndFeedOutput();
+                try {
+                    output.output(feed, new OutputStreamWriter(cachedFeed));
+                    CacheManager.Companion.getInstance(
+                            AbstractRSSFeedProvider.this.getContext()).writeCache(
+                            cachedFeed.toByteArray(),
+                            AbstractRSSFeedProvider.this.getClass().getName(), "cache_feed",
+                            TimeUnit.HOURS.toMillis(1));
+                } catch (IOException | FeedException e) {
+                    e.printStackTrace();
+                }
+            });
         });
     }
 
@@ -77,9 +138,53 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
-            bindFeed(feed1 -> {
-                lastUpdate = System.currentTimeMillis();
-                articles = feed1;
+            Executors.newSingleThreadExecutor().submit(() -> {
+                byte[] cache;
+                if ((cache = CacheManager.Companion.getInstance(getContext()).getCachedBytes(getClass().getName(),
+                        "cached_feed")).length >= 1) {
+                    try {
+                        articles = new SyndFeedInput().build(
+                                new InputSource(new ByteArrayInputStream(cache)));
+                    } catch (FeedException e) {
+                        bindFeed(feed1 -> {
+                            Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                                    "constructor: bound to feed");
+                            lastUpdate = System.currentTimeMillis();
+                            articles = feed1;
+                            ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
+                            SyndFeedOutput output = new SyndFeedOutput();
+                            try {
+                                output.output(feed1, new OutputStreamWriter(cachedFeed));
+                                CacheManager.Companion.getInstance(
+                                        AbstractRSSFeedProvider.this.getContext()).writeCache(
+                                        cachedFeed.toByteArray(),
+                                        AbstractRSSFeedProvider.this.getClass().getName(),
+                                        "cache_feed", TimeUnit.HOURS.toMillis(1));
+                            } catch (IOException | FeedException e2) {
+                                e.printStackTrace();
+                            }
+                        });
+                        e.printStackTrace();
+                    }
+                }
+                bindFeed(feed -> {
+                    Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                            "constructor: bound to feed");
+                    lastUpdate = System.currentTimeMillis();
+                    articles = feed;
+                    ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
+                    SyndFeedOutput output = new SyndFeedOutput();
+                    try {
+                        output.output(feed, new OutputStreamWriter(cachedFeed));
+                        CacheManager.Companion.getInstance(
+                                AbstractRSSFeedProvider.this.getContext()).writeCache(
+                                cachedFeed.toByteArray(),
+                                AbstractRSSFeedProvider.this.getClass().getName(), "cache_feed",
+                                TimeUnit.HOURS.toMillis(1));
+                    } catch (IOException | FeedException e) {
+                        e.printStackTrace();
+                    }
+                });
             });
         }
         if (articles == null) {
@@ -175,7 +280,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     protected abstract void bindFeed(BindCallback callback);
 
     protected interface BindCallback {
-
         void onBind(SyndFeed feed);
     }
 }

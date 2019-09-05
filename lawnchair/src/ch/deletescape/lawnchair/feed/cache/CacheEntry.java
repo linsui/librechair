@@ -25,9 +25,10 @@ class CacheEntry {
     }
 
     @SuppressLint("DefaultLocale")
-    CacheEntry(String namespace, String id) {
-        cacheId = (namespace + id).hashCode() ^ namespace.length();
-        filePath = String.format("cache/%s/%s/%d", namespace, id, cacheId);
+    CacheEntry(String namespace, String id, long expiry) {
+        this.cacheId = (namespace + id).hashCode() ^ namespace.length();
+        this.filePath = String.format("cache/%s/%s/%d", namespace, id, cacheId);
+        this.expiry = System.currentTimeMillis() + expiry;
     }
 
     @PrimaryKey
@@ -35,6 +36,12 @@ class CacheEntry {
 
     @ColumnInfo(name = "file_path")
     protected String filePath;
+
+    protected long expiry;
+
+    public boolean expired() {
+        return expiry < System.currentTimeMillis();
+    }
 
     @Nullable
     public byte[] getCachedData(Context context) {
@@ -57,7 +64,9 @@ class CacheEntry {
     @NotNull
     public OutputStream getOutputStream(Context context) {
         try {
-            return new FileOutputStream(new File(context.getCacheDir(), filePath));
+            File file = new File(context.getCacheDir(), filePath);
+            file.getParentFile().mkdirs();
+            return new FileOutputStream(file);
         } catch (FileNotFoundException e) {
             return new OutputStream() {
                 @Override
