@@ -63,6 +63,8 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.jvm.isAccessible
 
 class LauncherFeed(val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
@@ -125,7 +127,7 @@ class LauncherFeed(val originalContext: Context,
     var navigationBarHeight: Int? = null
 
     init {
-        reinitState(reinit = false)
+        reinitState()
         if (backgroundSetupListener != null) {
             backgroundSetupListener {
                 runBlocking { delay(2) }
@@ -490,6 +492,15 @@ class LauncherFeed(val originalContext: Context,
             feedAttached = true
         }
         tabView.isInlineLabel = context.lawnchairPrefs.feedHorizontalTabs
+        if (context.lawnchairPrefs.feedHideTabText) {
+            for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
+                val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
+                val title = tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                    isAccessible = true
+                }.call(tab) as TextView
+                title.visibility = View.GONE
+            }
+        }
     }
 
     fun displayPreferenceScreen(screen: ProviderScreen, x: Float, y: Float,

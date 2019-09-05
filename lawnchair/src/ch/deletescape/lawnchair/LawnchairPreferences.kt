@@ -510,6 +510,7 @@ class LawnchairPreferences(val context: Context) :
     var showVerticalHourlyForecast by BooleanPref("pref_show_vertical_hourly_forecast", false, ::restartOverlay)
     var elevateWeatherCard by BooleanPref("pref_elevate_weather_card", false, ::restartOverlay)
     var feedHorizontalTabs by BooleanPref("pref_display_feed_tabs_as_single_line", false, ::restartOverlay)
+    var feedHideTabText by BooleanPref("pref_feed_hide_tab_text", false, ::restartOverlay)
     val feedTabsOnBottom by BooleanPref("pref_feed_tabs_on_bottom", false, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)

@@ -639,4 +639,7 @@
 
     <string name="title_pref_display_feed_tabs_as_single_line">Display tab items as single line</string>
     <string name="summary_pref_display_feed_tabs_as_single_line">Tabs will be displayed with icons and text in the same line</string>
+
+    <string name="title_pref_feed_hide_tab_text">Hide tab titles</string>
+    <string name="summary_pref_feed_hide_tab_text">Tab titles will not be displayed</string>
 </resources>

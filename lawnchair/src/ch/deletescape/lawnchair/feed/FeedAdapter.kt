@@ -270,8 +270,12 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon)
         }
         holder.viewHolder.removeAllViewsInLayout()
-        holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
-                holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
+        try {
+            holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
+                    holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
