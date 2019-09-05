@@ -57,12 +57,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent">
-            <android.support.design.widget.TabLayout
-                android:id="@+id/feed_tabs"
-                style="@style/Widget.Feed.Tabs"
+            <LinearLayout
+                android:id="@+id/feed_widget_layout"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/SettingsTheme.Base" />
+                android:layout_height="wrap_content">
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/feed_tabs"
+                    style="@style/Widget.Feed.Tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/SettingsTheme.Base" />
+            </LinearLayout>
         </Toolbar>
     </FrameLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>
