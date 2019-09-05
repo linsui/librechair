@@ -32,7 +32,13 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.CheckLongPressHelper;
+import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
+import com.android.launcher3.SimpleOnStylusPressListener;
+import com.android.launcher3.StylusEventHelper;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.dragndrop.DragLayer;
 
 public class OverlayWidgetHost extends AppWidgetHost {
 
@@ -44,6 +50,9 @@ public class OverlayWidgetHost extends AppWidgetHost {
     protected AppWidgetHostView onCreateView(Context context, int appWidgetId,
             AppWidgetProviderInfo appWidget) {
         return new AppWidgetHostView(context) {
+
+            private final CheckLongPressHelper mLongPressHelper = new CheckLongPressHelper(this);
+            private final StylusEventHelper mStylusEventHelper = new StylusEventHelper(new SimpleOnStylusPressListener(this), this);
 
             private boolean scrollable = false;
 
@@ -75,6 +84,7 @@ public class OverlayWidgetHost extends AppWidgetHost {
                 setPadding(0, 0, 0, 0);
             }
 
+
             @Override
             public void updateAppWidget(RemoteViews remoteViews) {
                 super.updateAppWidget(remoteViews);
@@ -87,12 +97,45 @@ public class OverlayWidgetHost extends AppWidgetHost {
             }
 
             @Override
-            public boolean onInterceptTouchEvent(MotionEvent event) {
-                if (scrollable && event.getAction() == MotionEvent.ACTION_DOWN) {
+            public boolean onInterceptTouchEvent(MotionEvent ev) {
+                if (scrollable && ev.getAction() == MotionEvent.ACTION_DOWN) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     getParent().getParent().requestDisallowInterceptTouchEvent(true);
                 }
-                return super.onInterceptTouchEvent(event);
+                // Just in case the previous long press hasn't been cleared, we make sure to start fresh
+                // on touch down.
+                if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                    mLongPressHelper.cancelLongPress();
+                }
+
+                // Consume any touch events for ourselves after longpress is triggered
+                if (mLongPressHelper.hasPerformedLongPress()) {
+                    mLongPressHelper.cancelLongPress();
+                    return true;
+                }
+
+                // Watch for longpress or stylus button press events at this level to
+                // make sure users can always pick up this widget
+                if (mStylusEventHelper.onMotionEvent(ev)) {
+                    mLongPressHelper.cancelLongPress();
+                    return true;
+                }
+
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_DOWN: {
+                        if (!mStylusEventHelper.inStylusButtonPressed()) {
+                            mLongPressHelper.postCheckForLongPress();
+                        }
+                        break;
+                    }
+
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        mLongPressHelper.cancelLongPress();
+                }
+
+                // Otherwise continue letting touch events fall through to children
+                return super.onInterceptTouchEvent(ev);
             }
         };
     }

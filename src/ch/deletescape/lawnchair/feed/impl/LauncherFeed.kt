@@ -225,50 +225,16 @@ class LauncherFeed(val originalContext: Context,
                                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
             searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,  context.appWidgetManager
                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
+            searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                menu.add(R.string.delete).setOnMenuItemClickListener {
+                    toolbar.removeView(searchWidgetView)
+                    searchWidgetView = null
+                    true
+                }
+                true
+            }
             searchWidgetView!!.setOnLongClickListener {
-                d("onLongClick: starting action mode")
-                it.startActionMode(object : ActionMode.Callback {
-                    override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-                        context.lawnchairPrefs.feedToolbarWidget = -1
-                        searchWidgetView?.animate()?.scaleY(0f)?.alpha(0f)?.setListener(object : Animator.AnimatorListener {
-                            override fun onAnimationRepeat(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationEnd(animation: Animator?) {
-                                toolbar.removeView(searchWidgetView)
-                                searchWidgetView = null
-                            }
-
-                            override fun onAnimationCancel(animation: Animator?) {
-
-                            }
-
-                            override fun onAnimationStart(animation: Animator?) {
-
-                            }
-
-                        })
-                        return true
-                    }
-
-                    override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                        mode.title = null
-                        mode.subtitle = null
-                        mode.titleOptionalHint = true
-                        menu.add(0, R.id.delete, 0, R.string.delete)
-                        return true
-                    }
-
-                    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
-                        return true
-                    }
-
-                    override fun onDestroyActionMode(mode: ActionMode?) {
-
-                    }
-
-                }, ActionMode.TYPE_FLOATING)
+                searchWidgetView!!.showContextMenu(it.x, it.y)
                 true
             }
             widgetContainer.addView(searchWidgetView, 0)
@@ -576,49 +542,16 @@ class LauncherFeed(val originalContext: Context,
                                                             .createView(context, context.lawnchairPrefs.feedToolbarWidget,
                                                                     context.appWidgetManager
                                                                             .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-                                                    searchWidgetView?.setOnLongClickListener {
-                                                        it.startActionMode(object : ActionMode.Callback {
-                                                            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-                                                                context.lawnchairPrefs.feedToolbarWidget = -1
-                                                                searchWidgetView?.animate()?.scaleY(0f)?.alpha(0f)?.setListener(object : Animator.AnimatorListener {
-                                                                    override fun onAnimationRepeat(animation: Animator?) {
-
-                                                                    }
-
-                                                                    override fun onAnimationEnd(animation: Animator?) {
-                                                                        toolbar.removeView(searchWidgetView)
-                                                                        searchWidgetView = null
-                                                                    }
-
-                                                                    override fun onAnimationCancel(animation: Animator?) {
-
-                                                                    }
-
-                                                                    override fun onAnimationStart(animation: Animator?) {
-
-                                                                    }
-
-                                                                })
-                                                                return true
-                                                            }
-
-                                                            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                                                                mode.title = null
-                                                                mode.subtitle = null
-                                                                mode.titleOptionalHint = true
-                                                                menu.add(0, R.id.delete, 0, R.string.delete)
-                                                                return true
-                                                            }
-
-                                                            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu): Boolean {
-                                                                return true
-                                                            }
-
-                                                            override fun onDestroyActionMode(mode: ActionMode?) {
-
-                                                            }
-
-                                                        }, ActionMode.TYPE_FLOATING)
+                                                    searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
+                                                        menu.add(R.string.delete).setOnMenuItemClickListener {
+                                                            toolbar.removeView(searchWidgetView)
+                                                            searchWidgetView = null
+                                                            true
+                                                        }
+                                                        true
+                                                    }
+                                                    searchWidgetView!!.setOnLongClickListener {
+                                                        searchWidgetView!!.showContextMenu(it.x, it.y)
                                                         true
                                                     }
                                                     widgetContainer.addView(searchWidgetView, 0)
