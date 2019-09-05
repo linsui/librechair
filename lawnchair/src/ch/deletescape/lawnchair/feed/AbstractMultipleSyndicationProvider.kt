@@ -114,29 +114,29 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             }
 
                             title.text = ClickbaitRanker.completePipeline(entry.title)
-                            var spanned =
-                                    Html.fromHtml(entry.description?.value ?: "", 0).toString()
+                            var spanned = if (entry.description != null) Html.fromHtml(
+                                    entry.description.value, 0).toString() else ""
                             if (spanned.length > 256) {
                                 spanned = spanned.subSequence(0, 256).toString() + "..."
                             }
                             description.text = spanned
                             readMore.setOnClickListener { v2 ->
                                 ArticleViewerScreen(context, entry.title,
-                                                    entry.categories.map { it.name }.joinToString(),
-                                                    entry.uri, entry.description.value)
+                                        entry.categories.map { it.name }.joinToString(),
+                                        entry.uri, entry.description.value)
                                         .display(this@AbstractMultipleSyndicationProvider,
-                                                 v2.getPostionOnScreen().first + v2.width / 2,
-                                                 v2.getPostionOnScreen().second + v2.height / 2)
+                                                v2.getPostionOnScreen().first + v2.width / 2,
+                                                v2.getPostionOnScreen().second + v2.height / 2)
                             }
 
                             date.text = entry.publishedDate?.toLocaleString()
                             return v
                         }
                     }, Card.RAISE or Card.TEXT_ONLY, null, entry.hashCode(), true,
-                                       entry.categories.map { it.name }).apply {
+                            entry.categories.map { it.name }).apply {
                         actionName = context.getString(
                                 context.resources.getIdentifier("whichSendApplicationLabel",
-                                                                "string", "android"))
+                                        "string", "android"))
                         actionListener = { context ->
                             val i = Intent(Intent.ACTION_SEND)
                             i.type = "text/plain"

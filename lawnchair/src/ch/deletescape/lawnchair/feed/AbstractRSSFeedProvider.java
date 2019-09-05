@@ -140,7 +140,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
             Executors.newSingleThreadExecutor().submit(() -> {
                 byte[] cache;
-                if ((cache = CacheManager.Companion.getInstance(getContext()).getCachedBytes(getClass().getName(),
+                if ((cache = CacheManager.Companion.getInstance(getContext()).getCachedBytes(
+                        getClass().getName(),
                         "cached_feed")).length >= 1) {
                     try {
                         articles = new SyndFeedInput().build(
@@ -226,7 +227,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     }
 
                     title.setText(ClickbaitRanker.completePipeline(entry.getTitle()));
-                    String spanned = Html.fromHtml(entry.getDescription().getValue(), 0).toString();
+                    String spanned = entry.getDescription() != null ? Html.fromHtml(
+                            entry.getDescription().getValue(), 0).toString() : "";
                     if (spanned.length() > 256) {
                         spanned = spanned.subSequence(0, 256).toString() + "...";
                     }
