@@ -564,25 +564,12 @@ class LauncherFeed(val originalContext: Context,
             background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
             visibility = View.INVISIBLE
             fitsSystemWindows = false
-            if (useTabbedMode) {
-                setPadding(paddingLeft,
-                        if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                        paddingRight,
-                        if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
-            } else {
-                setPadding(paddingLeft,
-                        if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                        paddingRight,
-                        if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
-            }
+            setPadding(paddingLeft,
+                    if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                            context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                    paddingRight,
+                    if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                            context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     val (height, width) = measuredHeight to measuredWidth
