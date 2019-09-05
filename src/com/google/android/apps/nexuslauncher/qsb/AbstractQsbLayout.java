@@ -593,10 +593,10 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         if (view != this) {
             return false;
         }
-        return dK();
+        return startClipboardActionMode();
     }
 
-    protected boolean dK() {
+    protected boolean startClipboardActionMode() {
         String clipboardText = getClipboardText();
         Intent settingsBroadcast = createSettingsBroadcast();
         Intent settingsIntent = createSettingsIntent();

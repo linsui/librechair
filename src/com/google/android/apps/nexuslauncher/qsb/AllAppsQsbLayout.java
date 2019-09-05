@@ -327,11 +327,11 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         }
     }
 
-    protected final boolean dK() {
+    protected final boolean startClipboardActionMode() {
         if (this.mFallback != null) {
             return false;
         }
-        return super.dK();
+        return super.startClipboardActionMode();
     }
 
     protected final void c(SharedPreferences sharedPreferences) {
