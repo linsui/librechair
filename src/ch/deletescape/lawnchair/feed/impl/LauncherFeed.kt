@@ -227,6 +227,7 @@ class LauncherFeed(val originalContext: Context,
                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
             searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
                 menu.add(R.string.delete).setOnMenuItemClickListener {
+                    context.lawnchairPrefs.feedToolbarWidget = -1
                     toolbar.removeView(searchWidgetView)
                     searchWidgetView = null
                     true
@@ -234,7 +235,7 @@ class LauncherFeed(val originalContext: Context,
                 true
             }
             searchWidgetView!!.setOnLongClickListener {
-                searchWidgetView!!.showContextMenu(it.x, it.y)
+                searchWidgetView!!.showContextMenu(0f, 0f)
                 true
             }
             widgetContainer.addView(searchWidgetView, 0)
@@ -545,6 +546,7 @@ class LauncherFeed(val originalContext: Context,
                                                                                 .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
                                                         searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
                                                             menu.add(R.string.delete).setOnMenuItemClickListener {
+                                                                context.lawnchairPrefs.feedToolbarWidget = -1
                                                                 toolbar.removeView(searchWidgetView)
                                                                 searchWidgetView = null
                                                                 true
@@ -552,7 +554,7 @@ class LauncherFeed(val originalContext: Context,
                                                             true
                                                         }
                                                         searchWidgetView!!.setOnLongClickListener {
-                                                            searchWidgetView!!.showContextMenu(it.x, it.y)
+                                                            searchWidgetView!!.showContextMenu(0f, 0f)
                                                             true
                                                         }
                                                         widgetContainer.addView(searchWidgetView, 0)
