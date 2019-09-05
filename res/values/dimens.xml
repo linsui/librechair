@@ -316,6 +316,6 @@
     <dimen name="dimen_height_category_divisor">4dp</dimen>
     <dimen name="dimen_margin_category_divisor">8dp</dimen>
     <dimen name="feed_app_bar_bottom_padding">16dp</dimen>
-    <dimen name="overlay_view_margin">24dp</dimen>
+    <dimen name="overlay_view_margin">8dp</dimen>
     <dimen name="height_rss_feed_card_image">360dp</dimen>
 </resources>

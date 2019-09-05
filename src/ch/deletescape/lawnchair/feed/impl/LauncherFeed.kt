@@ -634,7 +634,7 @@ class LauncherFeed(val originalContext: Context,
         preferenceScreens.add(screen to ScreenData(x, y, view!!))
     }
 
-    fun removeLastPrefereceScreen() {
+    fun removeLastPreferenceScreen() {
         removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x,
                 preferenceScreens.last().second.y);
         preferenceScreens.remove(preferenceScreens.last())
@@ -713,7 +713,7 @@ class LauncherFeed(val originalContext: Context,
                     if (preferenceScreens.isEmpty() || preferenceScreens.size == 1) {
                         toolbar.menu.removeItem(R.id.cancel)
                     }
-                    removeLastPrefereceScreen()
+                    removeLastPreferenceScreen()
                     true
                 }
             }
