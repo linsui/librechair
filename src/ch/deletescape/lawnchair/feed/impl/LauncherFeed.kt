@@ -218,24 +218,45 @@ class LauncherFeed(val originalContext: Context,
 
         if (context.lawnchairPrefs.feedToolbarWidget != -1) {
             val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+            var deleting = false
             searchWidgetView = (context.applicationContext as LawnchairApp)
                     .overlayWidgetHost
                     .createView(context, context.lawnchairPrefs.feedToolbarWidget,
                             context.appWidgetManager
                                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-            searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,  context.appWidgetManager
+            searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
-            searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
-                menu.add(R.string.delete).setOnMenuItemClickListener {
-                    context.lawnchairPrefs.feedToolbarWidget = -1
-                    toolbar.removeView(searchWidgetView)
-                    searchWidgetView = null
-                    true
-                }
+            searchWidgetView!!.setOnLongClickListener {
+                searchWidgetView!!.animate().scaleX(0.2f).scaleY(0.2f).duration = 500
+                deleting = true
                 true
             }
-            searchWidgetView!!.setOnLongClickListener {
-                searchWidgetView!!.showContextMenu(0f, 0f)
+            searchWidgetView!!.setOnTouchListener { v, event ->
+                if (deleting && event.action == MotionEvent.ACTION_UP) {
+                    searchWidgetView!!.animate().scaleX(0f).scaleY(0f).setDuration(500).setListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            context.lawnchairPrefs.feedToolbarWidget = -1
+                            toolbar.removeView(searchWidgetView)
+                            searchWidgetView = null
+                        }
+
+                        override fun onAnimationCancel(animation: Animator?) {
+
+                        }
+
+                        override fun onAnimationStart(animation: Animator?) {
+
+                        }
+
+                    })
+                } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                    deleting = false
+                    searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                }
                 true
             }
             widgetContainer.addView(searchWidgetView, 0)
@@ -534,31 +555,49 @@ class LauncherFeed(val originalContext: Context,
                                             override fun onWidgetSelected(i: Int) {
                                                 context.lawnchairPrefs.feedToolbarWidget = i
                                                 if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-                                                    runOnMainThread {
-                                                        val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
-                                                        if (searchWidgetView?.parent == widgetContainer) {
-                                                            widgetContainer.removeView(searchWidgetView)
-                                                        }
-                                                        searchWidgetView = (context.applicationContext as LawnchairApp)
-                                                                .overlayWidgetHost
-                                                                .createView(context, context.lawnchairPrefs.feedToolbarWidget,
-                                                                        context.appWidgetManager
-                                                                                .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-                                                        searchWidgetView!!.setOnCreateContextMenuListener { menu, v, menuInfo ->
-                                                            menu.add(R.string.delete).setOnMenuItemClickListener {
-                                                                context.lawnchairPrefs.feedToolbarWidget = -1
-                                                                toolbar.removeView(searchWidgetView)
-                                                                searchWidgetView = null
-                                                                true
-                                                            }
-                                                            true
-                                                        }
-                                                        searchWidgetView!!.setOnLongClickListener {
-                                                            searchWidgetView!!.showContextMenu(0f, 0f)
-                                                            true
-                                                        }
-                                                        widgetContainer.addView(searchWidgetView, 0)
+                                                    val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                                                    var deleting = false
+                                                    searchWidgetView = (context.applicationContext as LawnchairApp)
+                                                            .overlayWidgetHost
+                                                            .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                                                                    context.appWidgetManager
+                                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
+                                                    searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
+                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
+                                                    searchWidgetView!!.setOnLongClickListener {
+                                                        searchWidgetView!!.animate().scaleX(0.2f).scaleY(0.2f).duration = 500
+                                                        deleting = true
+                                                        true
                                                     }
+                                                    searchWidgetView!!.setOnTouchListener { v, event ->
+                                                        if (deleting && event.action == MotionEvent.ACTION_UP) {
+                                                            searchWidgetView!!.animate().scaleX(0f).scaleY(0f).setDuration(500).setListener(object : Animator.AnimatorListener {
+                                                                override fun onAnimationRepeat(animation: Animator?) {
+
+                                                                }
+
+                                                                override fun onAnimationEnd(animation: Animator?) {
+                                                                    context.lawnchairPrefs.feedToolbarWidget = -1
+                                                                    toolbar.removeView(searchWidgetView)
+                                                                    searchWidgetView = null
+                                                                }
+
+                                                                override fun onAnimationCancel(animation: Animator?) {
+
+                                                                }
+
+                                                                override fun onAnimationStart(animation: Animator?) {
+
+                                                                }
+
+                                                            })
+                                                        } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                                                            deleting = false
+                                                            searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                                                        }
+                                                        true
+                                                    }
+                                                    widgetContainer.addView(searchWidgetView, 0)
                                                 }
                                             }
                                         })
