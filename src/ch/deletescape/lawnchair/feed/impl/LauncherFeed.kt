@@ -368,6 +368,15 @@ class LauncherFeed(val originalContext: Context,
                                         context)
                                 else R.color.textColorPrimaryInverse.fromColorRes(context))
                     }
+                    if (context.lawnchairPrefs.feedHideTabText) {
+                        for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
+                            val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
+                            val title = tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                                isAccessible = true
+                            }.call(tab) as TextView
+                            title.visibility = View.GONE
+                        }
+                    }
                     runOnNewThread { refresh(0) }
                 }
             })
