@@ -79,16 +79,16 @@ class LauncherFeed(val originalContext: Context,
     }
 
     private var context = ContextThemeWrapper(originalContext,
-                                              if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+            if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
-                                      context.applicationContext, this)
+            context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
     private var horizontalBackground: Drawable? = null
     private var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
-                                                                       false) as FeedController)
+            false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
@@ -114,7 +114,7 @@ class LauncherFeed(val originalContext: Context,
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
     private var googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
-                                        Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
+            Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
@@ -156,13 +156,13 @@ class LauncherFeed(val originalContext: Context,
 
             dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
             context = ContextThemeWrapper(originalContext,
-                                          if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+                    if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
             feedAttached = false
             closeOverlay(0)
             verticalBackground = null
             horizontalBackground = null
             feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
-                                                                   false) as FeedController).also {
+                    false) as FeedController).also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
                     d("onGlobalLayout: global layout called")
@@ -170,29 +170,29 @@ class LauncherFeed(val originalContext: Context,
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                             verticalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                                                         Utilities.cropToCenter(
-                                                                                 background,
-                                                                                 it.measuredHeight,
-                                                                                 it.measuredWidth))
+                                    Utilities.cropToCenter(
+                                            background,
+                                            it.measuredHeight,
+                                            it.measuredWidth))
                             horizontalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                                                         Utilities.cropToCenter(
-                                                                                 background,
-                                                                                 it.measuredWidth,
-                                                                                 it.measuredHeight))
+                                    Utilities.cropToCenter(
+                                            background,
+                                            it.measuredWidth,
+                                            it.measuredHeight))
                         } else {
                             horizontalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                                                         Utilities.cropToCenter(
-                                                                                 background,
-                                                                                 it.measuredHeight,
-                                                                                 it.measuredWidth))
+                                    Utilities.cropToCenter(
+                                            background,
+                                            it.measuredHeight,
+                                            it.measuredWidth))
                             verticalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                                                         Utilities.cropToCenter(
-                                                                                 background,
-                                                                                 it.measuredWidth,
-                                                                                 it.measuredHeight))
+                                    Utilities.cropToCenter(
+                                            background,
+                                            it.measuredWidth,
+                                            it.measuredHeight))
                         }
                     }
                     lastOrientation = context.resources.configuration.orientation
@@ -203,7 +203,7 @@ class LauncherFeed(val originalContext: Context,
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
             recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
             adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
-                                  context.applicationContext, this)
+                    context.applicationContext, this)
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
             content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
@@ -248,9 +248,9 @@ class LauncherFeed(val originalContext: Context,
                     oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
                 }
                 setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                           oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
-                           oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                           oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
+                        oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
+                        oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                        oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
             }
             toolbar.apply {
                 if (oldToolbarPaddingVertical == null) {
@@ -260,9 +260,9 @@ class LauncherFeed(val originalContext: Context,
                     oldToolbarPaddingHorizontal = paddingLeft to paddingRight
                 }
                 setPadding(oldToolbarPaddingHorizontal!!.first + insets.stableInsetLeft,
-                           if (!tabsOnBottom) oldToolbarPaddingVertical!!.first + statusBarHeight!! else paddingTop,
-                           oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
-                           if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
+                        if (!tabsOnBottom) oldToolbarPaddingVertical!!.first + statusBarHeight!! else paddingTop,
+                        oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
+                        if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
             }
             (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 marginEnd =
@@ -362,9 +362,9 @@ class LauncherFeed(val originalContext: Context,
                         toolbar.menu.getItem(0).isVisible = tabs[tab.position]!!.isWidgetTab
                         toolbar.menu.getItem(0).icon = R.drawable.ic_add.fromDrawableRes(context)
                                 .tint(if (useWhiteText(backgroundColor,
-                                                       context)) R.color.textColorPrimary.fromColorRes(
+                                                context)) R.color.textColorPrimary.fromColorRes(
                                         context)
-                                      else R.color.textColorPrimaryInverse.fromColorRes(context))
+                                else R.color.textColorPrimaryInverse.fromColorRes(context))
                     }
                     runOnNewThread { refresh(0) }
                 }
@@ -380,7 +380,7 @@ class LauncherFeed(val originalContext: Context,
                 tabView.tabIconTint = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                 arrayOf<Int>().toIntArray()), arrayOf(getColorForIndex(0),
-                                                                      tabView.tabIconTint!!.defaultColor).toIntArray())
+                        tabView.tabIconTint!!.defaultColor).toIntArray())
                 tabView.tabRippleColor = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                 arrayOf<Int>().toIntArray()),
@@ -418,7 +418,7 @@ class LauncherFeed(val originalContext: Context,
                 runOnMainThread {
                     if (adapter.itemCount == 0) {
                         toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
-                                                                   context)) Color.WHITE else Color.DKGRAY)
+                                        context)) Color.WHITE else Color.DKGRAY)
                     } else {
                         toolbar.title = ""
                     }
@@ -435,50 +435,50 @@ class LauncherFeed(val originalContext: Context,
             toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
             toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
                     .tint(if (useWhiteText(backgroundColor,
-                                           context)) R.color.textColorPrimary.fromColorRes(context)
-                          else R.color.textColorPrimaryInverse.fromColorRes(context))
+                                    context)) R.color.textColorPrimary.fromColorRes(context)
+                    else R.color.textColorPrimaryInverse.fromColorRes(context))
             toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
             toolbar.menu.getItem(0).setOnMenuItemClickListener {
                 context.bindService(Intent(context, WidgetSelectionService::class.java),
-                                    object : ServiceConnection {
-                                        override fun onServiceDisconnected(name: ComponentName?) {
-                                        }
+                        object : ServiceConnection {
+                            override fun onServiceDisconnected(name: ComponentName?) {
+                            }
 
-                                        override fun onServiceConnected(name: ComponentName?,
-                                                                        service: IBinder?) {
-                                            IWidgetSelector.Stub.asInterface(service)
-                                                    .pickWidget(object :
-                                                                        WidgetSelectionCallback.Stub() {
-                                                        override fun onWidgetSelected(i: Int) {
-                                                            context.lawnchairPrefs.feedWidgetList
-                                                                    .customAdder(i)
-                                                            context.bindService(Intent(context,
-                                                                                       PreferenceSynchronizerService::class.java),
-                                                                                object :
-                                                                                        ServiceConnection {
-                                                                                    override fun onServiceDisconnected(
-                                                                                            name: ComponentName?) {
-                                                                                    }
-
-                                                                                    override fun onServiceConnected(
-                                                                                            name: ComponentName?,
-                                                                                            service: IBinder?) {
-                                                                                        PreferenceSynchronizer
-                                                                                                .Stub
-                                                                                                .asInterface(
-                                                                                                        service)
-                                                                                                .requestSynchronization()
-                                                                                    }
-                                                                                },
-                                                                                Context.BIND_AUTO_CREATE)
-
-                                                            runOnNewThread {
-                                                                refresh(0)
+                            override fun onServiceConnected(name: ComponentName?,
+                                                            service: IBinder?) {
+                                IWidgetSelector.Stub.asInterface(service)
+                                        .pickWidget(object :
+                                                WidgetSelectionCallback.Stub() {
+                                            override fun onWidgetSelected(i: Int) {
+                                                context.lawnchairPrefs.feedWidgetList
+                                                        .customAdder(i)
+                                                context.bindService(Intent(context,
+                                                        PreferenceSynchronizerService::class.java),
+                                                        object :
+                                                                ServiceConnection {
+                                                            override fun onServiceDisconnected(
+                                                                    name: ComponentName?) {
                                                             }
-                                                        }
-                                                    })
-                                        }
-                                    }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+
+                                                            override fun onServiceConnected(
+                                                                    name: ComponentName?,
+                                                                    service: IBinder?) {
+                                                                PreferenceSynchronizer
+                                                                        .Stub
+                                                                        .asInterface(
+                                                                                service)
+                                                                        .requestSynchronization()
+                                                            }
+                                                        },
+                                                        Context.BIND_AUTO_CREATE)
+
+                                                runOnNewThread {
+                                                    refresh(0)
+                                                }
+                                            }
+                                        })
+                            }
+                        }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
             if (hasWidgetTab) {
                 toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
@@ -489,20 +489,21 @@ class LauncherFeed(val originalContext: Context,
             feedController.onScroll(1f)
             feedAttached = true
         }
+        tabView.isInlineLabel = context.lawnchairPrefs.feedHorizontalTabs
     }
 
     fun displayPreferenceScreen(screen: ProviderScreen, x: Float, y: Float,
                                 inflater: (parent: ViewGroup) -> View) {
         var view: View? = null
         displayView({
-                        inflater(it).also { view = it }
-                    }, x, y)
+            inflater(it).also { view = it }
+        }, x, y)
         preferenceScreens.add(screen to ScreenData(x, y, view!!))
     }
 
     fun removeLastPrefereceScreen() {
         removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x,
-                            preferenceScreens.last().second.y);
+                preferenceScreens.last().second.y);
         preferenceScreens.remove(preferenceScreens.last())
     }
 
@@ -512,7 +513,7 @@ class LauncherFeed(val originalContext: Context,
             oldIconTint = tabView.tabIconTint!!
             oldIndicatorTint = if (backgroundColor.alpha > 35) getColorForIndex(
                     tabView.selectedTabPosition) else if (useWhiteText(backgroundColor,
-                                                                       context)) R.color.textColorPrimary.fromColorRes(
+                            context)) R.color.textColorPrimary.fromColorRes(
                     context) else R.color.textColorPrimaryInverse.fromColorRes(context)
             oldTextColor = tabView.tabTextColors!!
             if (useWhiteText(backgroundColor, context) && !dark) {
@@ -545,22 +546,22 @@ class LauncherFeed(val originalContext: Context,
             fitsSystemWindows = false
             if (useTabbedMode) {
                 setPadding(paddingLeft,
-                           if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                   context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                           paddingRight,
-                           if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                   context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
+                        if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
+                                context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                        paddingRight,
+                        if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                context).toInt() + R.dimen.overlay_view_margin.fromDimenRes(
+                                context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
             } else {
                 setPadding(paddingLeft,
-                           if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                   context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                           paddingRight,
-                           if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
-                                   context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
-                                   context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
+                        if (!tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
+                                context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                        paddingRight,
+                        if (tabsOnBottom) R.dimen.feed_app_bar_height_material.fromDimenRes(
+                                context).toInt() / 2 + R.dimen.overlay_view_margin.fromDimenRes(
+                                context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
             }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
@@ -569,7 +570,7 @@ class LauncherFeed(val originalContext: Context,
                     val radius = hypot(height.toDouble(), width.toDouble())
                     val animator = ViewAnimationUtils
                             .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
-                                                  radius.toFloat())
+                                    radius.toFloat())
                     visibility = View.VISIBLE
                     animator.apply {
                         duration = 300
@@ -585,7 +586,7 @@ class LauncherFeed(val originalContext: Context,
             toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
                 icon = R.drawable.ic_close.fromDrawableRes(context)
                         .tint(if (useWhiteText(backgroundColor,
-                                               context)) R.color.textColorPrimary.fromColorRes(
+                                        context)) R.color.textColorPrimary.fromColorRes(
                                 context) else R.color.textColorPrimaryInverse.fromColorRes(context))
                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 setOnMenuItemClickListener {
@@ -691,18 +692,18 @@ class LauncherFeed(val originalContext: Context,
             feedAttached = true
             if (accessingPackages.size > 1) {
                 displayView({
-                                return@displayView FrameLayout(it.context).apply {
-                                    layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-                                    layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
-                                    addView(TextView(it.context).apply {
-                                        layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-                                        layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
-                                        gravity = Gravity.CENTER
-                                        text = R.string.message_feed_multiple_processes
-                                                .fromStringRes(context)
-                                    })
-                                }
-                            }, 0f, 0f)
+                    return@displayView FrameLayout(it.context).apply {
+                        layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
+                        layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+                        addView(TextView(it.context).apply {
+                            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
+                            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
+                            gravity = Gravity.CENTER
+                            text = R.string.message_feed_multiple_processes
+                                    .fromStringRes(context)
+                        })
+                    }
+                }, 0f, 0f)
             }
             if (!useWhiteText(backgroundColor, context)) {
                 feedController.systemUiVisibility =
@@ -823,11 +824,11 @@ class LauncherFeed(val originalContext: Context,
                 patch.deltas.forEach {
                     when (it.type!!) {
                         DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
-                                                                           it.source.lines.size)
+                                it.source.lines.size)
                         DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
-                                                                            it.source.lines.size)
+                                it.source.lines.size)
                         DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
-                                                                           it.source.lines.size)
+                                it.source.lines.size)
                         DeltaType.EQUAL -> {
                         }
                     }
