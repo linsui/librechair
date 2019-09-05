@@ -30,7 +30,7 @@ class CacheManager(val context: Context) {
 
     fun writeCache(data: ByteArray, namespace: String, cacheEntry: String, expiry: Long = TimeUnit.HOURS.toMillis(1)) {
         var outputStream = database.access().findEntryById(
-                (namespace + cacheEntry).hashCode() xor 4)?.getOutputStream(context)
+                (namespace + cacheEntry).hashCode() xor namespace.length)?.getOutputStream(context)
         if (outputStream == null) {
             outputStream = CacheEntry(namespace, cacheEntry, expiry).also {
                 database.access().insert(it)

@@ -3,6 +3,7 @@ package ch.deletescape.lawnchair.feed.cache;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -27,7 +28,7 @@ class CacheEntry {
     @SuppressLint("DefaultLocale")
     CacheEntry(String namespace, String id, long expiry) {
         this.cacheId = (namespace + id).hashCode() ^ namespace.length();
-        this.filePath = String.format("cache/%s/%s/%d", namespace, id, cacheId);
+        this.filePath = String.format("cacheManager/%s/%s/%d", namespace, id, cacheId);
         this.expiry = System.currentTimeMillis() + expiry;
     }
 
@@ -68,6 +69,7 @@ class CacheEntry {
             file.getParentFile().mkdirs();
             return new FileOutputStream(file);
         } catch (FileNotFoundException e) {
+            Log.d(getClass().getName(), "getOutputStream: could not retrieve output stream", e);
             return new OutputStream() {
                 @Override
                 public void write(int b) throws IOException {

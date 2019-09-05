@@ -44,6 +44,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                             callback.onBind(getLocationAwareFeed(lat to lon,
                                                                  Locale("", country).isO3Country))
                         } catch (e: Exception) {
+                            e.printStackTrace()
                             callback.onBind(getFallbackFeed())
                         }
                     } else {
