@@ -46,7 +46,7 @@ public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
                 String feed;
                 try {
                     feed = IOUtils.toString(
-                            new URL("https://theverge.com/rss/index.xml")
+                            new URL("https://www.theverge.com/rss/index.xml")
                                     .openConnection()
                                     .getInputStream(), Charset
                                     .defaultCharset());
