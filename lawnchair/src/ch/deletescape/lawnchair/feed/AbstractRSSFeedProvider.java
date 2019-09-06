@@ -212,6 +212,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
+                    readMore.setTextColor(FeedAdapter.Companion.getOverrideColor(parent.getContext()));
+
                     Log.d(getClass().getSimpleName(),
                             "inflate: Image URL is " + LawnchairUtilsKt.getThumbnailURL(entry));
 

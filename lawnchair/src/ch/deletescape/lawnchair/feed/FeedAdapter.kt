@@ -299,12 +299,16 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
 
     companion object {
         fun getOverrideColor(c: Context, currentColor: Int): Int {
-            if (currentColor == R.color.colorAccent.fromColorRes(c)
+            return if (currentColor == R.color.colorAccent.fromColorRes(c)
                     || currentColor == R.color.colorAccentDark.fromColorRes(c)) {
-                return c.getColorAttr(R.attr.colorAccent)
+                c.getColorAttr(R.attr.colorAccent)
             } else {
-                return currentColor
+                currentColor
             }
+        }
+
+        fun getOverrideColor(c: Context): Int {
+            return getOverrideColor(c, c.getColorEngineAccent())
         }
     }
 }

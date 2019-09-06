@@ -94,6 +94,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             readMore = v.findViewById(R.id.rss_item_read_more)
                             categories = v.findViewById(R.id.rss_item_categories)
 
+                            readMore.setTextColor(FeedAdapter.getOverrideColor(parent.context))
+
                             d("inflate: Image URL is ${entry.thumbnailURL}")
 
                             if (entry.thumbnailURL != null && entry.thumbnailURL!!.startsWith(
