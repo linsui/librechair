@@ -231,13 +231,20 @@ class LauncherFeed(val originalContext: Context,
             searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
             searchWidgetView!!.setOnLongClickListener {
-                searchWidgetView!!.animate().scaleX(0.2f).scaleY(0.2f).duration = 500
+                searchWidgetView!!.animate()
+                        .scaleX(0.7f)
+                        .scaleY(0.7f)
+                        .setInterpolator(Interpolators.ACCEL_1_5).duration = 500
                 deleting = true
                 true
             }
             searchWidgetView!!.setOnTouchListener { v, event ->
                 if (deleting && event.action == MotionEvent.ACTION_UP) {
-                    searchWidgetView!!.animate().scaleX(0f).scaleY(0f).setDuration(500).setListener(object : Animator.AnimatorListener {
+                    searchWidgetView!!.animate()
+                            .scaleX(0f)
+                            .scaleY(0f)
+                            .setDuration(500)
+                            .setListener(object : Animator.AnimatorListener {
                         override fun onAnimationRepeat(animation: Animator?) {
 
                         }
@@ -572,13 +579,20 @@ class LauncherFeed(val originalContext: Context,
                                                     searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
                                                             .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
                                                     searchWidgetView!!.setOnLongClickListener {
-                                                        searchWidgetView!!.animate().scaleX(0.2f).scaleY(0.2f).duration = 500
+                                                        searchWidgetView!!.animate()
+                                                                .scaleX(0.7f)
+                                                                .scaleY(0.7f)
+                                                                .setInterpolator(Interpolators.ACCEL_1_5).duration = 500
                                                         deleting = true
                                                         true
                                                     }
                                                     searchWidgetView!!.setOnTouchListener { v, event ->
                                                         if (deleting && event.action == MotionEvent.ACTION_UP) {
-                                                            searchWidgetView!!.animate().scaleX(0f).scaleY(0f).setDuration(500).setListener(object : Animator.AnimatorListener {
+                                                            searchWidgetView!!.animate()
+                                                                    .scaleX(0f)
+                                                                    .scaleY(0f)
+                                                                    .setDuration(500)
+                                                                    .setListener(object : Animator.AnimatorListener {
                                                                 override fun onAnimationRepeat(animation: Animator?) {
 
                                                                 }
