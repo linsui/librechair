@@ -46,7 +46,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     }
     private val calendarDrawableColoured by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!
-                .tint(context.getColorAttr(R.attr.colorAccent))
+                .tint(FeedAdapter.getOverrideColor(context))
     }
 
     override fun onFeedShown() {
