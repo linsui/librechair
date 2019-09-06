@@ -48,7 +48,7 @@ public class WikipediaNewsProvider extends FeedProvider {
         super(c);
         this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
                 .newDrawable().mutate();
-        this.newsIcon.setTint(LawnchairUtilsKt.getColorAttr(c, R.attr.colorAccent));
+        this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
         Executors.newSingleThreadExecutor().submit(() -> {
                 this.wikipedia = new Wiki("en.wikipedia.org");
                 this.wikipedia.conf.userAgent = "Librechair";
