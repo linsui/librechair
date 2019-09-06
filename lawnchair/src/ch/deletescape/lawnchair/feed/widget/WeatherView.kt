@@ -49,7 +49,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs),
-                                                             LawnchairSmartspaceController.Listener {
+        LawnchairSmartspaceController.Listener {
     private var weatherData: LawnchairSmartspaceController.WeatherData? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
@@ -88,33 +88,52 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         hourlyLayout.removeAllViews()
         dailyLayout.removeAllViews()
 
-        hourlyWeatherForecast?.data?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
+        if (context.lawnchairPrefs.showVerticalHourlyForecast) {
+            hourlyLayout.orientation = LinearLayout.VERTICAL
+        }
+        hourlyWeatherForecast?.data
+                ?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
                 ?.forEach {
-                    hourlyLayout.addView(LayoutInflater.from(hourlyLayout.context).inflate(
-                            R.layout.narrow_forecast_item, this, false).apply {
-                        val temperature =
-                                findViewById(R.id.forecast_current_temperature) as TextView
-                        val time = findViewById(R.id.forecast_current_time) as TextView
-                        val icon = findViewById(R.id.forecast_weather_icon) as ImageView
+                    hourlyLayout.addView(
+                            LayoutInflater.from(hourlyLayout.context).inflate(
+                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item, hourlyLayout,
+                                    false).apply {
+                                val temperature = findViewById(
+                                        R.id.forecast_current_temperature) as TextView
+                                val time = findViewById(
+                                        R.id.forecast_current_time) as TextView
+                                val icon = findViewById(
+                                        R.id.forecast_weather_icon) as ImageView
 
-                        icon.setImageBitmap(it.data.icon)
-                        val zonedDateTime =
-                                ZonedDateTime.ofInstant(it.date.toInstant(), ZoneId.of("UTC"))
-                                        .withZoneSameInstant(ZoneId.systemDefault())
-                        time.text = formatTime(zonedDateTime, context)
-                        temperature.text =
-                                it.data.temperature.toString(context.lawnchairPrefs.weatherUnit)
-
-                        if (!ThemeManager.getInstance(context).supportsDarkText) {
-                            time.setTextColor(Color.WHITE)
-                            temperature.setTextColor(Color.WHITE)
-                        }
-                        layoutParams = LinearLayout
-                                .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                              ViewGroup.LayoutParams.WRAP_CONTENT).apply {
-                                    weight = 1f
+                                viewTreeObserver.addOnPreDrawListener {
+                                    if (context.lawnchairPrefs.showVerticalHourlyForecast) {
+                                        layoutParams = LinearLayout.LayoutParams(
+                                                dailyLayout.also {
+                                                    it.measure(
+                                                            MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED)
+                                                }.width, ViewGroup.LayoutParams.WRAP_CONTENT)
+                                    }
+                                    true
                                 }
-                    })
+
+                                icon.setImageBitmap(it.data.icon)
+                                val zonedDateTime = ZonedDateTime
+                                        .ofInstant(it.date.toInstant(),
+                                                ZoneId.of("UTC"))
+                                        .withZoneSameInstant(ZoneId.systemDefault())
+                                time.text = formatTime(zonedDateTime, context)
+                                temperature.text = it.data.temperature.toString(
+                                        context.lawnchairPrefs.weatherUnit)
+                                if (!ThemeManager.getInstance(context).supportsDarkText) {
+                                    time.setTextColor(Color.WHITE)
+                                    temperature.setTextColor(Color.WHITE)
+                                }
+                                layoutParams = LinearLayout
+                                        .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                                        .apply {
+                                            weight = 1f
+                                        }
+                            })
                 }
 
         dailyForecast?.dailyForecastData
@@ -128,8 +147,8 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                         viewTreeObserver.addOnGlobalLayoutListener {
                             if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                 layoutParams = LinearLayout.LayoutParams(dailyLayout.also {
-                                    it.measure(View.MeasureSpec.UNSPECIFIED,
-                                               View.MeasureSpec.UNSPECIFIED)
+                                    it.measure(MeasureSpec.UNSPECIFIED,
+                                            MeasureSpec.UNSPECIFIED)
                                 }.width, ViewGroup.LayoutParams.WRAP_CONTENT)
                             }
                         }
@@ -158,7 +177,7 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                         }
                         layoutParams = LinearLayout
                                 .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                              ViewGroup.LayoutParams.WRAP_CONTENT).apply {
+                                        ViewGroup.LayoutParams.WRAP_CONTENT).apply {
                                     weight = 1f
                                 }
                     })
