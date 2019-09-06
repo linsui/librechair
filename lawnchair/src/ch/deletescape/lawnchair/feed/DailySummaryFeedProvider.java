@@ -34,11 +34,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
 import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,6 +52,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
+
 import kotlin.Pair;
 
 public class DailySummaryFeedProvider extends FeedProvider {
@@ -56,6 +60,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
     @Thunk
     Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
     private long sunriseSunsetExpiry;
+
     @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
@@ -142,9 +147,8 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     RecyclerView recyclerView = v.findViewById(R.id.daily_summary_information);
                     Adapter adapter = new Adapter(parent.getContext(), this);
                     recyclerView.setAdapter(adapter);
-                    GridLayoutManager layoutManager;
                     recyclerView.setLayoutManager(
-                            layoutManager = new GridLayoutManager(parent.getContext(),
+                            new GridLayoutManager(parent.getContext(),
                                     1)); /* TODO proper grid layout span sizes */
                     adapter.refresh();
                     return v;
@@ -192,8 +196,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                         .tint(
                                 Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_event_black_24dp)),
-                                LawnchairUtilsKt
-                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                                FeedAdapter.Companion.getOverrideColor(context)),
                         context.getResources()
                                 .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
                                         calendarEvents.getCount(), calendarEvents.getCount())));
@@ -202,19 +205,15 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
             if (feedProvider.sunriseSunset != null) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .tint(
-                                Objects.requireNonNull(
+                        .tint(Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_sunrise_24dp)),
-                                LawnchairUtilsKt
-                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                                FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
                                 .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
                 items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .tint(
-                                Objects.requireNonNull(
+                        .tint(Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_sunset_24dp)),
-                                LawnchairUtilsKt
-                                        .getColorAttrib(context.getTheme(), R.attr.colorAccent)),
+                                FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
                                 .formatTime(feedProvider.sunriseSunset.getSecond(), context)));
             }
