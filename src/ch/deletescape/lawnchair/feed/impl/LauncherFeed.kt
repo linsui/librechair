@@ -123,6 +123,7 @@ class LauncherFeed(val originalContext: Context,
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
+    private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
 
@@ -220,6 +221,15 @@ class LauncherFeed(val originalContext: Context,
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
         }
 
+        if (context.lawnchairPrefs.feedHighContrastToolbar) {
+            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+        }
+
+
+        var oldToolbarPaddingVertical: Pair<Int, Int>? = null
+        var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
+        var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
+        var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
         if (context.lawnchairPrefs.feedToolbarWidget != -1) {
             val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
             var deleting = false
@@ -251,6 +261,7 @@ class LauncherFeed(val originalContext: Context,
 
                                 override fun onAnimationEnd(animation: Animator?) {
                                     context.lawnchairPrefs.feedToolbarWidget = -1
+                                    reapplyInsetFlag = true
                                     widgetContainer.removeView(searchWidgetView)
                                     searchWidgetView = null
                                 }
@@ -270,18 +281,9 @@ class LauncherFeed(val originalContext: Context,
                 }
                 true
             }
+            reapplyInsetFlag = true
             widgetContainer.addView(searchWidgetView, 0)
         }
-
-        if (context.lawnchairPrefs.feedHighContrastToolbar) {
-            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
-        }
-
-
-        var oldToolbarPaddingVertical: Pair<Int, Int>? = null
-        var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
-        var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
-        var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
         feedController
                 .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                     if (lastOrientation != context.resources.configuration.orientation) {
@@ -290,6 +292,14 @@ class LauncherFeed(val originalContext: Context,
                             feedController.background =
                                     if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                         }
+                    }
+                    if (reapplyInsetFlag) {
+                        reapplyInsetFlag = false
+                        oldRecyclerViewPaddingVertical = (if (!tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
+                                R.dimen.feed_app_bar_bottom_padding).toInt() else recyclerView.paddingTop) to
+                                (if (tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(R.dimen.feed_app_bar_bottom_padding).toInt()
+                                else recyclerView.paddingBottom)
+                        feedController.requestApplyInsets()
                     }
                 }
         upButton.visibility = if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
@@ -599,6 +609,7 @@ class LauncherFeed(val originalContext: Context,
 
                                                                         override fun onAnimationEnd(animation: Animator?) {
                                                                             context.lawnchairPrefs.feedToolbarWidget = -1
+                                                                            reapplyInsetFlag = true
                                                                             widgetContainer.removeView(searchWidgetView)
                                                                             searchWidgetView = null
                                                                         }
@@ -618,6 +629,7 @@ class LauncherFeed(val originalContext: Context,
                                                         }
                                                         true
                                                     }
+                                                    reapplyInsetFlag = true
                                                     widgetContainer.addView(searchWidgetView, 0)
                                                 }
                                             }
