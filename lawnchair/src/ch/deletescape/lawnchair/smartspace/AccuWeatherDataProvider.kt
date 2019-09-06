@@ -65,7 +65,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
             val locationProvider = locationManager?.getBestProvider(Criteria(), true)
             val location = locationManager?.getLastKnownLocation(locationProvider)
             if (location != null) {
-                AccuRetrofitServiceFactory.accuSearchRetrofitService.getGeoPosition("${location.latitude},${location.longitude}", context.locale.language).enqueue(object : Callback<AccuLocationGSon> {
+                AccuRetrofitServiceFactory.getAccuSearchRetrofitService(context).getGeoPosition("${location.latitude},${location.longitude}", context.locale.language).enqueue(object : Callback<AccuLocationGSon> {
                     override fun onFailure(call: Call<AccuLocationGSon>, t: Throwable) {
                         updateData(null, null)
                     }
@@ -82,7 +82,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
             }
         } else {
             if (keyCache.first != prefs.weatherCity) {
-                AccuRetrofitServiceFactory.accuSearchRetrofitService.search(prefs.weatherCity, context.locale.language).enqueue(object : Callback<List<AccuLocationGSon>> {
+                AccuRetrofitServiceFactory.getAccuSearchRetrofitService(context).search(prefs.weatherCity, context.locale.language).enqueue(object : Callback<List<AccuLocationGSon>> {
                     override fun onFailure(call: Call<List<AccuLocationGSon>>, t: Throwable) {
                         updateData(null, null)
                     }
@@ -101,7 +101,7 @@ class AccuWeatherDataProvider(controller: LawnchairSmartspaceController) :
     }
 
     private fun loadWeather() {
-        AccuRetrofitServiceFactory.accuWeatherRetrofitService.getLocalWeather(keyCache.second, context.locale.language).enqueue(object : Callback<AccuLocalWeatherGSon> {
+        AccuRetrofitServiceFactory.getAccuWeatherRetrofitService(context).getLocalWeather(keyCache.second, context.locale.language).enqueue(object : Callback<AccuLocalWeatherGSon> {
             override fun onFailure(call: Call<AccuLocalWeatherGSon>, t: Throwable) {
                 updateData(null, null)
             }

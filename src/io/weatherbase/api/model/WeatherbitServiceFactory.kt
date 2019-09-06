@@ -19,7 +19,9 @@
 
 package io.weatherbase.api.model
 
+import android.content.Context
 import android.text.TextUtils
+import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
 import ch.deletescape.lawnchair.smartspace.accu.AccuSearchRetrofitService
 import ch.deletescape.lawnchair.smartspace.accu.AccuWeatherRetrofitService
@@ -36,19 +38,19 @@ object WeatherbitServiceFactory {
     private var okHttpClient: OkHttpClient? = null
 
 
-    fun <T : Any> getRetrofitService(serviceClass: KClass<T>): T {
-        val client = buildOkHttpClient()
+    fun <T : Any> getRetrofitService(serviceClass: KClass<T>, c: Context): T {
+        val client = buildOkHttpClient(c)
         return Retrofit.Builder().baseUrl(WEATHERBIT_BASE_URL).addConverterFactory(
                 GsonConverterFactory.create()).client(client).build().create(serviceClass.java)
     }
 
-    private fun buildOkHttpClient(): OkHttpClient? {
+    private fun buildOkHttpClient(c: Context): OkHttpClient? {
         if (okHttpClient == null) {
             synchronized(AccuRetrofitServiceFactory::class.java) {
+                runOnMainThread {  }
                 if (okHttpClient == null) {
                     okHttpClient = OkHttpClientBuilder()
-                            .addQueryParam(API_KEY).build(
-                                    LauncherAppState.getInstanceNoCreate()?.context)
+                            .addQueryParam(API_KEY).build(c)
                 }
             }
         }

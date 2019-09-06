@@ -46,7 +46,6 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     private final Context c;
 
     public WeatherChannelForecastProvider(Context c) {
-
         this.c = c;
     }
 
@@ -55,7 +54,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     public Forecast getHourlyForecast(double lat, double lon) throws ForecastException {
         try {
             Response<SunV1HourlyForecastResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
-                    .getWeatherComWeatherRetrofitServiceForForecast()
+                    .getRetrofitServiceForecast(c)
                     .getHourlyForecast(lat, lon, 24,
                             LawnchairUtilsKt.getLocale(c).getLanguage(), "m").execute();
             if (!response.isSuccessful()) {
@@ -87,7 +86,7 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     public DailyForecast getDailyForecast(double lat, double lon) throws ForecastException {
         try {
             Response<SunV3DailyForecastResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
-                    .getWeatherComWeatherRetrofitService()
+                    .getRetrofitService(c)
                     .getDailyForecastWithApiV3(7, lat + "," + lon, LawnchairUtilsKt.getLocale(c).getLanguage(), "m")
                     .execute();
 
@@ -120,7 +119,8 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     public CurrentWeather getCurrentWeather(double lat, double lon) throws ForecastException {
         try {
             Response<SunV1CurrentConditionsResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
-                    .getWeatherComWeatherRetrofitServiceForForecast().getCurrentConditions(lat, lon)
+                    .getRetrofitServiceForecast(c)
+                    .getCurrentConditions(lat, lon)
                     .execute();
             if (!response.isSuccessful()) {
                 throw new ForecastException("api call failed: " + response.message());
@@ -144,7 +144,9 @@ public class WeatherChannelForecastProvider implements ForecastProvider {
     @Override
     public Pair<Double, Double> getGeolocation(@NotNull String query) throws ForecastException {
         try {
-            Response<SunV3LocationSearchResponse> response = WeatherComRetrofitServiceFactory.INSTANCE.getWeatherComWeatherRetrofitService().searchLocationByName(query, "city", LawnchairUtilsKt.getLocale(c).getLanguage()).execute();
+            Response<SunV3LocationSearchResponse> response = WeatherComRetrofitServiceFactory.INSTANCE
+                    .getRetrofitServiceForecast(c)
+                    .searchLocationByName(query, "city", LawnchairUtilsKt.getLocale(c).getLanguage()).execute();
             if (!response.isSuccessful()) {
                 throw new IOException("request failed");
             } else if (response.body().location.latitude.size() < 1) {

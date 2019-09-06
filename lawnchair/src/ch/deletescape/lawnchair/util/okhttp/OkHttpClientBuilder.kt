@@ -19,8 +19,10 @@ package ch.deletescape.lawnchair.util.okhttp
 
 import android.content.Context
 import ch.deletescape.lawnchair.lawnchairPrefs
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.util.concurrent.TimeUnit
 
 class OkHttpClientBuilder {
     private val builder = OkHttpClient.Builder()
@@ -31,7 +33,7 @@ class OkHttpClientBuilder {
         return this
     }
 
-    fun build(context: Context?): OkHttpClient {
+    fun build(context: Context): OkHttpClient {
         if (queryParams.isNotEmpty()) {
             builder.addInterceptor {
                 val urlBuilder = it.request().url.newBuilder()
@@ -42,12 +44,18 @@ class OkHttpClientBuilder {
             }
         }
         builder.addInterceptor(HttpLoggingInterceptor().apply {
-            level = if (context?.lawnchairPrefs?.debugOkHttp == true) {
+            level = if (context.lawnchairPrefs.debugOkHttp) {
                 HttpLoggingInterceptor.Level.BODY
             } else {
                 HttpLoggingInterceptor.Level.BASIC
             }
         })
+        builder.addInterceptor {
+            it.proceed(it.request()
+                    .newBuilder()
+                    .header("Cache-Control", "public, max-age=${TimeUnit.MINUTES.toSeconds(30)}").build())
+        }
+        builder.cache(Cache(context.cacheDir, 1024 * 1024 * 10))
         return builder.build()
     }
 }

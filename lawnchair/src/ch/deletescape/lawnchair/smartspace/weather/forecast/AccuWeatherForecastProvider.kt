@@ -41,7 +41,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
 
     override fun getGeolocation(query: String): Pair<Double, Double> {
         try {
-            val response = AccuRetrofitServiceFactory.accuSearchRetrofitService
+            val response = AccuRetrofitServiceFactory.getAccuSearchRetrofitService(c)
                     .search(query, c.locale.language).execute()
             if (!response.isSuccessful || response.body()?.isEmpty() == true) {
                 throw ForecastProvider.ForecastException(
@@ -49,7 +49,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
             } else {
                 return (response.body()!![0].geoPosition.latitude.toDoubleOrNull()
                         ?: 0.toDouble()) to (response.body()!![0].geoPosition.longitude.toDoubleOrNull()
-                                             ?: 0.toDouble())
+                        ?: 0.toDouble())
             }
         } catch (e: IOException) {
             throw ForecastProvider.ForecastException(e)
@@ -63,18 +63,18 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                 try {
                     if (cachedHourly == null || cachedHourly?.expired == true) {
                         val geolocationResponse =
-                                AccuRetrofitServiceFactory.accuSearchRetrofitService
+                                AccuRetrofitServiceFactory.getAccuSearchRetrofitService(c)
                                         .getGeoPosition("$lat,$lon", c.locale.language).execute()
                         if (!geolocationResponse.isSuccessful) {
                             throw ForecastProvider.ForecastException(
                                     "geolocation couldn't be retrieved")
                         } else {
-                            responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
+                            responseResult = AccuRetrofitServiceFactory.getAccuWeatherRetrofitService(c)
                                     .getHourly(geolocationResponse.body()!!.key, c.locale.language)
                                     .execute()
                             cachedHourly =
                                     CachedResponse(System.currentTimeMillis() + (1000 * 60 * 10),
-                                                   responseResult!!)
+                                            responseResult!!)
                         }
                     } else {
                         responseResult = cachedHourly?.value
@@ -102,8 +102,8 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
 
                         data += ForecastProvider.ForecastData(
                                 LawnchairSmartspaceController.WeatherData(icon, temperature, null,
-                                                                          null, null, lat, lon,
-                                                                          iconRes), date, conds)
+                                        null, null, lat, lon,
+                                        iconRes), date, conds)
                     }
                     return ForecastProvider.Forecast(data)
                 }
@@ -119,22 +119,22 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                 return cachedCurrent!!.value
             } else {
                 try {
-                    val locationInfo = AccuRetrofitServiceFactory.accuSearchRetrofitService
+                    val locationInfo = AccuRetrofitServiceFactory.getAccuSearchRetrofitService(c)
                             .getGeoPosition("$lat,$lon", c.locale.language).execute()
-                    val weatherResponse = AccuRetrofitServiceFactory.accuWeatherRetrofitService
+                    val weatherResponse = AccuRetrofitServiceFactory.getAccuWeatherRetrofitService(c)
                             .getLocalWeather(locationInfo.body()!!.key, c.locale.language).execute()
                     cachedCurrent = CachedResponse(System.currentTimeMillis() + 2,
-                                                   ForecastProvider.CurrentWeather(
-                                                           arrayOf(COND_MAP[weatherResponse.body()!!.currentConditions.weatherIcon]!!),
-                                                           Date.from(Instant.ofEpochSecond(
-                                                                   weatherResponse.body()!!.currentConditions.epochTime)),
-                                                           Temperature(
-                                                                   weatherResponse.body()!!.currentConditions.temperature.value.toDouble().toInt(),
-                                                                   Temperature.Unit.Celsius),
-                                                           AccuWeatherDataProvider.getIcon(c,
-                                                                                           weatherResponse.body()!!.currentConditions.weatherIcon,
-                                                                                           weatherResponse.body()!!.currentConditions.isDayTime),
-                                                           weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble()))
+                            ForecastProvider.CurrentWeather(
+                                    arrayOf(COND_MAP[weatherResponse.body()!!.currentConditions.weatherIcon]!!),
+                                    Date.from(Instant.ofEpochSecond(
+                                            weatherResponse.body()!!.currentConditions.epochTime)),
+                                    Temperature(
+                                            weatherResponse.body()!!.currentConditions.temperature.value.toDouble().toInt(),
+                                            Temperature.Unit.Celsius),
+                                    AccuWeatherDataProvider.getIcon(c,
+                                            weatherResponse.body()!!.currentConditions.weatherIcon,
+                                            weatherResponse.body()!!.currentConditions.isDayTime),
+                                    weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble()))
                     return cachedCurrent!!.value
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)
@@ -152,7 +152,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                 if (cachedDaily == null || cachedDaily?.expired == true) {
 
 
-                    val geolocationResponse = AccuRetrofitServiceFactory.accuSearchRetrofitService
+                    val geolocationResponse = AccuRetrofitServiceFactory.getAccuSearchRetrofitService(c)
                             .getGeoPosition("$lat,$lon", c.locale.language).execute()
                     if (!geolocationResponse.isSuccessful) {
 
@@ -160,11 +160,11 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                 "geolocation couldn't be retrieved")
                     } else {
 
-                        responseResult = AccuRetrofitServiceFactory.accuWeatherRetrofitService
+                        responseResult = AccuRetrofitServiceFactory.getAccuWeatherRetrofitService(c)
                                 .getDaily10Day(geolocationResponse.body()!!.key, c.locale.language)
                                 .execute()
                         cachedDaily = CachedResponse(System.currentTimeMillis() + (1000 * 60 * 10),
-                                                     responseResult!!)
+                                responseResult!!)
                     }
                 } else {
                     responseResult = cachedDaily?.value
@@ -181,9 +181,9 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                     responseResult.body()!!.dailyForecasts!!.forEach {
                         data += ForecastProvider.DailyForecastData(
                                 Temperature(it.temperature.maximum.value.toDouble().toInt(),
-                                            Temperature.Unit.Celsius),
+                                        Temperature.Unit.Celsius),
                                 Temperature(it.temperature.minimum.value.toDouble().toInt(),
-                                            Temperature.Unit.Celsius),
+                                        Temperature.Unit.Celsius),
                                 Date.from(Instant.ofEpochSecond(it.epochDate)),
                                 AccuWeatherDataProvider.getIcon(c, it.day.icon, true), null)
                     }
@@ -198,12 +198,12 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
 
     companion object {
         val COND_MAP = mapOf(1 to 800, 2 to 801, 3 to 805, 4 to 802, 5 to 900, 6 to 810, 7 to 802,
-                             8 to 804, 11 to 721, 12 to 510, 13 to 509, 14 to 504, 15 to 211,
-                             16 to 209, 17 to 218, 18 to 501, 19 to 510, 20 to 500, 21 to 500,
-                             22 to 601, 23 to 600, 24 to 1104, 25 to 611, 26 to 500, 29 to 600,
-                             32 to 1200, 33 to 800, 34 to 801, 35 to 804, 36 to 801, 37 to 721,
-                             38 to 803, 39 to 500, 40 to 500, 41 to 200, 42 to 200, 43 to 612,
-                             44 to 600, 99 to 0)
+                8 to 804, 11 to 721, 12 to 510, 13 to 509, 14 to 504, 15 to 211,
+                16 to 209, 17 to 218, 18 to 501, 19 to 510, 20 to 500, 21 to 500,
+                22 to 601, 23 to 600, 24 to 1104, 25 to 611, 26 to 500, 29 to 600,
+                32 to 1200, 33 to 800, 34 to 801, 35 to 804, 36 to 801, 37 to 721,
+                38 to 803, 39 to 500, 40 to 500, 41 to 200, 42 to 200, 43 to 612,
+                44 to 600, 99 to 0)
         @JvmStatic
         val DAILY_LOCK = Any() /* Stuff might lock against this from Java */
         @JvmStatic

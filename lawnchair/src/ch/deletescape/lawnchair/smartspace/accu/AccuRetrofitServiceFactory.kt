@@ -17,6 +17,7 @@
 
 package ch.deletescape.lawnchair.smartspace.accu
 
+import android.content.Context
 import android.text.TextUtils
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
 import com.android.launcher3.BuildConfig
@@ -34,34 +35,24 @@ object AccuRetrofitServiceFactory {
     private val ACCU_METRIC = Pair("metric", "true")
     private var okHttpClient: OkHttpClient? = null
 
-    val accuWeatherRetrofitService: AccuWeatherRetrofitService by lazy { getAccuWeatherRetrofitService_() }
-
-    val accuSearchRetrofitService: AccuSearchRetrofitService by lazy { getAccuSearchRetrofitService_() }
-
-    fun setApiKey(apiKey: String) {
-        if (!TextUtils.isEmpty(apiKey)) {
-            ACCU_APIKEY = Pair("apiKey", apiKey)
-        }
+    fun getAccuWeatherRetrofitService(c: Context): AccuWeatherRetrofitService {
+        return getRetrofitService(AccuWeatherRetrofitService::class.java, c)
     }
 
-    fun getAccuWeatherRetrofitService_(): AccuWeatherRetrofitService {
-        return getRetrofitService(AccuWeatherRetrofitService::class.java)
+    fun getAccuSearchRetrofitService(c: Context): AccuSearchRetrofitService {
+        return getRetrofitService(AccuSearchRetrofitService::class.java, c)
     }
 
-    fun getAccuSearchRetrofitService_(): AccuSearchRetrofitService {
-        return getRetrofitService(AccuSearchRetrofitService::class.java)
-    }
-
-    private fun <T> getRetrofitService(serviceClass: Class<T>): T {
-        val client = buildOkHttpClient()
+    private fun <T> getRetrofitService(serviceClass: Class<T>, c: Context): T {
+        val client = buildOkHttpClient(c)
         return Retrofit.Builder().baseUrl(ACCU_BASE_URL).addConverterFactory(GsonConverterFactory.create()).client(client).build().create(serviceClass)
     }
 
-    private fun buildOkHttpClient(): OkHttpClient? {
+    private fun buildOkHttpClient(c: Context): OkHttpClient? {
         if (okHttpClient == null) {
             synchronized(AccuRetrofitServiceFactory::class.java) {
                 if (okHttpClient == null) {
-                    okHttpClient = OkHttpClientBuilder().addQueryParam(ACCU_APIKEY).addQueryParam(ACCU_DETAILS).addQueryParam(ACCU_METRIC).build(LauncherAppState.getInstanceNoCreate()?.context)
+                    okHttpClient = OkHttpClientBuilder().addQueryParam(ACCU_APIKEY).addQueryParam(ACCU_DETAILS).addQueryParam(ACCU_METRIC).build(c)
                 }
             }
         }

@@ -38,7 +38,9 @@ class WeatherbitDataProvider(controller: LawnchairSmartspaceController) :
             if (cachedResponseInternal != null && cachedResponseInternal?.expired?.not() == false) {
                 return@run cachedResponseInternal
             } else {
-                val response = WeatherbitServiceFactory.getRetrofitService(CurrentWeatherDataApi::class).currentcitycitycountrycountryGet(context.lawnchairPrefs.weatherCity.split(",")[0].trim(), context.lawnchairPrefs.weatherCity.split(",")[1].trim(), null, null, null, context.locale.language, null).execute()
+                val response = WeatherbitServiceFactory.getRetrofitService(CurrentWeatherDataApi::class, context)
+                        .currentcitycitycountrycountryGet(context.lawnchairPrefs.weatherCity.split(",")[0].trim(), context.lawnchairPrefs.weatherCity.split(",")[1].trim(), null, null, null, context.locale.language, null)
+                        .execute()
                 return@run CachedResponse(System.currentTimeMillis() + (1000 * 60 * 20), response.body()!!).also { cachedResponseInternal = it }
             }
         };

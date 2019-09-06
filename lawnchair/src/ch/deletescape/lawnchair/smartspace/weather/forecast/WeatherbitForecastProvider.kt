@@ -40,7 +40,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
         return {
             try {
                 val response =
-                        WeatherbitServiceFactory.getRetrofitService(CurrentWeatherDataApi::class)
+                        WeatherbitServiceFactory.getRetrofitService(CurrentWeatherDataApi::class, context)
                                 .currentcitycitycountrycountryGet(query.split(",")[0].trim(),
                                                                   query.split(",")[1].trim(), null,
                                                                   null, null,
@@ -57,7 +57,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
         try {
             val response = WeatherbitServiceFactory
-                    .getRetrofitService(Class120HourHourlyForecastApi::class)
+                    .getRetrofitService(Class120HourHourlyForecastApi::class, context)
                     .forecastHourlylatlatlonlonGet(lat, lon, null, context.locale.language, null,
                                                    120).execute();
             if (!response.isSuccessful) {
@@ -86,7 +86,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
     override fun getDailyForecast(lat: Double, lon: Double): ForecastProvider.DailyForecast {
         try {
             val response =
-                    WeatherbitServiceFactory.getRetrofitService(Class16DayDailyForecastApi::class)
+                    WeatherbitServiceFactory.getRetrofitService(Class16DayDailyForecastApi::class, context)
                             .forecastDailylatlatlonlonGet(lat, lon, 5.toBigDecimal(), null,
                                                           context.locale.language, null).execute()
             val data = mutableListOf<ForecastProvider.DailyForecastData>()
@@ -109,7 +109,7 @@ class WeatherbitForecastProvider(val context: Context) : ForecastProvider {
         try {
             d("getCurrentWeather: retrieving weather for $lat, $lon")
             val response = WeatherbitServiceFactory.getRetrofitService(
-                    CurrentWeatherDataApi::class).currentlatlatlonlonGet(lat, lon, null, null,
+                    CurrentWeatherDataApi::class, context).currentlatlatlonlonGet(lat, lon, null, null,
                                                                          context.locale.language,
                                                                          null).execute().body()!!.data[0]!!
             d("getCurrentWeather: response: $response")

@@ -51,13 +51,13 @@ class WeatherChannelWeatherProvider(controller: LawnchairSmartspaceController) :
         runOnNewThread {
             if (context.lawnchairPrefs.weatherCity != "##Auto") {
                 try {
-                    val position = WeatherComRetrofitServiceFactory.weatherComWeatherRetrofitService
+                    val position = WeatherComRetrofitServiceFactory.getRetrofitService(context)
                             .searchLocationByName(context.lawnchairPrefs.weatherCity, "city",
                                                   context.locale.language).execute()
 
                     d("updateData: position $position")
                     val currentConditions =
-                            WeatherComRetrofitServiceFactory.weatherComWeatherRetrofitService.getCurrentConditions(
+                            WeatherComRetrofitServiceFactory.getRetrofitService(context).getCurrentConditions(
                                     position.body()!!.location.latitude[0],
                                     position.body()!!.location.longitude[0]).execute().body()!!
                     val icon: Bitmap
@@ -97,7 +97,7 @@ class WeatherChannelWeatherProvider(controller: LawnchairSmartspaceController) :
                 val location = locationManager?.getLastKnownLocation(locationProvider)
                                ?: return@runOnNewThread
                 val currentConditions =
-                        WeatherComRetrofitServiceFactory.weatherComWeatherRetrofitService.getCurrentConditions(
+                        WeatherComRetrofitServiceFactory.getRetrofitService(context).getCurrentConditions(
                                 location.latitude,
                                 location.longitude).execute().body()!!
                 val icon: Bitmap
