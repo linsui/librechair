@@ -245,25 +245,25 @@ class LauncherFeed(val originalContext: Context,
                             .scaleY(0f)
                             .setDuration(500)
                             .setListener(object : Animator.AnimatorListener {
-                        override fun onAnimationRepeat(animation: Animator?) {
+                                override fun onAnimationRepeat(animation: Animator?) {
 
-                        }
+                                }
 
-                        override fun onAnimationEnd(animation: Animator?) {
-                            context.lawnchairPrefs.feedToolbarWidget = -1
-                            widgetContainer.removeView(searchWidgetView)
-                            searchWidgetView = null
-                        }
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    context.lawnchairPrefs.feedToolbarWidget = -1
+                                    widgetContainer.removeView(searchWidgetView)
+                                    searchWidgetView = null
+                                }
 
-                        override fun onAnimationCancel(animation: Animator?) {
+                                override fun onAnimationCancel(animation: Animator?) {
 
-                        }
+                                }
 
-                        override fun onAnimationStart(animation: Animator?) {
+                                override fun onAnimationStart(animation: Animator?) {
 
-                        }
+                                }
 
-                    })
+                            })
                 } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
                     deleting = false
                     searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
@@ -277,12 +277,6 @@ class LauncherFeed(val originalContext: Context,
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
 
-        recyclerView.apply {
-            setPadding(paddingStart, toolbar.also {
-                it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-            }.measuredHeight + context.resources.getDimension(
-                    R.dimen.feed_app_bar_bottom_padding).toInt(), paddingRight, paddingBottom);
-        }
 
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
         var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
@@ -304,7 +298,13 @@ class LauncherFeed(val originalContext: Context,
             navigationBarHeight = insets.stableInsetBottom
             recyclerView.apply {
                 if (oldRecyclerViewPaddingVertical == null) {
-                    oldRecyclerViewPaddingVertical = paddingTop to paddingBottom
+                    oldRecyclerViewPaddingVertical = (if (!tabsOnBottom) toolbar.also {
+                        it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                    }.measuredHeight + context.resources.getDimension(
+                            R.dimen.feed_app_bar_bottom_padding).toInt() else paddingTop) to (if (tabsOnBottom) toolbar.also {
+                        it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                    }.measuredHeight + context.resources.getDimension(
+                            R.dimen.feed_app_bar_bottom_padding).toInt() else paddingBottom)
                 }
                 if (oldRecyclerViewPaddingHorizontal == null) {
                     oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
@@ -593,25 +593,25 @@ class LauncherFeed(val originalContext: Context,
                                                                     .scaleY(0f)
                                                                     .setDuration(500)
                                                                     .setListener(object : Animator.AnimatorListener {
-                                                                override fun onAnimationRepeat(animation: Animator?) {
+                                                                        override fun onAnimationRepeat(animation: Animator?) {
 
-                                                                }
+                                                                        }
 
-                                                                override fun onAnimationEnd(animation: Animator?) {
-                                                                    context.lawnchairPrefs.feedToolbarWidget = -1
-                                                                    widgetContainer.removeView(searchWidgetView)
-                                                                    searchWidgetView = null
-                                                                }
+                                                                        override fun onAnimationEnd(animation: Animator?) {
+                                                                            context.lawnchairPrefs.feedToolbarWidget = -1
+                                                                            widgetContainer.removeView(searchWidgetView)
+                                                                            searchWidgetView = null
+                                                                        }
 
-                                                                override fun onAnimationCancel(animation: Animator?) {
+                                                                        override fun onAnimationCancel(animation: Animator?) {
 
-                                                                }
+                                                                        }
 
-                                                                override fun onAnimationStart(animation: Animator?) {
+                                                                        override fun onAnimationStart(animation: Animator?) {
 
-                                                                }
+                                                                        }
 
-                                                            })
+                                                                    })
                                                         } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
                                                             deleting = false
                                                             searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
