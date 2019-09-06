@@ -560,6 +560,9 @@ class LauncherFeed(val originalContext: Context,
                                                 context.lawnchairPrefs.feedToolbarWidget = i
                                                 if (context.lawnchairPrefs.feedToolbarWidget != -1) {
                                                     val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                                                    if (searchWidgetView != null) {
+                                                        widgetContainer.removeView(searchWidgetView)
+                                                    }
                                                     var deleting = false
                                                     searchWidgetView = (context.applicationContext as LawnchairApp)
                                                             .overlayWidgetHost
