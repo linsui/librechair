@@ -39,6 +39,7 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.*
 import android.widget.*
 import ch.deletescape.lawnchair.*
@@ -123,6 +124,19 @@ class LauncherFeed(val originalContext: Context,
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
+        set(value) = run {
+            field = value
+            (field?.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
+                marginStart = 8f.applyAsDip(context)
+                        .toInt()
+                marginEnd = 8f.applyAsDip(context)
+                        .toInt()
+                topMargin = 8f.applyAsDip(context)
+                        .toInt()
+                bottomMargin = 4f.applyAsDip(context)
+                        .toInt()
+            }
+        }
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
