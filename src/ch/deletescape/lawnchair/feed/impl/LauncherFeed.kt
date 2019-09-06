@@ -352,9 +352,7 @@ class LauncherFeed(val originalContext: Context,
             (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
                 marginEnd =
                         if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
-                bottomMargin = if (!tabsOnBottom) insets.stableInsetBottom + 16 else toolbar.also {
-                    it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                }.measuredHeight / 2 + insets.stableInsetBottom + 16
+                bottomMargin = insets.stableInsetBottom + 16f.applyAsDip(context).toInt()
             }
             upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat()).duration = 500
             insets
