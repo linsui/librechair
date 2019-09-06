@@ -281,7 +281,6 @@ class LauncherFeed(val originalContext: Context,
                 }
                 true
             }
-            reapplyInsetFlag = true
             widgetContainer.addView(searchWidgetView, 0)
         }
         feedController
