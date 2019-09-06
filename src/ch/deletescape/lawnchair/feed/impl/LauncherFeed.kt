@@ -124,19 +124,6 @@ class LauncherFeed(val originalContext: Context,
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
-        set(value) = run {
-            field = value
-            (field?.layoutParams as? ViewGroup.MarginLayoutParams)?.apply {
-                marginStart = 8f.applyAsDip(context)
-                        .toInt()
-                marginEnd = 8f.applyAsDip(context)
-                        .toInt()
-                topMargin = 8f.applyAsDip(context)
-                        .toInt()
-                bottomMargin = 4f.applyAsDip(context)
-                        .toInt()
-            }
-        }
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
@@ -253,7 +240,16 @@ class LauncherFeed(val originalContext: Context,
                             context.appWidgetManager
                                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
             searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
-                    .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
+                    .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight).apply {
+                marginStart = 8f.applyAsDip(context)
+                        .toInt()
+                marginEnd = 8f.applyAsDip(context)
+                        .toInt()
+                topMargin = 8f.applyAsDip(context)
+                        .toInt()
+                bottomMargin = 4f.applyAsDip(context)
+                        .toInt()
+            }
             searchWidgetView!!.setOnLongClickListener {
                 searchWidgetView!!.animate()
                         .scaleX(0.7f)
@@ -598,7 +594,16 @@ class LauncherFeed(val originalContext: Context,
                                                                     context.appWidgetManager
                                                                             .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
                                                     searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
-                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight)
+                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight).apply {
+                                                        marginStart = 8f.applyAsDip(context)
+                                                                .toInt()
+                                                        marginEnd = 8f.applyAsDip(context)
+                                                                .toInt()
+                                                        topMargin = 8f.applyAsDip(context)
+                                                                .toInt()
+                                                        bottomMargin = 4f.applyAsDip(context)
+                                                                .toInt()
+                                                    }
                                                     searchWidgetView!!.setOnLongClickListener {
                                                         searchWidgetView!!.animate()
                                                                 .scaleX(0.7f)
