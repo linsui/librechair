@@ -26,10 +26,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout.LayoutParams;
+
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+
 import java.util.Collections;
 import java.util.List;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
 public class FeedSearchboxProvider extends FeedProvider {
 
@@ -60,15 +64,20 @@ public class FeedSearchboxProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         Log.d(getClass().getName(), "getCards: retrieving cards");
-        return Collections.singletonList(new Card(getContext().getDrawable(R.drawable.ic_search),
+        return Collections.singletonList(new Card(
+                LawnchairUtilsKt.tint(getContext().getDrawable(R.drawable.ic_search),
+                        FeedAdapter.Companion.getOverrideColor(getContext())),
                 getContext().getString(R.string.search), parent -> {
             EditText editText = new EditText(parent.getContext());
-            editText.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            editText.setInputType(editText.getInputType() &~ InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            editText.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            editText.setInputType(editText.getInputType() & ~InputType.TYPE_TEXT_FLAG_MULTI_LINE);
             editText.setMaxLines(1);
             editText.setOnEditorActionListener((v, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Utilities.openURLinBrowser(getContext(), String.format(Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(), editText.getText().toString()));
+                    Utilities.openURLinBrowser(getContext(), String.format(
+                            Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
+                            editText.getText().toString()));
                 }
                 return true;
             });
