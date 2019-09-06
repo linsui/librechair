@@ -640,6 +640,8 @@ class LauncherFeed(val originalContext: Context,
             if (hasWidgetTab) {
                 toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
             }
+
+            upButton.supportImageTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
         }
         if (reinit) {
             startScroll()
@@ -667,6 +669,7 @@ class LauncherFeed(val originalContext: Context,
         preferenceScreens.add(screen to ScreenData(x, y, view!!))
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun removeLastPreferenceScreen() {
         removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x,
                 preferenceScreens.last().second.y);
