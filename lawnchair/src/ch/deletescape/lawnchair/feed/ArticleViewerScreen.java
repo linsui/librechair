@@ -23,17 +23,23 @@ import android.content.Context;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+
 import io.github.cdimascio.essence.Essence;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
+
 import org.apache.commons.io.IOUtils;
 
 public class ArticleViewerScreen extends ProviderScreen {
@@ -43,7 +49,8 @@ public class ArticleViewerScreen extends ProviderScreen {
     private final String url;
     private final String desc;
 
-    public ArticleViewerScreen(Context base, String title, String categories, String url, String desc) {
+    public ArticleViewerScreen(Context base, String title, String categories, String url,
+                               String desc) {
         super(base);
         this.title = title;
         this.categories = categories;
@@ -60,9 +67,11 @@ public class ArticleViewerScreen extends ProviderScreen {
     protected void bindView(View articleView) {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
-        articleView.findViewById(R.id.open_externally)
-                .setOnClickListener(v3 -> Utilities
-                        .openURLinBrowser(this, url));
+        Button openInBrowser = articleView.findViewById(R.id.open_externally);
+        openInBrowser.setOnClickListener(v3 -> Utilities
+                .openURLinBrowser(this, url));
+        openInBrowser.setTextColor(FeedAdapter.Companion.getOverrideColor(articleView.getContext(),
+                LawnchairUtilsKt.getColorEngineAccent(this)));
         titleView.setText(title);
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);

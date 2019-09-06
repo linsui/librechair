@@ -83,11 +83,11 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                          recyclerView.context.lawnchairPrefs.cardDecorationMarginVertical,
-                                          recyclerView.context.resources.displayMetrics).toInt(),
+                        recyclerView.context.lawnchairPrefs.cardDecorationMarginVertical,
+                        recyclerView.context.resources.displayMetrics).toInt(),
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                          recyclerView.context.lawnchairPrefs.cardDecorationMarginHorizontal,
-                                          recyclerView.context.resources.displayMetrics).toInt()))
+                        recyclerView.context.lawnchairPrefs.cardDecorationMarginHorizontal,
+                        recyclerView.context.resources.displayMetrics).toInt()))
         this.recyclerView = recyclerView
     }
 
@@ -149,8 +149,8 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     holder.itemView.animate().scaleX(0.9f).scaleY(0.9f).duration = 100
                 }
                 (LayoutInflater.from(holder.itemView.context).inflate(R.layout.card_remove_hint,
-                                                                      holder.itemView as ViewGroup,
-                                                                      false) as ViewGroup).apply {
+                        holder.itemView as ViewGroup,
+                        false) as ViewGroup).apply {
                     background = ColorDrawable(Color.BLACK)
                     alpha = 0f
                     if (hasAction) {
@@ -287,13 +287,24 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             } else {
                 holder.itemView.cardElevation = TypedValue
                         .applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                        context.lawnchairPrefs.feedCardElevation,
-                                        context.resources.displayMetrics)
+                                context.lawnchairPrefs.feedCardElevation,
+                                context.resources.displayMetrics)
             }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                                                               LawnchairPreferences.getInstance(
-                                                                       holder.itemView.context).feedCornerRounding,
-                                                               holder.itemView.context.resources.displayMetrics)
+                    LawnchairPreferences.getInstance(
+                            holder.itemView.context).feedCornerRounding,
+                    holder.itemView.context.resources.displayMetrics)
+        }
+    }
+
+    companion object {
+        fun getOverrideColor(c: Context, currentColor: Int): Int {
+            if (currentColor == R.color.colorAccent.fromColorRes(c)
+                    || currentColor == R.color.colorAccentDark.fromColorRes(c)) {
+                return c.getColorAttr(R.attr.colorAccent)
+            } else {
+                return currentColor
+            }
         }
     }
 }
@@ -333,7 +344,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
                 backgroundColor)}")
 
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor,
-                                                                            viewHolder.context)) {
+                        viewHolder.context)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
         } else if (type and Card.RAISE == 0) {
             description?.setTextColor(
@@ -346,7 +357,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
             backgroundBlurView!!.visibility = VISIBLE
             backgroundBlurView!!.setBlurRadius(
                     TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 25f,
-                                              itemView.context.resources.displayMetrics))
+                            itemView.context.resources.displayMetrics))
         }
     }
 }
