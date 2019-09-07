@@ -26,11 +26,18 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import com.android.launcher3.R;
+
+import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
+import ch.deletescape.lawnchair.feed.wikipedia.news.News;
 import fastily.jwiki.core.Wiki;
 import info.bliki.wiki.model.WikiModel;
 import java.io.IOException;
@@ -41,25 +48,15 @@ import java.util.concurrent.Executors;
 public class WikipediaNewsProvider extends FeedProvider {
 
     private Drawable newsIcon;
-    private Wiki wikipedia;
-    private String wikiText;
+    private ITNAdapter adapter;
 
     public WikipediaNewsProvider(Context c) {
         super(c);
         this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
-        Executors.newSingleThreadExecutor().submit(() -> {
-                this.wikipedia = new Wiki("en.wikipedia.org");
-                this.wikipedia.conf.userAgent = "Librechair";
-            while (wikiText == null) {
-                wikiText = wikipedia.getPageText("Template:In the news");
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        News.addListener(items -> {
+            adapter = new ITNAdapter(items);
         });
     }
 
@@ -85,22 +82,20 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
-        return wikiText == null ? Collections.emptyList() : Collections.singletonList(
+        return adapter == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
-                            TextView view = new TextView(item.getContext());
-                            if (wikiText != null) {
-                                try {
-                                    view.setText(Html.fromHtml(
-                                            new WikiModel("https://commons.wikipedia.org",
-                                                    "https://en.wikipedia.org")
-                                                    .render(wikiText), 0));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                return view;
-                            }
-                            return new View(getContext());
+                            RecyclerView view = new RecyclerView(item.getContext());
+                            view.setOnTouchListener((v, ev) -> {
+                                v.getParent().getParent().requestDisallowInterceptTouchEvent(true);
+                                v.getParent().requestDisallowInterceptTouchEvent(true);
+                                return true;
+                            });
+                            view.setAdapter(adapter);
+                            view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
+                            view.setLayoutParams(new LinearLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            return view;
                         }, Card.Companion.getRAISE(), null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
     }
 }

@@ -3,6 +3,7 @@ package ch.deletescape.lawnchair.feed.wikipedia.news;
 import android.util.Pair;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -23,8 +24,8 @@ import java.util.function.Consumer;
 
 public final class News {
     private static final Executor fetchExecutor = Executors.newSingleThreadExecutor();
-    private static final List<Consumer<NewsItem>> onChangeListeners = new ArrayList<>();
-    private static NewsItem currentItem;
+    private static final List<Consumer<List<NewsItem>>> onChangeListeners = new ArrayList<>();
+    private static List<NewsItem> currentItem;
     private static final String API_URL = "https://en.wikipedia.org/api/rest_v1/feed/featured/2496/04/01";
 
     static {
@@ -38,16 +39,21 @@ public final class News {
                 JsonObject object = new JsonParser().parse(
                         IOUtils.toString(connection.getInputStream(),
                                 Charset.defaultCharset())).getAsJsonObject().getAsJsonObject();
-                JsonObject news = object.getAsJsonObject("news");
-                JsonObject links = news.getAsJsonObject("links");
-                NewsItem item = new NewsItem();
-                item.contentUrl = links.getAsJsonObject("content_urls").getAsJsonObject(
-                        "desktop").getAsJsonPrimitive("page").getAsString();
-                item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
-                        "source").getAsString();
-                item.lang = links.getAsJsonPrimitive("lang").getAsString();
-                item.story = news.getAsJsonPrimitive("story").getAsString();
-                currentItem = item;
+                JsonArray news = object.getAsJsonArray("news");
+                ArrayList<NewsItem> list = new ArrayList<>();
+                news.iterator().forEachRemaining(jsonElement -> {
+                    JsonObject newsItem = jsonElement.getAsJsonObject();
+                    JsonObject links = newsItem.getAsJsonArray("links").get(0).getAsJsonObject();
+                    NewsItem item = new NewsItem();
+                    item.contentUrl = links.getAsJsonObject("content_urls").getAsJsonObject(
+                            "desktop").getAsJsonPrimitive("page").getAsString();
+                    item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
+                            "source").getAsString();
+                    item.lang = links.getAsJsonPrimitive("lang").getAsString();
+                    item.story = newsItem.getAsJsonPrimitive("story").getAsString();
+                    list.add(item);
+                });
+                currentItem = list;
                 onChangeListeners.forEach(consumer -> consumer.accept(currentItem));
             } catch (MalformedURLException e) {
                 throw new RuntimeException(e);
@@ -57,7 +63,7 @@ public final class News {
         });
     }
 
-    public static synchronized void addListener(Consumer<NewsItem> consumer) {
+    public static synchronized void addListener(Consumer<List<NewsItem>> consumer) {
         if (currentItem != null) {
             consumer.accept(currentItem);
         }
