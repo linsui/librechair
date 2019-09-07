@@ -37,6 +37,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import com.android.launcher3.InvariantDeviceProfile;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.appprediction.PredictionUiStateManager.Client;
 import com.android.launcher3.model.AppLaunchTracker;
 import com.android.launcher3.util.UiThreadHelper;
@@ -95,19 +96,25 @@ public class PredictionAppTracker extends AppLaunchTracker {
 
     @WorkerThread
     private AppPredictor createPredictor(Client client, int count) {
-        AppPredictionManager apm = mContext.getSystemService(AppPredictionManager.class);
+        if (Utilities.ATLEAST_Q) {
+            AppPredictionManager apm = mContext.getSystemService(AppPredictionManager.class);
 
-        if (mContext.checkSelfPermission(Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED) {
-            AppPredictor predictor = apm.createAppPredictionSession(
-                    new AppPredictionContext.Builder(mContext)
-                            .setUiSurface(client.id)
-                            .setPredictedTargetCount(count)
-                            .setExtras(getAppPredictionContextExtras(client))
-                            .build());
-            predictor.registerPredictionUpdates(mContext.getMainExecutor(),
-                    PredictionUiStateManager.INSTANCE.get(mContext).appPredictorCallback(client));
-            predictor.requestPredictionUpdate();
-            return predictor;
+            if (mContext.checkSelfPermission(
+                    Manifest.permission.PACKAGE_USAGE_STATS) == PackageManager.PERMISSION_GRANTED) {
+                AppPredictor predictor = apm.createAppPredictionSession(
+                        new AppPredictionContext.Builder(mContext)
+                                .setUiSurface(client.id)
+                                .setPredictedTargetCount(count)
+                                .setExtras(getAppPredictionContextExtras(client))
+                                .build());
+                predictor.registerPredictionUpdates(mContext.getMainExecutor(),
+                        PredictionUiStateManager.INSTANCE.get(mContext).appPredictorCallback(
+                                client));
+                predictor.requestPredictionUpdate();
+                return predictor;
+            } else {
+                return null;
+            }
         } else {
             return null;
         }

@@ -110,7 +110,7 @@ public class UiFactory extends RecentsUiFactory {
 
                 @Override
                 public void onStateTransitionComplete(LauncherState finalState) {
-                    boolean swipeUpEnabled = SysUINavigationMode.INSTANCE.get(launcher).getMode()
+                    boolean swipeUpEnabled = Utilities.ATLEAST_Q && SysUINavigationMode.INSTANCE.get(launcher).getMode()
                             .hasGestures;
                     LauncherState prevState = launcher.getStateManager().getLastState();
 
