@@ -215,7 +215,7 @@ public class TaskView extends FrameLayout implements PageCallbacks, Reusable {
                     TaskUtils.getLaunchComponentKeyForTask(getTask().key));
         });
         mCornerRadius = TaskCornerRadius.get(context);
-        mWindowCornerRadius = QuickStepContract.getWindowCornerRadius(context.getResources());
+        mWindowCornerRadius = Utilities.ATLEAST_Q ? QuickStepContract.getWindowCornerRadius(context.getResources()) : 0f;
         mCurrentFullscreenParams = new FullscreenDrawParams(mCornerRadius);
         mDigitalWellBeingToast = new DigitalWellBeingToast(mActivity, this);
 

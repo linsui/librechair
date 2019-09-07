@@ -30,6 +30,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.android.launcher3.Utilities;
 import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.systemui.shared.recents.ISystemUiProxy;
 import com.android.systemui.shared.recents.model.Task;
@@ -71,7 +72,13 @@ public class RecentsModel extends TaskStackChangeListener {
         mTaskList = new RecentTasksList(context);
         mIconCache = new TaskIconCache(context, loaderThread.getLooper());
         mThumbnailCache = new TaskThumbnailCache(context, loaderThread.getLooper());
-        ActivityManagerWrapper.getInstance().registerTaskStackListener(this);
+        if (Utilities.ATLEAST_Q) {
+            try {
+                ActivityManagerWrapper.getInstance().registerTaskStackListener(this);
+            } catch (NoSuchMethodError error) {
+                error.printStackTrace();
+            }
+        }
     }
 
     public TaskIconCache getIconCache() {

@@ -85,11 +85,11 @@ public class ClipAnimationHelper {
     private final RectF mTmpRectF = new RectF();
     private final RectF mCurrentRectWithInsets = new RectF();
     // Corner radius of windows, in pixels
-    private final float mWindowCornerRadius;
+    private float mWindowCornerRadius;
     // Corner radius of windows when they're in overview mode.
-    private final float mTaskCornerRadius;
+    private float mTaskCornerRadius;
     // If windows can have real time rounded corners.
-    private final boolean mSupportsRoundedCornersOnWindows;
+    private boolean mSupportsRoundedCornersOnWindows;
     // Whether or not to actually use the rounded cornders on windows
     private boolean mUseRoundedCornersOnWindows;
 
@@ -103,10 +103,18 @@ public class ClipAnimationHelper {
             (t, a1) -> a1;
 
     public ClipAnimationHelper(Context context) {
-        mWindowCornerRadius = getWindowCornerRadius(context.getResources());
-        mSupportsRoundedCornersOnWindows = supportsRoundedCornersOnWindows(context.getResources());
-        mTaskCornerRadius = TaskCornerRadius.get(context);
-        mUseRoundedCornersOnWindows = mSupportsRoundedCornersOnWindows;
+        if (Utilities.ATLEAST_Q) {
+            mWindowCornerRadius = getWindowCornerRadius(context.getResources());
+            mSupportsRoundedCornersOnWindows = supportsRoundedCornersOnWindows(context.getResources());
+            mTaskCornerRadius = TaskCornerRadius.get(context);
+            mUseRoundedCornersOnWindows = mSupportsRoundedCornersOnWindows;
+        } else {
+            mWindowCornerRadius = 0;
+            mSupportsRoundedCornersOnWindows = false;
+            mTaskCornerRadius = 0;
+            mUseRoundedCornersOnWindows = false;
+        }
+
     }
 
     private void updateSourceStack(RemoteAnimationTargetCompat target) {

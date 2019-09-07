@@ -405,7 +405,13 @@ public abstract class RecentsView<T extends BaseActivity> extends PagedView impl
         updateTaskStackListenerState();
         mModel.getThumbnailCache().getHighResLoadingState().addCallback(this);
         mActivity.addMultiWindowModeChangedListener(mMultiWindowModeChangedListener);
-        ActivityManagerWrapper.getInstance().registerTaskStackListener(mTaskStackListener);
+        if (Utilities.ATLEAST_Q) {
+            try {
+                ActivityManagerWrapper.getInstance().registerTaskStackListener(mTaskStackListener);
+            } catch (NoSuchMethodError e) {
+                e.printStackTrace();
+            }
+        }
         mSyncTransactionApplier = new SyncRtSurfaceTransactionApplierCompat(this);
         RecentsModel.INSTANCE.get(getContext()).addThumbnailChangeListener(this);
         mIdp.addOnChangeListener(this);

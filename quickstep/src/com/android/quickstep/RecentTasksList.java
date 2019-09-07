@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Process;
 import android.util.SparseBooleanArray;
 import com.android.launcher3.MainThreadExecutor;
+import com.android.launcher3.Utilities;
 import com.android.systemui.shared.recents.model.Task;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
 import com.android.systemui.shared.system.BackgroundExecutor;
@@ -59,7 +60,13 @@ public class RecentTasksList extends TaskStackChangeListener {
         mBgThreadExecutor = BackgroundExecutor.get();
         mKeyguardManager = new KeyguardManagerCompat(context);
         mChangeId = 1;
-        ActivityManagerWrapper.getInstance().registerTaskStackListener(this);
+        if (Utilities.ATLEAST_Q) {
+            try {
+                ActivityManagerWrapper.getInstance().registerTaskStackListener(this);
+            } catch (NoSuchMethodError exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 
     /**

@@ -58,8 +58,13 @@ import java.util.ArrayList;
 public abstract class RecentsUiFactory {
 
     public static final boolean GO_LOW_RAM_RECENTS_ENABLED = false;
-    private static final AsyncCommand SET_SHELF_HEIGHT_CMD = (visible, height) ->
+    private static final AsyncCommand SET_SHELF_HEIGHT_CMD = (visible, height) -> {
+        try {
             WindowManagerWrapper.getInstance().setShelfHeight(visible != 0, height);
+        } catch (NoSuchMethodError | NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+    };
 
     public static RotationMode ROTATION_LANDSCAPE = new RotationMode(-90) {
         @Override
@@ -152,13 +157,13 @@ public abstract class RecentsUiFactory {
             if (launcher.getDeviceProfile().isVerticalBarLayout()) {
                 list.add(new OverviewToAllAppsTouchController(launcher));
                 list.add(new LandscapeEdgeSwipeController(launcher));
-                if (mode.hasGestures) {
+                if (Utilities.ATLEAST_Q && mode.hasGestures) {
                     list.add(new TransposedQuickSwitchTouchController(launcher));
                 }
             } else {
                 list.add(new PortraitStatesTouchController(launcher,
-                        mode.hasGestures /* allowDragToOverview */));
-                if (mode.hasGestures) {
+                        Utilities.ATLEAST_Q && mode.hasGestures /* allowDragToOverview */));
+                if (Utilities.ATLEAST_Q && mode.hasGestures) {
                     list.add(new QuickSwitchTouchController(launcher));
                 }
             }

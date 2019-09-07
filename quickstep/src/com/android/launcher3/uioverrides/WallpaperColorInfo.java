@@ -27,8 +27,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.android.systemui.shared.system.TonalCompat;
-import com.android.systemui.shared.system.TonalCompat.ExtractionInfo;
+import androidx.core.graphics.ColorUtils;
 
 import java.util.ArrayList;
 
@@ -53,38 +52,36 @@ public class WallpaperColorInfo implements OnColorsChangedListener {
 
     private final ArrayList<OnChangeListener> mListeners = new ArrayList<>();
     private final WallpaperManager mWallpaperManager;
-    private final TonalCompat mTonalCompat;
 
-    private ExtractionInfo mExtractionInfo;
+    private ColorInfoWrapper mWrapper;
 
     private OnChangeListener[] mTempListeners = new OnChangeListener[0];
 
     private WallpaperColorInfo(Context context) {
         mWallpaperManager = context.getSystemService(WallpaperManager.class);
-        mTonalCompat = new TonalCompat(context);
 
         mWallpaperManager.addOnColorsChangedListener(this, new Handler(Looper.getMainLooper()));
         update(mWallpaperManager.getWallpaperColors(FLAG_SYSTEM));
     }
 
     public int getMainColor() {
-        return mExtractionInfo.mainColor;
+        return mWrapper.mainColor;
     }
 
     public int getSecondaryColor() {
-        return mExtractionInfo.secondaryColor;
+        return mWrapper.secondaryColor;
     }
 
     public boolean isDark() {
-        return mExtractionInfo.supportsDarkTheme;
+        return mWrapper.supportsDarkTheme();
     }
 
     public boolean supportsDarkText() {
-        return mExtractionInfo.supportsDarkText;
+        return mWrapper.supportsDarkText();
     }
 
     public boolean isMainColorDark() {
-        return mExtractionInfo.mainColor == MAIN_COLOR_DARK;
+        return mWrapper.mainColor == MAIN_COLOR_DARK;
     }
 
     @Override
@@ -96,7 +93,7 @@ public class WallpaperColorInfo implements OnColorsChangedListener {
     }
 
     private void update(WallpaperColors wallpaperColors) {
-        mExtractionInfo = mTonalCompat.extractDarkColors(wallpaperColors);
+        mWrapper = new ColorInfoWrapper(wallpaperColors);
     }
 
     public void addOnChangeListener(OnChangeListener listener) {
@@ -119,5 +116,23 @@ public class WallpaperColorInfo implements OnColorsChangedListener {
 
     public interface OnChangeListener {
         void onExtractedColorsChanged(WallpaperColorInfo wallpaperColorInfo);
+    }
+
+    public class ColorInfoWrapper {
+        public ColorInfoWrapper(WallpaperColors palette) {
+            mainColor = palette.getPrimaryColor().toArgb();
+            secondaryColor = palette.getSecondaryColor().toArgb();
+        }
+
+        public int mainColor;
+        public int secondaryColor;
+        
+        public boolean supportsDarkText() {
+            return ColorUtils.calculateLuminance(mainColor) > 0.5;
+        }
+        
+        public boolean supportsDarkTheme() {
+            return ColorUtils.calculateLuminance(mainColor) > 0.5;
+        }
     }
 }

@@ -140,6 +140,10 @@ public class OverviewInteractionState {
     }
 
     private boolean modeSupportsGestures() {
-        return SysUINavigationMode.getMode(mContext).hasGestures;
+        if (SysUINavigationMode.getMode(mContext) != null) {
+            return SysUINavigationMode.getMode(mContext).hasGestures;
+        } else {
+            return false;
+        }
     }
 }

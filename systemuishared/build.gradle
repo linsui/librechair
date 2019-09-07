@@ -1,0 +1,66 @@
+apply plugin: 'com.android.library'
+
+final String FRAMEWORK_PREBUILTS_DIR = "prebuilts"
+
+allprojects {
+    repositories {
+        mavenCentral()
+        google()
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs.add('-Xbootclasspath/p:prebuilts/libs/framework.jar')
+        }
+    }
+}
+
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.1"
+
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs.add('-Xbootclasspath/p:prebuilts/libs/framework.jar')
+        }
+    }
+
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/java']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    compileOnly fileTree(dir: "${FRAMEWORK_PREBUILTS_DIR}/libs", include: 'framework.jar')
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
