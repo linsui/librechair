@@ -86,11 +86,6 @@ public class WikipediaNewsProvider extends FeedProvider {
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
                             RecyclerView view = new RecyclerView(item.getContext());
-                            view.setOnTouchListener((v, ev) -> {
-                                v.getParent().getParent().requestDisallowInterceptTouchEvent(true);
-                                v.getParent().requestDisallowInterceptTouchEvent(true);
-                                return true;
-                            });
                             view.setAdapter(adapter);
                             view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
                             view.setLayoutParams(new LinearLayout.LayoutParams(

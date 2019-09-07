@@ -21,5 +21,9 @@ class ITNViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(parent.inflate(
         Picasso.Builder(itemView.context).build()
                 .load(newsItem.thumbnail)
                 .into(itemView.itn_thumbnail)
+        itemView.setOnTouchListener{ v, ev ->
+            itemView.parent.requestDisallowInterceptTouchEvent(true)
+            true
+        }
     }
 }
