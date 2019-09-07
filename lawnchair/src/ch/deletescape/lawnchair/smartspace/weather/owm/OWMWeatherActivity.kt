@@ -185,12 +185,10 @@ class OWMWeatherActivity : SettingsBaseActivity() {
 
         @SuppressLint("SetTextI18n") override fun onBindViewHolder(
             holder: ThreeHourForecastViewHolder, position: Int) {
-            holder.itemView.setOnTouchListener(object : View.OnTouchListener {
-                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                    v?.parent?.requestDisallowInterceptTouchEvent(true);
-                    return false
-                }
-            })
+            holder.itemView.setOnTouchListener { v, event ->
+                v?.parent?.requestDisallowInterceptTouchEvent(true);
+                false
+            }
             val currentWeather = dailyWeatherForcast.dailyForecastData[position]
             var zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochSecond(currentWeather.date.time / 1000), ZoneId.of("UTC"))
             if (whiteText) {
