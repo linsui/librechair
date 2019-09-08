@@ -582,7 +582,7 @@ class LawnchairPreferences(val context: Context) :
     fun restartOverlay() {
         if (getCurrentProcessName(context) != ":overlay") {
             try {
-                LawnchairLauncher.getLauncher(context).googleNow!!.mBaseService.disconnect()
+                LawnchairLauncher.getLauncher(context).overlay?.client?.disconnect();
             } catch (e: NullPointerException) {
                 e.printStackTrace();
             } catch (e: IllegalArgumentException) {

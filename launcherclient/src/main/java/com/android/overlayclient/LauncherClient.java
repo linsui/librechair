@@ -10,9 +10,7 @@ import android.view.WindowManager;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public class LauncherClient implements OpenableOverscrollClient, DisconnectableOverscrollClient {
 
@@ -169,7 +167,8 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
 
     @Override
     public void disconnect() {
-        boundActivity.unbindService(factory);
+        overlay = null;
+        factory.disconnect();
     }
 
     public void putAdditionalParams(Bundle params) {

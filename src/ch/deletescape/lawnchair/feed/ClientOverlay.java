@@ -64,4 +64,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
     public void setOverlayCallbacks(Launcher.LauncherOverlayCallbacks callbacks) {
         this.callbacks = callbacks;
     }
+
+    public LauncherClient getClient() {
+        return client;
+    }
 }

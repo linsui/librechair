@@ -83,6 +83,7 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
+    var overlay: ClientOverlay? = null
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
     private var paused = false
@@ -132,7 +133,7 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
 
         if (lawnchairPrefs.swipeForFeed) {
-            setLauncherOverlay(ClientOverlay(this))
+            setLauncherOverlay(ClientOverlay(this).also { overlay = it })
         }
     }
 

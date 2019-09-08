@@ -16,6 +16,7 @@ public abstract class ServiceFactory implements ServiceConnection {
     private ILauncherOverlay overlay;
     private Consumer<ILauncherOverlay> changeListener;
     private Context context;
+    private boolean connected;
 
     protected abstract Intent getService();
 
@@ -27,11 +28,13 @@ public abstract class ServiceFactory implements ServiceConnection {
     @Override
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         overlay = ILauncherOverlay.Stub.asInterface(iBinder);
+        connected = true;
         changeListener.accept(overlay);
     }
 
     @Override
     public void onServiceDisconnected(ComponentName componentName) {
+        connected = false;
         overlay = null;
         changeListener.accept(null);
     }
@@ -39,6 +42,13 @@ public abstract class ServiceFactory implements ServiceConnection {
     public void connect() {
         context.bindService(getService(), this,
                 Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+    }
+
+    public void disconnect() {
+        if (connected) {
+            connected = false;
+            context.unbindService(this);
+        }
     }
 
     public int getApiVersion() {
