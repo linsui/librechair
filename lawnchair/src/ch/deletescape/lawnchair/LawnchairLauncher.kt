@@ -99,6 +99,10 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
             Utilities.requestStoragePermission(this)
         }
 
+        if (lawnchairPrefs.swipeForFeed) {
+            overlay = ClientOverlay(this)
+        }
+
         super.onCreate(savedInstanceState)
         launcherWorkHandlerThread.start()
 
@@ -117,6 +121,7 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         performSignatureVerification()
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
+        setLauncherOverlay(overlay)
 
         if (!lawnchairPrefs.swipeForFeed) {
             setLauncherOverlay(null)
@@ -130,10 +135,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     }
                 }
             }
-        }
-
-        if (lawnchairPrefs.swipeForFeed) {
-            setLauncherOverlay(ClientOverlay(this).also { overlay = it })
         }
     }
 

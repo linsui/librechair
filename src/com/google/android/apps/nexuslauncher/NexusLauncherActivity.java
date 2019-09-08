@@ -3,6 +3,7 @@ package com.google.android.apps.nexuslauncher;
 import android.animation.AnimatorSet;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
 import com.android.launcher3.Launcher;
 import com.google.android.apps.nexuslauncher.smartspace.SmartspaceView;
 import com.google.android.libraries.gsa.launcherclient.LauncherClient;
@@ -22,7 +23,7 @@ public class NexusLauncherActivity extends Launcher {
 
     @Nullable
     public LauncherClient getGoogleNow() {
-        return mLauncher.mClient;
+        return null;
     }
 
     public void playQsbAnimation() {

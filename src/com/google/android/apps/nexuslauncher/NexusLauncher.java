@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.graphics.ColorUtils;
 import android.view.View;
-import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherCallbacks;
@@ -26,9 +26,7 @@ import com.google.android.apps.nexuslauncher.reflection.ReflectionClient;
 import com.google.android.apps.nexuslauncher.search.ItemInfoUpdateReceiver;
 import com.google.android.apps.nexuslauncher.smartspace.SmartspaceController;
 import com.google.android.apps.nexuslauncher.smartspace.SmartspaceView;
-import com.google.android.apps.nexuslauncher.utils.ActionIntentFilter;
-import com.google.android.libraries.gsa.launcherclient.LauncherClient;
-import com.google.android.libraries.gsa.launcherclient.StaticInteger;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -36,14 +34,15 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+
 public class NexusLauncher {
     private final Launcher mLauncher;
     final NexusLauncherCallbacks mCallbacks;
     private boolean mFeedRunning;
     private final LauncherExterns mExterns;
     private boolean mRunning;
-    LauncherClient mClient;
-    private NexusLauncherOverlay mOverlay;
     private boolean mStarted;
     private final Bundle mUiInformation = new Bundle();
     private ItemInfoUpdateReceiver mItemInfoUpdateReceiver;
@@ -55,7 +54,6 @@ public class NexusLauncher {
         mExterns = activity;
         mCallbacks = new ShadeCompatLauncherCallbacks();
         mExterns.setLauncherCallbacks(mCallbacks);
-        mLauncher.addOnDeviceProfileChangeListener(dp -> mClient.redraw());
     }
 
     void registerSmartspaceView(SmartspaceView smartspace) {
@@ -94,7 +92,6 @@ public class NexusLauncher {
 
         private Set<SmartspaceView> mSmartspaceViews = Collections
                 .newSetFromMap(new WeakHashMap<>());
-        private final FeedReconnector mFeedReconnector = new FeedReconnector();
 
         private final Runnable mUpdatePredictionsIfResumed = this::updatePredictionsIfResumed;
 
@@ -139,8 +136,9 @@ public class NexusLauncher {
         }
 
         public void onAttachedToWindow() {
-            mClient.onAttachedToWindow();
-            mFeedReconnector.start();
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onAttachedToWindow();
+            }
         }
 
         void registerSmartspaceView(SmartspaceView smartspace) {
@@ -149,13 +147,6 @@ public class NexusLauncher {
 
         public void onCreate(final Bundle bundle) {
             SharedPreferences prefs = Utilities.getPrefs(mLauncher);
-            mOverlay = new NexusLauncherOverlay(mLauncher);
-            mClient = new LauncherClient(mLauncher, mOverlay, new StaticInteger(
-                    (prefs.getBoolean(SettingsActivity.ENABLE_MINUS_ONE_PREF, true) ? 1 : 0) | 2 | 4
-                            | 8));
-            mOverlay.setClient(mClient);
-
-            mLauncher.setLauncherOverlay(mOverlay);
 
             prefs.registerOnSharedPreferenceChangeListener(this);
 
@@ -181,17 +172,9 @@ public class NexusLauncher {
         }
 
         public void onDestroy() {
-            LauncherClient launcherClient = mClient;
-
-            launcherClient.mDestroyed = true;
-
-            if (launcherClient.mOverlayCallback != null) {
-                launcherClient.mOverlayCallback.mClient = null;
-                launcherClient.mOverlayCallback.mWindowManager = null;
-                launcherClient.mOverlayCallback.mWindow = null;
-                launcherClient.mOverlayCallback = null;
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onStop();
             }
-
             Utilities.getPrefs(mLauncher).unregisterOnSharedPreferenceChangeListener(this);
             WallpaperColorInfo.getInstance(mLauncher).removeOnChangeListener(this);
 
@@ -201,14 +184,17 @@ public class NexusLauncher {
         }
 
         public void onDetachedFromWindow() {
-            mFeedReconnector.stop();
-            mClient.onDetachedFromWindow();
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onDetachedFromWindow();
+            }
         }
 
         @Override
         public void onHomeIntent(boolean internalStateHandled) {
             if (mFeedRunning) {
-                mClient.hideOverlay(mFeedRunning);
+                if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                    ((LawnchairLauncher) mLauncher).getOverlay().getClient().closeOverlay(true);
+                }
             }
         }
 
@@ -218,7 +204,9 @@ public class NexusLauncher {
 
         public void onPause() {
             mRunning = false;
-            mClient.onPause();
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onPause();
+            }
 
             for (SmartspaceView smartspace : mSmartspaceViews) {
                 smartspace.onPause();
@@ -235,7 +223,9 @@ public class NexusLauncher {
                 mFeedRunning = true;
             }
 
-            mClient.onResume();
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onResume();
+            }
 
             for (SmartspaceView smartspace : mSmartspaceViews) {
                 smartspace.onResume();
@@ -252,21 +242,16 @@ public class NexusLauncher {
         }
 
         public void onStart() {
-            if (!ActionIntentFilter.googleEnabled(mLauncher)) {
-                mOverlay.setPersistentFlags(0);
-            }
-
             mStarted = true;
-            mClient.onStart();
+            if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                ((LawnchairLauncher) mLauncher).getOverlay().getClient().onStart();
+            }
         }
 
         public void onStop() {
             mStarted = false;
             if (!mRunning) {
                 mFeedRunning = false;
-            }
-            if (mOverlay.mFlagsChanged) {
-                mOverlay.mLauncher.recreate();
             }
         }
 
@@ -291,24 +276,6 @@ public class NexusLauncher {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            switch (key) {
-                case SettingsActivity.ENABLE_MINUS_ONE_PREF:
-                    LauncherClient launcherClient = mClient;
-                    StaticInteger i = new StaticInteger(
-                            (sharedPreferences
-                                    .getBoolean(SettingsActivity.ENABLE_MINUS_ONE_PREF, true) ? 1
-                                    : 0) | 2 | 4 | 8);
-                    if (i.mData != launcherClient.mFlags) {
-                        launcherClient.mFlags = i.mData;
-                        if (launcherClient.mLayoutParams != null) {
-                            launcherClient.exchangeConfig();
-                        }
-                    }
-                    break;
-                case SettingsActivity.FEED_THEME_PREF:
-                    applyFeedTheme(true);
-                    break;
-            }
         }
 
         @Override
@@ -340,7 +307,10 @@ public class NexusLauncher {
             mUiInformation.putBoolean("is_background_dark", isDark);
 
             if (redraw) {
-                mClient.redraw(mUiInformation);
+                if (((LawnchairLauncher) mLauncher).getOverlay() != null) {
+                    ((LawnchairLauncher) mLauncher).getOverlay().getClient().putAdditionalParams(
+                            mUiInformation);
+                }
             }
         }
 
@@ -353,38 +323,6 @@ public class NexusLauncher {
                     mLauncher.getUserEventDispatcher().updatePredictions();
                     mLauncher.getUserEventDispatcher().updateActions();
                 });
-            }
-        }
-
-        class FeedReconnector implements Runnable {
-
-            private final static int MAX_RETRIES = 10;
-            private final static int RETRY_DELAY_MS = 500;
-
-            private final Handler mHandler = new Handler();
-            private int mFeedConnectionTries;
-
-            void start() {
-                stop();
-                mFeedConnectionTries = 0;
-                mHandler.post(this);
-            }
-
-            void stop() {
-                mHandler.removeCallbacks(this);
-            }
-
-            @Override
-            public void run() {
-                if (Utilities.getPrefs(mLauncher)
-                        .getBoolean(SettingsActivity.ENABLE_MINUS_ONE_PREF, true) &&
-                        !mClient.mDestroyed &&
-                        mClient.mLayoutParams != null &&
-                        !mOverlay.mAttached &&
-                        mFeedConnectionTries++ < MAX_RETRIES) {
-                    mClient.exchangeConfig();
-                    mHandler.postDelayed(this, RETRY_DELAY_MS);
-                }
             }
         }
     }
