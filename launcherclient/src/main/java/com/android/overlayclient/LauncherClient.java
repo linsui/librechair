@@ -5,6 +5,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
@@ -49,6 +50,9 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
                 this.overlay = l3overlay;
                 ((ArrayList<Consumer<ILauncherOverlay>>) overlayChangeListeners.clone()).forEach(
                         consumer -> consumer.accept(l3overlay));
+                if (params != null) {
+                    acceptLayoutParams(params);
+                }
                 if (l3overlay == null) {
                     new Handler(boundActivity.getMainLooper()).postDelayed(this::reconnect,
                             TimeUnit.SECONDS.toMillis(2));
@@ -187,6 +191,7 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
 
     @Override
     public void reconnect() {
+        Log.d(getClass().getName(), "reconnect: reconnect called");
         factory.connect();
     }
 

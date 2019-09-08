@@ -48,6 +48,7 @@ public abstract class ServiceFactory implements ServiceConnection {
         if (connected) {
             connected = false;
             context.unbindService(this);
+            changeListener.accept(null);
         }
     }
 
