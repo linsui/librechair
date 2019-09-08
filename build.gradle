@@ -381,6 +381,8 @@ dependencies {
     quickstepImplementation project(':systemui-shared')
     l3goImplementation project(':systemui-shared')
 
+    implementation project(':launcherclient')
+
     if (!isPublicBuild) {
         // TODO: update to 2.x when we're on AndroidX
         debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'

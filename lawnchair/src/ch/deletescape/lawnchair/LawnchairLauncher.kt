@@ -43,6 +43,7 @@ import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.ClientOverlay
 import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.images.ImageStore
@@ -128,6 +129,10 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     }
                 }
             }
+        }
+
+        if (lawnchairPrefs.swipeForFeed) {
+            setLauncherOverlay(ClientOverlay(this))
         }
     }
 
