@@ -16,7 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
-public class LauncherClient implements OpenableOverscrollClient, DisconnectableOverscrollClient {
+public class LauncherClient implements OpenableOverscrollClient, DisconnectableOverscrollClient,
+        SearchableOverscrollClient {
 
     private ILauncherOverlay overlay;
     private Activity boundActivity;
@@ -248,5 +249,17 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
             } catch (RemoteException ignored) {
             }
         }
+    }
+
+    @Override
+    public boolean startSearch(byte[] options, Bundle parameters) {
+        if (overlay != null) {
+            try {
+                return overlay.startSearch(options, parameters);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

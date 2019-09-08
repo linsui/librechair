@@ -13,6 +13,18 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import com.android.launcher3.BaseRecyclerView;
+import com.android.launcher3.Launcher;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.allapps.AllAppsContainerView;
+import com.android.launcher3.allapps.SearchUiManager;
+import com.google.android.apps.nexuslauncher.search.SearchThread;
+
+import org.jetbrains.annotations.NotNull;
+
+import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
@@ -21,14 +33,6 @@ import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider;
 import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
-import com.android.launcher3.BaseRecyclerView;
-import com.android.launcher3.Launcher;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.allapps.AllAppsContainerView;
-import com.android.launcher3.allapps.SearchUiManager;
-import com.google.android.apps.nexuslauncher.search.SearchThread;
-import org.jetbrains.annotations.NotNull;
 
 public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManager,
         QsbChangeListener,
@@ -221,7 +225,9 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
             searchFallback(str);
         } else if (controller.isGoogle()) {
             final ConfigBuilder f = new ConfigBuilder(this, true);
-            if (!mActivity.getGoogleNow().startSearch(f.build(), f.getExtras())) {
+            if (((LawnchairLauncher) mActivity).getOverlay() != null &&
+                    ((LawnchairLauncher) mActivity).getOverlay().getClient()
+                            .startSearch(f.build(), f.getExtras())) {
                 searchFallback(str);
                 if (mFallback != null) {
                     mFallback.setHint(null);

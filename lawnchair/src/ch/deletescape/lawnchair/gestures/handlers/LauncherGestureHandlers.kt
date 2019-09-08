@@ -26,6 +26,7 @@ import android.support.annotation.Keep
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.gestures.GestureHandler
@@ -156,12 +157,7 @@ import org.json.JSONObject
     }
 
     override fun onGestureTrigger(controller: GestureController, view: View?) {
-        if (controller.launcher.googleNow != null) {
-            controller.launcher.googleNow?.showOverlay(true)
-        } else {
-            controller.launcher.startActivity(
-                Intent(Intent.ACTION_MAIN).setClassName(PACKAGE, "$PACKAGE.SearchActivity"))
-        }
+        LawnchairLauncher.getLauncher(context).overlay?.client?.openOverlay(true)
     }
 
     companion object {

@@ -22,20 +22,25 @@ import android.support.v4.graphics.ColorUtils;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.View;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
-import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
-import ch.deletescape.lawnchair.globalsearch.SearchProvider;
-import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
+
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.util.PackageManagerHelper;
-import java.util.List;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
+import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
+import ch.deletescape.lawnchair.globalsearch.SearchProvider;
+import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 
 public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeListener,
         LawnchairPreferences.OnPreferenceChangeListener, ColorEngine.OnColorChangeListener {
@@ -197,8 +202,9 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
 
     private void startGoogleSearch() {
         final ConfigBuilder f = new ConfigBuilder(this, false);
-        if (!forceFallbackSearch() && mActivity.getGoogleNow()
-                .startSearch(f.build(), f.getExtras())) {
+        if (!forceFallbackSearch() && ((LawnchairLauncher) mActivity).getOverlay() != null &&
+                ((LawnchairLauncher) mActivity).getOverlay().getClient()
+                        .startSearch(f.build(), f.getExtras())) {
             SharedPreferences devicePrefs = Utilities.getDevicePrefs(getContext());
             devicePrefs.edit().putInt("key_hotseat_qsb_tap_count",
                     devicePrefs.getInt("key_hotseat_qsb_tap_count", 0) + 1).apply();

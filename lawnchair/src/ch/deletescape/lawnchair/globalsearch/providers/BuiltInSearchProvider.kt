@@ -22,11 +22,10 @@ package ch.deletescape.lawnchair.globalsearch.providers
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import ch.deletescape.lawnchair.getLauncherOrNull
+import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.globalsearch.SearchProvider
 import ch.deletescape.lawnchair.globalsearch.activity.WebSearchProviderActivity
 import com.android.launcher3.R
-import com.google.android.apps.nexuslauncher.NexusLauncherActivity
 
 class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
     override val name: String
@@ -51,13 +50,7 @@ class BuiltInSearchProvider(c: Context) : SearchProvider(c) {
     }
 
     override fun startFeed(callback: (intent: Intent) -> Unit) {
-        /* val i = Intent(context, FeedActivity::class.java)
-        callback.invoke(i) */
-        try {
-            (context.applicationContext.getLauncherOrNull()!! as NexusLauncherActivity).googleNow!!.showOverlay(false)
-        } catch (e: NullPointerException) {
-            e.printStackTrace()
-        }
+        LawnchairLauncher.getLauncher(context).overlay?.client?.openOverlay(true)
     }
 
     override fun getIcon(): Drawable {
