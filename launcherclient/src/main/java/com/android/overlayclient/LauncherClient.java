@@ -64,12 +64,24 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
 
     @Override
     public void openOverlay(boolean animate) {
-        // TODO
+        if (overlay != null) {
+            try {
+                overlay.openOverlay(animate ? 1 : 0);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void closeOverlay(boolean animate) {
-        // TODO
+        if (overlay != null) {
+            try {
+                overlay.closeOverlay(animate ? 1 : 0);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
