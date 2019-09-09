@@ -24,8 +24,11 @@ import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.*
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.Shape
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -34,11 +37,14 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import ch.deletescape.lawnchair.allChildren
+import ch.deletescape.lawnchair.applyAsDip
 import ch.deletescape.lawnchair.fromColorRes
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.CheckLongPressHelper
 import com.android.launcher3.R
 import com.android.launcher3.SimpleOnStylusPressListener
 import com.android.launcher3.StylusEventHelper
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
@@ -95,6 +101,20 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         fun forceStyle() {
+            allChildren[0].apply {
+                if (background != null) {
+                    background = GradientDrawable(GradientDrawable.Orientation.BL_TR, intArrayOf(if (dark)
+                        R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context),
+                            if (dark)
+                                R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context))).apply {
+
+                    }.apply {
+                        elevation = 16f.applyAsDip(context)
+                        cornerRadius = context.lawnchairPrefs.searchBarRadius
+                    }
+                }
+                background?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
+            }
             allChildren.forEach { view ->
                 if (dark && darkSubst.keys.any { it.isSuperclassOf(view::class) }) {
                     darkSubst.filter { it.key.isSuperclassOf(view::class) }
@@ -165,11 +185,6 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                                     PorterDuff.Mode.SRC)
                         }
                         Unit
-                    },
-                    (View::class as KClass<out View>) to { it: View ->
-                        if (it.background != null) {
-                            it.background.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC)
-                        }
                     }
             )
             var darkSubst = mapOf(
@@ -186,11 +201,6 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                                     PorterDuff.Mode.SRC)
                         }
                         Unit
-                    },
-                    (View::class as KClass<out View>) to { it: View ->
-                        if (it.background != null) {
-                            it.background.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
-                        }
                     }
             )
         }
