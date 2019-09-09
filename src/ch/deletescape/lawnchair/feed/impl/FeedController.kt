@@ -31,9 +31,10 @@ import com.android.launcher3.R
 import com.android.launcher3.config.FeatureFlags
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
+import kotlin.math.sign
 
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
-                                                              SwipeDetector.Listener {
+        SwipeDetector.Listener {
     var mOpenedCallback: (() -> Unit)? = null
     protected val mDetector: SwipeDetector
     protected var mStartState: FeedState? = null
@@ -131,11 +132,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
         }
         if (FeatureFlags.FEED_SIMPLE_ANIMATION || context.lawnchairPrefs.lowPerformanceMode) {
-            mFeedBackground!!.translationX = (-1 + mProgress) * shiftRange
+            mFeedBackground!!.translationX = (-1 + mProgress) * shiftRange * if (layoutDirection == View.LAYOUT_DIRECTION_RTL) -1 else 1
             mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
         } else {
             mFeedBackground!!.alpha = progress
-            mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
+            mFeedContent!!.translationX = (-1 + mProgress) * shiftRange * if (layoutDirection == View.LAYOUT_DIRECTION_RTL) -1 else 1
         }
     }
 
@@ -153,13 +154,13 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         mLastScroll = progress
         onTouchEvent(
                 MotionEvent.obtain(mDownTime, time(), MotionEvent.ACTION_MOVE, mLastScroll * width,
-                                   0f, 0))
+                        0f, 0))
     }
 
     fun endScroll() {
         onTouchEvent(
                 MotionEvent.obtain(mDownTime, time(), MotionEvent.ACTION_UP, mLastScroll * width,
-                                   0f, 0))
+                        0f, 0))
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -260,20 +261,24 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDrag(displacement: Float, velocity: Float): Boolean {
-        val deltaProgress = mProgressMultiplier * (displacement - mDisplacementShift)
+        val deltaProgress = mProgressMultiplier * ((if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+            -1 else 1) * displacement - mDisplacementShift)
         val progress = deltaProgress + mStartProgress
         updateProgress(progress)
-        val isDragTowardPositive = displacement - mDisplacementShift < 0
+        val isDragTowardPositive = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+            -1 else 1) * displacement - mDisplacementShift < 0
         if (progress <= 0) {
             if (reinitCurrentAnimation(false, isDragTowardPositive)) {
-                mDisplacementShift = displacement
+                mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                    -1 else 1) * displacement
                 if (mCanBlockFling) {
                     mFlingBlockCheck.blockFling()
                 }
             }
         } else if (progress >= 1) {
             if (reinitCurrentAnimation(true, isDragTowardPositive)) {
-                mDisplacementShift = displacement
+                mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                    -1 else 1) * displacement
                 if (mCanBlockFling) {
                     mFlingBlockCheck.blockFling()
                 }
@@ -297,12 +302,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
 
         val targetState: FeedState?
-        val progress = mCurrentAnimationPlaybackController!!.progressFraction
+        val progress = mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+            -1 else 1)
         val interpolatedProgress = mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
         if (fling) {
-            targetState = if (java.lang.Float.compare(Math.signum(velocity), Math.signum(
-                            mProgressMultiplier)) == 0) mToState
-            else mFromState
+            targetState = if (sign(velocity).compareTo(Math.signum(
+                            mProgressMultiplier)) == 0) mToState else mFromState
             // snap to top or bottom using the release velocity
         } else {
             targetState =
@@ -327,8 +332,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                         progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
                         1f)
                 duration = SwipeDetector.calculateDuration(velocity,
-                                                           endProgress - Math.max(progress,
-                                                                                  0f)) * durationMultiplier
+                        endProgress - Math.max(progress,
+                                0f)) * durationMultiplier
             }
         } else {
             // Let the state manager know that the animation didn't go to the target state,
@@ -347,7 +352,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                         progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
                         1f)
                 duration = SwipeDetector.calculateDuration(velocity, Math.min(progress,
-                                                                              1f) - endProgress) * durationMultiplier
+                        1f) - endProgress) * durationMultiplier
             }
         }
 

@@ -79,7 +79,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
 
     @Override
     public void onScrollChange(float progress, boolean rtl) {
-        client.onScroll(rtl ? -progress : progress);
+        client.onScroll(progress);
     }
 
     @Override
