@@ -50,6 +50,7 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -126,6 +127,14 @@ class LauncherFeed(val originalContext: Context,
     private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
+        set(value) {
+            field = value
+            if (value is OverlayWidgetHost.OverlayWidgetView) {
+                value.dark = dark
+                value.shouldForceStyle = true
+                value.forceStyle();
+            }
+        }
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null

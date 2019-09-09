@@ -1213,3 +1213,16 @@ fun Bitmap.blur(c: Context): Bitmap = BlurProcessor.Builder(c)
             .blur(this)
 
 fun ViewGroup.inflate(@LayoutRes res: Int): View = LayoutInflater.from(context).inflate(res, this, false)
+
+val ViewGroup.allChildren: List<View>
+    get() = run {
+    val children = mutableListOf<View>()
+    for (i in 0 until childCount) {
+        val view = getChildAt(i);
+        children.add(view)
+        if (view is ViewGroup) {
+            children.addAll(view.allChildren)
+        }
+    }
+    children
+}
