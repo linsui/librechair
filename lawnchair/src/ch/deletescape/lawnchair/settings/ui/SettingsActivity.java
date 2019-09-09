@@ -665,6 +665,9 @@ public class SettingsActivity extends SettingsBaseActivity implements
             noPlugins.setEnabled(false);
 
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
+
+            disableReservedIconSpace(getPreferenceScreen());
+
             if (getContent() == R.xml.lawnchair_desktop_preferences) {
                 if (getResources().getBoolean(R.bool.notification_badging_enabled)) {
                     ButtonPreference iconBadgingPref =
@@ -836,6 +839,16 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 mIconBadgingObserver = null;
             }
             super.onDestroy();
+        }
+
+        private void disableReservedIconSpace(PreferenceGroup group) {
+            group.setIconSpaceReserved(false);
+            for (int i = 0; i < group.getPreferenceCount(); ++i) {
+                group.getPreference(i).setIconSpaceReserved(false);
+                if (group.getPreference(i) instanceof PreferenceGroup) {
+                    disableReservedIconSpace((PreferenceGroup) group.getPreference(i));
+                }
+            }
         }
 
         @Override
