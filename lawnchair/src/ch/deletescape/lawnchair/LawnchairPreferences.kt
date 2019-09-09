@@ -514,7 +514,7 @@ class LawnchairPreferences(val context: Context) :
     val feedTabsOnBottom by BooleanPref("pref_feed_tabs_on_bottom", false, ::restartOverlay)
     var feedToolbarWidget by IntPref("pref_feed_toolbar_custom_widget", -1)
     var feedToolbarWidgetForceStyle by BooleanPref("pref_feed_toolbar_widget_force_style",
-            true, ::restartOverlay)
+            false, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
     private val was1stApril = is1stApril()

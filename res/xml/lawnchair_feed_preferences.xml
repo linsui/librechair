@@ -69,6 +69,7 @@
             android:title="@string/title_pref_remove_feed_widget"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_feed_toolbar_widget_force_style"
+            android:defaultValue="false"
             android:title="@string/title_pref_feed_toolbar_widget_force_style"
             android:summary="@string/summary_pref_feed_toolbar_widget_force_style"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
