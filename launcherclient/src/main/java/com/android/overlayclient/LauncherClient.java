@@ -47,17 +47,15 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
             }
         };
         factory.setChangeListener(l3overlay -> {
-            synchronized (this) {
-                this.overlay = l3overlay;
-                ((ArrayList<Consumer<ILauncherOverlay>>) overlayChangeListeners.clone()).forEach(
-                        consumer -> consumer.accept(l3overlay));
-                if (params != null) {
-                    acceptLayoutParams(params);
-                }
-                if (l3overlay == null) {
-                    new Handler(boundActivity.getMainLooper()).postDelayed(this::reconnect,
-                            TimeUnit.SECONDS.toMillis(2));
-                }
+            this.overlay = l3overlay;
+            ((ArrayList<Consumer<ILauncherOverlay>>) overlayChangeListeners.clone()).forEach(
+                    consumer -> consumer.accept(l3overlay));
+            if (params != null) {
+                acceptLayoutParams(params);
+            }
+            if (l3overlay == null) {
+                new Handler(boundActivity.getMainLooper()).postDelayed(this::reconnect,
+                        TimeUnit.SECONDS.toMillis(2));
             }
         });
         factory.connect();
@@ -155,17 +153,15 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
         } else if (overlay != null) {
             configure();
         } else {
-            synchronized (this) {
-                overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
-                    @Override
-                    public void accept(ILauncherOverlay iLauncherOverlay) {
-                        configure();
-                        synchronized (LauncherClient.this) {
-                            overlayChangeListeners.remove(this);
-                        }
+            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
+                @Override
+                public void accept(ILauncherOverlay iLauncherOverlay) {
+                    configure();
+                    synchronized (LauncherClient.this) {
+                        overlayChangeListeners.remove(this);
                     }
-                });
-            }
+                }
+            });
         }
     }
 
