@@ -25,7 +25,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
@@ -221,7 +220,6 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     @Override
     public void reconnect() {
-        Log.d(getClass().getName(), "reconnect: reconnect called");
         factory.connect();
     }
 
