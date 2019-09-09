@@ -24,6 +24,7 @@ import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -98,13 +99,15 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                 if (dark && darkSubst.keys.any { it.isSuperclassOf(view::class) }) {
                     darkSubst.filter { it.key.isSuperclassOf(view::class) }
                             .values
-                            .first()
-                            .invoke(view);
+                            .forEach {
+                                it(view)
+                            }
                 } else if (lightSubst.keys.any { it.isSuperclassOf(view::class) }) {
                     lightSubst.filter { it.key.isSuperclassOf(view::class) }
                             .values
-                            .first()
-                            .invoke(view);
+                            .forEach {
+                                it(view)
+                            }
                 }
             }
         }
@@ -159,14 +162,13 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                         (it as ImageView)
                         if (it.drawable != null) {
                             it.drawable.setColorFilter(R.color.primary_text_material_dark.fromColorRes(it.context),
-                                    PorterDuff.Mode.SRC_OVER)
+                                    PorterDuff.Mode.SRC)
                         }
                         Unit
                     },
                     (View::class as KClass<out View>) to { it: View ->
                         if (it.background != null) {
-                            it.background.setTint(R.color.qsb_background_hotseat_white
-                                    .fromColorRes(it.context))
+                            it.background.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC)
                         }
                     }
             )
@@ -181,14 +183,13 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                         (it as ImageView)
                         if (it.drawable != null) {
                             it.drawable.setColorFilter(R.color.primary_text_material_light.fromColorRes(it.context),
-                                    PorterDuff.Mode.SRC_OVER)
+                                    PorterDuff.Mode.SRC)
                         }
                         Unit
                     },
                     (View::class as KClass<out View>) to { it: View ->
                         if (it.background != null) {
-                            it.background.setTint(R.color.qsb_background_hotseat_dark
-                                    .fromColorRes(it.context))
+                            it.background.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
                         }
                     }
             )
