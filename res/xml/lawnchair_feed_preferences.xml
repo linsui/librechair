@@ -259,7 +259,7 @@
             android:defaultValue="false"
             android:summary="@string/summary_pref_elevate_weather_card"
             android:title="@string/title_pref_elevate_weather_card" />
-        <android.support.v7.preference.EditTextPreference
+        <androidx.preference.EditTextPreference
             android:defaultValue="https://example.com/search?q=%s"
             android:key="pref_feed_search_url_template"
             android:title="@string/title_pref_feed_search_url_template"/>
