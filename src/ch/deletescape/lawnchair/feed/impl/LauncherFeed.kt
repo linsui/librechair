@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.Animator
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHostView
 import android.content.ComponentName
 import android.content.Context
@@ -151,6 +152,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
+    @SuppressLint("RestrictedApi")
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (context.appWidgetManager
                         .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget) == null) {
@@ -398,6 +400,21 @@ class LauncherFeed(val originalContext: Context,
                     arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
                     arrayOf(googleColours[0],
                             R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
+        } else if (backgroundColor.alpha > 35) {
+            tabView.tabIconTint =
+                    ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
+            tabView.tabSelectedIndicator!!
+                    .setTint(R.color.textColorPrimary.fromColorRes(context))
+            tabView.tabTextColors = ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
+        } else {
+            tabView.tabIconTint =
+                    ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
+            tabView.tabSelectedIndicator!!
+                    .setTint(R.color.textColorPrimary.fromColorRes(context))
+            tabView.tabTextColors = ColorStateList(
+                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
+                    arrayOf(googleColours[0],
+                            R.color.textColorPrimary.fromColorRes(context)).toIntArray())
         }
         if (!useTabbedMode) {
             if (tabbedProviders.keys != setOf(null)) {
