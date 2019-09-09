@@ -644,4 +644,7 @@
     <string name="summary_pref_feed_hide_tab_text">Tab titles will not be displayed</string>
 
     <string name="title_pref_remove_feed_widget">Remove title bar widget</string>
+
+    <string name="title_pref_feed_toolbar_widget_force_style">Force style in toolbar widget</string>
+    <string name="summary_pref_feed_toolbar_widget_force_style">Librechair will attempt to apply the set theme to the widget</string>
 </resources>

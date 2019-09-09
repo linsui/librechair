@@ -162,6 +162,12 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                                     PorterDuff.Mode.SRC_OVER)
                         }
                         Unit
+                    },
+                    (View::class as KClass<out View>) to { it: View ->
+                        if (it.background != null) {
+                            it.background.setTint(R.color.qsb_background_hotseat_white
+                                    .fromColorRes(it.context))
+                        }
                     }
             )
             var darkSubst = mapOf(
@@ -178,6 +184,12 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                                     PorterDuff.Mode.SRC_OVER)
                         }
                         Unit
+                    },
+                    (View::class as KClass<out View>) to { it: View ->
+                        if (it.background != null) {
+                            it.background.setTint(R.color.qsb_background_hotseat_dark
+                                    .fromColorRes(it.context))
+                        }
                     }
             )
         }

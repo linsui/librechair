@@ -131,8 +131,10 @@ class LauncherFeed(val originalContext: Context,
             field = value
             if (value is OverlayWidgetHost.OverlayWidgetView) {
                 value.dark = dark
-                value.shouldForceStyle = true
-                value.forceStyle();
+                value.shouldForceStyle = context.lawnchairPrefs.feedToolbarWidgetForceStyle
+                if (value.shouldForceStyle) {
+                    value.forceStyle();
+                }
             }
         }
     private var reapplyInsetFlag = false
