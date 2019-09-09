@@ -26,7 +26,6 @@ import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.gestures.gestures.*
 import ch.deletescape.lawnchair.gestures.handlers.*
 import ch.deletescape.lawnchair.lawnchairPrefs
-import com.android.launcher3.Utilities
 import com.android.launcher3.util.TouchController
 import org.json.JSONException
 import org.json.JSONObject
@@ -110,14 +109,14 @@ class GestureController(val launcher: LawnchairLauncher) : TouchController {
                 } catch (e: JSONException) {
                     null
                 }
-                var className = config?.getString("class") ?: jsonString
+                var className = config?.getString("class") ?: jsonString!!
                 if (className in LEGACY_SLEEP_HANDLERS) {
                     className = SleepGestureHandler::class.java.name
                 }
                 val configValue = if (config?.has("config") == true) config.getJSONObject("config") else null
                 // Log.d(TAG, "creating handler $className with config ${configValue?.toString(2)}")
                 try {
-                    val handler =  Class.forName(className).getConstructor(Context::class.java, JSONObject::class.java)
+                    val handler = Class.forName(className).getConstructor(Context::class.java, JSONObject::class.java)
                             .newInstance(context, configValue) as GestureHandler
                     if(handler.isAvailable) return handler
                 } catch (t: Throwable) {

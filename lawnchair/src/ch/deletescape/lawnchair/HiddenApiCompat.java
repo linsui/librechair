@@ -20,6 +20,7 @@ package ch.deletescape.lawnchair;
 import android.app.ActivityManager;
 import android.app.ActivityManager.TaskDescription;
 import android.app.ActivityOptions;
+import android.app.ActivityTaskManager;
 import android.app.WindowConfiguration;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -28,6 +29,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.view.ThreadedRenderer;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -71,7 +73,16 @@ public class HiddenApiCompat {
     }
 
     public static boolean supportsMultiWindow(Context context) {
-        return ActivityManager.supportsMultiWindow(context);
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            try {
+                Method method = ActivityManager.class.getDeclaredMethod("supportsMultiWindow",
+                        Context.class);
+                return (boolean) method.invoke(null, context);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return ActivityTaskManager.supportsMultiWindow(context);
     }
 
     public static boolean isResizeableMode(int mode) {
