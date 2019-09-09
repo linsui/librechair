@@ -25,10 +25,8 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.*
-import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.Shape
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -36,15 +34,11 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.allChildren
-import ch.deletescape.lawnchair.applyAsDip
-import ch.deletescape.lawnchair.fromColorRes
-import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.*
 import com.android.launcher3.CheckLongPressHelper
 import com.android.launcher3.R
 import com.android.launcher3.SimpleOnStylusPressListener
 import com.android.launcher3.StylusEventHelper
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
@@ -113,9 +107,9 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     }.apply {
                         elevation = 16f.applyAsDip(context)
                         cornerRadius = if (context.lawnchairPrefs.searchBarRadius < 1)
-                                it.measuredHeight.toFloat() / 2
-                            else
-                                context.lawnchairPrefs.searchBarRadius
+                            it.measuredHeight.toFloat() / 2
+                        else
+                            context.lawnchairPrefs.searchBarRadius
                     }
                 }
                 background?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
@@ -186,6 +180,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
+                            it.setImageDrawable(processDrawable(it.drawable, it.context))
                             it.drawable.setColorFilter(R.color.primary_text_material_dark.fromColorRes(it.context),
                                     PorterDuff.Mode.SRC)
                         }
@@ -202,12 +197,39 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
+                            it.setImageDrawable(processDrawable(it.drawable, it.context))
                             it.drawable.setColorFilter(R.color.primary_text_material_light.fromColorRes(it.context),
                                     PorterDuff.Mode.SRC)
                         }
                         Unit
                     }
             )
+
+            fun processDrawable(drawable: Drawable, c: Context): Drawable {
+                val src = drawable.toBitmap()!!
+                val tgt = Canvas()
+                val colorPaintCache = mutableMapOf<Int, Paint>();
+
+                for (x in 0 until src.width) {
+                    for (y in 0 until src.height) {
+                        if (src.getPixel(x, y) != 0) {
+                            tgt.drawPoint(x.toFloat(), y.toFloat(), colorPaintCache[src.getPixel(x, y)]
+                                    ?: Paint().apply {
+                                        color = src.getPixel(x, y)
+                                    }.also { colorPaintCache[src.getPixel(x, y)] = it })
+                        }
+                    }
+                }
+
+
+                val bitmap = Bitmap.createBitmap(
+                        drawable.intrinsicWidth,
+                        drawable.intrinsicHeight,
+                        Bitmap.Config.ARGB_8888)
+
+                tgt.setBitmap(bitmap);
+                return bitmap.toDrawable(c);
+            }
         }
     }
 }
