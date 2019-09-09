@@ -21,23 +21,21 @@ package ch.deletescape.lawnchair.notes
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v7.widget.ActionMenuView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.ActionMenuView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 import java.io.Serializable
 
 @Suppress("TypeParameterFindViewById")
 class NotesActivity : SettingsBaseActivity() {
-    val recycler by lazy { findViewById(R.id.notes_recycler) as RecyclerView }
+    val recycler by lazy { findViewById(R.id.notes_recycler) as androidx.recyclerview.widget.RecyclerView }
     val tabLayout by lazy { findViewById(R.id.note_tabs) as TabLayout }
     lateinit var adapter: NotesAdapter
     var useSimpleNotesAdapter: Boolean = false
@@ -57,7 +55,7 @@ class NotesActivity : SettingsBaseActivity() {
             adapter = NotesAdapter(this)
             tabLayout.visibility = View.VISIBLE
         }
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
         recycler.adapter = adapter
         adapter.currentColor = savedInstanceState?.getInt("persist_color") ?: getColorEngineAccent()
         adapter.bindToTabLayout(tabLayout)

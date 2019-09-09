@@ -15,7 +15,7 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<android.support.v7.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
         android:key="pref_swipe_feed"
@@ -264,4 +264,4 @@
             android:key="pref_feed_search_url_template"
             android:title="@string/title_pref_feed_search_url_template"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
-</android.support.v7.preference.PreferenceScreen>
+</androidx.preference.PreferenceScreen>

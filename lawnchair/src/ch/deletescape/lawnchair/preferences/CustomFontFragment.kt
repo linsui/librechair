@@ -20,22 +20,21 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.graphics.Typeface
 import android.os.Bundle
-import android.support.annotation.Keep
-import android.support.v4.app.Fragment
-import android.support.v4.provider.FontRequest
-import android.support.v4.provider.FontsContractCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.Keep
+import androidx.core.provider.FontRequest
+import androidx.core.provider.FontsContractCompat
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.uiWorkerHandler
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 
 @Keep
-class CustomFontFragment : Fragment() {
+class CustomFontFragment : androidx.fragment.app.Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_custom_font, container, false)

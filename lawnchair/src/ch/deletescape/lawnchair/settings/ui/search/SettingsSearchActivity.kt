@@ -20,15 +20,15 @@ package ch.deletescape.lawnchair.settings.ui.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import com.android.launcher3.R
 import kotlinx.android.synthetic.main.activity_settings_search.*
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 import android.text.TextUtils
 import android.view.MenuItem
 import android.widget.*
@@ -55,10 +55,10 @@ class SettingsSearchActivity : SettingsBaseActivity(), SearchView.OnQueryTextLis
         val listResults = list_results
         listResults.shouldTranslateSelf = false
         listResults.adapter = searchAdapter
-        listResults.layoutManager = LinearLayoutManager(this)
-        listResults.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        listResults.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        listResults.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 if (dy != 0) {
                     hideKeyboard()
                 }
@@ -126,7 +126,7 @@ class SettingsSearchActivity : SettingsBaseActivity(), SearchView.OnQueryTextLis
         searchAdapter.postSearchResults(matches)
     }
 
-    class SearchAdapter(private val activity: SettingsSearchActivity) : RecyclerView.Adapter<SearchAdapter.Holder>() {
+    class SearchAdapter(private val activity: SettingsSearchActivity) : androidx.recyclerview.widget.RecyclerView.Adapter<SearchAdapter.Holder>() {
 
         private val searchResults = ArrayList<SearchIndex.SettingsEntry>()
 
@@ -158,7 +158,7 @@ class SettingsSearchActivity : SettingsBaseActivity(), SearchView.OnQueryTextLis
             diffResult.dispatchUpdatesTo(this)
         }
 
-        open class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        open class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
             protected val titleView = itemView.findViewById(android.R.id.title) as TextView
             protected val summaryView = itemView.findViewById(android.R.id.summary) as TextView

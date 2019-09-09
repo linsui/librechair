@@ -20,8 +20,8 @@ package ch.deletescape.lawnchair.colors
 import android.content.Context
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.view.WindowManager
+import androidx.appcompat.app.AlertDialog
 import ch.deletescape.lawnchair.applyAccent
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import com.android.launcher3.R

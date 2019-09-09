@@ -18,12 +18,12 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.PreferenceDialogFragmentCompat
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceDialogFragmentCompat
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.view.View
 import ch.deletescape.lawnchair.applyAccent
 import com.android.launcher3.R
@@ -37,10 +37,10 @@ class SmartspaceEventProvidersFragment : PreferenceDialogFragmentCompat() {
         super.onBindDialogView(view)
         adapter = SmartspaceEventProvidersAdapter(view.context)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.list)
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = adapter
-        (recyclerView.itemAnimator as? DefaultItemAnimator)?.supportsChangeAnimations = false
+        (recyclerView.itemAnimator as? androidx.recyclerview.widget.DefaultItemAnimator)?.supportsChangeAnimations = false
         adapter.itemTouchHelper = ItemTouchHelper(adapter.TouchHelperCallback()).apply {
             attachToRecyclerView(recyclerView)
         }

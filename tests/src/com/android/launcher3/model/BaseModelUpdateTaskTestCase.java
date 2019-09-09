@@ -18,9 +18,9 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.os.Process;
 import android.os.UserHandle;
-import android.support.annotation.NonNull;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.provider.ProviderTestRule;
+import androidx.annotation.NonNull;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.provider.ProviderTestRule;
 
 import com.android.launcher3.AllAppsList;
 import com.android.launcher3.AppFilter;

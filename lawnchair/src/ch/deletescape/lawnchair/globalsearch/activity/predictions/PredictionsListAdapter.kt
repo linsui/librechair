@@ -19,14 +19,13 @@
 
 package ch.deletescape.lawnchair.globalsearch.activity.predictions
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
 class PredictionsListAdapter(predictions: List<String>, onCallHandler: OnCallHandler) :
-        RecyclerView.Adapter<PredictionsListAdapter.PredictionViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<PredictionsListAdapter.PredictionViewHolder>() {
 
     var onCallHandler = onCallHandler
         get() = field
@@ -56,7 +55,7 @@ class PredictionsListAdapter(predictions: List<String>, onCallHandler: OnCallHan
                                            })
     }
 
-    class PredictionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class PredictionViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
     interface OnCallHandler {
         fun onClick(item: Int)

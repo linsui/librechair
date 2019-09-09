@@ -16,10 +16,10 @@
 
 package com.android.launcher3.tapl;
 
-import android.support.annotation.NonNull;
-import android.support.test.uiautomator.BySelector;
-import android.support.test.uiautomator.Direction;
-import android.support.test.uiautomator.UiObject2;
+import androidx.annotation.NonNull;
+import androidx.test.uiautomator.BySelector;
+import androidx.test.uiautomator.Direction;
+import androidx.test.uiautomator.UiObject2;
 
 /**
  * Operations on AllApps opened from Home.

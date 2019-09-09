@@ -15,12 +15,11 @@
  */
 package com.android.launcher3.ui;
 
-import android.support.test.filters.LargeTest;
-import android.support.test.runner.AndroidJUnit4;
-import android.support.test.uiautomator.UiObject2;
-import android.support.test.uiautomator.Until;
+import androidx.test.filters.LargeTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.Until;
 
-import com.android.launcher3.R;
 import com.android.launcher3.util.Condition;
 import com.android.launcher3.util.Wait;
 import com.android.launcher3.util.rule.LauncherActivityRule;

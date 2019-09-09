@@ -29,9 +29,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
-import android.view.Surface;
 import android.view.animation.Interpolator;
 
 import com.android.launcher3.BaseDraggingActivity;
@@ -51,7 +50,6 @@ import com.android.systemui.shared.system.SyncRtSurfaceTransactionApplier.Surfac
 import com.android.systemui.shared.system.TransactionCompat;
 import com.android.systemui.shared.system.WindowManagerWrapper;
 
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 /**

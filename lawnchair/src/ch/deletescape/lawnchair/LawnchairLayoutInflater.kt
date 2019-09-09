@@ -18,7 +18,7 @@
 package ch.deletescape.lawnchair
 
 import android.content.Context
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View

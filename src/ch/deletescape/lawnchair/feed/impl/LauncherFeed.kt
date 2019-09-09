@@ -33,12 +33,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.*
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.TabLayout
-import android.support.v4.graphics.ColorUtils
-import android.support.v7.graphics.Palette
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.tabs.TabLayout
+import androidx.core.graphics.ColorUtils
+import androidx.palette.graphics.Palette
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -112,7 +112,7 @@ class LauncherFeed(val originalContext: Context,
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
     private var tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-    private var recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+    private var recyclerView = (feedController.findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
@@ -174,7 +174,7 @@ class LauncherFeed(val originalContext: Context,
             backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
                     ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
                     (LawnchairPreferences.getInstance(
-                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else Palette.from(
+                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else androidx.palette.graphics.Palette.from(
                     backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
 
             d("reinitState: background color: r: ${backgroundColor.red} g: ${backgroundColor.green} b: ${backgroundColor.blue}")
@@ -226,7 +226,7 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-            recyclerView = (feedController.findViewById(R.id.feed_recycler) as RecyclerView)
+            recyclerView = (feedController.findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
             adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                     context.applicationContext, this)
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
@@ -490,8 +490,8 @@ class LauncherFeed(val originalContext: Context,
             }
         }
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         toolbar.animate().translationY(
@@ -503,8 +503,8 @@ class LauncherFeed(val originalContext: Context,
             })
         }
         if (context.lawnchairPrefs.feedBackToTop) {
-            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         upButton.animate().translationY(0f).duration = 500
@@ -514,7 +514,7 @@ class LauncherFeed(val originalContext: Context,
                 }
             })
         }
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object : androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 runOnMainThread {
                     if (adapter.itemCount == 0) {
@@ -836,9 +836,9 @@ class LauncherFeed(val originalContext: Context,
                 if (field) {
                     if (recyclerView.adapter == null) {
                         recyclerView.adapter = this.adapter
-                        recyclerView.layoutManager = object : LinearLayoutManager(context) {
-                            override fun onLayoutChildren(recycler: RecyclerView.Recycler?,
-                                                          state: RecyclerView.State?) {
+                        recyclerView.layoutManager = object : androidx.recyclerview.widget.LinearLayoutManager(context) {
+                            override fun onLayoutChildren(recycler: androidx.recyclerview.widget.RecyclerView.Recycler?,
+                                                          state: androidx.recyclerview.widget.RecyclerView.State?) {
                                 try {
                                     super.onLayoutChildren(recycler, state)
                                 } catch (e: RuntimeException) {

@@ -19,21 +19,16 @@
 
 package ch.deletescape.lawnchair.predictions
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.atMost
 import com.android.launcher3.AppInfo
 import com.android.launcher3.BubbleTextView
-import com.android.launcher3.ItemInfoWithIcon
 import com.android.launcher3.R
 import com.android.launcher3.allapps.AllAppsStore
-import com.google.android.apps.nexuslauncher.search.AppItemInfoWithIcon
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
-import org.apache.commons.lang3.mutable.Mutable
-import java.util.ArrayList
 
-open class PredictedApplicationsAdapter : RecyclerView.Adapter<IconViewViewHolder>() {
+open class PredictedApplicationsAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<IconViewViewHolder>() {
     open val gridSize = 7
     var predictions: List<ComponentKeyMapper> = mutableListOf()
         set(value) = {
@@ -58,7 +53,7 @@ open class PredictedApplicationsAdapter : RecyclerView.Adapter<IconViewViewHolde
     }
 }
 
-class IconViewViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+class IconViewViewHolder(parent: ViewGroup) : androidx.recyclerview.widget.RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(R.layout.all_apps_icon, parent, false)) {
     val bubbleTextView by lazy { itemView as BubbleTextView }
 }

@@ -22,12 +22,10 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
-import android.support.v7.widget.ActionMenuView
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.widget.ActionMenuView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
@@ -54,10 +52,10 @@ class FontSelectionActivity : SettingsBaseActivity(), SearchView.OnQueryTextList
         val listResults = list_results
         listResults.shouldTranslateSelf = false
         listResults.adapter = adapter
-        listResults.layoutManager = LinearLayoutManager(this)
-        listResults.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        listResults.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        listResults.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
 
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
                 if (dy != 0) {
                     hideKeyboard()
                 }
@@ -170,7 +168,7 @@ class FontSelectionActivity : SettingsBaseActivity(), SearchView.OnQueryTextList
         return fontsDir.listFiles().map { FontCache.TTFFont(this, it) }
     }
 
-    inner class FontAdapter(private val context: Context) : RecyclerView.Adapter<FontAdapter.Holder>() {
+    inner class FontAdapter(private val context: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<FontAdapter.Holder>() {
 
         private val items = ArrayList<Item>()
         private val filtered = ArrayList<Item>()
@@ -252,7 +250,7 @@ class FontSelectionActivity : SettingsBaseActivity(), SearchView.OnQueryTextList
         override fun getItemViewType(position: Int) = filtered[position].viewType
 
         abstract inner class Holder(parent: ViewGroup, layout: Int) :
-                RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(layout, parent, false)) {
+                androidx.recyclerview.widget.RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(layout, parent, false)) {
 
             open var selected = false
 

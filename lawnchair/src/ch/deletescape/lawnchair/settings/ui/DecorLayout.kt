@@ -23,7 +23,7 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Environment
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View

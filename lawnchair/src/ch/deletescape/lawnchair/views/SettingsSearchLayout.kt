@@ -20,7 +20,7 @@ package ch.deletescape.lawnchair.views
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Rect
-import android.support.v7.widget.CardView
+import androidx.cardview.widget.CardView
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.folder.FolderShape
 import com.android.launcher3.InsettableFrameLayout

@@ -41,7 +41,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.SystemClock
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.util.Log
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime

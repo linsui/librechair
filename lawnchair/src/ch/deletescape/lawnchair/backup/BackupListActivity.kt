@@ -22,24 +22,21 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import ch.deletescape.lawnchair.settings.ui.SettingsBottomSheet
-import ch.deletescape.lawnchair.settings.ui.SettingsBottomSheetDialog
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.google.android.material.snackbar.Snackbar
 
 class BackupListActivity : SettingsBaseActivity(), BackupListAdapter.Callbacks {
 
     private val permissionRequestReadExternalStorage = 0
 
-    private val recyclerView by lazy { findViewById<RecyclerView>(R.id.recyclerView) }
+    private val recyclerView by lazy { findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerView) }
     private val adapter by lazy { BackupListAdapter(this) }
 
     private var currentPosition = 0
@@ -53,8 +50,8 @@ class BackupListActivity : SettingsBaseActivity(), BackupListAdapter.Callbacks {
 
         adapter.callbacks = this
         loadLocalBackups()
-        recyclerView.layoutManager = GridLayoutManager(this, 2).apply {
-            spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 2).apply {
+            spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
                 override fun getSpanSize(position: Int) = if (position == 0) 2 else 1
             }
         }

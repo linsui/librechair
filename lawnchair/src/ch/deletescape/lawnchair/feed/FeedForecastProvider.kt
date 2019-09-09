@@ -21,11 +21,10 @@ package ch.deletescape.lawnchair.feed
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
@@ -84,11 +83,11 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                  context.getString(R.string.forecast_s), object : Card.Companion.InflateHelper {
                     override fun inflate(parent: ViewGroup): View {
                         val recyclerView = LayoutInflater.from(parent.context).inflate(
-                            R.layout.width_inflatable_recyclerview, parent, false) as RecyclerView
+                            R.layout.width_inflatable_recyclerview, parent, false) as androidx.recyclerview.widget.RecyclerView
                         if (forecast != null) {
                             recyclerView.layoutManager =
-                                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
-                                                        false)
+                                    androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
+                                            false)
                             recyclerView.adapter = OWMWeatherActivity
                                     .HourlyForecastAdapter(forecast!!, context,
                                                            (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit,

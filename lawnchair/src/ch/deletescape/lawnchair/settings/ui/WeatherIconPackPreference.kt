@@ -20,7 +20,7 @@
 package ch.deletescape.lawnchair.settings.ui
 
 import android.content.Context
-import android.support.v7.preference.DialogPreference
+import androidx.preference.DialogPreference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.lawnchairPrefs

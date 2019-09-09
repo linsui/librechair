@@ -18,7 +18,7 @@
 package ch.deletescape.lawnchair.smartspace
 
 import android.os.Handler
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.text.TextUtils
 import android.view.View
 import ch.deletescape.lawnchair.loadSmallIcon

@@ -19,7 +19,6 @@ package ch.deletescape.lawnchair.backup
 
 import android.content.Context
 import android.net.Uri
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.isVisible
 import com.android.launcher3.R
 
-class BackupListAdapter(val context: Context) : RecyclerView.Adapter<BackupListAdapter.Holder>() {
+class BackupListAdapter(val context: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<BackupListAdapter.Holder>() {
 
     private val backupList = ArrayList<LawnchairBackup>()
     private val backupMetaLoaderList = ArrayList<LawnchairBackup.MetaLoader>()
@@ -99,7 +98,7 @@ class BackupListAdapter(val context: Context) : RecyclerView.Adapter<BackupListA
         backupMetaLoaderList.forEach { it.meta?.recycle() }
     }
 
-    open class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    open class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         open fun bind(position: Int) {
 

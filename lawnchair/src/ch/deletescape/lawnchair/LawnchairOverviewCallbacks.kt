@@ -18,7 +18,7 @@
 package ch.deletescape.lawnchair
 
 import android.content.Context
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.config.FeatureFlags
 import com.android.quickstep.OverviewCallbacks

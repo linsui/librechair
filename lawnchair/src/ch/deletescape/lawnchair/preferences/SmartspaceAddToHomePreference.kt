@@ -21,7 +21,7 @@ package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
 import android.content.Intent
-import android.support.v7.preference.Preference
+import androidx.preference.Preference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
 import com.android.launcher3.BuildConfig

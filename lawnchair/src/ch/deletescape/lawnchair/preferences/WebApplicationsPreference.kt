@@ -23,11 +23,11 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.preference.DialogPreference
-import android.support.v7.preference.PreferenceDialogFragmentCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceDialogFragmentCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -66,7 +66,7 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
     class Fragment : PreferenceDialogFragmentCompat() {
-        lateinit var recyclerView: RecyclerView
+        lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
         override fun onDialogClosed(positiveResult: Boolean) {
             if (positiveResult) {
                 val dialog = object :
@@ -110,8 +110,8 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
 
         override fun onBindDialogView(view: View) {
             super.onBindDialogView(view)
-            recyclerView = view.findViewById(R.id.list) as RecyclerView
-            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView = view.findViewById(R.id.list) as androidx.recyclerview.widget.RecyclerView
+            recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             recyclerView.adapter = Adapter()
         }
 
@@ -123,25 +123,25 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
             }
         }
 
-        inner class Adapter : RecyclerView.Adapter<ProviderItemViewHolder>() {
+        inner class Adapter : androidx.recyclerview.widget.RecyclerView.Adapter<ProviderItemViewHolder>() {
             private lateinit var itemTouchHelper: ItemTouchHelper
 
             override fun getItemCount(): Int {
                 return context?.lawnchairPrefs?.feedWebApplications?.size ?: 0
             }
 
-            override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+            override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
                 super.onAttachedToRecyclerView(recyclerView)
                 ItemTouchHelper(object : ItemTouchHelper.Callback() {
-                    override fun getMovementFlags(recyclerView: RecyclerView,
-                                                  viewHolder: RecyclerView.ViewHolder): Int {
+                    override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                                  viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
                         return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
                                                  ItemTouchHelper.START)
                     }
 
-                    override fun onMove(recyclerView: RecyclerView,
-                                        viewHolder: RecyclerView.ViewHolder,
-                                        target: RecyclerView.ViewHolder): Boolean {
+                    override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                        viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                                        target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
                         val prefList = context!!.lawnchairPrefs.feedWebApplications.toMutableList()
@@ -161,7 +161,7 @@ class WebApplicationsPreference(context: Context?, attrs: AttributeSet?) :
                         return true
                     }
 
-                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
                         context?.lawnchairPrefs?.feedWebApplications =
                                 context?.lawnchairPrefs?.feedWebApplications?.toMutableList()?.apply {
                                     removeAt(viewHolder.adapterPosition)

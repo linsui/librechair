@@ -19,17 +19,17 @@
 
 package librechair.fonts.provider;
 
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR;
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND;
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_MALFORMED_QUERY;
+import static androidx.core.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_LOAD_ERROR;
+import static androidx.core.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND;
+import static androidx.core.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_MALFORMED_QUERY;
 
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
-import android.support.v4.provider.FontRequest;
-import android.support.v4.provider.FontsContractCompat.FontRequestCallback;
+import androidx.core.provider.FontRequest;
+import androidx.core.provider.FontsContractCompat.FontRequestCallback;
 import android.util.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

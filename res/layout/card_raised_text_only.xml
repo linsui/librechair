@@ -18,7 +18,7 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<android.support.v7.widget.CardView xmlns:tools="http://schemas.android.com/tools"
+<androidx.cardview.widget.CardView xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
         android:visibility="gone"
         app:realtimeBlurRadius="20dp"
         app:realtimeOverlayColor="@color/frosted_blur_overlay_colour" />
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:padding="@dimen/dimen_feed_card_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -57,5 +57,5 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             tools:ignore="MissingConstraints" />
-    </android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

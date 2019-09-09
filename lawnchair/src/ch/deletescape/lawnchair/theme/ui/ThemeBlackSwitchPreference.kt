@@ -18,7 +18,7 @@
 package ch.deletescape.lawnchair.theme.ui
 
 import android.content.Context
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.theme.ThemeManager

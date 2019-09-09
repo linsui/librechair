@@ -22,22 +22,26 @@ package ch.deletescape.lawnchair.preferences;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog.Builder;
-import android.support.v7.preference.PreferenceDialogFragmentCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import ch.deletescape.lawnchair.LawnchairPreferences;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog.Builder;
+import androidx.preference.PreferenceDialogFragmentCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
 import com.android.launcher3.R;
 import com.gryzor.swipenolib.RecyclerViewItemSwipeHelper;
+
 import java.util.Objects;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
 
 public class RSSSourcesFragment extends PreferenceDialogFragmentCompat {
 

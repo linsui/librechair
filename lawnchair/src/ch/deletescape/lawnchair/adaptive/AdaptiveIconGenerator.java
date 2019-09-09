@@ -17,28 +17,31 @@
 
 package ch.deletescape.lawnchair.adaptive;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.lang.Math.round;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.graphics.ColorUtils;
 import android.util.Log;
 import android.util.SparseIntArray;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
-import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
+
+import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
+
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.ColorExtractor;
 import com.android.launcher3.graphics.FixedScaleDrawable;
 import com.android.launcher3.graphics.IconNormalizer;
 import com.android.launcher3.graphics.LauncherIcons;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
+import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.lang.Math.round;
 
 // TODO: Make this thing async somehow (maybe using some drawable wrappers?)
 public class AdaptiveIconGenerator {

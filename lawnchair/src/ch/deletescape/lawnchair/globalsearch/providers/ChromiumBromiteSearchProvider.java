@@ -26,16 +26,21 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.globalsearch.SearchProvider;
+
+import androidx.annotation.Nullable;
+
 import com.android.launcher3.R;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class ChromiumBromiteSearchProvider extends SearchProvider {
 

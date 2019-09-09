@@ -39,7 +39,7 @@ package ch.deletescape.lawnchair.settings.ui
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.support.v7.preference.ListPreference
+import androidx.preference.ListPreference
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.trebuchet.TrebuchetUtil
 import ch.deletescape.lawnchair.util.extensions.d

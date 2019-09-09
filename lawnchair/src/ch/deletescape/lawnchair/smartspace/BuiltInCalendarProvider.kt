@@ -43,7 +43,7 @@ import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
 import android.net.Uri
 import android.provider.CalendarContract
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.text.TextUtils
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime

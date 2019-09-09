@@ -20,8 +20,6 @@ package ch.deletescape.lawnchair.gestures.ui
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
 import ch.deletescape.lawnchair.preferences.AppsAdapterWithShortcuts
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
@@ -36,9 +34,9 @@ class SelectAppActivity : SettingsBaseActivity(), AppsAdapterWithShortcuts.Callb
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.list)
+        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list)
         recyclerView.adapter = AppsAdapterWithShortcuts(this, this)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

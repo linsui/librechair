@@ -25,7 +25,7 @@
         launcher:numColumns="4"
         launcher:numFolderRows="4"
         launcher:numFolderColumns="4"
-        launcher:iconSize="60"
+        launcher:profileIconSize="60"
         launcher:iconTextSize="14.0"
         launcher:defaultLayoutId="@xml/default_workspace_4x4"
         />

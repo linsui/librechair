@@ -24,32 +24,25 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.allapps.PredictionsProvider
-import ch.deletescape.lawnchair.predictions.LawnchairEventPredictor
+import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
 import ch.deletescape.lawnchair.predictions.PredictionsProviderService
-import ch.deletescape.lawnchair.util.extensions.currentStackTrace
+import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
-import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
-import com.android.launcher3.logging.UserEventDispatcher
-import com.google.android.apps.nexuslauncher.CustomAppPredictor
-import com.google.android.apps.nexuslauncher.allapps.PredictionRowView
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
-    private val recyclerView = RecyclerView(context)
+    private val recyclerView = androidx.recyclerview.widget.RecyclerView(context)
     private val adapter = PredictedApplicationsAdapter()
     private var predictions: List<ComponentKeyMapper> = emptyList()
 
     init {
         recyclerView.adapter = adapter
         adapter.predictions = predictions
-        recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
+        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, adapter.gridSize)
         adapter.notifyDataSetChanged()
         d("init: refreshing predictions")
         refreshPredictions()

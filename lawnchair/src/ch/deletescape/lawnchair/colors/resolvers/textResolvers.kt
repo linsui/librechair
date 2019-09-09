@@ -18,10 +18,9 @@
 package ch.deletescape.lawnchair.colors.resolvers
 
 import android.graphics.Color
-import android.support.annotation.Keep
-import android.support.v4.graphics.ColorUtils
+import androidx.annotation.Keep
+import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.colors.ThemeAttributeColorResolver
-import ch.deletescape.lawnchair.foregroundColor
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import com.android.launcher3.R

@@ -41,7 +41,7 @@ import android.content.Context
 import android.content.Intent
 import android.location.Criteria
 import android.location.LocationManager
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.util.Log
 import android.widget.Toast
 import ch.deletescape.lawnchair.LawnchairPreferences

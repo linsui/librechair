@@ -17,8 +17,8 @@
 package com.android.launcher3.tapl;
 
 import android.graphics.Point;
-import android.support.annotation.NonNull;
-import android.support.test.uiautomator.UiObject2;
+import androidx.annotation.NonNull;
+import androidx.test.uiautomator.UiObject2;
 
 /**
  * Operations on AllApps opened from Overview.

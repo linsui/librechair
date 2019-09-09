@@ -25,14 +25,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.os.Process
-import android.support.v7.widget.ActionMenuView
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.*
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.ActionMenuView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.iconpack.EditIconActivity.Companion.EXTRA_ENTRY
@@ -48,13 +46,13 @@ import java.util.concurrent.Semaphore
 
 class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, SearchView.OnQueryTextListener {
     private val iconPackManager = IconPackManager.getInstance(this)
-    private val iconGrid by lazy { findViewById<RecyclerView>(R.id.list_results) }
+    private val iconGrid by lazy { findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list_results) }
     private val iconPack by lazy { iconPackManager.getIconPack(
             intent.getParcelableExtra<IconPackManager.PackProvider>(EXTRA_ICON_PACK), false) }
     private val items get() = searchItems ?: actualItems
     private var actualItems = ArrayList<AdapterItem>()
     private val adapter = IconGridAdapter()
-    private val layoutManager = GridLayoutManager(this, 1)
+    private val layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 1)
     private var canceled = false
     private val collator = Collator.getInstance()
     private val showDebugInfo = lawnchairPrefs.showDebugInfo
@@ -235,7 +233,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
         val usedWidth = iconSize * columnCount
         dynamicPadding = (width - usedWidth) / (columnCount + 1) / 2
         layoutManager.spanCount = columnCount
-        layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+        layoutManager.spanSizeLookup = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int) = getItemSpan(position)
         }
         iconGrid.setPadding(iconPadding - dynamicPadding, iconPadding, iconPadding - dynamicPadding, iconPadding)
@@ -250,13 +248,13 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
         finish()
     }
 
-    inner class IconGridAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    inner class IconGridAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<androidx.recyclerview.widget.RecyclerView.ViewHolder>() {
 
         private val loadingType = 0
         private val itemType = 1
         private val categoryType = 2
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): androidx.recyclerview.widget.RecyclerView.ViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
             return when (viewType) {
                 itemType -> IconHolder(layoutInflater.inflate(R.layout.icon_item, parent, false))
@@ -267,7 +265,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
 
         override fun getItemCount() = items.size
 
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: androidx.recyclerview.widget.RecyclerView.ViewHolder, position: Int) {
             if (holder is IconHolder) {
                 holder.bind(items[position] as IconItem)
             } else if (holder is CategoryHolder) {
@@ -285,7 +283,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
 
         fun isItem(position: Int) = getItemViewType(position) == itemType
 
-        inner class IconHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener, IconItem.Callback {
+        inner class IconHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), View.OnClickListener, IconItem.Callback {
 
             private var iconLoader: IconItem? = null
                 set(value) {
@@ -325,7 +323,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
             }
         }
 
-        inner class CategoryHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        inner class CategoryHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
             private val title: TextView = itemView.findViewById(android.R.id.title)
 
@@ -343,7 +341,7 @@ class IconPickerActivity : SettingsBaseActivity(), View.OnLayoutChangeListener, 
             }
         }
 
-        inner class LoadingHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+        inner class LoadingHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
     }
 
     open class AdapterItem

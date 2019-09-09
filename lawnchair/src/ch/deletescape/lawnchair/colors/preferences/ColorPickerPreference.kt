@@ -20,9 +20,8 @@ package ch.deletescape.lawnchair.colors.preferences
 import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.support.v4.app.FragmentManager
-import android.support.v7.preference.Preference
 import android.util.AttributeSet
+import androidx.preference.Preference
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.colors.ColorEngine
 import com.android.launcher3.R
@@ -78,7 +77,7 @@ open class ColorPickerPreference(context: Context, attrs: AttributeSet?)
         }
     }
 
-    fun showDialog(fragmentManager: FragmentManager) {
+    fun showDialog(fragmentManager: androidx.fragment.app.FragmentManager) {
         val resolver = engine.getResolver(key)
         ColorPickerDialog.newInstance(key, resolver.resolveColor(), colorMode, resolvers).show(fragmentManager, key)
     }

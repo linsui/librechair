@@ -18,8 +18,6 @@
 package ch.deletescape.lawnchair.groups.ui
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.TextUtils
 import android.util.LayoutDirection
 import android.view.LayoutInflater
@@ -28,6 +26,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.createDisabledColor
 import ch.deletescape.lawnchair.groups.AppGroups
@@ -38,7 +37,7 @@ import ch.deletescape.lawnchair.tintDrawable
 import com.android.launcher3.R
 
 abstract class AppGroupsAdapter<VH : AppGroupsAdapter<VH, T>.GroupHolder, T : AppGroups.Group>(val context: Context)
-    : RecyclerView.Adapter<AppGroupsAdapter.Holder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<AppGroupsAdapter.Holder>() {
 
     private var saved = true
 
@@ -148,7 +147,7 @@ abstract class AppGroupsAdapter<VH : AppGroupsAdapter<VH, T>.GroupHolder, T : Ap
 
     abstract fun createGroup(callback: (group: T, animate: Boolean) -> Unit)
 
-    open class Holder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    open class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 
     inner class HeaderHolder(itemView: View) : Holder(itemView) {
 
@@ -237,16 +236,16 @@ abstract class AppGroupsAdapter<VH : AppGroupsAdapter<VH, T>.GroupHolder, T : Ap
 
     inner class TouchHelperCallback : ItemTouchHelper.Callback() {
 
-        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
             if (viewHolder !is AppGroupsAdapter<*, *>.GroupHolder) return 0
             return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
         }
 
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return move(viewHolder.adapterPosition, target.adapterPosition)
         }
 
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
 
         }
     }

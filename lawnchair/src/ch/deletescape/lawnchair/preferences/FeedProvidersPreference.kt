@@ -37,11 +37,11 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
-import android.support.v7.preference.DialogPreference
-import android.support.v7.preference.PreferenceViewHolder
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.feed.FeedProviderContainer
 import ch.deletescape.lawnchair.feed.MainFeedController

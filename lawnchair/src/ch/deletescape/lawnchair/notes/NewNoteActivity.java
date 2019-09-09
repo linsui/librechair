@@ -23,18 +23,22 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
+
 import com.android.launcher3.ExtendedEditText;
 import com.android.launcher3.R;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Objects;
+
+import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
 
 @SuppressLint("Registered")
 public class NewNoteActivity extends SettingsBaseActivity {

@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.icu.text.DateFormat;
 import android.icu.text.DisplayContext;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import ch.deletescape.lawnchair.LawnchairPreferences;

@@ -25,9 +25,6 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Vibrator
-import android.support.v4.graphics.ColorUtils
-import android.support.v7.widget.CardView
-import android.support.v7.widget.RecyclerView
 import android.util.TypedValue
 import android.view.*
 import android.view.View.GONE
@@ -36,6 +33,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
@@ -48,8 +46,8 @@ import kotlin.math.roundToInt
 
 class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                   private val context: Context, private val feed: LauncherFeed?) :
-        RecyclerView.Adapter<CardViewHolder>() {
-    private lateinit var recyclerView: RecyclerView
+        androidx.recyclerview.widget.RecyclerView.Adapter<CardViewHolder>() {
+    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
     var backgroundColor: Int = 0
         set(value) {
             d("init: backgroundColor is now ${value}")
@@ -79,7 +77,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -123,7 +121,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards.size;
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+    override fun onDetachedFromRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         providers.iterator().forEachRemaining {
             it.onDestroy()
@@ -276,7 +274,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        if (holder.itemView is CardView) {
+        if (holder.itemView is androidx.cardview.widget.CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
                         context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
@@ -313,7 +311,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 }
 
-class CardViewHolder : RecyclerView.ViewHolder {
+class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
     val icon by lazy {
         itemView.findViewById(R.id.card_provider_small_icon) as ImageView?
     }
@@ -356,7 +354,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
         }
 
         if (viewHolder.context.lawnchairPrefs.feedCardBlur && type and Card.RAISE != 0) {
-            (itemView as CardView).setCardBackgroundColor(Color.TRANSPARENT)
+            (itemView as androidx.cardview.widget.CardView).setCardBackgroundColor(Color.TRANSPARENT)
             itemView.background.setTint(Color.argb(64, 255, 255, 255))
             backgroundBlurView!!.visibility = VISIBLE
             backgroundBlurView!!.setBlurRadius(
@@ -367,9 +365,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
 }
 
 private class Decoration(private val spaceHeightVertical: Int,
-                         private val spaceHeightHorizontal: Int) : RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
-                                state: RecyclerView.State) {
+                         private val spaceHeightHorizontal: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView,
+                                state: androidx.recyclerview.widget.RecyclerView.State) {
         with(outRect) {
             if (parent.getChildAdapterPosition(view) == 0) {
                 top = spaceHeightVertical

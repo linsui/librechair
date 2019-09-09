@@ -26,24 +26,19 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.launcher3.R;
+
+import java.util.Collections;
+import java.util.List;
 
 import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
 import ch.deletescape.lawnchair.feed.wikipedia.news.News;
-import fastily.jwiki.core.Wiki;
-import info.bliki.wiki.model.WikiModel;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
 
 public class WikipediaNewsProvider extends FeedProvider {
 

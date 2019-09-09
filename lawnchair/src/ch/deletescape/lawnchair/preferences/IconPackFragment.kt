@@ -17,20 +17,18 @@
 
 package ch.deletescape.lawnchair.preferences
 
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import ch.deletescape.lawnchair.LawnchairPreferences
 
 class IconPackFragment : RecyclerViewFragment() {
 
     private val adapter by lazy { IconPackAdapter(requireContext()) }
 
-    override fun onRecyclerViewCreated(recyclerView: RecyclerView) {
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+    override fun onRecyclerViewCreated(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = adapter
-        (recyclerView.itemAnimator as? DefaultItemAnimator)?.supportsChangeAnimations = false
+        (recyclerView.itemAnimator as? androidx.recyclerview.widget.DefaultItemAnimator)?.supportsChangeAnimations = false
         adapter.itemTouchHelper = ItemTouchHelper(adapter.TouchHelperCallback()).apply {
             attachToRecyclerView(recyclerView)
         }

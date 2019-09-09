@@ -19,7 +19,7 @@ import android.content.Context;
 import android.content.pm.LauncherActivityInfo;
 import android.graphics.Color;
 import android.os.UserHandle;
-import android.support.v4.graphics.ColorUtils;
+import androidx.core.graphics.ColorUtils;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.allapps.AppColorComparator;
 import ch.deletescape.lawnchair.groups.DrawerFolderInfo;

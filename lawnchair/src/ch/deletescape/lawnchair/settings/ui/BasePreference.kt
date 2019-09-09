@@ -18,7 +18,7 @@
 package ch.deletescape.lawnchair.settings.ui
 
 import android.content.Context
-import android.support.v7.preference.Preference
+import androidx.preference.Preference
 import android.util.AttributeSet
 
 open class BasePreference(context: Context, attrs: AttributeSet?) : Preference(context, attrs),

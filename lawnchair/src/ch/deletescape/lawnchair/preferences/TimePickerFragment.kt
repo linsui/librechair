@@ -37,8 +37,8 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.PreferenceDialogFragmentCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceDialogFragmentCompat
 import android.view.View
 import android.widget.TimePicker
 import ch.deletescape.lawnchair.applyAccent

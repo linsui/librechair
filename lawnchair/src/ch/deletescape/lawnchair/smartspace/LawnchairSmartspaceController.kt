@@ -29,7 +29,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.Settings
 import android.service.notification.StatusBarNotification
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import android.view.View

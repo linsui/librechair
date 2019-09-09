@@ -18,9 +18,9 @@
 package ch.deletescape.lawnchair.views
 
 import android.content.Context
-import android.support.animation.FloatValueHolder
-import android.support.animation.SpringAnimation
-import android.support.animation.SpringForce
+import androidx.dynamicanimation.animation.FloatValueHolder
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
 import android.util.AttributeSet
 import android.view.KeyEvent
 import android.view.View

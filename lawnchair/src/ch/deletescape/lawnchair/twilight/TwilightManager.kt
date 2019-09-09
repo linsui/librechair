@@ -32,7 +32,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import android.util.ArrayMap
 import android.util.Log
 import ch.deletescape.lawnchair.checkLocationAccess

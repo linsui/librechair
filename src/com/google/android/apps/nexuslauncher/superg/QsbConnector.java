@@ -3,7 +3,7 @@ package com.google.android.apps.nexuslauncher.superg;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.support.v4.graphics.ColorUtils;
+import androidx.core.graphics.ColorUtils;
 import android.util.AttributeSet;
 import android.util.Property;
 import android.view.View;

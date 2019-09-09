@@ -20,9 +20,11 @@ package ch.deletescape.lawnchair.gestures.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.TypedArray
-import android.support.v7.preference.DialogPreference
 import android.util.AttributeSet
-import ch.deletescape.lawnchair.gestures.*
+import androidx.preference.DialogPreference
+import ch.deletescape.lawnchair.gestures.BlankGestureHandler
+import ch.deletescape.lawnchair.gestures.GestureController
+import ch.deletescape.lawnchair.gestures.NavSwipeUpGesture
 import com.android.launcher3.R
 
 class GesturePreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs), SharedPreferences.OnSharedPreferenceChangeListener {

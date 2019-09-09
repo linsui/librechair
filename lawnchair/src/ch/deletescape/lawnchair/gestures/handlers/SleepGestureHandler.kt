@@ -29,8 +29,8 @@ import android.os.Build
 import android.os.PowerManager
 import android.os.SystemClock
 import android.provider.Settings
-import android.support.annotation.Keep
 import android.view.View
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.gestures.GestureHandler
 import ch.deletescape.lawnchair.lawnchairApp

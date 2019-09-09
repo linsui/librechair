@@ -21,8 +21,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceViewHolder
+import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.MenuItem

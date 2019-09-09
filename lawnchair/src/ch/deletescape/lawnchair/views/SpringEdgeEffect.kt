@@ -20,10 +20,10 @@ package ch.deletescape.lawnchair.views
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
-import android.support.animation.SpringAnimation
-import android.support.animation.SpringForce
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.EdgeEffectFactory.*
+import androidx.dynamicanimation.animation.SpringAnimation
+import androidx.dynamicanimation.animation.SpringForce
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.EdgeEffectFactory.*
 import android.view.View
 import android.widget.EdgeEffect
 import ch.deletescape.lawnchair.KFloatProperty
@@ -149,9 +149,9 @@ class SpringEdgeEffect(
             }
         }
 
-        inner class SpringEdgeEffectFactory : RecyclerView.EdgeEffectFactory() {
+        inner class SpringEdgeEffectFactory : androidx.recyclerview.widget.RecyclerView.EdgeEffectFactory() {
 
-            override fun createEdgeEffect(recyclerView: RecyclerView, direction: Int): EdgeEffect {
+            override fun createEdgeEffect(recyclerView: androidx.recyclerview.widget.RecyclerView, direction: Int): EdgeEffect {
                 return createEdgeEffect(direction) ?: super.createEdgeEffect(recyclerView, direction)
             }
         }

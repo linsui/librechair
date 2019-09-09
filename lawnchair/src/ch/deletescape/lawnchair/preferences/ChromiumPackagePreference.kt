@@ -20,8 +20,8 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
-import android.support.v7.preference.ListPreference
 import android.util.AttributeSet
+import androidx.preference.ListPreference
 import ch.deletescape.lawnchair.globalsearch.providers.ChromiumBromiteSearchProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 

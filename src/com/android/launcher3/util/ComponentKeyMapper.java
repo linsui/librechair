@@ -16,7 +16,7 @@ package com.android.launcher3.util;
  * limitations under the License.
  */
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.allapps.AllAppsStore;
 import java.util.Map;

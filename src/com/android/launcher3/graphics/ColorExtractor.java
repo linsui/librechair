@@ -17,12 +17,11 @@ package com.android.launcher3.graphics;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.ColorUtils;
+import androidx.core.graphics.ColorUtils;
 import android.util.SparseArray;
-import android.util.SparseIntArray;
+
 import com.android.launcher3.Utilities;
 import java.util.HashSet;
 import java.util.Set;

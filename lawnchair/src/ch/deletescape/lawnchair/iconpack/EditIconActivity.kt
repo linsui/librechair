@@ -26,9 +26,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -37,6 +34,8 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.applyAccent
 import ch.deletescape.lawnchair.isVisible
@@ -54,8 +53,8 @@ class EditIconActivity : SettingsBaseActivity() {
 
     private val originalIcon by lazy { findViewById<ImageView>(R.id.originalIcon) }
     private val divider by lazy { findViewById<View>(R.id.divider) }
-    private val iconRecyclerView by lazy { findViewById<RecyclerView>(R.id.iconRecyclerView) }
-    private val iconPackRecyclerView by lazy { findViewById<RecyclerView>(R.id.iconPackRecyclerView) }
+    private val iconRecyclerView by lazy { findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.iconRecyclerView) }
+    private val iconPackRecyclerView by lazy { findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.iconPackRecyclerView) }
     private val iconPackManager by lazy { IconPackManager.getInstance(this) }
     private val component by lazy {
         if (intent.hasExtra(EXTRA_COMPONENT)) {
@@ -135,11 +134,11 @@ class EditIconActivity : SettingsBaseActivity() {
         originalIcon.setOnClickListener { onSelectIcon(null) }
 
         iconPackRecyclerView.adapter = IconPackAdapter()
-        iconPackRecyclerView.layoutManager = LinearLayoutManager(this)
+        iconPackRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
 
         if (component != null) {
             iconRecyclerView.adapter = iconAdapter
-            iconRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+            iconRecyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
         } else {
             divider.visibility = View.GONE
             iconRecyclerView.visibility = View.GONE
@@ -208,7 +207,7 @@ class EditIconActivity : SettingsBaseActivity() {
                 .show().applyAccent()
     }
 
-    inner class IconAdapter : RecyclerView.Adapter<IconAdapter.Holder>() {
+    inner class IconAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<IconAdapter.Holder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return when (viewType) {
@@ -230,7 +229,7 @@ class EditIconActivity : SettingsBaseActivity() {
             holder.bind(icons[position])
         }
 
-        open inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        open inner class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
             init {
                 itemView.setOnClickListener(this)
@@ -263,7 +262,7 @@ class EditIconActivity : SettingsBaseActivity() {
         }
     }
 
-    inner class IconPackAdapter : RecyclerView.Adapter<IconPackAdapter.Holder>() {
+    inner class IconPackAdapter : androidx.recyclerview.widget.RecyclerView.Adapter<IconPackAdapter.Holder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
             return Holder(LayoutInflater.from(parent.context).inflate(R.layout.icon_pack_item, parent, false))
@@ -279,7 +278,7 @@ class EditIconActivity : SettingsBaseActivity() {
             }
         }
 
-        inner class Holder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        inner class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
             private val icon = itemView.findViewById<ImageView>(android.R.id.icon)
             private val title = itemView.findViewById<TextView>(android.R.id.title)

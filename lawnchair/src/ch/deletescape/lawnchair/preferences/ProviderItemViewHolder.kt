@@ -19,7 +19,6 @@
 
 package ch.deletescape.lawnchair.preferences
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.android.launcher3.R
@@ -28,4 +27,4 @@ class ProviderItemViewHolder(itemView: View,
                              val title: TextView = itemView.findViewById(android.R.id.title),
                              val summary: TextView = itemView.findViewById(android.R.id.summary),
                              val dragHandle: View = itemView.findViewById(R.id.drag_handle)) :
-        RecyclerView.ViewHolder(itemView)
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)

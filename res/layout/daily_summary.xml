@@ -29,7 +29,7 @@
         android:layout_width="match_parent"
         android:gravity="center"
         style="@style/TextAppearance.MaterialComponents.Headline4" />
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

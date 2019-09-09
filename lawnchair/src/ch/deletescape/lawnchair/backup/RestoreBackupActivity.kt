@@ -25,21 +25,21 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
-import android.support.v4.graphics.drawable.DrawableCompat
-import android.support.v7.widget.AppCompatEditText
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.graphics.drawable.DrawableCompat
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity
 import com.android.launcher3.LauncherAppState
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.provider.RestoreDbTask
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 class RestoreBackupActivity : SettingsBaseActivity(), LawnchairBackup.MetaLoader.Callback, ColorEngine.OnColorChangeListener {
     private val backupName by lazy { findViewById<AppCompatEditText>(R.id.name) }

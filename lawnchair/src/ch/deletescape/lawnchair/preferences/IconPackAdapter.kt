@@ -20,14 +20,13 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.iconpack.IconPackList
@@ -35,7 +34,7 @@ import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.isVisible
 import com.android.launcher3.R
 
-class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.Holder>() {
+class IconPackAdapter(context: Context) : androidx.recyclerview.widget.RecyclerView.Adapter<IconPackAdapter.Holder>() {
 
     private val manager = IconPackManager.getInstance(context)
     private val allPacks = ArrayList<IconPackItem>()
@@ -167,7 +166,7 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
         override val type = TYPE_DOWNLOAD
     }
 
-    abstract class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         open fun bind(item: Item) {
 
@@ -274,27 +273,27 @@ class IconPackAdapter(context: Context) : RecyclerView.Adapter<IconPackAdapter.H
 
     inner class TouchHelperCallback : ItemTouchHelper.Callback() {
 
-        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        override fun onSelectedChanged(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             isDragging = actionState == ItemTouchHelper.ACTION_STATE_DRAG
             handler.post { notifyItemChanged(dividerIndex) }
         }
 
-        override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun canDropOver(recyclerView: androidx.recyclerview.widget.RecyclerView, current: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return target.adapterPosition in 1..dividerIndex
         }
 
-        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
             val item = adapterItems[viewHolder.adapterPosition]
             val dragFlags = if (item.isStatic) 0 else ItemTouchHelper.UP or ItemTouchHelper.DOWN
             return ItemTouchHelper.Callback.makeMovementFlags(dragFlags, 0)
         }
 
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return move(viewHolder.adapterPosition, target.adapterPosition)
         }
 
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
 
         }
     }

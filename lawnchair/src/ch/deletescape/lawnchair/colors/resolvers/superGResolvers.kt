@@ -17,8 +17,8 @@
 
 package ch.deletescape.lawnchair.colors.resolvers
 
-import android.support.annotation.Keep
-import android.support.v4.content.ContextCompat
+import androidx.annotation.Keep
+import androidx.core.content.ContextCompat
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.theme.ThemeManager
 import com.android.launcher3.R

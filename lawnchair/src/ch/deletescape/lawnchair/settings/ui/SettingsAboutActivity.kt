@@ -19,7 +19,7 @@ package ch.deletescape.lawnchair.settings.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
 import me.jfenn.attribouter.Attribouter
@@ -33,7 +33,7 @@ class SettingsAboutActivity : SettingsActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun createLaunchFragment(intent: Intent): Fragment {
+    override fun createLaunchFragment(intent: Intent): androidx.fragment.app.Fragment {
         return Attribouter.from(this).withGitHubToken(BuildConfig.GITHUB_TOKEN).withFile(R.xml.attribouter).toFragment()
     }
 

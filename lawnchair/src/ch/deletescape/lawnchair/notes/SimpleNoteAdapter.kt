@@ -21,20 +21,19 @@ package ch.deletescape.lawnchair.notes
 
 import android.app.Dialog
 import android.content.Context
-import android.support.design.widget.TabLayout
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.TypedValue
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.priyesh.chroma.ChromaView
@@ -81,18 +80,18 @@ class SimpleNoteAdapter(override val context: Context) :
         }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         ItemTouchHelper(object : ItemTouchHelper.Callback() {
-            override fun getMovementFlags(recyclerView: RecyclerView,
-                                          viewHolder: RecyclerView.ViewHolder) = makeMovementFlags(
+            override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                          viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) = makeMovementFlags(
                     0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT)
 
-            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
-                                target: RecyclerView.ViewHolder): Nothing = error(
+            override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                                target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Nothing = error(
                     "reorganization has not yet been implemented")
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
                 remove(notes[viewHolder.adapterPosition])
             }
 

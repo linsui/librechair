@@ -20,10 +20,11 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
-import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 public class OverlayDrawerLayout extends DrawerLayout {
 

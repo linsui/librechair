@@ -25,7 +25,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
-import android.support.v4.graphics.ColorUtils
+import androidx.core.graphics.ColorUtils
 import android.util.AttributeSet
 import android.util.Property
 import android.view.LayoutInflater

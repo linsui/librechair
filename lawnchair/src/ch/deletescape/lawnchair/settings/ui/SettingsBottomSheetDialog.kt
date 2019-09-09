@@ -19,7 +19,7 @@ package ch.deletescape.lawnchair.settings.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.view.View
 import android.view.ViewGroup
 import com.android.launcher3.R
@@ -30,7 +30,7 @@ class SettingsBottomSheetDialog(context: Context) : BottomSheetDialog(context) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (window != null && Utilities.ATLEAST_OREO) {
-            findViewById<View>(android.support.design.R.id.container)!!.fitsSystemWindows = false
+            findViewById<View>(com.google.android.material.R.id.container)!!.fitsSystemWindows = false
         }
     }
 

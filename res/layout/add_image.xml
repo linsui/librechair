@@ -17,7 +17,7 @@
   ~     You should have received a copy of the GNU General Public License
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<android.support.constraint.ConstraintLayout android:padding="@dimen/dimen_feed_card_padding"
+<androidx.constraintlayout.widget.ConstraintLayout android:padding="@dimen/dimen_feed_card_padding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground"
@@ -40,4 +40,4 @@
         app:layout_constraintBottom_toBottomOf="@+id/edit_images_icon"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

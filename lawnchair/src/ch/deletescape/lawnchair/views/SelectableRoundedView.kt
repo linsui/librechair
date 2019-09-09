@@ -23,7 +23,7 @@ import android.R
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
-import android.support.v4.graphics.ColorUtils
+import androidx.core.graphics.ColorUtils
 import android.util.AttributeSet
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout

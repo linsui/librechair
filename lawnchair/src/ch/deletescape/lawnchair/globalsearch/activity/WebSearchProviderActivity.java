@@ -20,13 +20,17 @@
 package ch.deletescape.lawnchair.globalsearch.activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.widget.EditText;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.launcher3.R;
+
+import java.util.Arrays;
+
 import ch.deletescape.lawnchair.globalsearch.activity.predictions.PredictionsListAdapter;
 import ch.deletescape.lawnchair.settings.ui.SettingsBaseActivity;
-import com.android.launcher3.R;
-import java.util.Arrays;
 
 public class WebSearchProviderActivity extends SettingsBaseActivity {
     private EditText searchQuery;

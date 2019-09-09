@@ -24,7 +24,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.Point;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 import android.util.DisplayMetrics;
 import android.util.Xml;
 import android.view.Display;
@@ -236,7 +236,7 @@ public class InvariantDeviceProfile {
                             Xml.asAttributeSet(parser), R.styleable.InvariantDeviceProfile);
                     int numRows = a.getInt(R.styleable.InvariantDeviceProfile_numRows, 0);
                     int numColumns = a.getInt(R.styleable.InvariantDeviceProfile_numColumns, 0);
-                    float iconSize = a.getFloat(R.styleable.InvariantDeviceProfile_iconSize, 0);
+                    float iconSize = a.getFloat(R.styleable.InvariantDeviceProfile_profileIconSize, 0);
                     profiles.add(new InvariantDeviceProfile(
                             a.getString(R.styleable.InvariantDeviceProfile_name),
                             a.getFloat(R.styleable.InvariantDeviceProfile_minWidthDps, 0),

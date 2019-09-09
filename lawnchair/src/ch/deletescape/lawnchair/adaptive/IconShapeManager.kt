@@ -27,8 +27,8 @@ import android.graphics.Region
 import android.graphics.RegionIterator
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Handler
-import android.support.v4.graphics.PathParser
 import android.text.TextUtils
+import androidx.core.graphics.PathParser
 import ch.deletescape.lawnchair.folder.FolderShape
 import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat
 import ch.deletescape.lawnchair.lawnchairPrefs

@@ -20,10 +20,10 @@ package ch.deletescape.lawnchair.groups.ui
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
-import android.support.v4.graphics.ColorUtils
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.groups.AppGroupsManager
 import kotlinx.android.synthetic.lawnchair.app_categorization_type_item.view.*

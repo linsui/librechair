@@ -19,8 +19,6 @@ package ch.deletescape.lawnchair.gestures.ui
 
 import android.app.AlertDialog
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.GestureController
@@ -56,9 +54,9 @@ class LauncherGesturePreference(context: Context, attrs: AttributeSet?) : Launch
         builder.setPositiveButton(null, null)
     }
 
-    override fun onBindRecyclerView(recyclerView: RecyclerView) {
+    override fun onBindRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         recyclerView.adapter = HandlerListAdapter(themedContext, false, getClassName(), onSelectHandler)
-        recyclerView.layoutManager = LinearLayoutManager(themedContext)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(themedContext)
     }
 
     fun getClassName(): String {

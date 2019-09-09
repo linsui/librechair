@@ -22,12 +22,11 @@ package ch.deletescape.lawnchair.adaptive
 import android.content.Context
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.ListPreference
-import android.support.v7.preference.PreferenceDialogFragmentCompat
 import android.util.AttributeSet
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.ListPreference
+import androidx.preference.PreferenceDialogFragmentCompat
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.overrides.ThemedListPreferenceDialogFragment
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
@@ -102,7 +101,7 @@ class IconShapePreference(context: Context, attrs: AttributeSet?) : ListPreferen
         preferenceManager.showDialog(this)
     }
 
-    fun createDialogFragment(): DialogFragment {
+    fun createDialogFragment(): androidx.fragment.app.DialogFragment {
         return if (forceCustomizeMode ?: isCustomIcon) {
             CustomizeDialogFragment.newInstance(key)
         } else {

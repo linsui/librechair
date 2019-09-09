@@ -20,16 +20,18 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.RippleDrawable
-import android.support.v4.graphics.ColorUtils
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Space
 import android.widget.TextView
-import ch.deletescape.lawnchair.*
+import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.dpToPx
+import ch.deletescape.lawnchair.getColorAttr
 import ch.deletescape.lawnchair.settings.ui.SettingsBottomSheet
+import ch.deletescape.lawnchair.tintDrawable
 import com.android.launcher3.R
 
 class DrawerTabTypeSelectionBottomSheet(context: Context, selectionItems: Map<Int, Array<Int>>, callback: (which: Int) -> Unit): FrameLayout(context) {

@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.UserHandle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import ch.deletescape.lawnchair.iconpack.IconPackManager;
 import com.android.launcher3.LauncherSettings.Favorites;

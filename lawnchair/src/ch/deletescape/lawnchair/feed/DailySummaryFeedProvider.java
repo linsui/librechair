@@ -24,10 +24,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +31,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.launcher3.R;
 import com.android.launcher3.util.Thunk;
@@ -53,6 +52,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import kotlin.Pair;
 
 public class DailySummaryFeedProvider extends FeedProvider {

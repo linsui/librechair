@@ -40,17 +40,16 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.HandlerThread
-import android.support.v7.preference.Preference
-import android.support.v7.preference.PreferenceViewHolder
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.colors.ColorEngine
 import com.android.launcher3.R
-import kotlin.math.roundToInt
 
 open class IntSeekbarPreference @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
         Preference(context, attrs, defStyleAttr), SeekBar.OnSeekBarChangeListener, View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener, ColorEngine.OnColorChangeListener {

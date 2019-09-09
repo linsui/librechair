@@ -32,9 +32,9 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
-import android.support.v4.app.ActivityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.RecyclerView
+import androidx.core.app.ActivityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -78,8 +78,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-    val feed by lazy { findViewById(R.id.feed_recycler) as RecyclerView }
-    val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as DrawerLayout }
+    val feed by lazy { findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView }
+    val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout }
     val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
@@ -119,7 +119,7 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
         performSignatureVerification()
-        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         setLauncherOverlay(overlay)
 

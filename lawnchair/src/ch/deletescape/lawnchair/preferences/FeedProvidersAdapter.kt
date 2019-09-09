@@ -19,13 +19,12 @@ package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
 import android.os.Handler
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.feed.FeedProviderContainer
 import ch.deletescape.lawnchair.feed.METADATA_CONTROLLER_PACKAGE
 import ch.deletescape.lawnchair.feed.MainFeedController
@@ -36,7 +35,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class FeedProvidersAdapter(private val context: Context)
-    : RecyclerView.Adapter<FeedProvidersAdapter.Holder>() {
+    : androidx.recyclerview.widget.RecyclerView.Adapter<FeedProvidersAdapter.Holder>() {
 
     private val prefs = context.lawnchairPrefs
     private val allProviders = ArrayList<ProviderItem>()
@@ -165,7 +164,7 @@ class FeedProvidersAdapter(private val context: Context)
         override val type = TYPE_DIVIDER
     }
 
-    abstract class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    abstract class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         open fun bind(item: Item) {
 
@@ -259,27 +258,27 @@ class FeedProvidersAdapter(private val context: Context)
 
     inner class TouchHelperCallback : ItemTouchHelper.Callback() {
 
-        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+        override fun onSelectedChanged(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?, actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             isDragging = actionState == ItemTouchHelper.ACTION_STATE_DRAG
             handler.post { notifyItemChanged(dividerIndex) }
         }
 
-        override fun canDropOver(recyclerView: RecyclerView, current: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun canDropOver(recyclerView: androidx.recyclerview.widget.RecyclerView, current: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return target.adapterPosition in 1..dividerIndex
         }
 
-        override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
+        override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
             val item = adapterItems[viewHolder.adapterPosition]
             val dragFlags = if (item.isStatic) 0 else ItemTouchHelper.UP or ItemTouchHelper.DOWN
             return makeMovementFlags(dragFlags, 0)
         }
 
-        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+        override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return move(viewHolder.adapterPosition, target.adapterPosition)
         }
 
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
 
         }
     }

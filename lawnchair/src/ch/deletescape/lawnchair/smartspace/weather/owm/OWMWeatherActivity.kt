@@ -25,8 +25,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -55,8 +55,8 @@ class OWMWeatherActivity : SettingsBaseActivity() {
     private var iconView: ImageView? = null
     private var weatherTitleText: TextView? = null
     private var weatherHelpfulTip: TextView? = null
-    private var threeHourForecastRecyclerView: RecyclerView? = null;
-    private var twentyFourHourForecastRecyclerView: RecyclerView? = null;
+    private var threeHourForecastRecyclerView: androidx.recyclerview.widget.RecyclerView? = null;
+    private var twentyFourHourForecastRecyclerView: androidx.recyclerview.widget.RecyclerView? = null;
     private var icon: Bitmap? = null;
     private var threeHourAdapter: HourlyForecastAdapter? = null
     private var twentyFourHourAdapter: DailyForecastAdapter? = null
@@ -98,7 +98,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                 runOnUiThread {
                     threeHourAdapter =
                             HourlyForecastAdapter(hourlyForecast, this, prefs.weatherUnit)
-                    threeHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+                    threeHourForecastRecyclerView!!.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
                     threeHourForecastRecyclerView!!.adapter = threeHourAdapter!!
                 }
             } catch (e: ForecastProvider.ForecastException) {
@@ -111,7 +111,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
                 runOnUiThread {
                     twentyFourHourAdapter =
                             DailyForecastAdapter(dailyForecast, this, prefs.weatherUnit)
-                    twentyFourHourForecastRecyclerView!!.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+                    twentyFourHourForecastRecyclerView!!.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
                     twentyFourHourForecastRecyclerView!!.adapter = twentyFourHourAdapter!!
                 }
             } catch (e: ForecastProvider.ForecastException) {
@@ -120,7 +120,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
         }
     }
 
-    class ThreeHourForecastViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ThreeHourForecastViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         val icon: ImageView = itemView.findViewById(R.id.forecast_weather_icon)
         val time: TextView = itemView.findViewById(R.id.forecast_current_time)
         val temperature: TextView = itemView.findViewById(R.id.forecast_current_temperature);
@@ -133,7 +133,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
     @Suppress("IMPLICIT_CAST_TO_ANY")
     class HourlyForecastAdapter(val hourlyWeatherForecast: ForecastProvider.Forecast, val context: Context,
                                 val weatherUnit: Temperature.Unit, val whiteText: Boolean = false) :
-            RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
+            androidx.recyclerview.widget.RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
         private val iconProvider by lazy { WeatherIconProvider(context) }
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
@@ -173,7 +173,7 @@ class OWMWeatherActivity : SettingsBaseActivity() {
     @Suppress("IMPLICIT_CAST_TO_ANY")
     class DailyForecastAdapter(val dailyWeatherForcast: ForecastProvider.DailyForecast, val context: Context,
                                val weatherUnit: Temperature.Unit, val whiteText: Boolean = false) :
-            RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
+            androidx.recyclerview.widget.RecyclerView.Adapter<ThreeHourForecastViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup,
                                         viewType: Int): ThreeHourForecastViewHolder {
             return ThreeHourForecastViewHolder(parent)

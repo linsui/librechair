@@ -24,8 +24,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.drawable.ColorDrawable
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.CalendarEventProvider
@@ -37,7 +35,7 @@ import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.setAlpha
 import kotlin.math.roundToInt
 
-class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
+class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : androidx.recyclerview.widget.RecyclerView(context, attrs) {
     init {
             background = ColorDrawable(
                     ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
@@ -47,7 +45,7 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
                                           context).feedBackground.value.resolveColor().setAlpha(
                                           (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
                                   context, null);
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
             postDelayed({
                             runOnNewThread {

@@ -17,7 +17,7 @@ package com.android.quickstep;
 
 import android.content.Context;
 
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import com.android.launcher3.MainProcessInitializer;
 import com.android.launcher3.Utilities;

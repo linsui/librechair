@@ -25,10 +25,10 @@ import android.content.Intent
 import android.graphics.Matrix
 import android.graphics.Rect
 import android.os.Build
-import android.support.annotation.Keep
 import android.util.Pair
 import android.view.View
 import android.view.animation.PathInterpolator
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.findInViews

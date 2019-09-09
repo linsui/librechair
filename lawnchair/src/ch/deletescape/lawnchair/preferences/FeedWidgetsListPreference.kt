@@ -22,12 +22,6 @@ package ch.deletescape.lawnchair.preferences
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.preference.DialogPreference
-import android.support.v7.preference.PreferenceDialogFragmentCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -37,6 +31,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceDialogFragmentCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -78,9 +76,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         override fun onBindDialogView(view: View) {
             super.onBindDialogView(view)
             d("onBindDialogView: bound to dialog view $view")
-            val recyclerView = view.findViewById<RecyclerView>(R.id.list)
+            val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list)
             d("onBindDialogView: found recycler $recyclerView")
-            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             d("onBindDialogView: set layoutManager for RecyclerView $recyclerView")
             recyclerView.adapter = FeedWidgetsPreferenceAdapter(preference)
             d("onBindDialogView: set adapter for RecyclerView ${recyclerView.adapter}")
@@ -88,7 +86,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
         class FeedWidgetsPreferenceAdapter(
                 val preference: LawnchairPreferences.MutableListPref<Int>) :
-                RecyclerView.Adapter<ProviderItemViewHolder>() {
+                androidx.recyclerview.widget.RecyclerView.Adapter<ProviderItemViewHolder>() {
             val prefList = preference.getList().filter {
                 Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
             }.toMutableList()
@@ -353,18 +351,18 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 }
             }
 
-            override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+            override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
                 super.onAttachedToRecyclerView(recyclerView)
                 ItemTouchHelper(object : ItemTouchHelper.Callback() {
-                    override fun getMovementFlags(recyclerView: RecyclerView,
-                                                  viewHolder: RecyclerView.ViewHolder): Int {
+                    override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                                  viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
                         return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
                                                  ItemTouchHelper.START)
                     }
 
-                    override fun onMove(recyclerView: RecyclerView,
-                                        viewHolder: RecyclerView.ViewHolder,
-                                        target: RecyclerView.ViewHolder): Boolean {
+                    override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                        viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                                        target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
 
@@ -383,7 +381,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         return true
                     }
 
-                    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
                         (viewHolder.itemView.context.applicationContext as LawnchairApp)
                                 .overlayWidgetHost
                                 .deleteAppWidgetId(prefList[viewHolder.adapterPosition])

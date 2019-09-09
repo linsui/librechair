@@ -18,7 +18,7 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginStart="@dimen/dimen_feed_card_padding"
     android:layout_marginEnd="@dimen/dimen_feed_card_padding"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -48,4 +48,4 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         tools:ignore="MissingConstraints" />
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

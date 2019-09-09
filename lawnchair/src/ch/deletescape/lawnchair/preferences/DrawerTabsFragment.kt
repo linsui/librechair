@@ -18,13 +18,11 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.os.Bundle
-import android.support.annotation.Keep
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.groups.LegacyDrawerTabsAdapter
 import ch.deletescape.lawnchair.tintDrawable
@@ -56,10 +54,10 @@ class DrawerTabsFragment : RecyclerViewFragment() {
         }
     }
 
-    override fun onRecyclerViewCreated(recyclerView: RecyclerView) {
+    override fun onRecyclerViewCreated(recyclerView: androidx.recyclerview.widget.RecyclerView) {
         val context = recyclerView.context
         recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
         adapter = LegacyDrawerTabsAdapter(context).apply {
             itemTouchHelper.attachToRecyclerView(recyclerView)
         }

@@ -17,12 +17,12 @@
 
 package ch.deletescape.lawnchair.util
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import me.mvdw.recyclerviewmergeadapter.adapter.RecyclerViewMergeAdapter
 
 open class AnimateRecyclerViewMergeAdapter : RecyclerViewMergeAdapter() {
 
-    override fun addAdapter(index: Int, adapter: RecyclerView.Adapter<*>) {
+    override fun addAdapter(index: Int, adapter: androidx.recyclerview.widget.RecyclerView.Adapter<*>) {
         super.addAdapter(index, adapter)
 
         val subAdapterOffset = getSubAdapterFirstGlobalPosition(adapter)

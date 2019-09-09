@@ -19,16 +19,13 @@ package ch.deletescape.lawnchair.groups.ui
 
 import android.content.Context
 import android.os.Bundle
-import android.support.annotation.Keep
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Switch
 import android.widget.TextView
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.groups.AppGroupsManager
@@ -39,14 +36,14 @@ import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.fragment_app_categorization.*
 
 @Keep
-class AppCategorizationFragment : Fragment(), LawnchairPreferences.OnPreferenceChangeListener {
+class AppCategorizationFragment : androidx.fragment.app.Fragment(), LawnchairPreferences.OnPreferenceChangeListener {
 
     private val ourContext by lazy { activity as Context }
     private val prefs by lazy { ourContext.lawnchairPrefs }
     private val manager by lazy { prefs.appGroupsManager }
 
     private val accent by lazy { ColorEngine.getInstance(ourContext).accent }
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
     private var groupAdapter: AppGroupsAdapter<*, *>? = null
         set(value) {
             if (field != value) {
@@ -72,7 +69,7 @@ class AppCategorizationFragment : Fragment(), LawnchairPreferences.OnPreferenceC
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(ourContext)
+        recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(ourContext)
         setupEnableToggle(enableToggle)
         setupStyleSection()
     }

@@ -27,18 +27,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.Collections;
+
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedJoinedWeatherProvider;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Listener;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
-import java.util.Collections;
 
 public class WeatherCardRecyclerView extends RecyclerView implements Listener {
 

@@ -19,8 +19,8 @@ package ch.deletescape.lawnchair.views
 
 import android.content.Context
 import android.graphics.Canvas
-import android.support.v4.widget.NestedScrollView
-import android.support.v7.widget.RecyclerView.EdgeEffectFactory.DIRECTION_BOTTOM
+import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.RecyclerView.EdgeEffectFactory.DIRECTION_BOTTOM
 import android.util.AttributeSet
 import android.view.View
 import ch.deletescape.lawnchair.colors.ColorEngine
