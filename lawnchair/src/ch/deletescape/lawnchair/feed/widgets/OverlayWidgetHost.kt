@@ -101,16 +101,21 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         fun forceStyle() {
-            allChildren[0].apply {
-                if (background != null) {
-                    background = GradientDrawable(GradientDrawable.Orientation.BL_TR, intArrayOf(if (dark)
+            allChildren[0].let {
+                if (it.background != null) {
+                    it.background = GradientDrawable(GradientDrawable.Orientation.BL_TR, intArrayOf(if (dark)
                         R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context),
                             if (dark)
-                                R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context))).apply {
+                                R.color.qsb_background_dark.fromColorRes(context)
+                            else
+                                R.color.qsb_background.fromColorRes(context))).apply {
 
                     }.apply {
                         elevation = 16f.applyAsDip(context)
-                        cornerRadius = context.lawnchairPrefs.searchBarRadius
+                        cornerRadius = if (context.lawnchairPrefs.searchBarRadius < 1)
+                                it.measuredHeight.toFloat() / 2
+                            else
+                                context.lawnchairPrefs.searchBarRadius
                     }
                 }
                 background?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
