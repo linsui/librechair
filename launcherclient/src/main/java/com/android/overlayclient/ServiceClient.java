@@ -1,3 +1,23 @@
+/*
+ * Copyright (c) 2019 oldosfan.
+ * Copyright (c) 2019 the Lawnchair developers
+ *
+ *     This file is part of Librechair.
+ *
+ *     Librechair is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     Librechair is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package com.android.overlayclient;
 
 import android.app.Activity;
@@ -16,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
-public class LauncherClient implements OpenableOverscrollClient, DisconnectableOverscrollClient,
+public class ServiceClient implements OpenableOverscrollClient, DisconnectableOverscrollClient,
         SearchableOverscrollClient {
 
     private ILauncherOverlay overlay;
@@ -29,8 +49,8 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
     private int apiVersion;
     private ArrayList<Consumer<ILauncherOverlay>> overlayChangeListeners;
 
-    public LauncherClient(Activity boundActivity,
-                          ServiceFactory factory, OverlayCallback callback) {
+    public ServiceClient(Activity boundActivity,
+                         ServiceFactory factory, OverlayCallback callback, Runnable disconnectCallback) {
         this.boundActivity = boundActivity;
         this.factory = factory;
         this.apiVersion = factory.getApiVersion();
@@ -54,6 +74,7 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
                 acceptLayoutParams(params);
             }
             if (l3overlay == null) {
+                disconnectCallback.run();
                 new Handler(boundActivity.getMainLooper()).postDelayed(this::reconnect,
                         TimeUnit.SECONDS.toMillis(2));
             }
@@ -157,7 +178,7 @@ public class LauncherClient implements OpenableOverscrollClient, DisconnectableO
                 @Override
                 public void accept(ILauncherOverlay iLauncherOverlay) {
                     configure();
-                    synchronized (LauncherClient.this) {
+                    synchronized (ServiceClient.this) {
                         overlayChangeListeners.remove(this);
                     }
                 }
