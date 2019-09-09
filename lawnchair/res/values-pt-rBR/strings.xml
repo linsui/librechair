@@ -512,6 +512,10 @@
         <item>Você já olhou pra fora hoje?</item>
         <item>Tenha um ótimo dia!</item>
     </string-array>
+    <string-array name="greetings_evening">
+        <item>Boa noite!</item>
+        <item>Durma bem!</item>
+    </string-array>
     <string name="onbording_settings_title">Configurar %s</string>
     <string name="onbording_settings_summary">Pressione na sua tela inicial</string>
     <string name="onboarding_swipe_up">Deslize pra cima pra ver todos os seus aplicativos</string>
@@ -530,13 +534,4 @@
     <string name="pref_weather_icon_pack">Ícones de clima</string>
     <string name="weather_icon_packs_not_supported">Não suportado pelo serviço atual de meteorologia</string>
     <string name="lawnchair_settings">Config. do Lawnchair</string>
-    <string-array name="greetings_evening">
-        <item>Boa noite!</item>
-        <item>Durma bem!</item>
-        <item>Te vejo amanhã!</item>
-        <item>Bons sonhos!</item>
-        <item>Não fique acordado até tarde</item>
-        <item>Como foi seu dia?</item>
-        <item>O que você fez hoje?</item>
-    </string-array>
 </resources>

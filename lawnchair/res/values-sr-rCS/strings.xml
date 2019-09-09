@@ -496,6 +496,16 @@
     <string name="zen_mode_enabled">Uključen je režim „Ne uznemiravaj”</string>
     <string name="crash_report_notif_title">%1$s je otkazao!</string>
     <string name="personality_provider">Kontekstualne poruke</string>
+    <string-array name="greetings_morning">
+        <item>Dobro jutro!</item>
+        <item>Kakav divan dan!</item>
+        <item>Jeste li bili napolju?</item>
+        <item>Uživajte u današnjem danu!</item>
+    </string-array>
+    <string-array name="greetings_evening">
+        <item>Laku noć!</item>
+        <item>Lepo spavaj!</item>
+    </string-array>
     <string name="onbording_settings_title">Podesi %s</string>
     <string name="onbording_settings_summary">Pritisnite i zadržite početni ekran</string>
     <string name="onboarding_swipe_up">Prevucite nagore da biste videli sve aplikacije</string>
@@ -510,19 +520,8 @@
     <string name="web_search_baidu">Baidu (veb)</string>
     <string name="icon_shape_override_miui_explaination">Zbog ograničenja sistema MIUI, oblik ikona možda ostane kvadratni.\nNe prijavljujte ovo kao grešku.</string>
     <string name="button_organize_screens">Organizuj ekrane</string>
-    <string-array name="greetings_morning">
-        <item>Dobro jutro!</item>
-        <item>Kakav divan dan!</item>
-        <item>Jeste li bili napolju?</item>
-        <item>Uživajte u današnjem danu!</item>
-    </string-array>
-    <string-array name="greetings_evening">
-        <item>Laku noć!</item>
-        <item>Lepo spavaj!</item>
-        <item>Vidimo se sutra!</item>
-        <item>Želim vam lepe snove!</item>
-        <item>Lezite na vreme</item>
-        <item>Kako vam je prošao dan?</item>
-        <item>Šta ste radili danas?</item>
-    </string-array>
+    <string name="weather_icons_default">Podrazumevano</string>
+    <string name="pref_weather_icon_pack">Ikone vremenskih prilika</string>
+    <string name="weather_icon_packs_not_supported">Trenutni izvor vremenske prognoze ne podržava</string>
+    <string name="lawnchair_settings">Podešavanja Lawnchaira</string>
 </resources>

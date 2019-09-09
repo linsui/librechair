@@ -14,7 +14,7 @@
     <string name="search">Sök</string>
     <string name="label_voice_search">Röstsökning</string>
     <string name="icon_pack">Ikonpaket</string>
-    <string name="home_widget">Hemwidget</string>
+    <string name="home_widget">Hemskärmswidget</string>
     <string name="title_show_google_app">%1$s till vänster</string>
     <string name="msg_minus_one_on_left">Flöde till vänster om skrivbordet</string>
     <string name="smartspace_preferences_in_settings">At a Glance</string>
@@ -80,7 +80,7 @@
     <string name="debug_component_name">Komponentnamn</string>
     <string name="debug_component_name_copied">Kopierad</string>
     <string name="restart_lawnchair_pref_summary">Tillämpa inställningar igen</string>
-    <string name="local_backups">Säkerhetskopieringar på enheten</string>
+    <string name="local_backups">Säkerhetskopior på enheten</string>
     <string name="read_external_storage_required">Tillåt åtkomst till lagring för att spara säkerhetskopian</string>
     <string name="grid_size_height">Höjd</string>
     <string name="grid_size_width">Bredd</string>
@@ -521,10 +521,9 @@
     <string-array name="greetings_evening">
         <item>Godnatt!</item>
         <item>Sov gott!</item>
-        <item>Ses imorgon!</item>
-        <item>Dröm sött!</item>
-        <item>Stanna inte uppe för länge</item>
-        <item>Hur var din dag?</item>
-        <item>Vad har du gjort idag?</item>
     </string-array>
+    <string name="weather_icons_default">Standard</string>
+    <string name="pref_weather_icon_pack">Väderikoner</string>
+    <string name="weather_icon_packs_not_supported">Stöds inte av din nuvarande väderleverantör</string>
+    <string name="lawnchair_settings">Lawnchair-inställningar</string>
 </resources>

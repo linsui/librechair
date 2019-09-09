@@ -505,6 +505,16 @@
     <string name="zen_mode_enabled">Укључен је режим „Не узнемиравај”</string>
     <string name="crash_report_notif_title">%1$s је отказао!</string>
     <string name="personality_provider">Контекстуалне поруке</string>
+    <string-array name="greetings_morning">
+        <item>Добро јутро!</item>
+        <item>Какав диван дан!</item>
+        <item>Јесте ли били напољу?</item>
+        <item>Уживајте у данашњем дану!</item>
+    </string-array>
+    <string-array name="greetings_evening">
+        <item>Лаку ноћ!</item>
+        <item>Лепо спавај!</item>
+    </string-array>
     <string name="onbording_settings_title">Подеси %s</string>
     <string name="onbording_settings_summary">Притисните и задржите почетни екран</string>
     <string name="onboarding_swipe_up">Превуците нагоре да бисте видели све апликације</string>
@@ -519,19 +529,8 @@
     <string name="web_search_baidu">Baidu (веб)</string>
     <string name="icon_shape_override_miui_explaination">Због ограничења система MIUI, облик икона можда остане квадратни.\nНе пријављујте ово као грешку.</string>
     <string name="button_organize_screens">Организуј екране</string>
-    <string-array name="greetings_morning">
-        <item>Добро јутро!</item>
-        <item>Какав диван дан!</item>
-        <item>Јесте ли били напољу?</item>
-        <item>Уживајте у данашњем дану!</item>
-    </string-array>
-    <string-array name="greetings_evening">
-        <item>Лаку ноћ!</item>
-        <item>Лепо спавај!</item>
-        <item>Видимо се сутра!</item>
-        <item>Желим вам лепе снове!</item>
-        <item>Лезите на време</item>
-        <item>Како вам је прошао дан?</item>
-        <item>Шта сте радили данас?</item>
-    </string-array>
+    <string name="weather_icons_default">Подразумевано</string>
+    <string name="pref_weather_icon_pack">Иконе временских прилика</string>
+    <string name="weather_icon_packs_not_supported">Тренутни извор временске прогнозе не подржава</string>
+    <string name="lawnchair_settings">Подешавања Lawnchair-а</string>
 </resources>

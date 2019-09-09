@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<?xml version="1.0" encoding="UTF-8"?><!--
 /*
 * Copyright (C) 2008 The Android Open Source Project
 *
@@ -17,8 +16,7 @@
 */
  -->
 
-<resources xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name" msgid="649227358658669779">"Launcher3"</string>
     <string name="folder_name" msgid="7371454440695724752"></string>
     <string name="work_folder_name" msgid="3753320833950115786">"업무"</string>
@@ -65,8 +63,8 @@
     <string name="folder_hint_text" msgid="6617836969016293992">"이름이 없는 폴더"</string>
     <string name="disabled_app_label" msgid="6673129024321402780">"<xliff:g id="APP_NAME">%1$s</xliff:g> 사용 안함"</string>
     <plurals name="badged_app_label" formatted="false" msgid="7948068486082879291">
-      <item quantity="other"><xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g>개의 <xliff:g id="APP_NAME_2">%1$s</xliff:g> 알림 있음</item>
-      <item quantity="one"><xliff:g id="NOTIFICATION_COUNT_1">%2$d</xliff:g>개의 <xliff:g id="APP_NAME_0">%1$s</xliff:g> 알림 있음</item>
+        <item quantity="other"><xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g>개의 <xliff:g id="APP_NAME_2">%1$s</xliff:g> 알림 있음</item>
+        <item quantity="one"><xliff:g id="NOTIFICATION_COUNT_1">%2$d</xliff:g>개의 <xliff:g id="APP_NAME_0">%1$s</xliff:g> 알림 있음</item>
     </plurals>
     <string name="default_scroll_format" msgid="7475544710230993317">"페이지 %1$d/%2$d"</string>
     <string name="workspace_scroll_format" msgid="8458889198184077399">"홈 화면 %1$d/%2$d"</string>
@@ -149,8 +147,8 @@
     <string name="msg_disable_suggestions_prompt">추천사항이 앱 목록 상단에 표시되지 않으며 추천에 반영된 사용 데이터는 영구 삭제됩니다.</string>
     <string name="label_turn_off_suggestions">사용 중지</string>
     <string name="action_edit">편집</string>
-  <string name="hide_app_sum">앱 서랍에서 앱 숨기기</string>
-  <string name="hide_app">앱 숨기기</string>
+    <string name="hide_app_sum">앱 서랍에서 앱 숨기기</string>
+    <string name="hide_app">앱 숨기기</string>
     <string name="icon_shape_rounded_square">모서리가 둥근 정사각형</string>
     <string name="smartspace_hours_mins">%1$s %2$s</string>
     <string name="week_day_format">%2$s %1$s</string>

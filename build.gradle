@@ -48,6 +48,9 @@ if (localPropsFile.exists()) {
     localProps.load(localPropsFile.newDataInputStream())
 }
 
+def publicBranches = ["alpha", "beta"]
+def ciBuild = localProps.getProperty("ciBuild") == "true" || System.getenv("CI_BUILD") == "true"
+def isPublicBuild = localProps.getProperty("public") == "true" || (ciBuild && publicBranches.contains(System.getenv("DRONE_BRANCH")))
 configurations.all {
     resolutionStrategy.eachDependency { details ->
         if (details.requested.group == 'com.android.support') {
@@ -65,8 +68,6 @@ def getGitHash = { ->
     return stdout.toString().trim()
 }
 
-def isPublicBuild = System.getenv("CI_BUILD") == "true" && System.getenv("DRONE_BRANCH") == "alpha"
-
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -83,18 +84,21 @@ android {
     signingConfigs {
         ci {
             storeFile file("debug.jks")
-            storePassword System.getenv("STORE_PASSWORD")
+            storePassword localProps.getProperty("storePass") ?: System.getenv("STORE_PASSWORD")
             keyAlias "Lawnchair"
-            keyPassword System.getenv("KEY_PASSWORD")
+            keyPassword localProps.getProperty("keyPass") ?:System.getenv("KEY_PASSWORD")
         }
     }
     defaultConfig {
         minSdkVersion 26
         targetSdkVersion 29
 
-        if (System.getenv("CI_BUILD") == "true") {
-            versionCode = Integer.valueOf(System.getenv("CI_BUILD_NUMBER"))
-            versionName = System.getenv("MAJOR_MINOR") + (System.getenv("DRONE") ? "-" : ".") + System.getenv("CI_BUILD_NUMBER")
+        if (ciBuild) {
+            def ciBuildNumber = localProps.getProperty("buildNumber") ?: System.getenv("CI_BUILD_NUMBER")
+            versionCode = Integer.valueOf(ciBuildNumber)
+            def majorMinor = localProps.getProperty("majorMinor") ?: System.getenv("MAJOR_MINOR")
+            def drone = localProps.getProperty("public") == "true" || System.getenv("DRONE")
+            versionName = majorMinor + (drone ? "-" : ".") + ciBuildNumber
         } else {
             versionCode 2
             versionName getGitHash()
@@ -122,13 +126,13 @@ android {
         buildConfigField "String", "ACCUWEATHER_KEY", accuWeatherKey
 
         ndk {
-            abiFilters "armeabi-v7a", "x86", "arm64-v8a"
+            abiFilters "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
         }
     }
     buildTypes {
         debug {
             minifyEnabled false
-            if (System.getenv("CI_BUILD") == "true") {
+            if (ciBuild) {
                 if (System.getenv("CI_EVENT_TYPE") != "pull_request") {
                     signingConfig signingConfigs.ci
                 }
@@ -145,7 +149,7 @@ android {
              */
             initWith debug
             minifyEnabled false
-            if (System.getenv("CI_BUILD") == "true") {
+            if (ciBuild) {
                 if (System.getenv("CI_EVENT_TYPE") != "pull_request") {
                     signingConfig signingConfigs.ci
                 }
@@ -157,7 +161,7 @@ android {
              * LIBRE_CHANGED: Proguard minification gets in the way of audits and reverse-engineering
              */
             minifyEnabled false
-            if (System.getenv("CI_BUILD") == "true") {
+            if (ciBuild) {
                 if (System.getenv("CI_EVENT_TYPE") != "pull_request") {
                     signingConfig signingConfigs.ci
                 }
@@ -223,7 +227,7 @@ android {
         ci {
             dimension "build"
             applicationIdSuffix ".ci"
-            versionNameSuffix "-ci-" + System.getenv("DRONE_BRANCH")
+            versionNameSuffix "-ci-" + (localProps.getProperty("branch") ?: System.getenv("DRONE_BRANCH"))
 
             buildConfigField "boolean", "SIGNATURE_VERIFICATION", "true"
         }
@@ -355,7 +359,7 @@ dependencies {
     implementation 'com.github.KwabenBerko:OpenWeatherMap-Android-Library:2.0.1'
     implementation 'net.aksingh:owm-japis:2.5.3.0'
     implementation 'com.github.LawnchairLauncher:chroma:1.2.6'
-    implementation 'com.github.LawnchairLauncher:hoko-lite:0e21db9ae5'
+    implementation 'com.github.LawnchairLauncher:hoko-lite:4e0d797'
     implementation('com.github.LawnchairLauncher:attribouter-y:0.1.6') {
         // The "MaterialButton" styleable defines an attr named iconSize which breaks compatibility with our source base
         exclude group: 'com.android.support', module: 'design'
@@ -385,10 +389,8 @@ dependencies {
 
     if (!isPublicBuild) {
         // TODO: update to 2.x when we're on AndroidX
-        debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-        debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
-        optimizedImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-        optimizedImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
+        implementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+        implementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
     } else {
         implementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
     }
