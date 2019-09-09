@@ -39,9 +39,11 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.graphics.Palette
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.TypedValue
 import android.view.*
-import android.widget.*
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toolbar
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
@@ -833,17 +835,19 @@ class LauncherFeed(val originalContext: Context,
                                 }
                             }
                         }
-                        d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
-                        if (lastOrientation != context.resources.configuration.orientation) {
-                            if (horizontalBackground != null && verticalBackground != null) {
-                                feedController.background =
-                                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
-                            }
-                            lastOrientation = context.resources.configuration.orientation
-                        }
                     }
+                    d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
+                    if (lastOrientation != context.resources.configuration.orientation) {
+                        if (horizontalBackground != null && verticalBackground != null) {
+                            feedController.background =
+                                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                        }
+                        lastOrientation = context.resources.configuration.orientation
+                    }
+                    feedController.visibility = View.VISIBLE
                     windowService.addView(feedController, layoutParams)
                 } else {
+                    feedController.visibility = View.INVISIBLE
                     feedController.alpha = 0f
                     windowService.removeView(feedController)
                 }

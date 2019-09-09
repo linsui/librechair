@@ -134,7 +134,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             mFeedBackground!!.translationX = (-1 + mProgress) * shiftRange
             mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
         } else {
-            mFeedBackground!!.animate().alpha(mProgress).duration = 0
+            mFeedBackground!!.alpha = progress
             mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
         }
     }
