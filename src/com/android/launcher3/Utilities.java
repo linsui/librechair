@@ -78,19 +78,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.HiddenApiCompat;
-import ch.deletescape.lawnchair.LawnchairAppKt;
-import ch.deletescape.lawnchair.LawnchairLauncher;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
-import ch.deletescape.lawnchair.feed.impl.OverlayService;
-import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.LauncherIcons;
 import com.android.launcher3.uioverrides.OverviewState;
 import com.android.launcher3.util.PackageManagerHelper;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -107,6 +102,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import ch.deletescape.lawnchair.HiddenApiCompat;
+import ch.deletescape.lawnchair.LawnchairAppKt;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
+import ch.deletescape.lawnchair.feed.impl.OverlayService;
+import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -125,7 +128,7 @@ public final class Utilities {
     private static final Matrix sInverseMatrix = new Matrix();
 
     public static final boolean ATLEAST_Q = Build.VERSION.CODENAME.length() == 1 &&
-            Build.VERSION.CODENAME.charAt(0) >= 'Q' && Build.VERSION.CODENAME.charAt(0) <= 'Z';
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
 
     public static final boolean ATLEAST_P =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;

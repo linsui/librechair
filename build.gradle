@@ -73,7 +73,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.protobuf'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
     packagingOptions {
