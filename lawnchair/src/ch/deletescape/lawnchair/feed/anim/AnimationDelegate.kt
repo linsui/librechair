@@ -32,10 +32,12 @@ interface AnimationDelegate {
                 clazz.constructors.first { it.parameters.isEmpty() }.call()
 
         val allDelegates =
-                listOf<KClass<out AnimationDelegate>>(DefaultFeedTransitionDelegate::class)
+                listOf(DefaultFeedTransitionDelegate::class,
+                       SlidingFeedTransitionDelegate::class)
         val delegateNames =
-                mapOf<KClass<out AnimationDelegate>, Int>(DefaultFeedTransitionDelegate::class to
-                        R.string.title_animation_delegate_default)
+                mapOf(
+                        DefaultFeedTransitionDelegate::class to R.string.title_animation_delegate_default,
+                        SlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_slide)
     }
 }
 
