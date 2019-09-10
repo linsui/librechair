@@ -56,10 +56,12 @@ package ch.deletescape.lawnchair.flights;
 
 import com.android.launcher3.Utilities;
 import com.google.gson.Gson;
+
 import java.io.Serializable;
+
 import kotlin.jvm.functions.Function2;
 
-public class Flight implements Serializable  {
+public class Flight implements Serializable {
     public String legs;
     public String formattedName;
     public String electronic;
