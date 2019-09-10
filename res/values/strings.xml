@@ -653,5 +653,6 @@
     <string name="title_pref_feed_animation">Opening animation</string>
     <string name="title_animation_delegate_slide">Slide</string>
     <string name="title_animation_delegate_fading">Fading</string>
-    <string name="title_animation_delegate_slide_top">Slide from top</string>
+    <string name="title_animation_delegate_slide_top">Slide down</string>
+    <string name="title_animation_delegate_slide_up">Slide up</string>
 </resources>
