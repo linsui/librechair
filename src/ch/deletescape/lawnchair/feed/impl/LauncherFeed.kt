@@ -34,17 +34,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabLayout
-import androidx.core.graphics.ColorUtils
-import androidx.palette.graphics.Palette
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toolbar
+import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
@@ -61,6 +56,8 @@ import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlin.math.hypot
@@ -83,6 +80,7 @@ class LauncherFeed(val originalContext: Context,
     init {
         d("init: dark ${dark}")
     }
+    private var lastScroll = 0f
 
     private var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
@@ -134,7 +132,7 @@ class LauncherFeed(val originalContext: Context,
                 value.dark = dark
                 value.shouldForceStyle = context.lawnchairPrefs.feedToolbarWidgetForceStyle
                 if (value.shouldForceStyle) {
-                    value.forceStyle();
+                    value.forceStyle()
                 }
             }
         }
@@ -689,9 +687,10 @@ class LauncherFeed(val originalContext: Context,
 
             upButton.supportImageTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
         }
-        if (reinit) {
+        if (reinit && lastScroll != 0f) {
             startScroll()
-            feedController.onScroll(1f)
+            feedController.onScroll(lastScroll)
+            callback?.overlayScrollChanged(lastScroll)
             feedAttached = true
         }
         tabView.isInlineLabel = context.lawnchairPrefs.feedHorizontalTabs
@@ -918,7 +917,10 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun onScroll(progress: Float) {
-        handler.post { feedController.onScroll(progress) }
+        handler.post {
+            lastScroll = progress
+            feedController.onScroll(progress)
+        }
     }
 
     override fun endScroll() {
