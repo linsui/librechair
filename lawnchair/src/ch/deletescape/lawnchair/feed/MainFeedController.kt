@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
+import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
@@ -71,6 +72,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_remote_feeds)
                     WikipediaNewsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news)
+                    ItnSyndicationProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_wikipedia_news_synd)
                     WikipediaFunFactsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_fun_facts)
                     WikinewsFeedProvider::class.qualifiedName -> context.getString(
@@ -148,6 +151,7 @@ class MainFeedController(val context: Context) {
                     NoteListProvider::class.qualifiedName,
                     WeatherBarFeedProvider::class.qualifiedName,
                     WikipediaNewsProvider::class.qualifiedName,
+                    ItnSyndicationProvider::class.qualifiedName,
                     WikipediaFunFactsProvider::class.qualifiedName,
                     WikinewsFeedProvider::class.qualifiedName,
                     TheGuardianFeedProvider::class.qualifiedName,

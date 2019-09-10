@@ -1,15 +1,11 @@
 package ch.deletescape.lawnchair.feed.wikipedia.news;
 
-import android.util.Pair;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -45,6 +41,7 @@ public final class News {
                     JsonObject newsItem = jsonElement.getAsJsonObject();
                     JsonObject links = newsItem.getAsJsonArray("links").get(0).getAsJsonObject();
                     NewsItem item = new NewsItem();
+                    item.title = links.getAsJsonPrimitive("displaytitle").getAsString();
                     item.contentUrl = links.getAsJsonObject("content_urls").getAsJsonObject(
                             "desktop").getAsJsonPrimitive("page").getAsString();
                     item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
@@ -61,6 +58,17 @@ public final class News {
                 e.printStackTrace();
             }
         });
+    }
+
+    @NotNull
+    public static synchronized List<NewsItem> requireEntries() {
+        if (currentItem != null) {
+            return currentItem;
+        } else {
+            requestRefresh();
+            while (currentItem == null);
+            return currentItem;
+        }
     }
 
     public static synchronized void addListener(Consumer<List<NewsItem>> consumer) {

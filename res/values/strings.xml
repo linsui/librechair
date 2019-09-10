@@ -396,7 +396,8 @@
     <string name="title_feed_provider_calendar">Calendar</string>
     <string name="title_feed_provider_weather">Weather (legacy)</string>
     <string name="title_feed_provider_forecast">Forecast</string>
-    <string name="title_feed_provider_wikipedia_news">In the news</string>
+    <string name="title_feed_provider_wikipedia_news">In the news (legacy)</string>
+    <string name="title_feed_provider_wikipedia_news_synd">In the news</string>
     <string name="title_preference_feed_providers">Feed providers</string>
     <string name="title_preference_init_leak_canary">LeakCanary debugging</string>
     <string name="title_preference_swipe_feed">Swipe left for feed</string>
