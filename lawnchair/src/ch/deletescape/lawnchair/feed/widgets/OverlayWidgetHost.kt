@@ -182,7 +182,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageDrawable(processDrawable(it.drawable, it.context, R.color.primary_text_material_light.fromColorRes(it.context)))
+                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_light.fromColorRes(it.context)))
                         }
                         Unit
                     }
@@ -197,7 +197,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageDrawable(processDrawable(it.drawable, it.context, R.color.primary_text_material_dark.fromColorRes(it.context)))
+                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_dark.fromColorRes(it.context)))
                         }
                         Unit
                     }
@@ -205,7 +205,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
 
             val SUBST_MASK = arrayOf(3, 3, 3)
 
-            fun processDrawable(drawable: Drawable, c: Context, color: Int): Drawable {
+            fun processDrawable(drawable: Drawable, c: Context, color: Int): Bitmap {
                 val src = drawable.toBitmap()!!
                 val bitmap = Bitmap.createBitmap(
                         src.width,
@@ -242,7 +242,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     }
                 }
 
-                return bitmap.toDrawable(c)
+                return bitmap
             }
         }
     }
