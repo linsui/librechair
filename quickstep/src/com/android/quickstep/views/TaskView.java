@@ -16,15 +16,13 @@
 
 package com.android.quickstep.views;
 
-import static android.widget.Toast.LENGTH_SHORT;
-import static com.android.quickstep.views.TaskThumbnailView.DIM_ALPHA_MULTIPLIER;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Outline;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +35,7 @@ import android.view.ViewOutlineProvider;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
 import com.android.launcher3.BaseActivity;
 import com.android.launcher3.BaseDraggingActivity;
 import com.android.launcher3.R;
@@ -51,7 +50,12 @@ import com.android.systemui.shared.recents.model.Task;
 import com.android.systemui.shared.recents.model.Task.TaskCallbacks;
 import com.android.systemui.shared.recents.model.ThumbnailData;
 import com.android.systemui.shared.system.ActivityManagerWrapper;
+
 import java.util.function.Consumer;
+
+import static android.widget.Toast.LENGTH_SHORT;
+import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
+import static com.android.quickstep.views.TaskThumbnailView.DIM_ALPHA_MULTIPLIER;
 
 /**
  * A task in the Recents view.
@@ -91,11 +95,61 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
                 }
             };
 
+    public static final FloatProperty<TaskView> FULLSCREEN_PROGRESS =
+            new FloatProperty<TaskView>("fullscreenProgress") {
+                @Override
+                public void setValue(TaskView taskView, float v) {
+                    taskView.setFullscreenProgress(v);
+                }
+
+                @Override
+                public Float get(TaskView taskView) {
+                    return taskView.mFullscreenProgress;
+                }
+            };
+
+    private static final FloatProperty<TaskView> FOCUS_TRANSITION =
+            new FloatProperty<TaskView>("focusTransition") {
+                @Override
+                public void setValue(TaskView taskView, float v) {
+                    taskView.setIconAndDimTransitionProgress(v);
+                }
+
+                @Override
+                public Float get(TaskView taskView) {
+                    return taskView.mFocusTransitionProgress;
+                }
+            };
+
+    static final Intent SEE_TIME_IN_APP_TEMPLATE =
+            new Intent("com.android.settings.action.TIME_SPENT_IN_APP");
+
+    private final OnAttachStateChangeListener mTaskMenuStateListener =
+            new OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View view) {
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View view) {
+                    if (mMenuView != null) {
+                        mMenuView.removeOnAttachStateChangeListener(this);
+                        mMenuView = null;
+                    }
+                }
+            };
+
     private Task mTask;
     private TaskThumbnailView mSnapshotView;
+    private TaskMenuView mMenuView;
     private IconView mIconView;
     private float mCurveScale;
     private float mZoomScale;
+    private float mFullscreenProgress;
+
+    private Animator mIconAndDimAnimator;
+    private float mFocusTransitionProgress = 1;
+
     private Animator mDimAlphaAnim;
 
     public TaskView(Context context) {
@@ -193,6 +247,16 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
         mIconView.setOnLongClickListener(null);
     }
 
+
+    private void setIconAndDimTransitionProgress(float progress) {
+        mFocusTransitionProgress = progress;
+        mSnapshotView.setDimAlphaMultipler(progress);
+        float scale = FAST_OUT_SLOW_IN.getInterpolation(Utilities.boundToRange(
+                progress * DIM_ANIM_DURATION / SCALE_ICON_DURATION, 0, 1));
+        mIconView.setScaleX(scale);
+        mIconView.setScaleY(scale);
+    }
+
     @Override
     public void onTaskWindowingModeChanged() {
         // Do nothing
@@ -229,6 +293,10 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
         setTranslationZ(0);
         setAlpha(1f);
         setIconScaleAndDim(1);
+        if (!getRecentsView().getQuickScrubController().isQuickSwitch()) {
+            // Reset full screen progress unless we are doing back to back quick switch.
+            setFullscreenProgress(0);
+        }
     }
 
     @Override
@@ -362,5 +430,25 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
         }
         Log.w(tag, msg);
         Toast.makeText(getContext(), R.string.activity_not_available, LENGTH_SHORT).show();
+    }
+
+    /**
+     * Hides the icon and shows insets when this TaskView is about to be shown fullscreen.
+     * @param progress: 0 = show icon and no insets; 1 = don't show icon and show full insets.
+     */
+    public void setFullscreenProgress(float progress) {
+        if (progress == mFullscreenProgress) {
+            return;
+        }
+        mFullscreenProgress = progress;
+        boolean isFullscreen = mFullscreenProgress > 0;
+        mIconView.setVisibility(isFullscreen ? INVISIBLE : VISIBLE);
+        setClipChildren(!isFullscreen);
+        setClipToPadding(!isFullscreen);
+        getThumbnail().invalidate();
+    }
+
+    public float getFullscreenProgress() {
+        return mFullscreenProgress;
     }
 }

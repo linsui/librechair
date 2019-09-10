@@ -71,6 +71,13 @@ public class QuickScrubController implements OnAlarmListener {
     private Runnable mOnFinishedTransitionToQuickScrubRunnable;
     private ActivityControlHelper mActivityControlHelper;
 
+    private boolean mIsQuickSwitch;
+    private float mStartProgress;
+    private float mEndProgress;
+    private float mPrevProgressDelta;
+    private float mPrevPrevProgressDelta;
+    private boolean mShouldSwitchToNext;
+
     public QuickScrubController(BaseActivity activity, RecentsView recentsView) {
         mActivity = activity;
         mRecentsView = recentsView;
@@ -88,14 +95,18 @@ public class QuickScrubController implements OnAlarmListener {
         mFinishedTransitionToQuickScrub = false;
         mActivityControlHelper = controlHelper;
 
-        /* TODO: reimplement this
-        if (startingFromHome) {
-            ScrimView scrim = mActivity.findViewById(R.id.scrim_view);
-            if (scrim != null) {
-                scrim.hide();
+        if (mIsQuickSwitch) {
+            mShouldSwitchToNext = true;
+            mPrevProgressDelta = 0;
+            TaskView runningTaskView = mRecentsView.getRunningTaskView();
+            TaskView nextTaskView = mRecentsView.getNextTaskView();
+            if (runningTaskView != null) {
+                runningTaskView.setFullscreenProgress(1);
+            }
+            if (nextTaskView != null) {
+                nextTaskView.setFullscreenProgress(1);
             }
         }
-        */
 
         snapToNextTaskIfAvailable();
         mActivity.getUserEventDispatcher().resetActionDurationMillis();
@@ -121,6 +132,18 @@ public class QuickScrubController implements OnAlarmListener {
                                 TaskUtils.getLaunchComponentKeyForTask(taskView.getTask().key));
                     }
                     mWaitingForTaskLaunch = false;
+                    if (mIsQuickSwitch) {
+                        mIsQuickSwitch = false;
+                        TaskView runningTaskView = mRecentsView.getRunningTaskView();
+                        TaskView nextTaskView = mRecentsView.getNextTaskView();
+                        if (runningTaskView != null) {
+                            runningTaskView.setFullscreenProgress(0);
+                        }
+                        if (nextTaskView != null) {
+                            nextTaskView.setFullscreenProgress(0);
+                        }
+                    }
+
                 }, taskView.getHandler());
             } else {
                 breakOutOfQuickScrub();
@@ -181,6 +204,40 @@ public class QuickScrubController implements OnAlarmListener {
     }
 
     public void onQuickScrubProgress(float progress) {
+        if (mIsQuickSwitch) {
+            TaskView currentPage = mRecentsView.getRunningTaskView();
+            TaskView nextPage = mRecentsView.getNextTaskView();
+            if (currentPage == null || nextPage == null) {
+                return;
+            }
+            if (!mFinishedTransitionToQuickScrub || mStartProgress <= 0) {
+                mStartProgress = mEndProgress = progress;
+            } else {
+                float progressDelta = progress - mEndProgress;
+                mEndProgress = progress;
+                progress = Utilities.boundToRange(progress, mStartProgress, 1);
+                progress = Utilities.mapToRange(progress, mStartProgress, 1, 0, 1, Interpolators.LINEAR);
+                if (mInQuickScrub) {
+                    mShouldSwitchToNext = mPrevProgressDelta > 0.007f || progressDelta > 0.007f
+                            || progress >= 0.5f;
+                }
+                mPrevPrevProgressDelta = mPrevProgressDelta;
+                mPrevProgressDelta = progressDelta;
+                float scrollDiff = nextPage.getWidth() + mRecentsView.getPageSpacing();
+                int scrollDir = mRecentsView.isRtl() ? -1 : 1;
+                int linearScrollDiff = (int) (progress * scrollDiff * scrollDir);
+                float accelScrollDiff = Interpolators.ACCEL.getInterpolation(progress) * scrollDiff * scrollDir;
+                currentPage.setZoomScale(1 - Interpolators.DEACCEL_1_5.getInterpolation(progress)
+                        * TaskView.EDGE_SCALE_DOWN_FACTOR);
+                currentPage.setTranslationX(linearScrollDiff + accelScrollDiff);
+                nextPage.setTranslationZ(1);
+                nextPage.setTranslationY(currentPage.getTranslationY());
+                int startScroll = mRecentsView.isRtl() ? mRecentsView.getMaxScrollX() : 0;
+                mRecentsView.setScrollX(startScroll + linearScrollDiff);
+            }
+            return;
+        }
+
         int quickScrubSection = 0;
         for (float threshold : QUICK_SCRUB_THRESHOLDS) {
             if (progress < threshold) {
@@ -231,13 +288,13 @@ public class QuickScrubController implements OnAlarmListener {
     }
 
     private void goToPageWithHaptic(int pageToGoTo, int overrideDuration, boolean forceHaptic,
-            Interpolator interpolator) {
+                                    Interpolator interpolator) {
         pageToGoTo = Utilities.boundToRange(pageToGoTo, 0, mRecentsView.getTaskViewCount() - 1);
         boolean snappingToPage = pageToGoTo != mRecentsView.getNextPage();
         if (snappingToPage) {
             int duration = overrideDuration > -1 ? overrideDuration
                     : Math.abs(pageToGoTo - mRecentsView.getNextPage())
-                            * QUICKSCRUB_SNAP_DURATION_PER_PAGE;
+                    * QUICKSCRUB_SNAP_DURATION_PER_PAGE;
             mRecentsView.snapToPage(pageToGoTo, duration, interpolator);
         }
         if (snappingToPage || forceHaptic) {

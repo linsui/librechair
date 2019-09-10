@@ -94,6 +94,8 @@ public class TaskThumbnailView extends View implements
     private final Matrix mMatrix = new Matrix();
 
     private float mClipBottom = -1;
+    private Rect mScaledInsets = new Rect();
+    private boolean mIsRotated;
 
     private Task mTask;
     private ThumbnailData mThumbnailData;
@@ -166,7 +168,7 @@ public class TaskThumbnailView extends View implements
 
     /**
      * Sets the alpha of the dim layer on top of this view.
-     *
+     * <p>
      * If dimAlpha is 0, no dimming is applied; if dimAlpha is 1, the thumbnail will be black.
      */
     public void setDimAlpha(float dimAlpha) {
@@ -201,7 +203,22 @@ public class TaskThumbnailView extends View implements
 
     @Override
     protected void onDraw(Canvas canvas) {
-        drawOnCanvas(canvas, 0, 0, getMeasuredWidth(), getMeasuredHeight(), mCornerRadius);
+        float fullscreenProgress = ((TaskView) getParent()).getFullscreenProgress();
+        if (mIsRotated) {
+            // Don't show insets in the wrong orientation.
+            fullscreenProgress = 0;
+        }
+        if (fullscreenProgress > 0) {
+            // Draw the insets if we're being drawn fullscreen (we do this for quick switch).
+            drawOnCanvas(canvas,
+                    -mScaledInsets.left * fullscreenProgress,
+                    -mScaledInsets.top * fullscreenProgress,
+                    getMeasuredWidth() + mScaledInsets.right * fullscreenProgress,
+                    getMeasuredHeight() + mScaledInsets.bottom * fullscreenProgress,
+                    mCornerRadius);
+        } else {
+            drawOnCanvas(canvas, 0, 0, getMeasuredWidth(), getMeasuredHeight(), mCornerRadius);
+        }
     }
 
     public float getCornerRadius() {
@@ -244,11 +261,11 @@ public class TaskThumbnailView extends View implements
     }
 
     private void updateThumbnailMatrix() {
-        boolean rotate = false;
+        mIsRotated = false;
         mClipBottom = -1;
         if (mBitmapShader != null && mThumbnailData != null) {
             float scale = mThumbnailData.scale;
-            Rect thumbnailInsets  = mThumbnailData.insets;
+            Rect thumbnailInsets = mThumbnailData.insets;
             final float thumbnailWidth = mThumbnailData.thumbnail.getWidth() -
                     (thumbnailInsets.left + thumbnailInsets.right) * scale;
             final float thumbnailHeight = mThumbnailData.thumbnail.getHeight() -
@@ -265,17 +282,17 @@ public class TaskThumbnailView extends View implements
                 final Configuration configuration =
                         getContext().getResources().getConfiguration();
                 // Rotate the screenshot if not in multi-window mode
-                rotate = FeatureFlags.OVERVIEW_USE_SCREENSHOT_ORIENTATION &&
+                mIsRotated = FeatureFlags.OVERVIEW_USE_SCREENSHOT_ORIENTATION &&
                         configuration.orientation != mThumbnailData.orientation &&
                         !mActivity.isInMultiWindowModeCompat() &&
                         mThumbnailData.windowingMode == WINDOWING_MODE_FULLSCREEN;
                 // Scale the screenshot to always fit the width of the card.
-                thumbnailScale = rotate
+                thumbnailScale = mIsRotated
                         ? getMeasuredWidth() / thumbnailHeight
                         : getMeasuredWidth() / thumbnailWidth;
             }
 
-            if (rotate) {
+            if (mIsRotated) {
                 int rotationDir = profile.isVerticalBarLayout() && !profile.isSeascape() ? -1 : 1;
                 mMatrix.setRotate(90 * rotationDir);
                 int newLeftInset = rotationDir == 1 ? thumbnailInsets.bottom : thumbnailInsets.top;
@@ -299,7 +316,7 @@ public class TaskThumbnailView extends View implements
             mMatrix.postScale(thumbnailScale, thumbnailScale);
             mBitmapShader.setLocalMatrix(mMatrix);
 
-            float bitmapHeight = Math.max((rotate ? thumbnailWidth : thumbnailHeight)
+            float bitmapHeight = Math.max((mIsRotated ? thumbnailWidth : thumbnailHeight)
                     * thumbnailScale, 0);
             if (Math.round(bitmapHeight) < getMeasuredHeight()) {
                 mClipBottom = bitmapHeight;
@@ -307,7 +324,7 @@ public class TaskThumbnailView extends View implements
             mPaint.setShader(mBitmapShader);
         }
 
-        if (rotate) {
+        if (mIsRotated) {
             // The overlay doesn't really work when the screenshot is rotated, so don't add it.
             mOverlay.reset();
         } else {
