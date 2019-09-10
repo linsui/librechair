@@ -23,12 +23,12 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import ch.deletescape.lawnchair.feed.anim.AnimationDelegate
+import ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate
 import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
-import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
-import com.android.launcher3.config.FeatureFlags
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
 import kotlin.math.sign
@@ -62,6 +62,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
     private var mLauncherFeed: LauncherFeed? = null
+    var animationDelegate: AnimationDelegate = DefaultFeedTransitionDelegate()
 
     private val swipeDirection: Int
         get() {
@@ -131,13 +132,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         if (notify) {
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
         }
-        if (FeatureFlags.FEED_SIMPLE_ANIMATION || context.lawnchairPrefs.lowPerformanceMode) {
-            mFeedBackground!!.translationX = (-1 + mProgress) * shiftRange * if (layoutDirection == View.LAYOUT_DIRECTION_RTL) -1 else 1
-            mFeedContent!!.translationX = (-1 + mProgress) * shiftRange
-        } else {
-            mFeedBackground!!.alpha = progress
-            mFeedContent!!.translationX = (-1 + mProgress) * shiftRange * if (layoutDirection == View.LAYOUT_DIRECTION_RTL) -1 else 1
-        }
+        animationDelegate.animate(mFeedContent!!, mFeedBackground!!, shiftRange, progress)
     }
 
     private fun time(): Long {

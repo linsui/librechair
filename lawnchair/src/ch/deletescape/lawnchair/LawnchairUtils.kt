@@ -42,17 +42,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.OpenableColumns
 import android.service.notification.StatusBarNotification
-import androidx.dynamicanimation.animation.FloatPropertyCompat
-import androidx.annotation.ColorInt
-import com.google.android.material.tabs.TabLayout
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.ColorUtils
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.viewpager.widget.PagerAdapter
-import androidx.appcompat.app.AlertDialog
-import androidx.palette.graphics.Palette
-import androidx.preference.Preference
-import androidx.preference.PreferenceGroup
 import android.text.TextUtils
 import android.text.format.DateFormat
 import android.util.AttributeSet
@@ -63,7 +52,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Interpolator
 import android.widget.*
+import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.dynamicanimation.animation.FloatPropertyCompat
+import androidx.preference.Preference
+import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
@@ -85,6 +82,7 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
+import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
@@ -1226,3 +1224,6 @@ val ViewGroup.allChildren: List<View>
     }
     children
 }
+
+val ViewGroup.rtl
+    get() = layoutDirection == ViewGroup.LAYOUT_DIRECTION_RTL
