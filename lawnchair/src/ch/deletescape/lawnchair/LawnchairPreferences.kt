@@ -34,6 +34,7 @@ import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.AlarmEventProvider
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
+import ch.deletescape.lawnchair.feed.images.providers.NationalGeographicImageProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -878,7 +879,7 @@ class LawnchairPreferences(val context: Context) :
     open inner class StringPref(key: String, defaultValue: String = "",
                                 onChange: () -> Unit = doNothing) :
             PrefDelegate<String>(key, defaultValue, onChange) {
-        override fun onGetValue(): String = sharedPrefs.getString(getKey(), defaultValue)
+        override fun onGetValue(): String = sharedPrefs.getString(getKey(), defaultValue)!!
 
         override fun onSetValue(value: String) {
             edit { putString(getKey(), value) }
@@ -941,7 +942,7 @@ class LawnchairPreferences(val context: Context) :
         override fun onGetValue(): Int = try {
             sharedPrefs.getInt(getKey(), defaultValue)
         } catch (e: Exception) {
-            toInt(sharedPrefs.getString(getKey(), "$defaultValue")).apply {
+            toInt(sharedPrefs.getString(getKey(), "$defaultValue")!!).apply {
                 edit { putInt(getKey(), this@apply) }
             }
         }
@@ -1007,8 +1008,11 @@ class LawnchairPreferences(val context: Context) :
     open inner class ImageProviderPref(key: String, defaultValue: KClass<out ImageProvider>,
                                        onChange: () -> Unit = doNothing) :
             PrefDelegate<KClass<out ImageProvider>>(key, defaultValue, onChange) {
+        val subst = mapOf("ch.deletescape.lawnchair.feed.images.ng.NationalGeographicImageProvider" to
+                NationalGeographicImageProvider::class.qualifiedName)
         override fun onGetValue(): KClass<out ImageProvider> =
-                Class.forName(sharedPrefs.getString(key, defaultValue.qualifiedName)).kotlin as KClass<out ImageProvider>
+                Class.forName(subst[sharedPrefs.getString(key, defaultValue.qualifiedName)]
+                        ?: sharedPrefs.getString(key, defaultValue.qualifiedName)!!).kotlin as KClass<out ImageProvider>
         override fun onSetValue(value: KClass<out ImageProvider>) = edit { putString(key, value.qualifiedName) }
     }
 

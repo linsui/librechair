@@ -22,11 +22,7 @@ package ch.deletescape.lawnchair.preferences
 import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.ListPreference
-import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicImageProvider
-import ch.deletescape.lawnchair.feed.images.providers.ApodImageProvider
-import ch.deletescape.lawnchair.feed.images.providers.BingImageProvider
-import ch.deletescape.lawnchair.feed.images.providers.CustomBackgroundProvider
-import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
+import ch.deletescape.lawnchair.feed.images.providers.*
 import ch.deletescape.lawnchair.fromStringRes
 import com.android.launcher3.R
 import kotlin.reflect.KClass
