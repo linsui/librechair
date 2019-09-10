@@ -35,10 +35,12 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.CheckLongPressHelper
 import com.android.launcher3.R
 import com.android.launcher3.SimpleOnStylusPressListener
 import com.android.launcher3.StylusEventHelper
+import kotlin.math.abs
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
@@ -173,23 +175,6 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             var lightSubst = mapOf(
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_dark
-                                .fromColorRes(it.context)));
-                        Unit
-                    },
-                    (ImageView::class as KClass<out View>) to { it: View ->
-                        (it as ImageView)
-                        if (it.drawable != null) {
-                            it.setImageDrawable(processDrawable(it.drawable, it.context))
-                            it.drawable.setColorFilter(R.color.primary_text_material_dark.fromColorRes(it.context),
-                                    PorterDuff.Mode.SRC)
-                        }
-                        Unit
-                    }
-            )
-            var darkSubst = mapOf(
-                    (TextView::class as KClass<out View>) to { it: View ->
-                        (it as TextView)
                         it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_light
                                 .fromColorRes(it.context)));
                         Unit
@@ -197,38 +182,67 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageDrawable(processDrawable(it.drawable, it.context))
-                            it.drawable.setColorFilter(R.color.primary_text_material_light.fromColorRes(it.context),
-                                    PorterDuff.Mode.SRC)
+                            it.setImageDrawable(processDrawable(it.drawable, it.context, R.color.primary_text_material_light.fromColorRes(it.context)))
+                        }
+                        Unit
+                    }
+            )
+            var darkSubst = mapOf(
+                    (TextView::class as KClass<out View>) to { it: View ->
+                        (it as TextView)
+                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_dark
+                                .fromColorRes(it.context)));
+                        Unit
+                    },
+                    (ImageView::class as KClass<out View>) to { it: View ->
+                        (it as ImageView)
+                        if (it.drawable != null) {
+                            it.setImageDrawable(processDrawable(it.drawable, it.context, R.color.primary_text_material_dark.fromColorRes(it.context)))
                         }
                         Unit
                     }
             )
 
-            fun processDrawable(drawable: Drawable, c: Context): Drawable {
-                val src = drawable.toBitmap()!!
-                val tgt = Canvas()
-                val colorPaintCache = mutableMapOf<Int, Paint>();
+            val SUBST_MASK = arrayOf(3, 3, 3)
 
+            fun processDrawable(drawable: Drawable, c: Context, color: Int): Drawable {
+                val src = drawable.toBitmap()!!
+                val bitmap = Bitmap.createBitmap(
+                        src.width,
+                        src.height,
+                        Bitmap.Config.ARGB_8888)
+                val tgt = Canvas(bitmap)
+                val colorPaintCache = mutableMapOf<Int, Paint>()
                 for (x in 0 until src.width) {
                     for (y in 0 until src.height) {
-                        if (src.getPixel(x, y) != 0) {
+                        val pixel: Int
+                        if (src.getPixel(x, y).also { pixel = it }.alpha >= 35 && pixel != -1) {
+                            val r = pixel.red
+                            val g = pixel.green
+                            val b = pixel.blue
+
+                            d("processDrawable: pixel $x,$y is $pixel")
+
                             tgt.drawPoint(x.toFloat(), y.toFloat(), colorPaintCache[src.getPixel(x, y)]
                                     ?: Paint().apply {
-                                        color = src.getPixel(x, y)
+                                        if (abs(r - g) <= 32
+                                                && abs(r - b) <= 32) {
+                                            this.color = color
+                                        } else {
+                                            this.color = pixel
+                                        }
                                     }.also { colorPaintCache[src.getPixel(x, y)] = it })
                         }
                     }
                 }
 
+                for (x in 0 until bitmap.width) {
+                    for (y in 0 until bitmap.height) {
+                        d("processDrawable: result pixel $x,$y is ${bitmap.getPixel(x, y)}")
+                    }
+                }
 
-                val bitmap = Bitmap.createBitmap(
-                        drawable.intrinsicWidth,
-                        drawable.intrinsicHeight,
-                        Bitmap.Config.ARGB_8888)
-
-                tgt.setBitmap(bitmap);
-                return bitmap.toDrawable(c);
+                return bitmap.toDrawable(c)
             }
         }
     }
