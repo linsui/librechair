@@ -25,6 +25,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
@@ -57,12 +58,12 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         this.overlayCallback = new ILauncherOverlayCallback.Stub() {
             @Override
             public void overlayScrollChanged(float progress) throws RemoteException {
-                callback.overlayScrollChanged(progress);
+                boundActivity.runOnUiThread(() -> callback.overlayScrollChanged(progress));
             }
 
             @Override
             public void overlayStatusChanged(int status) throws RemoteException {
-                callback.overlayStatusChanged(status);
+                boundActivity.runOnUiThread(() -> callback.overlayStatusChanged(status));
             }
         };
         factory.setChangeListener(l3overlay -> {
@@ -83,6 +84,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     @Override
     public void openOverlay(boolean animate) {
+        Throwable throwable = new Throwable();
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
         if (overlay != null) {
             try {
                 overlay.openOverlay(animate ? 1 : 0);
@@ -187,6 +190,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     @Override
     public void startScroll() {
+        Throwable throwable = new Throwable();
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
         if (overlay != null) {
             try {
                 overlay.startScroll();
@@ -209,6 +214,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     @Override
     public void stopScroll() {
+        Throwable throwable = new Throwable();
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
         if (overlay != null) {
             try {
                 overlay.endScroll();
