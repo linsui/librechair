@@ -33,14 +33,23 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.XmlRes;
-import androidx.preference.SwitchPreference;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.ActionMenuView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -50,19 +59,42 @@ import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCal
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 import androidx.preference.internal.AbstractMultiSelectListPreference;
-import androidx.appcompat.widget.ActionMenuView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
-import androidx.appcompat.widget.Toolbar;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+
+import com.android.launcher3.BuildConfig;
+import com.android.launcher3.LauncherFiles;
+import com.android.launcher3.LauncherSettings.Favorites;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.compat.LauncherAppsCompat;
+import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.plugin.PluginManager;
+import com.android.launcher3.plugin.PluginManager.Plugin;
+import com.android.launcher3.plugin.activity.ActivityPluginClient;
+import com.android.launcher3.plugin.button.ButtonPluginClient;
+import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
+import com.android.launcher3.plugin.unread.UnreadPluginClient;
+import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.ContentWriter;
+import com.android.launcher3.util.ContentWriter.CommitParams;
+import com.android.launcher3.util.SettingsObserver;
+import com.android.launcher3.views.ButtonPreference;
+import com.google.android.apps.nexuslauncher.reflection.ReflectionClient;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
 import ch.deletescape.lawnchair.FakeLauncherKt;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
@@ -76,6 +108,7 @@ import ch.deletescape.lawnchair.colors.overrides.ThemedMultiSelectListPreference
 import ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference;
 import ch.deletescape.lawnchair.feed.images.CurrentImageProvider;
 import ch.deletescape.lawnchair.feed.images.ImageStore.ImageStoreActivity;
+import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost;
 import ch.deletescape.lawnchair.gestures.ui.GesturePreference;
 import ch.deletescape.lawnchair.gestures.ui.SelectGestureHandlerFragment;
 import ch.deletescape.lawnchair.globalsearch.ui.SearchProviderPreference;
@@ -99,35 +132,8 @@ import ch.deletescape.lawnchair.smartspace.OnboardingProvider;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
 import ch.deletescape.lawnchair.theme.ThemeOverride.ThemeSet;
 import ch.deletescape.lawnchair.views.SpringRecyclerView;
-import com.android.launcher3.BuildConfig;
-import com.android.launcher3.LauncherFiles;
-import com.android.launcher3.LauncherSettings.Favorites;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.compat.LauncherAppsCompat;
-import com.android.launcher3.notification.NotificationListener;
-import com.android.launcher3.plugin.PluginManager;
-import com.android.launcher3.plugin.PluginManager.Plugin;
-import com.android.launcher3.plugin.activity.ActivityPluginClient;
-import com.android.launcher3.plugin.button.ButtonPluginClient;
-import com.android.launcher3.plugin.shortcuts.ShortcutPluginClient;
-import com.android.launcher3.plugin.unread.UnreadPluginClient;
-import com.android.launcher3.util.ComponentKey;
-import com.android.launcher3.util.ContentWriter;
-import com.android.launcher3.util.ContentWriter.CommitParams;
-import com.android.launcher3.util.SettingsObserver;
-import com.android.launcher3.views.ButtonPreference;
-import com.google.android.apps.nexuslauncher.reflection.ReflectionClient;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Settings activity for Launcher.
@@ -807,6 +813,11 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 findPreference("pref_remove_feed_widget").setOnPreferenceClickListener(preference -> {
                     Utilities.getLawnchairPrefs(getContext()).setFeedToolbarWidget(-1);
                     Utilities.getLawnchairPrefs(getContext()).restartOverlay();
+                    return true;
+                });
+                findPreference("pref_title_bar_home_widget").setOnPreferenceClickListener(preference -> {
+                    Utilities.getLawnchairPrefs(requireContext()).setFeedToolbarWidget(
+                            OverlayWidgetHost.SPECIAL_SMARTSPACE);
                     return true;
                 });
             }

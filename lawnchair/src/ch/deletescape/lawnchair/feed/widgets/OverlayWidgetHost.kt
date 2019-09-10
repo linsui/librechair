@@ -33,6 +33,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
+import android.widget.RemoteViews
 import android.widget.TextView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.extensions.d
@@ -47,11 +48,11 @@ import kotlin.reflect.full.isSuperclassOf
 class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
 
     override fun onCreateView(context: Context, appWidgetId: Int,
-                              appWidget: AppWidgetProviderInfo): AppWidgetHostView {
-        return OverlayWidgetView(context);
+                              appWidget: AppWidgetProviderInfo?): AppWidgetHostView {
+        return OverlayWidgetView(context, appWidgetId)
     }
 
-    class OverlayWidgetView(context: Context) : AppWidgetHostView(context) {
+    class OverlayWidgetView(context: Context, val specialId: Int) : AppWidgetHostView(context) {
 
         private val mLongPressHelper = CheckLongPressHelper(this)
         private val mStylusEventHelper = StylusEventHelper(SimpleOnStylusPressListener(this), this)
@@ -78,8 +79,25 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             return false
         }
 
+        override fun onFinishInflate() {
+            super.onFinishInflate()
+            if (specialId == SPECIAL_SMARTSPACE) {
+                addView(inflate(R.layout.smartspace_widget))
+            }
+        }
+
+        override fun updateAppWidget(remoteViews: RemoteViews?) {
+            if (specialId > -1) {
+                super.updateAppWidget(remoteViews)
+            }
+        }
+
         override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-            super.onLayout(changed, left, top, right, bottom)
+            try {
+                super.onLayout(changed, left, top, right, bottom)
+            } catch (e: RuntimeException) {
+
+            }
             scrollable = checkScrollableRecursively(this)
             if (shouldForceStyle) {
                 forceStyle()
@@ -92,6 +110,9 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         override fun getErrorView(): View {
+            if (appWidgetId == SPECIAL_SMARTSPACE) {
+                return inflate(R.layout.smartspace_widget)
+            }
             return LayoutInflater.from(this.context)
                     .inflate(R.layout.appwidget_error, this, false)
         }
@@ -245,5 +266,9 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                 return bitmap
             }
         }
+    }
+
+    companion object {
+        const val SPECIAL_SMARTSPACE = -2
     }
 }

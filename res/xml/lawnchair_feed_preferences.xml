@@ -70,6 +70,10 @@
         <ch.deletescape.lawnchair.preferences.Preference
             android:key="pref_remove_feed_widget"
             android:title="@string/title_pref_remove_feed_widget"/>
+        <ch.deletescape.lawnchair.preferences.Preference
+            android:key="pref_title_bar_home_widget"
+            android:title="@string/title_pref_title_bar_home_widget"
+            android:summary="@string/summary_pref_title_bar_home_widget"/>
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_feed_toolbar_widget_force_style"
             android:defaultValue="false"
