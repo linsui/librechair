@@ -16,9 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.compat.AccessibilityManagerCompat.isAccessibilityEnabled;
-import static com.android.launcher3.compat.AccessibilityManagerCompat.isObservedEventType;
-
 import android.animation.LayoutTransition;
 import android.animation.TimeInterpolator;
 import android.annotation.SuppressLint;
@@ -50,6 +47,9 @@ import com.android.launcher3.touch.OverScroll;
 import com.android.launcher3.util.Thunk;
 
 import java.util.ArrayList;
+
+import static com.android.launcher3.compat.AccessibilityManagerCompat.isAccessibilityEnabled;
+import static com.android.launcher3.compat.AccessibilityManagerCompat.isObservedEventType;
 
 /**
  * An abstraction of the original Workspace which supports browsing through a
@@ -239,6 +239,10 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
         return index;
     }
 
+    public int getPageSpacing() {
+        return mPageSpacing;
+    }
+
     /**
      * Updates the scroll of the current page immediately to its final scroll position.  We use this
      * in CustomizePagedView to allow tabs to share the same PagedView while resetting the scroll of
@@ -305,6 +309,10 @@ public abstract class PagedView<T extends View & PageIndicator> extends ViewGrou
      */
     protected void notifyPageSwitchListener(int prevPage) {
         updatePageIndicator();
+    }
+
+    public int getMaxScrollX() {
+        return mMaxScrollX;
     }
 
     private void updatePageIndicator() {

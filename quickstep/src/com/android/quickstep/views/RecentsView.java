@@ -16,15 +16,6 @@
 
 package com.android.quickstep.views;
 
-import static com.android.launcher3.BaseActivity.STATE_HANDLER_INVISIBILITY_FLAGS;
-import static com.android.launcher3.anim.Interpolators.ACCEL;
-import static com.android.launcher3.anim.Interpolators.ACCEL_2;
-import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.util.SystemUiController.UI_STATE_OVERVIEW;
-import static com.android.quickstep.TaskUtils.checkCurrentOrManagedUserId;
-import static com.android.quickstep.WindowTransformSwipeHandler.MIN_PROGRESS_FOR_OVERVIEW;
-
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -42,7 +33,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.UserHandle;
-import androidx.annotation.Nullable;
 import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
@@ -61,7 +51,16 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ListView;
 
-import com.android.launcher3.*;
+import androidx.annotation.Nullable;
+
+import com.android.launcher3.AbstractFloatingView;
+import com.android.launcher3.BaseActivity;
+import com.android.launcher3.BaseDraggingActivity;
+import com.android.launcher3.DeviceProfile;
+import com.android.launcher3.Insettable;
+import com.android.launcher3.PagedView;
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.AnimatorPlaybackController;
 import com.android.launcher3.anim.PropertyListBuilder;
 import com.android.launcher3.config.FeatureFlags;
@@ -87,6 +86,15 @@ import com.android.systemui.shared.system.TaskStackChangeListener;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
+
+import static com.android.launcher3.BaseActivity.STATE_HANDLER_INVISIBILITY_FLAGS;
+import static com.android.launcher3.anim.Interpolators.ACCEL;
+import static com.android.launcher3.anim.Interpolators.ACCEL_2;
+import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.util.SystemUiController.UI_STATE_OVERVIEW;
+import static com.android.quickstep.TaskUtils.checkCurrentOrManagedUserId;
+import static com.android.quickstep.WindowTransformSwipeHandler.MIN_PROGRESS_FOR_OVERVIEW;
 
 /**
  * A list of recent tasks.
@@ -1092,6 +1100,10 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
     public void onViewAdded(View child) {
         super.onViewAdded(child);
         child.setAlpha(mContentAlpha);
+    }
+
+    public TaskView getRunningTaskView() {
+        return getTaskView(mRunningTaskId);
     }
 
     public TaskView getTaskViewAt(int index) {

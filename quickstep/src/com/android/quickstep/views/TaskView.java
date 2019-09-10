@@ -73,7 +73,7 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
     /**
      * How much to scale down pages near the edge of the screen.
      */
-    private static final float EDGE_SCALE_DOWN_FACTOR = 0.03f;
+    public static final float EDGE_SCALE_DOWN_FACTOR = 0.03f;
 
     public static final long SCALE_ICON_DURATION = 120;
     private static final long DIM_ANIM_DURATION = 700;
@@ -336,8 +336,11 @@ public class TaskView extends FrameLayout implements TaskCallbacks, PageCallback
 
         for (TaskSystemShortcut menuOption : TaskMenuView.MENU_OPTIONS) {
             if (action == menuOption.labelResId) {
-                OnClickListener onClickListener = menuOption.getOnClickListener(
-                        BaseDraggingActivity.fromContext(getContext()), this);
+                OnClickListener onClickListener = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    onClickListener = menuOption.getOnClickListener(
+                            BaseDraggingActivity.fromContext(getContext()), this);
+                }
                 if (onClickListener != null) {
                     onClickListener.onClick(this);
                 }
