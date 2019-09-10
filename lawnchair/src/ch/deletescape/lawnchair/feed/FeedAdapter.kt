@@ -44,7 +44,7 @@ import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
 import kotlin.math.roundToInt
 
-class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
+open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                   private val context: Context, private val feed: LauncherFeed?) :
         androidx.recyclerview.widget.RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
@@ -67,7 +67,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    private val cards = ArrayList<Card>()
+    protected val cards = ArrayList<Card>()
     val immutableCards
         get() = cards.clone() as List<Card>
 
@@ -97,7 +97,7 @@ class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards[position].type
     }
 
-    fun refresh(): Int {
+    open fun refresh(): Int {
         cards.clear()
         val toSort: MutableList<List<Card>> = ArrayList()
         providers.iterator().forEach {

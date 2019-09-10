@@ -647,4 +647,5 @@
 
     <string name="title_pref_feed_toolbar_widget_force_style">Force style in toolbar widget</string>
     <string name="summary_pref_feed_toolbar_widget_force_style">Librechair will attempt to apply the set theme to the widget</string>
+    <string name="title_card_feed_preview_header">I\'m your feed!</string>
 </resources>

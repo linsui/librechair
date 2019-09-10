@@ -594,6 +594,8 @@ class LawnchairPreferences(val context: Context) :
                 e.printStackTrace();
             }
         }
+
+        sharedPrefs.edit().putString("pref_feed_preview", UUID.randomUUID().toString()).apply()
     }
 
     fun refreshGrid() {

@@ -17,6 +17,9 @@
 
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <ch.deletescape.lawnchair.preferences.PreviewPreference
+        app:previewLayout="@layout/feed_preview"
+        app:key="pref_feed_preview"/>
     <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
         android:key="pref_swipe_feed"
         android:summary="@string/summary_preference_swipe_feed"
