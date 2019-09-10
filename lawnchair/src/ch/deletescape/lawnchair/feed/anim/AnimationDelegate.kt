@@ -21,7 +21,24 @@
 package ch.deletescape.lawnchair.feed.anim
 
 import android.view.View
+import com.android.launcher3.R
+import kotlin.reflect.KClass
 
 interface AnimationDelegate {
     fun animate(content: View, background: View, width: Float, progress: Float)
+
+    companion object {
+        fun inflate(clazz: KClass<out AnimationDelegate>): AnimationDelegate =
+                clazz.constructors.first { it.parameters.isEmpty() }.call()
+
+        val allDelegates =
+                listOf<KClass<out AnimationDelegate>>(DefaultFeedTransitionDelegate::class)
+        val delegateNames =
+                mapOf<KClass<out AnimationDelegate>, Int>(DefaultFeedTransitionDelegate::class to
+                        R.string.title_animation_delegate_default)
+    }
 }
+
+@Suppress("UNCHECKED_CAST")
+fun AnimationDelegate.Companion.inflate(clazz: String) = inflate(
+        Class.forName(clazz).kotlin as KClass<out AnimationDelegate>)

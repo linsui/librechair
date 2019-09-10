@@ -24,10 +24,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import ch.deletescape.lawnchair.feed.anim.AnimationDelegate
-import ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate
+import ch.deletescape.lawnchair.feed.anim.inflate
 import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
@@ -62,7 +63,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
     private var mLauncherFeed: LauncherFeed? = null
-    var animationDelegate: AnimationDelegate = DefaultFeedTransitionDelegate()
+    var animationDelegate: AnimationDelegate =
+            AnimationDelegate.inflate(context.lawnchairPrefs.feedAnimationDelegate)
 
     private val swipeDirection: Int
         get() {
@@ -162,7 +164,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         if (mCurrentAnimationPlaybackController != null && mFromState === FeedState.OPEN) {
             return false
         }
-        mDetector.setDetectableScrollConditions(swipeDirection, mCurrentAnimationPlaybackController != null)
+        mDetector.setDetectableScrollConditions(swipeDirection,
+                mCurrentAnimationPlaybackController != null)
         mDetector.onTouchEvent(ev)
         return mDetector.isDraggingOrSettling
     }
@@ -256,8 +259,9 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDrag(displacement: Float, velocity: Float): Boolean {
-        val deltaProgress = mProgressMultiplier * ((if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
-            -1 else 1) * displacement - mDisplacementShift)
+        val deltaProgress =
+                mProgressMultiplier * ((if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                    -1 else 1) * displacement - mDisplacementShift)
         val progress = deltaProgress + mStartProgress
         updateProgress(progress)
         val isDragTowardPositive = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
@@ -297,9 +301,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
 
         val targetState: FeedState?
-        val progress = mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
-            -1 else 1)
-        val interpolatedProgress = mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
+        val progress =
+                mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                    -1 else 1)
+        val interpolatedProgress =
+                mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
         if (fling) {
             targetState = if (sign(velocity).compareTo(Math.signum(
                             mProgressMultiplier)) == 0) mToState else mFromState
@@ -351,7 +357,9 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             }
         }
 
-        mCurrentAnimationPlaybackController!!.setEndAction { onSwipeInteractionCompleted(targetState) }
+        mCurrentAnimationPlaybackController!!.setEndAction {
+            onSwipeInteractionCompleted(targetState)
+        }
         val anim = mCurrentAnimationPlaybackController!!.animationPlayer
         anim.setFloatValues(startProgress, endProgress)
         updateSwipeCompleteAnimation(anim, duration, targetState, velocity, fling)

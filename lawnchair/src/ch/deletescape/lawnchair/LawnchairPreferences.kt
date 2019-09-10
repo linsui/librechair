@@ -33,6 +33,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.resolvers.OLEDBlackColorResolver
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.AlarmEventProvider
+import ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.images.providers.NationalGeographicImageProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
@@ -436,6 +437,8 @@ class LawnchairPreferences(val context: Context) :
     var feedDailyForecastItemCount by FloatPref("pref_daily_forecast_item_count", 4f, ::restartOverlay)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
                                           restart)
+    val feedAnimationDelegate by StringPref("pref_feed_animation", DefaultFeedTransitionDelegate::class.qualifiedName!!
+            , ::restartOverlay)
     var feedTabController by StringPref("pref_feed_tab_controller", TabController::class.java.name,
                                         ::restartOverlay)
     var feedCalendarEventThreshold by IntPref("pref_feed_calendar_days", 30, ::restartOverlay)
