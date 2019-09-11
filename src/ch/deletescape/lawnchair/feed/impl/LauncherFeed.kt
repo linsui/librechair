@@ -80,6 +80,7 @@ class LauncherFeed(val originalContext: Context,
     init {
         d("init: dark ${dark}")
     }
+
     private var lastScroll = 0f
 
     private var context = ContextThemeWrapper(originalContext,
@@ -111,7 +112,8 @@ class LauncherFeed(val originalContext: Context,
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
     private var tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-    private var recyclerView = (feedController.findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
+    private var recyclerView = (feedController.findViewById(
+            R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
@@ -153,7 +155,9 @@ class LauncherFeed(val originalContext: Context,
     @SuppressLint("RestrictedApi")
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (context.appWidgetManager
-                        .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget) == null) {
+                        .getAppWidgetInfo(
+                                context.lawnchairPrefs.feedToolbarWidget) == null &&
+                context.lawnchairPrefs.feedToolbarWidget != OverlayWidgetHost.SPECIAL_SMARTSPACE) {
             context.lawnchairPrefs.feedToolbarWidget = -1
         }
         if (searchWidgetView != null && reinit &&
@@ -226,7 +230,8 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-            recyclerView = (feedController.findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
+            recyclerView = (feedController.findViewById(
+                    R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
             adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                     context.applicationContext, this)
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
@@ -252,17 +257,22 @@ class LauncherFeed(val originalContext: Context,
                     .createView(context, context.lawnchairPrefs.feedToolbarWidget,
                             context.appWidgetManager
                                     .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-            searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
-                    .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight).apply {
-                marginStart = 8f.applyAsDip(context)
-                        .toInt()
-                marginEnd = 8f.applyAsDip(context)
-                        .toInt()
-                topMargin = 8f.applyAsDip(context)
-                        .toInt()
-                bottomMargin = 4f.applyAsDip(context)
-                        .toInt()
-            }
+            searchWidgetView!!.layoutParams =
+                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            context.appWidgetManager
+                                    .getAppWidgetInfo(
+                                            context.lawnchairPrefs.feedToolbarWidget)?.minHeight ?:
+                            45f.applyAsDip(context).toInt())
+                            .apply {
+                                marginStart = 8f.applyAsDip(context)
+                                        .toInt()
+                                marginEnd = 8f.applyAsDip(context)
+                                        .toInt()
+                                topMargin = 8f.applyAsDip(context)
+                                        .toInt()
+                                bottomMargin = 4f.applyAsDip(context)
+                                        .toInt()
+                            }
             searchWidgetView!!.setOnLongClickListener {
                 searchWidgetView!!.animate()
                         .scaleX(0.7f)
@@ -317,10 +327,12 @@ class LauncherFeed(val originalContext: Context,
                     }
                     if (reapplyInsetFlag) {
                         reapplyInsetFlag = false
-                        oldRecyclerViewPaddingVertical = (if (!tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
-                                R.dimen.feed_app_bar_bottom_padding).toInt() else recyclerView.paddingTop) to
-                                (if (tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(R.dimen.feed_app_bar_bottom_padding).toInt()
-                                else recyclerView.paddingBottom)
+                        oldRecyclerViewPaddingVertical =
+                                (if (!tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
+                                        R.dimen.feed_app_bar_bottom_padding).toInt() else recyclerView.paddingTop) to
+                                        (if (tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
+                                                R.dimen.feed_app_bar_bottom_padding).toInt()
+                                        else recyclerView.paddingBottom)
                         feedController.requestApplyInsets()
                     }
                 }
@@ -363,7 +375,9 @@ class LauncherFeed(val originalContext: Context,
                         if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
                 bottomMargin = insets.stableInsetBottom + 16f.applyAsDip(context).toInt()
             }
-            upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat()).duration = 500
+            upButton.animate().translationY(
+                    (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
+                    .duration = 500
             insets
         }
         feedController.mOpenedCallback = {
@@ -374,7 +388,8 @@ class LauncherFeed(val originalContext: Context,
         upButton.setOnClickListener {
             recyclerView.smoothScrollToPosition(0)
             toolbar.animate().translationY(0f)
-            upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
+            upButton.animate().translationY(
+                    (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
         }
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
@@ -403,7 +418,8 @@ class LauncherFeed(val originalContext: Context,
                     ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
             tabView.tabSelectedIndicator!!
                     .setTint(R.color.textColorPrimary.fromColorRes(context))
-            tabView.tabTextColors = ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
+            tabView.tabTextColors =
+                    ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
         } else {
             tabView.tabIconTint =
                     ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
@@ -476,9 +492,10 @@ class LauncherFeed(val originalContext: Context,
                     if (context.lawnchairPrefs.feedHideTabText) {
                         for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
                             val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
-                            val title = tab::class.declaredMembers.first { it.name == "textView" }.apply {
-                                isAccessible = true
-                            }.call(tab) as TextView
+                            val title =
+                                    tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                                        isAccessible = true
+                                    }.call(tab) as TextView
                             title.visibility = View.GONE
                         }
                     }
@@ -505,8 +522,10 @@ class LauncherFeed(val originalContext: Context,
             }
         }
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
-            recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+            recyclerView.addOnScrollListener(object :
+                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                        dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         toolbar.animate().translationY(
@@ -518,18 +537,23 @@ class LauncherFeed(val originalContext: Context,
             })
         }
         if (context.lawnchairPrefs.feedBackToTop) {
-            recyclerView.addOnScrollListener(object : androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView, dx: Int, dy: Int) {
+            recyclerView.addOnScrollListener(object :
+                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                        dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
                         upButton.animate().translationY(0f).duration = 500
                     } else if (dy < 0) {
-                        upButton.animate().translationY((upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat()).duration = 500
+                        upButton.animate().translationY(
+                                (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
+                                .duration = 500
                     }
                 }
             })
         }
-        adapter.registerAdapterDataObserver(object : androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object :
+                androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 runOnMainThread {
                     if (adapter.itemCount == 0) {
@@ -611,32 +635,49 @@ class LauncherFeed(val originalContext: Context,
                                             override fun onWidgetSelected(i: Int) {
                                                 context.lawnchairPrefs.feedToolbarWidget = i
                                                 if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-                                                    val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                                                    val widgetContainer =
+                                                            toolbar.findViewById<LinearLayout>(
+                                                                    R.id.feed_widget_layout)
                                                     if (searchWidgetView != null) {
                                                         widgetContainer.removeView(searchWidgetView)
                                                     }
                                                     var deleting = false
-                                                    searchWidgetView = (context.applicationContext as LawnchairApp)
-                                                            .overlayWidgetHost
-                                                            .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                                                    searchWidgetView =
+                                                            (context.applicationContext as LawnchairApp)
+                                                                    .overlayWidgetHost
+                                                                    .createView(context,
+                                                                            context.lawnchairPrefs.feedToolbarWidget,
+                                                                            context.appWidgetManager
+                                                                                    .getAppWidgetInfo(
+                                                                                            context.lawnchairPrefs.feedToolbarWidget))
+                                                    searchWidgetView!!.layoutParams =
+                                                            LinearLayout.LayoutParams(
+                                                                    ViewGroup.LayoutParams.MATCH_PARENT,
                                                                     context.appWidgetManager
-                                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-                                                    searchWidgetView!!.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, context.appWidgetManager
-                                                            .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget).minHeight).apply {
-                                                        marginStart = 8f.applyAsDip(context)
-                                                                .toInt()
-                                                        marginEnd = 8f.applyAsDip(context)
-                                                                .toInt()
-                                                        topMargin = 8f.applyAsDip(context)
-                                                                .toInt()
-                                                        bottomMargin = 4f.applyAsDip(context)
-                                                                .toInt()
-                                                    }
+                                                                            .getAppWidgetInfo(
+                                                                                    context.lawnchairPrefs.feedToolbarWidget)?.minHeight ?: 32f.applyAsDip(context).toInt())
+                                                                    .apply {
+                                                                        marginStart = 8f.applyAsDip(
+                                                                                context)
+                                                                                .toInt()
+                                                                        marginEnd = 8f.applyAsDip(
+                                                                                context)
+                                                                                .toInt()
+                                                                        topMargin = 8f.applyAsDip(
+                                                                                context)
+                                                                                .toInt()
+                                                                        bottomMargin =
+                                                                                4f.applyAsDip(
+                                                                                        context)
+                                                                                        .toInt()
+                                                                    }
                                                     searchWidgetView!!.setOnLongClickListener {
                                                         searchWidgetView!!.animate()
                                                                 .scaleX(0.7f)
                                                                 .scaleY(0.7f)
-                                                                .setInterpolator(Interpolators.ACCEL_1_5).duration = 500
+                                                                .setInterpolator(
+                                                                        Interpolators.ACCEL_1_5)
+                                                                .duration = 500
                                                         deleting = true
                                                         true
                                                     }
@@ -646,30 +687,38 @@ class LauncherFeed(val originalContext: Context,
                                                                     .scaleX(0f)
                                                                     .scaleY(0f)
                                                                     .setDuration(500)
-                                                                    .setListener(object : Animator.AnimatorListener {
-                                                                        override fun onAnimationRepeat(animation: Animator?) {
+                                                                    .setListener(object :
+                                                                            Animator.AnimatorListener {
+                                                                        override fun onAnimationRepeat(
+                                                                                animation: Animator?) {
 
                                                                         }
 
-                                                                        override fun onAnimationEnd(animation: Animator?) {
-                                                                            context.lawnchairPrefs.feedToolbarWidget = -1
+                                                                        override fun onAnimationEnd(
+                                                                                animation: Animator?) {
+                                                                            context.lawnchairPrefs.feedToolbarWidget =
+                                                                                    -1
                                                                             reapplyInsetFlag = true
-                                                                            widgetContainer.removeView(searchWidgetView)
+                                                                            widgetContainer.removeView(
+                                                                                    searchWidgetView)
                                                                             searchWidgetView = null
                                                                         }
 
-                                                                        override fun onAnimationCancel(animation: Animator?) {
+                                                                        override fun onAnimationCancel(
+                                                                                animation: Animator?) {
 
                                                                         }
 
-                                                                        override fun onAnimationStart(animation: Animator?) {
+                                                                        override fun onAnimationStart(
+                                                                                animation: Animator?) {
 
                                                                         }
 
                                                                     })
                                                         } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
                                                             deleting = false
-                                                            searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                                                            searchWidgetView!!.animate().scaleX(1f)
+                                                                    .scaleY(1f).setDuration(250)
                                                         }
                                                         true
                                                     }
@@ -685,7 +734,8 @@ class LauncherFeed(val originalContext: Context,
                 toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
             }
 
-            upButton.supportImageTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
+            upButton.supportImageTintList =
+                    ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
         }
         if (reinit && lastScroll != 0f) {
             startScroll()
@@ -852,16 +902,18 @@ class LauncherFeed(val originalContext: Context,
                 if (field) {
                     if (recyclerView.adapter == null) {
                         recyclerView.adapter = this.adapter
-                        recyclerView.layoutManager = object : androidx.recyclerview.widget.LinearLayoutManager(context) {
-                            override fun onLayoutChildren(recycler: androidx.recyclerview.widget.RecyclerView.Recycler?,
-                                                          state: androidx.recyclerview.widget.RecyclerView.State?) {
-                                try {
-                                    super.onLayoutChildren(recycler, state)
-                                } catch (e: RuntimeException) {
-                                    e.printStackTrace()
+                        recyclerView.layoutManager =
+                                object : androidx.recyclerview.widget.LinearLayoutManager(context) {
+                                    override fun onLayoutChildren(
+                                            recycler: androidx.recyclerview.widget.RecyclerView.Recycler?,
+                                            state: androidx.recyclerview.widget.RecyclerView.State?) {
+                                        try {
+                                            super.onLayoutChildren(recycler, state)
+                                        } catch (e: RuntimeException) {
+                                            e.printStackTrace()
+                                        }
+                                    }
                                 }
-                            }
-                        }
                     }
                     d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
                     if (lastOrientation != context.resources.configuration.orientation) {

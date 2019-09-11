@@ -27,10 +27,7 @@ import android.content.res.ColorStateList
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.RemoteViews
@@ -61,6 +58,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
 
         var dark = false
         var shouldForceStyle = false
+            get() = field && specialId != SPECIAL_SMARTSPACE
 
 
         private fun checkScrollableRecursively(viewGroup: ViewGroup): Boolean {
@@ -79,13 +77,6 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             return false
         }
 
-        override fun onFinishInflate() {
-            super.onFinishInflate()
-            if (specialId == SPECIAL_SMARTSPACE) {
-                addView(inflate(R.layout.smartspace_widget))
-            }
-        }
-
         override fun updateAppWidget(remoteViews: RemoteViews?) {
             if (specialId > -1) {
                 super.updateAppWidget(remoteViews)
@@ -96,7 +87,6 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             try {
                 super.onLayout(changed, left, top, right, bottom)
             } catch (e: RuntimeException) {
-
             }
             scrollable = checkScrollableRecursively(this)
             if (shouldForceStyle) {
@@ -111,7 +101,9 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
 
         override fun getErrorView(): View {
             if (appWidgetId == SPECIAL_SMARTSPACE) {
-                return inflate(R.layout.smartspace_widget)
+                return inflate(R.layout.smartspace_widget).apply {
+                    layoutParams.height = 48f.applyAsDip(context).toInt()
+                }
             }
             return LayoutInflater.from(this.context)
                     .inflate(R.layout.appwidget_error, this, false)
@@ -265,6 +257,19 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
 
                 return bitmap
             }
+        }
+
+        init {
+            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    d("onGlobalLayout: specialId: $specialId")
+                    if (specialId == SPECIAL_SMARTSPACE) {
+                        addView(inflate(R.layout.smartspace_widget))
+                    }
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+
+            })
         }
     }
 
