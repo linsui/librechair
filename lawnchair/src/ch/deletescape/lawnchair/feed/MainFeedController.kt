@@ -24,6 +24,7 @@ import android.content.Context
 import android.content.res.Resources
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
+import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
@@ -116,6 +117,7 @@ class MainFeedController(val context: Context) {
                             context)
                     NgDailyImageProvider::class.qualifiedName -> R.string.title_image_provider_national_geographic.fromStringRes(
                             context)
+                    FeedContactsProvider::class.qualifiedName -> context.getString(R.string.title_feed_provider_feed_contacts)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -144,6 +146,7 @@ class MainFeedController(val context: Context) {
                     FeedDailyForecastProvider::class.qualifiedName,
                     FeedForecastProvider::class.qualifiedName,
                     FeedSearchboxProvider::class.qualifiedName,
+                    FeedContactsProvider::class.qualifiedName,
                     ImageProvider::class.qualifiedName,
                     BingDailyImageProvider::class.qualifiedName,
                     ApodDailyImageProvider::class.qualifiedName,

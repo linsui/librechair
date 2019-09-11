@@ -1148,7 +1148,7 @@ fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float): Bitmap
     return duplicate
 }
 
-fun Bitmap.toDrawable(c: Context? = null) = if (c == null) BitmapDrawable(this) else BitmapDrawable(
+fun Bitmap?.toDrawable(c: Context? = null) = if (this == null) null else if (c == null) BitmapDrawable(this) else BitmapDrawable(
         c.resources, this)
 
 fun View.getPostionOnScreen(): Pair<Int, Int> {
