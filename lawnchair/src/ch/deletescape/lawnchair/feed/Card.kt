@@ -39,6 +39,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     var actionName: String? = null
     var actionListener: ((c: Context) -> Unit)? = null
     var onRemoveListener: (() -> Unit)? = null
+    lateinit var globalClickListener: (v: View) -> Unit
 
     constructor(icon: Drawable?, title: String?,
                 inflateHelper: (parent: View, _: Unit /* This is used to resolve ambiguities in Java and is unused */) -> View,
@@ -58,7 +59,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     constructor(icon: Drawable?, title: String?, inflateHelper: InflateHelper, type: Int,
                 algoFlags: String? = null, identifier: Int = title.hashCode(), canHide: Boolean,
                 category: List<String>) : this(icon, title, inflateHelper, type, algoFlags,
-                                               identifier) {
+            identifier) {
         this.canHide = canHide
         this.categories = category
     }
@@ -74,6 +75,9 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
             fun inflate(parent: ViewGroup): View
         }
     }
+
+    fun hasGlobalClickListener() =
+            ::globalClickListener.isInitialized
 
     override fun toString(): String {
         return "Card(icon=$icon, title=$title, inflateHelper=$inflateHelper, type=$type, algoFlags=$algoFlags, identifier=$identifier, canHide=$canHide, internalCategory=$categories, actionName=$actionName, actionListener=$actionListener)"

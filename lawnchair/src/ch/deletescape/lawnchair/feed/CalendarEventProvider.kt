@@ -135,6 +135,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                 diffMinutes)
                     }
                     val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri
+                            .parse("content://com.android.calendar/events/" + eventCursor.getLong(
+                                    4).toString())
                     if (eventCursor.getString(5) != null) {
                         if (context.packageManager.getApplicationEnabledSetting(
                                         eventCursor.getString(
@@ -142,10 +145,8 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             intent.`package` = eventCursor.getString(5)!!
                         }
                     }
+                    intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK;
                     val address = eventCursor.getString(6)
-                    intent.data = Uri
-                            .parse("content://com.android.calendar/events/" + eventCursor.getLong(
-                                    4).toString())
                     cards.add(Card(
                             if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
                                     eventCursor.getInt(7).setAlpha(
@@ -160,7 +161,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                 }
                             },
                             if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE else Card.RAISE or Card.TEXT_ONLY,
-                            if (diffMinutes < 120) "nosort,top" else ""))
+                            if (diffMinutes < 120) "nosort,top" else "").apply {
+                        globalClickListener = {
+                            it.context.startActivity(intent)
+                        }
+                    })
                     eventCursor.moveToNext()
                 }
                 eventCursor.close()

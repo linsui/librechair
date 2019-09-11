@@ -133,6 +133,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
+        if (cards[position].hasGlobalClickListener()) {
+            holder.itemView.setOnClickListener(cards[position].globalClickListener)
+        }
+
         if (cards[holder.adapterPosition].canHide) {
             val hasAction =
                     cards[holder.adapterPosition].actionListener != null && cards[holder.adapterPosition].actionName != null
