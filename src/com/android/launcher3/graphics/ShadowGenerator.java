@@ -27,7 +27,9 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+
 import androidx.core.graphics.ColorUtils;
+
 import com.android.launcher3.LauncherAppState;
 
 /**
@@ -45,14 +47,18 @@ public class ShadowGenerator {
 
     private static final int AMBIENT_SHADOW_ALPHA = 30;
 
-    private final int mIconSize;
+    private int mIconSize;
 
     private final Paint mBlurPaint;
     private final Paint mDrawPaint;
     private final BlurMaskFilter mDefaultBlurMaskFilter;
 
     public ShadowGenerator(Context context) {
-        mIconSize = LauncherAppState.getIDP(context).iconBitmapSize;
+        try {
+            mIconSize = LauncherAppState.getIDP(context).iconBitmapSize;
+        } catch (RuntimeException e) {
+            mIconSize = 24;
+        }
         mBlurPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
         mDrawPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
         mDefaultBlurMaskFilter = new BlurMaskFilter(mIconSize * BLUR_FACTOR, Blur.NORMAL);

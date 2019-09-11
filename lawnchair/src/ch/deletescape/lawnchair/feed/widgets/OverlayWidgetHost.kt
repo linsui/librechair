@@ -94,7 +94,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             }
         }
 
-        override fun setAppWidget(appWidgetId: Int, info: AppWidgetProviderInfo) {
+        override fun setAppWidget(appWidgetId: Int, info: AppWidgetProviderInfo?) {
             super.setAppWidget(appWidgetId, info)
             setPadding(0, 0, 0, 0)
         }
@@ -264,7 +264,11 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                 override fun onGlobalLayout() {
                     d("onGlobalLayout: specialId: $specialId")
                     if (specialId == SPECIAL_SMARTSPACE) {
-                        addView(inflate(R.layout.smartspace_widget))
+                        try {
+                            addView(inflate(R.layout.smartspace_widget))
+                        } catch (e: RuntimeException) {
+                            e.printStackTrace()
+                        }
                     }
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }

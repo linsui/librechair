@@ -261,8 +261,8 @@ class LauncherFeed(val originalContext: Context,
                     LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             context.appWidgetManager
                                     .getAppWidgetInfo(
-                                            context.lawnchairPrefs.feedToolbarWidget)?.minHeight ?:
-                            45f.applyAsDip(context).toInt())
+                                            context.lawnchairPrefs.feedToolbarWidget)?.minHeight
+                                    ?: 45f.applyAsDip(context).toInt())
                             .apply {
                                 marginStart = 8f.applyAsDip(context)
                                         .toInt()
@@ -655,7 +655,9 @@ class LauncherFeed(val originalContext: Context,
                                                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                                                     context.appWidgetManager
                                                                             .getAppWidgetInfo(
-                                                                                    context.lawnchairPrefs.feedToolbarWidget)?.minHeight ?: 32f.applyAsDip(context).toInt())
+                                                                                    context.lawnchairPrefs.feedToolbarWidget)?.minHeight
+                                                                            ?: 32f.applyAsDip(
+                                                                                    context).toInt())
                                                                     .apply {
                                                                         marginStart = 8f.applyAsDip(
                                                                                 context)
@@ -808,12 +810,18 @@ class LauncherFeed(val originalContext: Context,
             background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
             visibility = View.INVISIBLE
             fitsSystemWindows = false
-            setPadding(paddingLeft,
-                    if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                            context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                    paddingRight,
-                    if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                            context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
+            setOnApplyWindowInsetsListener { _, windowInsets ->
+                if (this is ViewGroup) {
+                    setPadding(
+                            if (!rtl) windowInsets.stableInsetLeft else windowInsets.stableInsetRight,
+                            if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                                    context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
+                            if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
+                            if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                                    context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
+                }
+                windowInsets
+            }
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     val (height, width) = measuredHeight to measuredWidth
@@ -830,6 +838,12 @@ class LauncherFeed(val originalContext: Context,
                     recyclerView.isLayoutFrozen = true
                     toolbar.animate().translationY(0f)
                     return true;
+                }
+            })
+            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    requestApplyInsets()
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
             })
         })
