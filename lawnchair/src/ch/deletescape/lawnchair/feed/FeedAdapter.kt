@@ -134,7 +134,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
         if (cards[position].hasGlobalClickListener()) {
+            holder.itemView.foreground = holder.itemView.context.getDrawableAttr(R.attr.selectableItemBackground)
             holder.itemView.setOnClickListener(cards[position].globalClickListener)
+        } else {
+            holder.itemView.foreground = null
         }
 
         if (cards[holder.adapterPosition].canHide) {
