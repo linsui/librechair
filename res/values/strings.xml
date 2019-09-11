@@ -661,4 +661,5 @@
     <string name="title_animation_delegate_slide_up">Slide up</string>
     <string name="title_pref_title_bar_home_widget">Use home widget as toolbar widget</string>
     <string name="summary_pref_title_bar_home_widget">The title bar widget will be replaced by the home widget</string>
+    <string name="dbg_freeform">Freeform</string>
 </resources>

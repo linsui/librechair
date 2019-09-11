@@ -18,6 +18,7 @@ package com.android.systemui.shared.system;
 
 import static android.app.ActivityManager.SPLIT_SCREEN_CREATE_MODE_BOTTOM_OR_RIGHT;
 import static android.app.ActivityManager.SPLIT_SCREEN_CREATE_MODE_TOP_OR_LEFT;
+import static android.app.WindowConfiguration.WINDOWING_MODE_FREEFORM;
 import static android.app.WindowConfiguration.WINDOWING_MODE_SPLIT_SCREEN_PRIMARY;
 
 import android.app.ActivityOptions;
@@ -42,5 +43,11 @@ public abstract class ActivityOptionsCompat {
     public static ActivityOptions makeRemoteAnimation(
             RemoteAnimationAdapterCompat remoteAnimationAdapter) {
         return ActivityOptions.makeRemoteAnimation(remoteAnimationAdapter.getWrapped());
+    }
+
+    public static ActivityOptions makeFreeformOptions() {
+        final ActivityOptions options = ActivityOptions.makeBasic();
+        options.setLaunchWindowingMode(WINDOWING_MODE_FREEFORM);
+        return options;
     }
 }

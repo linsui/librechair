@@ -34,6 +34,15 @@ public class TaskOverlayFactory {
 
     private static TaskOverlayFactory sInstance;
 
+    /** Note that these will be shown in order from top to bottom, if available for the task. */
+    private static final TaskSystemShortcut[] MENU_OPTIONS = new TaskSystemShortcut[]{
+            new TaskSystemShortcut.AppInfo(),
+            new TaskSystemShortcut.SplitScreen(),
+            new TaskSystemShortcut.Pin(),
+            new TaskSystemShortcut.Install(),
+            new TaskSystemShortcut.Freeform()
+    };
+
     public static TaskOverlayFactory get(Context context) {
         Preconditions.assertUIThread();
         if (sInstance == null) {
