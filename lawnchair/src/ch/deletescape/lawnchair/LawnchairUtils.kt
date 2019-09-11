@@ -1096,7 +1096,7 @@ inline val SyndEntry.thumbnailURL: String?
             d("get: parsing foreign markup element ${element.namespacePrefix} ${element.name} ${element.attributes} ${element.getAttribute(
                     "url")} for image url")
             if (element.getAttributeValue("url")?.contains(
-                            Regex("(img|image|png|jpeg|bmp)")) == true || element.getAttributeValue(
+                            Regex("(img|image|png|jpeg|jpg|bmp)")) == true || element.getAttributeValue(
                             "url")?.matches(
                             Regex("https://.+\\.googleusercontent.com/proxy/.+")) == true) {
                 d("get: attribute \"url\" is a valid image URL. using that!")
