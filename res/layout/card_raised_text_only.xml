@@ -22,6 +22,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:foreground="?attr/selectableItemBackground"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="@dimen/dimen_elevation_raised_feed_card">
     <com.github.mmin18.widget.RealtimeBlurView
