@@ -224,7 +224,9 @@ class LawnchairPreferences(val context: Context) :
                                                           DeviceStateProvider::class.java.name,
                                                           CalendarEventProvider::class.java.name,
                                                           WikipediaNewsProvider::class.java.name,
-                                                          WikinewsFeedProvider::class.java.name).map {
+                                                          WikinewsFeedProvider::class.java.name,
+                                                          WikipediaNewsProvider::class.qualifiedName,
+                                                          FeedWidgetsProvider::class.qualifiedName).map {
                                                        FeedProviderContainer(it, null)
                                                    }) {
         override fun unflattenValue(value: String) = Gson().fromJson(value,
