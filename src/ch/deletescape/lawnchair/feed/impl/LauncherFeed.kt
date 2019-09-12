@@ -48,6 +48,7 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
+import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.font.CustomFontManager
@@ -519,8 +520,9 @@ class LauncherFeed(val originalContext: Context,
                                                 50)).toIntArray())
                     }
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
+                    toolbar.menu.getItem(0).isVisible =
+                            adapter.providers.any { it::class == FeedWidgetsProvider::class }
                     if (hasWidgetTab) {
-                        toolbar.menu.getItem(0).isVisible = tabs[tab.position]!!.isWidgetTab
                         toolbar.menu.getItem(0).icon = R.drawable.ic_add.fromDrawableRes(context)
                                 .tint(if (useWhiteText(backgroundColor,
                                                 context)) R.color.textColorPrimary.fromColorRes(
@@ -771,7 +773,8 @@ class LauncherFeed(val originalContext: Context,
                         }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
             if (hasWidgetTab) {
-                toolbar.menu.getItem(0).isVisible = tabs[0]!!.isWidgetTab
+                toolbar.menu.getItem(0).isVisible =
+                        adapter.providers.any { it::class == FeedWidgetsProvider::class }
             }
 
             upButton.supportImageTintList =
