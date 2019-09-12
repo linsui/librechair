@@ -435,7 +435,7 @@ class LauncherFeed(val originalContext: Context,
                     arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
                     arrayOf(googleColours[0],
                             R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
-        } else if (backgroundColor.alpha > 35) {
+        } else if (backgroundColor.alpha < 35) {
             tabView.tabIconTint =
                     ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
             tabView.tabSelectedIndicator!!
