@@ -424,6 +424,8 @@ fun Context.getLauncherOrNull(): Launcher? {
         Launcher.getLauncher(this)
     } catch (e: ClassCastException) {
         null
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
 

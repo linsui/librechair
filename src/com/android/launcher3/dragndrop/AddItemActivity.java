@@ -56,6 +56,7 @@ import com.android.launcher3.shortcuts.ShortcutInfoCompat;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
 import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.util.InstantAppResolver;
+import com.android.launcher3.views.BaseDragLayer;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.WidgetHostViewLoader;
@@ -312,5 +313,10 @@ public class AddItemActivity extends BaseActivity implements OnLongClickListener
                 newCommandAction(command),
                 newItemTarget(mWidgetCell.getWidgetView(), mInstantAppResolver),
                 newContainerTarget(ContainerType.PINITEM)), null);
+    }
+
+    @Override
+    public BaseDragLayer getDragLayer() {
+        throw new UnsupportedOperationException();
     }
 }

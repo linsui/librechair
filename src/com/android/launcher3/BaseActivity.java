@@ -32,6 +32,7 @@ import com.android.launcher3.logging.UserEventDispatcher.UserEventDelegate;
 import com.android.launcher3.uioverrides.UiFactory;
 import com.android.launcher3.userevent.nano.LauncherLogProto;
 import com.android.launcher3.util.SystemUiController;
+import com.android.launcher3.views.ActivityContext;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -41,7 +42,8 @@ import java.util.ArrayList;
 import static com.android.launcher3.util.SystemUiController.UI_STATE_OVERVIEW;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-public abstract class BaseActivity extends Activity implements UserEventDelegate{
+public abstract class BaseActivity extends Activity implements UserEventDelegate,
+        ActivityContext {
 
     public static final int INVISIBLE_BY_STATE_HANDLER = 1 << 0;
     public static final int INVISIBLE_BY_APP_TRANSITIONS = 1 << 1;

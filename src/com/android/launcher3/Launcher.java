@@ -124,6 +124,7 @@ import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.TraceHelper;
 import com.android.launcher3.util.UiThreadHelper;
 import com.android.launcher3.util.ViewOnDrawExecutor;
+import com.android.launcher3.views.ActivityContext;
 import com.android.launcher3.views.OptionsPopupView;
 import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
@@ -2553,7 +2554,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     public static Launcher getLauncher(Context context) {
-        return (Launcher) fromContext(context);
+        return (Launcher) ActivityContext.lookupContext(context);
     }
 
     @org.jetbrains.annotations.Nullable
