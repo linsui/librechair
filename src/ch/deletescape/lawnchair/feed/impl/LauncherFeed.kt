@@ -46,6 +46,8 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
+import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.font.CustomFontManager
@@ -472,6 +474,8 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView.visibility = View.GONE
         } else {
+            tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(TabIndicatorProvider::class,
+                    context).drawable)
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
                     text = it.title
