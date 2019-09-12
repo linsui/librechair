@@ -334,14 +334,28 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         holder.viewHolder.removeAllViewsInLayout()
         try {
             holder.viewHolder.addView(cards[holder.adapterPosition].inflateHelper.inflate(
-                    holder.viewHolder).also { (it.parent as ViewGroup?)?.removeView(it) })
+                    holder.viewHolder).apply {
+                if (this is ViewGroup) {
+                    this.allChildren.forEach { view ->
+                        if (view is TextView) {
+                            CustomFontManager.getInstance(context)
+                                    .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
+                                            into = { view.typeface = Typeface.create(it, view.typeface.style) })
+                        }
+                    }
+                } else if (this is TextView) {
+                    CustomFontManager.getInstance(context)
+                            .loadFont(CustomFontManager.FONT_TEXT, typeface.style,
+                                    into = { typeface = Typeface.create(it, typeface.style) })
+                }
+            }.also { (it.parent as ViewGroup?)?.removeView(it) })
         } catch (e: Exception) {
             e.printStackTrace()
         }
         if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
-                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
+                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(applt
                                 context.lawnchairPrefs.feedCardOpacity.roundToInt()))
             }
             if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255 || context.lawnchairPrefs.feedCardBlur) {
