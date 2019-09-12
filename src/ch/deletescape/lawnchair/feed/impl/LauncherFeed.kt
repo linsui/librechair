@@ -810,15 +810,21 @@ class LauncherFeed(val originalContext: Context,
             background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
             visibility = View.INVISIBLE
             fitsSystemWindows = false
+            var originalPaddingHorizontal: Pair<Int, Int>? = null
+            var originalPaddingVertical: Pair<Int, Int>? = null
             setOnApplyWindowInsetsListener { _, windowInsets ->
+                if (originalPaddingHorizontal == null || originalPaddingVertical == null) {
+                    originalPaddingHorizontal = paddingStart to paddingEnd
+                    originalPaddingVertical = paddingTop to paddingBottom
+                }
                 if (this is ViewGroup) {
                     setPadding(
-                            if (!rtl) windowInsets.stableInsetLeft else windowInsets.stableInsetRight,
-                            if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                                    context).toInt() + statusBarHeight!! else paddingTop + statusBarHeight!!,
-                            if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
-                            if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                                    context).toInt() + statusBarHeight!! else paddingBottom + statusBarHeight!!)
+                            originalPaddingHorizontal!!.first + if (!rtl) windowInsets.stableInsetLeft else windowInsets.stableInsetRight,
+                            originalPaddingVertical!!.first + if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                                    context).toInt() + statusBarHeight!! else statusBarHeight!!,
+                            originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
+                            originalPaddingVertical!!.second + if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                                    context).toInt() + statusBarHeight!! else statusBarHeight!!)
                 }
                 windowInsets
             }
@@ -840,7 +846,8 @@ class LauncherFeed(val originalContext: Context,
                     return true;
                 }
             })
-            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            viewTreeObserver.addOnGlobalLayoutListener(object :
+                    ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     requestApplyInsets()
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
