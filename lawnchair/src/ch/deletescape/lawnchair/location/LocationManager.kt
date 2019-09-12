@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.location
 
 import android.annotation.SuppressLint
 import android.content.Context
+import ch.deletescape.lawnchair.util.extensions.d
 import java.util.concurrent.TimeUnit
 
 @SuppressLint("StaticFieldLeak")
@@ -46,13 +47,14 @@ object LocationManager {
                     it(cache!!.second!!.first, cache!!.second!!.second)
                 }
             }
-            cache?.second
+            cache?.second.also { d("location: location is ${cache?.second}") }
         }
 
     fun internalGet(): Pair<Double, Double>? {
         providers.forEach {
-            if (it.location != null) {
-                return it.location
+            val loc = it.location
+            if (loc != null && loc != .0 to .0) {
+                return loc
             }
         }
         return null

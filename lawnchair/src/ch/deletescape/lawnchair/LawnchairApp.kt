@@ -26,8 +26,8 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import androidx.annotation.Keep
 import android.webkit.WebView
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
@@ -65,6 +65,7 @@ class LawnchairApp : Application(), () -> Unit {
 
     override fun onCreate() {
         super.onCreate()
+        ch.deletescape.lawnchair.location.LocationManager.location
         d("Current process: " + getCurrentProcessName(this))
         if (getCurrentProcessName(this).contains("overlay")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
