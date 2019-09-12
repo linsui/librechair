@@ -29,7 +29,6 @@ import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
 import com.android.launcher3.R
 import com.android.launcher3.util.TraceHelper
-import java.lang.Exception
 
 class CustomFontManager(private val context: Context) {
 
@@ -120,6 +119,11 @@ class CustomFontManager(private val context: Context) {
         if (fontType != -1) {
             setCustomFont(textView, fontType, fontWeight)
         }
+    }
+
+    fun loadFont(type: Int, style: Int = -1, into: (typeface: Typeface) -> Unit) {
+        val spec = specMap[type] ?: return
+        loaderManager.loadFont(spec.font.createWithWeight(style)).into(into, spec.fallback)
     }
 
     @JvmOverloads

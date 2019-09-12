@@ -52,6 +52,14 @@ class FontLoader(font: FontCache.Font) : FontCache.Font.LoadCallback {
         }
     }
 
+    fun into(target: (typeface: Typeface) -> Unit, fallback: Typeface) {
+        if (!fontLoaded) {
+            target(fallback)
+        } else {
+            target(face ?: fallback)
+        }
+    }
+
     fun into(target: FontReceiver, fallback: Typeface) {
         if (!fontLoaded) {
             target.setTypeface(fallback)

@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.os.Vibrator
 import android.util.TypedValue
@@ -41,6 +42,7 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
@@ -136,6 +138,13 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         var isDeleteActive = false
+        (holder.itemView as ViewGroup).allChildren.forEach { view ->
+            if (view is TextView) {
+                CustomFontManager.getInstance(context)
+                        .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
+                                into = { view.typeface = Typeface.create(it, view.typeface.style) })
+            }
+        }
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
         if (cards[position].hasGlobalClickListener()) {
@@ -154,14 +163,18 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
 
             when (context.lawnchairPrefs.feedRaisedCardTitleAlignment) {
                 TitleAlignmentPreference.ALIGNMENT_CENTER -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START,
+                            holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END,
+                            ConstraintSet.PARENT_ID, ConstraintSet.END)
                 }
                 TitleAlignmentPreference.ALIGNMENT_END -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END,
+                            ConstraintSet.PARENT_ID, ConstraintSet.END)
                 }
                 TitleAlignmentPreference.ALIGNMENT_START -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START,
+                            holder.icon!!.id, ConstraintSet.END)
                 }
             }
             constraintSet.applyTo(constraintLayout)
@@ -173,14 +186,18 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
 
             when (context.lawnchairPrefs.feedRaisedHeaderOnlyCardTitleAlignment) {
                 TitleAlignmentPreference.ALIGNMENT_CENTER -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START,
+                            holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END,
+                            ConstraintSet.PARENT_ID, ConstraintSet.END)
                 }
                 TitleAlignmentPreference.ALIGNMENT_END -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END,
+                            ConstraintSet.PARENT_ID, ConstraintSet.END)
                 }
                 TitleAlignmentPreference.ALIGNMENT_START -> {
-                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START,
+                            holder.icon!!.id, ConstraintSet.END)
                 }
             }
             constraintSet.applyTo(constraintLayout)
