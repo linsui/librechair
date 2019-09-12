@@ -161,7 +161,7 @@ public class SmartspaceView extends FrameLayout implements ISmartspace, ValueAni
             if (launcher instanceof NexusLauncherActivity) {
                 ((NexusLauncherActivity) launcher).registerSmartspaceView(this);
             }
-        } catch (ClassCastException e) {
+        } catch (ClassCastException | IllegalArgumentException e) {
 
         }
     }

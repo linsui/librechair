@@ -434,6 +434,8 @@ fun Context.getBaseDraggingActivityOrNull(): BaseDraggingActivity? {
         BaseDraggingActivity.fromContext(this)
     } catch (e: ClassCastException) {
         null
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
 
