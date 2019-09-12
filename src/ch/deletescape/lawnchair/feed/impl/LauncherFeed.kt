@@ -539,6 +539,18 @@ class LauncherFeed(val originalContext: Context,
                             title.visibility = View.GONE
                         }
                     }
+                    (tabView.getChildAt(0) as ViewGroup).childs.forEach {
+                        val textView = it::class.java.getDeclaredField(
+                                "textView").also { it.isAccessible = true }.get(it)
+                                as? TextView // TODO figure out Kotlin reflection is being so slow
+                        if (textView != null) {
+                            CustomFontManager.getInstance(context)
+                                    .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                            textView.typeface.style) {
+                                        textView.typeface = it
+                                    }
+                        }
+                    }
                     runOnNewThread { refresh(0) }
                 }
             })
