@@ -26,6 +26,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.IRunnable
 
 data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: RemoteInflateHelper,
                       val type: Int, val algoFlags: String? = null,
@@ -35,6 +36,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     var actionName: String? = null
     var actionOnCardActionSelectedListener: RemoteOnCardActionSelectedListener? = null
     var onRemoveListener: OnRemoveListener? = null
+    var globalClickListener: IRunnable? = null
 
     constructor(parcel: Parcel) : this(parcel.readParcelable(Bitmap::class.java.classLoader),
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
@@ -45,6 +47,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         actionOnCardActionSelectedListener =
                 RemoteOnCardActionSelectedListener.Stub.asInterface(parcel.readStrongBinder())
         onRemoveListener = OnRemoveListener.Stub.asInterface(parcel.readStrongBinder())
+        globalClickListener = IRunnable.Stub.asInterface(parcel.readStrongBinder())
     }
 
     constructor(icon: Bitmap?, title: String?, inflateHelper: RemoteInflateHelper, type: Int,
@@ -81,6 +84,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeString(actionName)
         parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
         parcel.writeStrongBinder(onRemoveListener?.asBinder())
+        parcel.writeStrongBinder(globalClickListener?.asBinder())
     }
 
     override fun describeContents(): Int {
@@ -110,6 +114,9 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
             }
             onRemoveListener = {
                 this@RemoteCard.onRemoveListener?.onRemove()
+            }
+            globalClickListener = {
+                this@RemoteCard.globalClickListener?.run()
             }
         }
     }
