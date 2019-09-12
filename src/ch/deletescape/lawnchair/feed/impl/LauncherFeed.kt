@@ -118,19 +118,21 @@ class LauncherFeed(val originalContext: Context,
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
         set(value) = run {
             field = value.also {
-                (it.getChildAt(0) as ViewGroup).allChildren.forEach {
-                    try {
-                        val textView = it::class.java.getDeclaredField("textView").also { it.isAccessible = true }.get(it)
-                                as? TextView // TODO figure out Kotlin reflection is being so slow
-                        if (textView != null) {
-                            CustomFontManager.getInstance(context)
-                                    .loadFont(CustomFontManager.FONT_TEXT,
-                                            textView.typeface.style) {
-                                        textView.typeface = it
-                                    }
+                it.viewTreeObserver.addOnGlobalLayoutListener {
+                    (it.getChildAt(0) as ViewGroup).allChildren.forEach {
+                        try {
+                            val textView = it::class.java.getDeclaredField("textView").also { it.isAccessible = true }.get(it)
+                                    as? TextView // TODO figure out Kotlin reflection is being so slow
+                            if (textView != null) {
+                                CustomFontManager.getInstance(context)
+                                        .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                                textView.typeface.style) {
+                                            textView.typeface = it
+                                        }
+                            }
+                        } catch (e: NoSuchFieldException) {
+                            e.printStackTrace()
                         }
-                    } catch (e: NoSuchFieldException) {
-                        e.printStackTrace()
                     }
                 }
             }
