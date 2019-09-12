@@ -38,6 +38,7 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.graphics.ColorUtils
+import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
@@ -52,8 +53,8 @@ import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                        private val context: Context, private val feed: LauncherFeed?) :
-        androidx.recyclerview.widget.RecyclerView.Adapter<CardViewHolder>() {
-    private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
+        RecyclerView.Adapter<CardViewHolder>() {
+    private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {
             d("init: backgroundColor is now ${value}")
@@ -83,7 +84,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.addItemDecoration(Decoration(
                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -128,7 +129,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 
     override fun onDetachedFromRecyclerView(
-            recyclerView: androidx.recyclerview.widget.RecyclerView) {
+            recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         providers.iterator().forEachRemaining {
             it.onDestroy()
@@ -138,13 +139,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     @SuppressLint("MissingPermission")
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         var isDeleteActive = false
-        (holder.itemView as ViewGroup).allChildren.forEach { view ->
-            if (view is TextView) {
-                CustomFontManager.getInstance(context)
-                        .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
-                                into = { view.typeface = Typeface.create(it, view.typeface.style) })
-            }
-        }
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
         if (cards[position].hasGlobalClickListener()) {
@@ -381,7 +375,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 }
 
-class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
+class CardViewHolder : RecyclerView.ViewHolder {
     val icon by lazy {
         itemView.findViewById(R.id.card_provider_small_icon) as ImageView?
     }
@@ -412,6 +406,16 @@ class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
             viewHolder.visibility = GONE
         }
 
+        itemView.viewTreeObserver.addOnGlobalLayoutListener {
+            (itemView as ViewGroup).allChildren.forEach { view ->
+                if (view is TextView) {
+                    CustomFontManager.getInstance(itemView.context)
+                            .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
+                                    into = { view.typeface = Typeface.create(it, view.typeface.style) })
+                }
+            }
+        }
+
         d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
                 backgroundColor)}")
 
@@ -437,10 +441,10 @@ class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
 
 private class Decoration(private val spaceHeightVertical: Int,
                          private val spaceHeightHorizontal: Int) :
-        androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+        RecyclerView.ItemDecoration() {
     override fun getItemOffsets(outRect: Rect, view: View,
-                                parent: androidx.recyclerview.widget.RecyclerView,
-                                state: androidx.recyclerview.widget.RecyclerView.State) {
+                                parent: RecyclerView,
+                                state: RecyclerView.State) {
         with(outRect) {
             if (parent.getChildAdapterPosition(view) == 0) {
                 top = spaceHeightVertical
