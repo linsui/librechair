@@ -44,14 +44,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:layout_marginStart="32dp"
             android:id="@+id/card_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
             android:text="@string/placeholder_raised_card_text"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/card_provider_small_icon"
-            app:layout_constraintStart_toEndOf="@+id/card_provider_small_icon" />
+            app:layout_constraintStart_toEndOf="@+id/card_provider_small_icon"
+            app:layout_constraintTop_toTopOf="parent" />
         <LinearLayout
             android:layout_marginTop="8dp"
             android:id="@+id/card_view_holder"
