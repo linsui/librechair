@@ -1059,7 +1059,6 @@ class LauncherFeed(val originalContext: Context,
     override fun windowDetached(isChangingConfigurations: Boolean) {
         handler.post {
             feedAttached = false
-            windowService.removeView(feedController)
         }
     }
 
