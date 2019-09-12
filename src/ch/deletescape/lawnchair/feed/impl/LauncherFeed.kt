@@ -48,6 +48,7 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
+import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -115,6 +116,25 @@ class LauncherFeed(val originalContext: Context,
     private var recyclerView = (feedController.findViewById(
             R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+        set(value) = run {
+            field = value.also {
+                (it.getChildAt(0) as ViewGroup).allChildren.forEach {
+                    try {
+                        val textView = it::class.java.getDeclaredField("textView").also { it.isAccessible = true }.get(it)
+                                as? TextView // TODO figure out Kotlin reflection is being so slow
+                        if (textView != null) {
+                            CustomFontManager.getInstance(context)
+                                    .loadFont(CustomFontManager.FONT_TEXT,
+                                            textView.typeface.style) {
+                                        textView.typeface = it
+                                    }
+                        }
+                    } catch (e: NoSuchFieldException) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =

@@ -340,7 +340,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                         if (view is TextView) {
                             CustomFontManager.getInstance(context)
                                     .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
-                                            into = { view.typeface = Typeface.create(it, view.typeface.style) })
+                                            into = {
+                                                view.typeface =
+                                                        Typeface.create(it, view.typeface.style)
+                                            })
                         }
                     }
                 } else if (this is TextView) {
@@ -355,7 +358,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
-                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(applt
+                        context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
                                 context.lawnchairPrefs.feedCardOpacity.roundToInt()))
             }
             if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255 || context.lawnchairPrefs.feedCardBlur) {
@@ -425,7 +428,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
                 if (view is TextView) {
                     CustomFontManager.getInstance(itemView.context)
                             .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
-                                    into = { view.typeface = Typeface.create(it, view.typeface.style) })
+                                    into = {
+                                        view.typeface = Typeface.create(it, view.typeface.style)
+                                    })
                 }
             }
         }
