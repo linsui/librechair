@@ -47,6 +47,7 @@ import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.DrawerTabs
 import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.preferences.DockStyle
+import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
@@ -521,6 +522,10 @@ class LawnchairPreferences(val context: Context) :
     var feedToolbarWidget by IntPref("pref_feed_toolbar_custom_widget", -1)
     var feedToolbarWidgetForceStyle by BooleanPref("pref_feed_toolbar_widget_force_style",
             false, ::restartOverlay)
+    val feedRaisedCardTitleAlignment by StringPref("pref_feed_card_title_alignment",
+            TitleAlignmentPreference.ALIGNMENT_CENTER, ::restartOverlay)
+    val feedRaisedHeaderOnlyCardTitleAlignment by StringPref("pref_feed_header_only_card_title_alignment",
+            TitleAlignmentPreference.ALIGNMENT_END, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
     private val was1stApril = is1stApril()

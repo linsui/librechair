@@ -33,11 +33,15 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.graphics.ColorUtils
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -45,7 +49,7 @@ import com.github.mmin18.widget.RealtimeBlurView
 import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
-                  private val context: Context, private val feed: LauncherFeed?) :
+                       private val context: Context, private val feed: LauncherFeed?) :
         androidx.recyclerview.widget.RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: androidx.recyclerview.widget.RecyclerView
     var backgroundColor: Int = 0
@@ -121,7 +125,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards.size;
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+    override fun onDetachedFromRecyclerView(
+            recyclerView: androidx.recyclerview.widget.RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         providers.iterator().forEachRemaining {
             it.onDestroy()
@@ -134,10 +139,51 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
         if (cards[position].hasGlobalClickListener()) {
-            holder.itemView.foreground = holder.itemView.context.getDrawableAttr(R.attr.selectableItemBackground)
+            holder.itemView.foreground =
+                    holder.itemView.context.getDrawableAttr(R.attr.selectableItemBackground)
             holder.itemView.setOnClickListener(cards[position].globalClickListener)
         } else {
             holder.itemView.foreground = null
+        }
+
+        if (holder.itemViewType and Card.TEXT_ONLY != 1 && holder.itemViewType and Card.NO_HEADER != 1 && holder.icon != null) {
+            val constraintLayout = holder.icon!!.parent as ConstraintLayout
+            val constraintSet = ConstraintSet().apply { clone(constraintLayout) }
+            constraintSet.removeFromHorizontalChain(holder.description!!.id)
+
+
+            when (context.lawnchairPrefs.feedRaisedCardTitleAlignment) {
+                TitleAlignmentPreference.ALIGNMENT_CENTER -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                }
+                TitleAlignmentPreference.ALIGNMENT_END -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                }
+                TitleAlignmentPreference.ALIGNMENT_START -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                }
+            }
+            constraintSet.applyTo(constraintLayout)
+        } else if (holder.itemViewType and Card.TEXT_ONLY == 1) {
+            val constraintLayout = holder.icon!!.parent as ConstraintLayout
+            val constraintSet = ConstraintSet().apply { clone(constraintLayout) }
+            constraintSet.removeFromHorizontalChain(holder.description!!.id)
+
+
+            when (context.lawnchairPrefs.feedRaisedHeaderOnlyCardTitleAlignment) {
+                TitleAlignmentPreference.ALIGNMENT_CENTER -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                }
+                TitleAlignmentPreference.ALIGNMENT_END -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+                }
+                TitleAlignmentPreference.ALIGNMENT_START -> {
+                    constraintSet.connect(holder.description!!.id, ConstraintSet.START, holder.icon!!.id, ConstraintSet.END)
+                }
+            }
+            constraintSet.applyTo(constraintLayout)
         }
 
         if (cards[holder.adapterPosition].canHide) {
@@ -281,7 +327,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        if (holder.itemView is androidx.cardview.widget.CardView) {
+        if (holder.itemView is CardView) {
             if (!context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.setCardBackgroundColor(
                         context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
@@ -361,7 +407,8 @@ class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
         }
 
         if (viewHolder.context.lawnchairPrefs.feedCardBlur && type and Card.RAISE != 0) {
-            (itemView as androidx.cardview.widget.CardView).setCardBackgroundColor(Color.TRANSPARENT)
+            (itemView as CardView).setCardBackgroundColor(
+                    Color.TRANSPARENT)
             itemView.background.setTint(Color.argb(64, 255, 255, 255))
             backgroundBlurView!!.visibility = VISIBLE
             backgroundBlurView!!.setBlurRadius(
@@ -372,8 +419,10 @@ class CardViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
 }
 
 private class Decoration(private val spaceHeightVertical: Int,
-                         private val spaceHeightHorizontal: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView,
+                         private val spaceHeightHorizontal: Int) :
+        androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+    override fun getItemOffsets(outRect: Rect, view: View,
+                                parent: androidx.recyclerview.widget.RecyclerView,
                                 state: androidx.recyclerview.widget.RecyclerView.State) {
         with(outRect) {
             if (parent.getChildAdapterPosition(view) == 0) {
