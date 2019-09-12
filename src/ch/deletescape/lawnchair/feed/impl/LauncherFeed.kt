@@ -112,52 +112,43 @@ class LauncherFeed(val originalContext: Context,
     private val useTabbedMode = tabController.allTabs.isNotEmpty()
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
-    private var tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-    private var recyclerView = (feedController.findViewById(
-            R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
-    private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar).also {
-        it.viewTreeObserver.addOnGlobalLayoutListener {
-            (it.getChildAt(0) as ViewGroup).allChildren.forEach {
-                try {
-                    val textView = it::class.java.getDeclaredField("textView").also {
-                        it.isAccessible = true
-                    }.get(it)
-                            as? TextView // TODO figure out Kotlin reflection is being so slow
-                    if (textView != null) {
-                        CustomFontManager.getInstance(context)
-                                .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
-                                        textView.typeface.style) {
-                                    textView.typeface = it
-                                }
-                    }
-                } catch (e: NoSuchFieldException) {
-                    e.printStackTrace()
+    private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
+        it.viewTreeObserver.addOnGlobalLayoutListener {  ->
+            (it.getChildAt(0) as ViewGroup).childs.forEach {
+                val textView = it::class.java.getDeclaredField(
+                        "textView").also { it.isAccessible = true }.get(it)
+                        as? TextView // TODO figure out Kotlin reflection is being so slow
+                if (textView != null) {
+                    CustomFontManager.getInstance(context)
+                            .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                    textView.typeface.style) {
+                                textView.typeface = it
+                            }
                 }
             }
         }
     }
         set(value) = run {
             field = value.also {
-                it.viewTreeObserver.addOnGlobalLayoutListener {
-                    (it.getChildAt(0) as ViewGroup).allChildren.forEach {
-                        try {
-                            val textView = it::class.java.getDeclaredField(
-                                    "textView").also { it.isAccessible = true }.get(it)
-                                    as? TextView // TODO figure out Kotlin reflection is being so slow
-                            if (textView != null) {
-                                CustomFontManager.getInstance(context)
-                                        .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
-                                                textView.typeface.style) {
-                                            textView.typeface = it
-                                        }
-                            }
-                        } catch (e: NoSuchFieldException) {
-                            e.printStackTrace()
+                it.viewTreeObserver.addOnGlobalLayoutListener { ->
+                    (it.getChildAt(0) as ViewGroup).childs.forEach {
+                        val textView = it::class.java.getDeclaredField(
+                                "textView").also { it.isAccessible = true }.get(it)
+                                as? TextView // TODO figure out Kotlin reflection is being so slow
+                        if (textView != null) {
+                            CustomFontManager.getInstance(context)
+                                    .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                            textView.typeface.style) {
+                                        textView.typeface = it
+                                    }
                         }
                     }
                 }
             }
         }
+    private var recyclerView = (feedController.findViewById(
+            R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
+    private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
