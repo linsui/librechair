@@ -38,6 +38,6 @@ public class TitleAlignmentPreference extends ListPreference {
                 new String[]{context.getString(R.string.title_alignment_start), context.getString(
                         R.string.title_alignment_center), context.getString(
                         R.string.title_alignment_end)});
-        setEntryValues(new String[]{ALIGNMENT_START, ALIGNMENT_END, ALIGNMENT_CENTER});
+        setEntryValues(new String[]{ALIGNMENT_START, ALIGNMENT_CENTER, ALIGNMENT_END});
     }
 }

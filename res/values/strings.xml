@@ -666,4 +666,6 @@
     <string name="title_alignment_start">Start</string>
     <string name="title_alignment_center">Center</string>
     <string name="title_alignment_end">End</string>
+    <string name="title_pref_feed_card_title_alignment">Card title alignment</string>
+    <string name="title_pref_feed_header_only_card_title_alignment">Header-only card title alignment</string>
 </resources>

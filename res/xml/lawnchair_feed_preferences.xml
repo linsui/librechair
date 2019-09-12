@@ -89,6 +89,16 @@
             android:title="@string/title_pref_feed_animation"
             android:summary="%s"
             android:defaultValue="ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate"/>
+        <ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
+            android:key="pref_feed_card_title_alignment"
+            android:summary="%s"
+            android:title="@string/title_pref_feed_card_title_alignment"
+            android:defaultValue="c"/>
+        <ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
+            android:key="pref_feed_header_only_card_title_alignment"
+            android:summary="%s"
+            android:title="@string/title_pref_feed_header_only_card_title_alignment"
+            android:defaultValue="e"/>
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_opacity"
             android:persistent="true"
