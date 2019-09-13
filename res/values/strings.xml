@@ -671,4 +671,5 @@
     <string name="title_tab_indicator_dot">Dot</string>
     <string name="title_pref_feed_indicator_provider">Tab indicator</string>
     <string name="title_tab_indicator_legacy">Material</string>
+    <string name="title_pref_feed_color_provider">Tab color provider</string>
 </resources>

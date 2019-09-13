@@ -22,6 +22,9 @@ package ch.deletescape.lawnchair.feed.tabs.colors;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Pair;
+
+import com.android.launcher3.R;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +40,11 @@ public class ColorProvider {
     }
 
     public static final class Companion {
+
+        public static final List<Pair<Class<? extends ColorProvider>, Integer>> all =
+                Arrays.asList(new Pair<>(ColorProvider.class, R.string.theme_default),
+                        new Pair<>(AccentProvider.class, R.string.lawnchair_accent));
+
         public static ColorProvider inflate(Class<? extends ColorProvider> clazz) {
             try {
                 return clazz.getConstructor().newInstance();
