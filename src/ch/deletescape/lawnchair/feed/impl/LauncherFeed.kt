@@ -17,6 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("UNCHECKED_CAST")
+
 package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.Animator
@@ -46,6 +48,7 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -157,8 +160,8 @@ class LauncherFeed(val originalContext: Context,
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
-    private var googleColours = arrayOf(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
-            Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"))
+    private var googleColours = ColorProvider.Companion.inflate(
+            Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>).getColors(context)
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList

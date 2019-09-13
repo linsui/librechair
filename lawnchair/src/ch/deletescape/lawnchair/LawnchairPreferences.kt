@@ -38,6 +38,7 @@ import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.images.providers.NationalGeographicImageProvider
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
@@ -454,7 +455,9 @@ class LawnchairPreferences(val context: Context) :
     val feedSearchUrl by StringPref("pref_feed_search_url_template", "https://example.com/search?q=%s", ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     val feedBlurStrength by FloatPref("pref_feed_blur_strength", 255f, ::restartOverlay)
-    val feedIndicatorProvider by StringPref("pref_feed_indicator_provider",     TabIndicatorProvider::class.qualifiedName!!, ::restartOverlay)
+    val feedIndicatorProvider by StringPref("pref_feed_indicator_provider", TabIndicatorProvider::class.qualifiedName!!, ::restartOverlay)
+    val feedColorProvider by StringPref("pref_feed_color_provider", ColorProvider::class.qualifiedName!!,
+            ::restartOverlay)
     var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
                 val providerList = MainFeedController.getFeedProviders(context, true)
