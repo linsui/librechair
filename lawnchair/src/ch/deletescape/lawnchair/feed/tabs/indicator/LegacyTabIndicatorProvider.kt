@@ -23,22 +23,9 @@ package ch.deletescape.lawnchair.feed.tabs.indicator
 import android.content.Context
 import android.graphics.drawable.Drawable
 import ch.deletescape.lawnchair.fromDrawableRes
-import com.android.launcher3.R
-import kotlin.reflect.KClass
 
-open class TabIndicatorProvider(val context: Context) {
-    open val drawable: Drawable
-        get() = R.drawable.tab_indicator_feed.fromDrawableRes(context)
-
-    companion object
+class LegacyTabIndicatorProvider(context: Context) : TabIndicatorProvider(context) {
+    override val drawable: Drawable
+        get() = com.google.android.material.R.drawable.
+                abc_tab_indicator_material.fromDrawableRes(context)
 }
-
-fun TabIndicatorProvider.Companion.inflate(klazz: KClass<out TabIndicatorProvider>,
-                                           context: Context): TabIndicatorProvider =
-            klazz.constructors.first().call(
-                    context)
-
-val TabIndicatorProvider.Companion.allProviders
-    get() = listOf(TabIndicatorProvider::class to R.string.theme_default,
-            DotIndicatorProvider::class to R.string.title_tab_indicator_dot,
-            TabIndicatorProvider::class to R.string.title_tab_indicator_legacy)
