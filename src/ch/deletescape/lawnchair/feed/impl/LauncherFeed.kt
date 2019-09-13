@@ -68,6 +68,7 @@ import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
@@ -475,7 +476,8 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView.visibility = View.GONE
         } else {
-            tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(TabIndicatorProvider::class,
+            tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(
+                    Class.forName(context.lawnchairPrefs.feedIndicatorProvider).kotlin as KClass<out TabIndicatorProvider>,
                     context).drawable)
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
