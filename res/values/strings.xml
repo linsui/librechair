@@ -669,4 +669,5 @@
     <string name="title_pref_feed_card_title_alignment">Card title alignment</string>
     <string name="title_pref_feed_header_only_card_title_alignment">Header-only card title alignment</string>
     <string name="title_tab_indicator_dot">Dot</string>
+    <string name="title_pref_feed_indicator_provider">Tab indicator</string>
 </resources>

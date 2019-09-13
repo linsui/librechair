@@ -99,6 +99,11 @@
             android:summary="%s"
             android:title="@string/title_pref_feed_header_only_card_title_alignment"
             android:defaultValue="e"/>
+        <ch.deletescape.lawnchair.preferences.TabIndicatorPreference
+            android:key="pref_feed_indicator_provider"
+            android:title="@string/title_pref_feed_indicator_provider"
+            android:defaultValue="ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider"
+            android:summary="%s"/>
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_opacity"
             android:persistent="true"
