@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.contacts;
 import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -63,10 +64,16 @@ public class ContactsUtil {
             Log.d(ContactsUtil.class.getSimpleName(), "queryContacts loading contact: " + cursor);
             Contact contact = new Contact();
             try {
+                contact.intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                                String.valueOf(cursor.getInt(0))));
                 contact.lookupKey = cursor.getString(3);
                 contact.name = cursor.getString(1);
                 contact.avatar = getAvatar(cursor.getString(3), context);
             } catch (RuntimeException e) {
+                contact.intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                                String.valueOf(0)));
                 Log.e(ContactsUtil.class.getSimpleName(),
                         "queryContacts: unable to retrieve contact name or avatar!", e);
                 if (contact.name == null) {
