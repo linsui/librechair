@@ -149,7 +149,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             holder.itemView.foreground = null
         }
 
-        if (holder.itemViewType and Card.TEXT_ONLY != 1 && holder.itemViewType and Card.NO_HEADER != 1 && holder.icon != null) {
+        if (holder.itemViewType and Card.TEXT_ONLY == 0
+                && holder.itemViewType and Card.NO_HEADER != 1 && holder.icon != null) {
             val constraintLayout = holder.icon!!.parent as ConstraintLayout
             val constraintSet = ConstraintSet().apply { clone(constraintLayout) }
             constraintSet.clear(holder.description!!.id, ConstraintSet.START)
