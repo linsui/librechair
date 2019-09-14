@@ -69,7 +69,11 @@ public class ContactsUtil {
                                 String.valueOf(cursor.getInt(0))));
                 contact.lookupKey = cursor.getString(3);
                 contact.name = cursor.getString(1);
-                contact.avatar = getAvatar(cursor.getString(3), context);
+                try {
+                    contact.avatar = getAvatar(cursor.getString(3), context);
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
             } catch (RuntimeException e) {
                 contact = null;
             }
@@ -84,21 +88,24 @@ public class ContactsUtil {
     public static Bitmap getAvatar(String address, Context context) {
         Bitmap contactAvatar = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.work_tab_user_education);
-        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(address));
-        Cursor phones = context.getContentResolver().query(contactUri, null, null, null, null);
-        while (phones.moveToNext()) {
-            String imageUri = phones.getString(phones.getColumnIndex(
-                    ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
-            if (imageUri != null) {
-                try {
-                    contactAvatar = MediaStore.Images.Media
-                            .getBitmap(context.getContentResolver(),
-                                    Uri.parse(imageUri));
-                } catch (IOException e) {
-                    e.printStackTrace();
+        Cursor phones = context.getContentResolver().query(Uri.parse(address),
+                null, null, null, null);
+        try {
+            while (phones.moveToNext()) {
+                String imageUri = phones.getString(phones.getColumnIndex(
+                        ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+                if (imageUri != null) {
+                    try {
+                        contactAvatar = MediaStore.Images.Media
+                                .getBitmap(context.getContentResolver(),
+                                        Uri.parse(imageUri));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+        } catch (RuntimeException e) {
+            e.printStackTrace();
         }
         return contactAvatar;
     }
