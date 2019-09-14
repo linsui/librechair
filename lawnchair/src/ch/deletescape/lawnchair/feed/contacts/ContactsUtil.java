@@ -36,6 +36,7 @@ import com.android.launcher3.R;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,13 +56,14 @@ public class ContactsUtil {
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(ContactsContract.Data.CONTENT_URI, projection, null,
                 null);
-        List<Contact> contacts = new LinkedList<>();
+        LinkedHashSet<Contact> contacts = new LinkedHashSet<>();
         Log.d(ContactsUtil.class.getSimpleName(), "queryContacts: contacts cursor: " + cursor);
         assert cursor != null;
         for (; !cursor.isAfterLast(); cursor.moveToNext()) {
             Log.d(ContactsUtil.class.getSimpleName(), "queryContacts loading contact: " + cursor);
             Contact contact = new Contact();
             try {
+                contact.lookupKey = cursor.getString(3);
                 contact.name = cursor.getString(1);
                 contact.avatar = getAvatar(cursor.getString(3), context);
             } catch (RuntimeException e) {
@@ -70,11 +72,12 @@ public class ContactsUtil {
                 if (contact.name == null) {
                     contact.name = "?";
                 }
+                contact.lookupKey = contact.name;
             }
             contacts.add(contact);
         }
         cursor.close();
-        return contacts;
+        return new LinkedList<>(contacts);
     }
 
     public static Bitmap getAvatar(String address, Context context) {
