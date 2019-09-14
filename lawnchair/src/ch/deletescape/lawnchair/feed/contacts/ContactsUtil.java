@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -33,10 +34,10 @@ import java.util.List;
 
 public class ContactsUtil {
     private static String[] projection = new String[]{
-            ContactsContract.Profile._ID,
-            ContactsContract.Profile.DISPLAY_NAME_PRIMARY,
-            ContactsContract.Profile.LOOKUP_KEY,
-            ContactsContract.Profile.PHOTO_THUMBNAIL_URI
+            ContactsContract.Data._ID,
+            ContactsContract.Data.DISPLAY_NAME_PRIMARY,
+            ContactsContract.Data.LOOKUP_KEY,
+            ContactsContract.Data.PHOTO_THUMBNAIL_URI
     };
 
     public static List<Contact> queryContacts(Context context) {
@@ -44,12 +45,20 @@ public class ContactsUtil {
             return Collections.emptyList();
         }
         ContentResolver resolver = context.getContentResolver();
-        Cursor cursor = resolver.query(ContactsContract.Profile.CONTENT_URI, projection, null,
+        Cursor cursor = resolver.query(ContactsContract.Data.CONTENT_URI, projection, null,
                 null);
         List<Contact> contacts = new LinkedList<>();
+        Log.d(ContactsUtil.class.getSimpleName(), "queryContacts: contacts cursor: " + cursor);
+        assert cursor != null;
         for (; !cursor.isAfterLast(); cursor.moveToNext()) {
+            Log.d(ContactsUtil.class.getSimpleName(), "queryContacts loading contact: " + cursor);
             Contact contact = new Contact();
-            contact.name = cursor.getString(1);
+            try {
+                contact.name = cursor.getString(1);
+            } catch (RuntimeException e) {
+                Log.e(ContactsUtil.class.getSimpleName(), "queryContacts: unable to retrieve contact name!");
+                contact.name = "";
+            }
             contacts.add(contact);
         }
         cursor.close();

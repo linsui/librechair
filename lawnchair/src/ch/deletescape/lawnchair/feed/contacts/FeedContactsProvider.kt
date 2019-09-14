@@ -25,6 +25,7 @@ import android.view.View
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.toDrawable
+import ch.deletescape.lawnchair.util.extensions.d
 
 class FeedContactsProvider(c: Context?) : FeedProvider(c) {
     override fun onFeedShown() {
@@ -45,6 +46,7 @@ class FeedContactsProvider(c: Context?) : FeedProvider(c) {
 
     override fun getCards(): List<Card> {
         return ContactsUtil.queryContacts(context).map {
+            d("getCards: contact: $it")
             Card(it.avatar.toDrawable(), it.name, {_, _ -> View(context) }, Card.RAISE or Card.DEFAULT, "",
                     it.name.hashCode())
         }
