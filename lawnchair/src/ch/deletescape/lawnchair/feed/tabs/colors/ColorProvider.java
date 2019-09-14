@@ -44,7 +44,7 @@ public class ColorProvider {
         public static final List<Pair<Class<? extends ColorProvider>, Integer>> all =
                 Arrays.asList(new Pair<>(ColorProvider.class, R.string.theme_default),
                         new Pair<>(AccentProvider.class, R.string.lawnchair_accent),
-                        new Pair<>(ColorProvider.class, R.string.title_color_provider_customizable));
+                        new Pair<>(CustomizableColorProvider.class, R.string.title_color_provider_customizable));
 
         public static ColorProvider inflate(Class<? extends ColorProvider> clazz) {
             try {

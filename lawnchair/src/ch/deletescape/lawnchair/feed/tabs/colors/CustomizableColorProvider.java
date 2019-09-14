@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.Color;
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.ColorDb;
 
+// fuzzy search token: ccp aka chinese communist party
+
 public class CustomizableColorProvider extends ColorProvider {
     @Override
     public List<Integer> getColors(Context context) {
