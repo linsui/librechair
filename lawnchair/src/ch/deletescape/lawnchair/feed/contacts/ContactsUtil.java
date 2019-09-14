@@ -46,7 +46,8 @@ public class ContactsUtil {
             ContactsContract.Data._ID,
             ContactsContract.Data.DISPLAY_NAME_PRIMARY,
             ContactsContract.Data.LOOKUP_KEY,
-            ContactsContract.Data.PHOTO_THUMBNAIL_URI
+            ContactsContract.Data.PHOTO_THUMBNAIL_URI,
+            ContactsContract.Data.CONTACT_ID
     };
 
     public static List<Contact> queryContacts(Context context) {
@@ -60,14 +61,13 @@ public class ContactsUtil {
         LinkedHashSet<Contact> contacts = new LinkedHashSet<>();
         Log.d(ContactsUtil.class.getSimpleName(), "queryContacts: contacts cursor: " + cursor);
         assert cursor != null;
-        for (; !cursor.isAfterLast(); cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             Log.d(ContactsUtil.class.getSimpleName(), "queryContacts loading contact: " + cursor);
             Contact contact = new Contact();
+            contact.lbcLookupKey = String.valueOf(cursor.getInt(4));
             try {
                 contact.intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
-                                String.valueOf(cursor.getInt(0))));
-                contact.lookupKey = cursor.getString(3);
+                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(cursor.getInt(4))));
                 contact.name = cursor.getString(1);
                 try {
                     contact.avatar = getAvatar(cursor.getString(3), context);

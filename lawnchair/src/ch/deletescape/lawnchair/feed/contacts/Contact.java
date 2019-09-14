@@ -31,15 +31,15 @@ public class Contact {
         if (this == o) return true;
         if (!(o instanceof Contact)) return false;
         Contact contact = (Contact) o;
-        return Objects.equals(lookupKey, contact.lookupKey);
+        return Objects.equals(lbcLookupKey, contact.lbcLookupKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lookupKey);
+        return Objects.hash(lbcLookupKey);
     }
 
-    public String lookupKey;
+    public String lbcLookupKey;
     public Intent intent;
     public String name;
     public String phone;
