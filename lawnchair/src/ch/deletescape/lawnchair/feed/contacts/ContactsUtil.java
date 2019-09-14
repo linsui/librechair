@@ -25,9 +25,16 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.util.Log;
 
+import com.android.launcher3.R;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,7 +48,8 @@ public class ContactsUtil {
     };
 
     public static List<Contact> queryContacts(Context context) {
-        if (context.checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (context.checkSelfPermission(
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return Collections.emptyList();
         }
         ContentResolver resolver = context.getContentResolver();
@@ -55,13 +63,39 @@ public class ContactsUtil {
             Contact contact = new Contact();
             try {
                 contact.name = cursor.getString(1);
+                contact.avatar = getAvatar(cursor.getString(3), context);
             } catch (RuntimeException e) {
-                Log.e(ContactsUtil.class.getSimpleName(), "queryContacts: unable to retrieve contact name!");
-                contact.name = "";
+                Log.e(ContactsUtil.class.getSimpleName(),
+                        "queryContacts: unable to retrieve contact name or avatar!", e);
+                if (contact.name == null) {
+                    contact.name = "?";
+                }
             }
             contacts.add(contact);
         }
         cursor.close();
         return contacts;
+    }
+
+    public static Bitmap getAvatar(String address, Context context) {
+        Bitmap contactAvatar = BitmapFactory.decodeResource(context.getResources(),
+                R.drawable.work_tab_user_education);
+        Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(address));
+        Cursor phones = context.getContentResolver().query(contactUri, null, null, null, null);
+        while (phones.moveToNext()) {
+            String imageUri = phones.getString(phones.getColumnIndex(
+                    ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+            if (imageUri != null) {
+                try {
+                    contactAvatar = MediaStore.Images.Media
+                            .getBitmap(context.getContentResolver(),
+                                    Uri.parse(imageUri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return contactAvatar;
     }
 }
