@@ -33,14 +33,15 @@
         android:src="@drawable/weather_03"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/card_title"
-        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/placeholder_raised_card_text"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/card_provider_small_icon"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/card_provider_small_icon"
         app:layout_constraintTop_toTopOf="parent" />
     <LinearLayout
         android:orientation="horizontal"

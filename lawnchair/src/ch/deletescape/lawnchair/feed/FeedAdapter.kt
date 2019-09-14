@@ -154,6 +154,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             val constraintSet = ConstraintSet().apply { clone(constraintLayout) }
             constraintSet.clear(holder.description!!.id, ConstraintSet.START)
             constraintSet.clear(holder.description!!.id, ConstraintSet.END)
+            constraintSet.clear(holder.description!!.id, ConstraintSet.LEFT)
+            constraintSet.clear(holder.description!!.id, ConstraintSet.RIGHT)
 
 
             when (context.lawnchairPrefs.feedRaisedCardTitleAlignment) {
@@ -178,6 +180,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             val constraintSet = ConstraintSet().apply { clone(constraintLayout) }
             constraintSet.clear(holder.description!!.id, ConstraintSet.START)
             constraintSet.clear(holder.description!!.id, ConstraintSet.END)
+            constraintSet.clear(holder.description!!.id, ConstraintSet.LEFT)
+            constraintSet.clear(holder.description!!.id, ConstraintSet.RIGHT)
 
 
             when (context.lawnchairPrefs.feedRaisedHeaderOnlyCardTitleAlignment) {
