@@ -26,18 +26,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceDialogFragmentCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ch.deletescape.lawnchair.colors.SingleUseColorDialog
+import ch.deletescape.lawnchair.colors.preferences.ColorPickerDialog
+import ch.deletescape.lawnchair.feed.tabs.colors.custom.Color
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.ColorDb
+import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.inflate
+import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import com.android.launcher3.R.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.priyesh.chroma.ColorMode
 import java.util.*
 import java.util.stream.Collectors
 
@@ -50,7 +57,21 @@ class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
-
+        if (positiveResult) {
+            val context = context!!
+            SingleUseColorDialog(context, context.getColorEngineAccent(),
+                    context.resources.getStringArray(R.array.resolvers_accent).toList(),
+                    ColorMode.RGB) {
+                GlobalScope.launch {
+                    ColorDb.getInstance(context).dao()
+                            .addColor(Color(ColorDb.getInstance(context).dao().everything().size, it))
+                }.invokeOnCompletion {
+                    runOnMainThread {
+                        context.lawnchairPrefs.restartOverlay()
+                    }
+                }
+            }.show()
+        }
     }
 
     private class Adapter(val context: Context) : RecyclerView.Adapter<ProviderItemViewHolder>() {
@@ -71,14 +92,50 @@ class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
             }
         }
 
+        override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+                override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                                    target: RecyclerView.ViewHolder) = false
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val pos = viewHolder.adapterPosition
+                    GlobalScope.launch {
+                        synchronized(colors) {
+                            ColorDb.getInstance(context).dao().clear()
+                            val oldColors = colors.toMutableList()
+                            oldColors.removeAt(viewHolder.adapterPosition)
+                            for (i in 0 until oldColors.size) {
+                                ColorDb.getInstance(context).dao().addColor(Color(i, oldColors[i]))
+                            }
+                            colors.clear()
+                            colors.addAll({
+                                val colors = ColorDb.getInstance(context).dao().everything()
+                                val ordered = IntArray(colors.size)
+                                for (color in colors) {
+                                    ordered[color.index] = color.color
+                                }
+                                ordered.toList()
+                            }())
+                        }
+                    }.invokeOnCompletion {
+                        runOnMainThread {
+                            notifyItemRemoved(pos)
+                            context.lawnchairPrefs.restartOverlay()
+                        }
+                    }
+                }
+
+            }).attachToRecyclerView(recyclerView)
+        }
+
         override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
             runBlocking { initHold.waitFor() }
             holder.summary.text = "    "
-            holder.summary.background = ColorDrawable(colors[holder.adapterPosition])
+            holder.itemView.background = ColorDrawable(colors[holder.adapterPosition])
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProviderItemViewHolder {
-            return ProviderItemViewHolder(parent)
+            return ProviderItemViewHolder(parent.inflate(R.layout.event_provider_dialog_item))
         }
 
         override fun getItemCount(): Int {

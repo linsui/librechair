@@ -42,6 +42,16 @@ public class FeedTabColorsPreference extends DialogPreference implements Fragmen
     }
 
     @Override
+    public CharSequence getPositiveButtonText() {
+        return getContext().getString(R.string.add_new_tab);
+    }
+
+    @Override
+    public CharSequence getNegativeButtonText() {
+        return null;
+    }
+
+    @Override
     public PreferenceDialogFragmentCompat getPrefFragment(@NotNull String key) {
         FeedTabColorsFragment fragment = new FeedTabColorsFragment();
         Bundle args = new Bundle();

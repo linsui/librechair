@@ -32,11 +32,17 @@ public abstract class ColorDao {
     @Insert
     public abstract void addColor(Color color);
 
+    @Query("delete from color")
+    public abstract void clear();
+
     @Query("select * from color")
     public abstract List<Color> everything();
 
     @Query("select * from color where `index` like :index limit 1")
     public abstract Color getColorForIndex(int index);
+
+    @Query("delete from color where `index` like :index")
+    public abstract void removeColor(int index);
 
     @Delete
     public abstract void removeColor(Color color);
