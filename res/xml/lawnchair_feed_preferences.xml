@@ -88,6 +88,9 @@
             android:key="pref_feed_color_provider"
             android:title="@string/title_pref_feed_color_provider"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.preferences.FeedTabColorsPreference
+            android:key="pref_feed_tab_colors"
+            android:title="@string/title_pref_feed_tab_colors"/>
         <ch.deletescape.lawnchair.preferences.FeedAnimationDelegatePreference
             android:key="pref_feed_animation"
             android:title="@string/title_pref_feed_animation"

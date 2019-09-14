@@ -117,6 +117,7 @@ import ch.deletescape.lawnchair.preferences.CustomizableTabsPreference;
 import ch.deletescape.lawnchair.preferences.FeedProvidersFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersPreference;
 import ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference;
+import ch.deletescape.lawnchair.preferences.FragmentInitializer;
 import ch.deletescape.lawnchair.preferences.RSSSourcesFragment;
 import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
@@ -906,6 +907,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = WebApplicationsPreference.Fragment.Companion.make();
             } else if (preference instanceof CustomizableTabsPreference) {
                 f = CustomizableTabsPreference.Fragment.Companion.make();
+            } else if (preference instanceof FragmentInitializer) {
+                f = ((FragmentInitializer) preference).getPrefFragment(preference.getKey());
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;
