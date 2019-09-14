@@ -71,17 +71,11 @@ public class ContactsUtil {
                 contact.name = cursor.getString(1);
                 contact.avatar = getAvatar(cursor.getString(3), context);
             } catch (RuntimeException e) {
-                contact.intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
-                                String.valueOf(0)));
-                Log.e(ContactsUtil.class.getSimpleName(),
-                        "queryContacts: unable to retrieve contact name or avatar!", e);
-                if (contact.name == null) {
-                    contact.name = "?";
-                }
-                contact.lookupKey = contact.name;
+                contact = null;
             }
-            contacts.add(contact);
+            if (contact != null) {
+                contacts.add(contact);
+            }
         }
         cursor.close();
         return new LinkedList<>(contacts);

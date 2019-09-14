@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.contacts;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 
 import java.util.Objects;
@@ -39,6 +40,7 @@ public class Contact {
     }
 
     public String lookupKey;
+    public Intent intent;
     public String name;
     public String phone;
     public Bitmap avatar;

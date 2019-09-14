@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.contacts
 
 import android.content.Context
+import android.content.Intent
 import android.view.View
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
@@ -47,8 +48,13 @@ class FeedContactsProvider(c: Context?) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         return ContactsUtil.queryContacts(context).map {
             d("getCards: contact: $it")
-            Card(it.avatar.toDrawable(), it.name, {_, _ -> View(context) }, Card.RAISE or Card.DEFAULT, "",
-                    it.name.hashCode())
+            Card(it.avatar.toDrawable(), it.name, { _, _ -> View(context) },
+                    Card.RAISE or Card.TEXT_ONLY, "",
+                    it.name.hashCode()).apply {
+                globalClickListener = { v ->
+                    v.context.startActivity(it.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                }
+            }
         }
     }
 
