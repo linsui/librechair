@@ -41,6 +41,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
+import ch.deletescape.lawnchair.colors.resolvers.FeedBackgroundResolver
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.font.CustomFontManager
@@ -363,10 +364,14 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             e.printStackTrace()
         }
         if (holder.itemView is CardView) {
-            if (!context.lawnchairPrefs.feedCardBlur) {
+            if (!context.lawnchairPrefs.feedCardBlur && context.colorEngine.getResolver(
+                            FEED_CARD) !is FeedBackgroundResolver) {
                 holder.itemView.setCardBackgroundColor(
                         context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
                                 context.lawnchairPrefs.feedCardOpacity.roundToInt()))
+            } else {
+                holder.itemView.setCardBackgroundColor(backgroundColor.setAlpha(
+                        context.lawnchairPrefs.feedCardOpacity.roundToInt()))
             }
             if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255 || context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.cardElevation = 0f
