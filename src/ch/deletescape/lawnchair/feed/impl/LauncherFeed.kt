@@ -1008,14 +1008,14 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun processTabs() {
+    fun processTabs() = if (context.lawnchairPrefs.feedHideUnusedTabs) {
         val layout = tabView.getChildAt(0) as ViewGroup
         for (i in 0 until tabs.size) {
             if (tabbedProviders[tabs[i]]!!.size < 1) {
                 layout.getChildAt(i).visibility = View.GONE
             }
         }
-    }
+    } else Unit
 
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
