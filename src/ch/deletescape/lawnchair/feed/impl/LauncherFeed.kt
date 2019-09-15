@@ -123,8 +123,8 @@ class LauncherFeed(val originalContext: Context,
     private val tabController: TabController =
             TabController.inflate(context.lawnchairPrefs.feedTabController, context)
     private val useTabbedMode = tabController.allTabs.isNotEmpty()
-    private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
-    private val tabs = tabController.allTabs
+    private val tabbedProviders = tabController.sortFeedProviders(adapter.providers).toMutableMap()
+    private val tabs = tabController.allTabs.toMutableList()
     private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
         it.viewTreeObserver.addOnGlobalLayoutListener { ->
             (it.getChildAt(0) as ViewGroup).childs.forEach {
@@ -504,6 +504,7 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView.visibility = View.GONE
         } else {
+            processTabs()
             tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(
                     Class.forName(
                             context.lawnchairPrefs.feedIndicatorProvider).kotlin as KClass<out TabIndicatorProvider>,
@@ -583,7 +584,6 @@ class LauncherFeed(val originalContext: Context,
                                     }
                         }
                     }
-                    processTabs()
                     runOnNewThread { refresh(0) }
                 }
             })
@@ -607,13 +607,6 @@ class LauncherFeed(val originalContext: Context,
                                 tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
             }
         }
-        tabView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int,
-                                        oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
-                tabView.removeOnLayoutChangeListener(this)
-                processTabs()
-            }
-        })
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
             recyclerView.addOnScrollListener(object :
                     RecyclerView.OnScrollListener() {
@@ -1009,10 +1002,11 @@ class LauncherFeed(val originalContext: Context,
     }
 
     fun processTabs() = if (context.lawnchairPrefs.feedHideUnusedTabs) {
-        val layout = tabView.getChildAt(0) as ViewGroup
-        for (i in 0 until tabs.size) {
-            if (tabbedProviders[tabs[i]]!!.size < 1) {
-                layout.getChildAt(i).visibility = View.GONE
+        val iter = tabs.iterator()
+        iter.forEach {
+            if (tabbedProviders[it]?.isEmpty() == true) {
+                iter.remove()
+                tabbedProviders.remove(it)
             }
         }
     } else Unit
