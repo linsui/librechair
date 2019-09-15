@@ -31,10 +31,10 @@ class DrawerFeedTransitionDelegate : AnimationDelegate {
         }
         if (background is ViewGroup && background.rtl) {
             background.translationX = (-1 + progress) * width * -1
-            content.translationX = (-1 + progress) * width * -1
+            content.translationX = 0f
         } else {
             background.translationX = (-1 + progress) * width
-            content.translationX = (-1 + progress) * width
+            content.translationX = 0f
         }
     }
 
