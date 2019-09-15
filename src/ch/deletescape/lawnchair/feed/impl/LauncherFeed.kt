@@ -1178,16 +1178,16 @@ class LauncherFeed(val originalContext: Context,
         previewAdapter.refresh()
         if (previewAdapter.itemCount > 0) {
             runOnMainThread {
-                recyclerView.visibility = View.GONE
+                recyclerView.visibility = View.INVISIBLE
+                previewRecyclerView.visibility = View.VISIBLE
                 previewAdapter.notifyDataSetChanged()
                 previewRecyclerView.scrollToPosition(0)
-                previewRecyclerView.isLayoutFrozen = true
-                previewRecyclerView.visibility = View.VISIBLE
             }
         }
         val oldCards = adapter.immutableCards
         adapter.refresh()
         val cards = adapter.immutableCards
+        Thread.sleep(10)
         if (oldCards.isEmpty() && count == 0) {
             this.refresh(150, 1)
         } else {
@@ -1208,7 +1208,7 @@ class LauncherFeed(val originalContext: Context,
                 }
                 recyclerView.isLayoutFrozen = false
                 recyclerView.visibility = View.VISIBLE
-                previewRecyclerView.visibility = View.GONE
+                previewRecyclerView.visibility = View.INVISIBLE
             }
         }
     }

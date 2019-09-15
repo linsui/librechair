@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.Output;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,11 +29,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
-
 import com.android.launcher3.R;
+import com.rometools.rome.feed.CopyFrom;
+import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
@@ -46,15 +45,16 @@ import org.xml.sax.InputSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
 import ch.deletescape.lawnchair.feed.cache.CacheManager;
 import kotlin.Unit;
 
@@ -280,6 +280,139 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             }
             return cards;
         }
+    }
+
+    @Override
+    public List<Card> getPreviewItems() {
+        List<Card> cards = new ArrayList<>();
+        SyndEntry entry = new SyndEntryImpl();
+        entry.setUri("https://placeholder");
+        entry.setTitle(getContext().getString(R.string.loading));
+        entry.setDescription(new SyndContent() {
+            @Override
+            public String getType() {
+                return null;
+            }
+
+            @Override
+            public void setType(String type) {
+
+            }
+
+            @Override
+            public String getMode() {
+                return null;
+            }
+
+            @Override
+            public void setMode(String mode) {
+
+            }
+
+            @Override
+            public String getValue() {
+                return "████████████████████████████████████████████████████\n\n" +
+                        "█████████████████████████████████████████████" +
+                        "██" +
+                        "\n" +
+                        "██████████████████████████" +
+                        "███" +
+                        "\n" +
+                        "██████████████";
+            }
+
+            @Override
+            public void setValue(String value) {
+
+            }
+
+            @Override
+            public Class<? extends CopyFrom> getInterface() {
+                return null;
+            }
+
+            @Override
+            public void copyFrom(CopyFrom obj) {
+
+            }
+
+            @Override
+            public Object clone() throws CloneNotSupportedException {
+                return null;
+            }
+        });
+        Card card = new Card(null, null, parent -> {
+            View v = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.rss_item, parent, false);
+            TextView title, description, date, categories;
+            ImageView icon;
+            Button readMore;
+
+            title = v.findViewById(R.id.rss_item_title);
+            description = v.findViewById(R.id.rss_item_description);
+            categories = v.findViewById(R.id.rss_item_categories);
+            icon = v.findViewById(R.id.rss_item_icon);
+            date = v.findViewById(R.id.rss_item_date);
+            readMore = v.findViewById(R.id.rss_item_read_more);
+
+            readMore.setTextColor(FeedAdapter.Companion.getOverrideColor(parent.getContext()));
+
+            Log.d(getClass().getSimpleName(),
+                    "inflate: Image URL is " + LawnchairUtilsKt.getThumbnailURL(entry));
+
+            if (LawnchairUtilsKt.getThumbnailURL(entry) != null && LawnchairUtilsKt
+                    .getThumbnailURL(entry).startsWith("http")) {
+                new Builder(parent.getContext()).build()
+                        .load(LawnchairUtilsKt.getThumbnailURL(entry))
+                        .placeholder(R.drawable.work_tab_user_education).into(icon);
+            } else {
+                new Builder(parent.getContext()).build()
+                        .load("https:" + LawnchairUtilsKt.getThumbnailURL(entry))
+                        .placeholder(R.drawable.work_tab_user_education).into(icon);
+            }
+
+            title.setText(ClickbaitRanker.completePipeline(entry.getTitle()));
+            String spanned = entry.getDescription() != null ? Html.fromHtml(
+                    entry.getDescription().getValue(), 0).toString() : "";
+            if (spanned.length() > 256) {
+                spanned = spanned.subSequence(0, 256).toString() + "...";
+            }
+            description.setText(spanned);
+            readMore.setOnClickListener(v2 -> {
+                new ArticleViewerScreen(getContext(), entry.getTitle(),
+                        entry.getCategories().stream().map(it -> it.getName())
+                                .collect(Collectors.joining(", ")),
+                        entry.getUri(),
+                        entry.getDescription() != null ? entry.getDescription().getValue() : "")
+                        .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
+                                        + v2.getWidth() / 2),
+                                (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
+                                        + v2.getHeight() / 2));
+            });
+
+            if (entry.getCategories().isEmpty()) {
+                categories.setText("");
+            } else {
+                categories.setText(String.join(", ",
+                        entry.getCategories().stream().map(entry2 -> entry2.getName())
+                                .collect(
+                                        Collectors.toList())));
+            }
+
+            if (entry.getPublishedDate() != null) {
+                date.setText(entry.getPublishedDate().toLocaleString());
+            } else {
+                date.setText(null);
+            }
+            return v;
+        }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
+                entry.hashCode(), true,
+                entry.getCategories().stream().map(entry2 -> entry2.getName()).collect(
+                        Collectors.toList()));
+        for (int i = 0; i < 2; ++i) {
+            cards.add(card);
+        }
+        return cards;
     }
 
     protected abstract void bindFeed(BindCallback callback);
