@@ -531,7 +531,6 @@ class LauncherFeed(val originalContext: Context,
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
-                    processTabs()
                     if (backgroundColor.alpha > 35) {
                         tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
                         tabView.tabTextColors = ColorStateList(
@@ -584,6 +583,7 @@ class LauncherFeed(val originalContext: Context,
                                     }
                         }
                     }
+                    processTabs()
                     runOnNewThread { refresh(0) }
                 }
             })
