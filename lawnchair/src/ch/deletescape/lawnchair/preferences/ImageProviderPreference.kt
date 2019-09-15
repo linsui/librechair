@@ -30,7 +30,8 @@ import kotlin.reflect.KClass
 class ImageProviderPreference(context: Context, attrs: AttributeSet) :
         ListPreference(context, attrs) {
     init {
-        entries = getAllProviders().map { getNameForProvider(it).fromStringRes(context) }.toTypedArray()
+        entries = getAllProviders().map { getNameForProvider(it).fromStringRes(context) }
+                .toTypedArray()
         entryValues = getAllProviders().map { it.qualifiedName }.toTypedArray()
         setDefaultValue(ImageProvider::class.qualifiedName)
         setOnPreferenceChangeListener { preference, newValue ->
@@ -43,14 +44,17 @@ class ImageProviderPreference(context: Context, attrs: AttributeSet) :
 
     companion object {
         fun getAllProviders(): List<KClass<out ImageProvider>> = listOf(ImageProvider::class,
-                                                                        BingImageProvider::class,
-                                                                        ApodImageProvider::class,
-                                                                        NationalGeographicImageProvider::class,
-                                                                        CustomBackgroundProvider::class)
+                BingImageProvider::class,
+                ApodImageProvider::class,
+                WikipediaFeaturedImageProvider::class,
+                NationalGeographicImageProvider::class,
+                CustomBackgroundProvider::class)
+
         fun getNameForProvider(clazz: KClass<out ImageProvider>) = when (clazz) {
             ImageProvider::class -> R.string.none
             BingImageProvider::class -> R.string.title_feed_provider_bing_daily
             ApodImageProvider::class -> R.string.title_image_provider_apod
+            WikipediaFeaturedImageProvider::class -> R.string.title_image_provider_wikipedia_featured
             NationalGeographicImageProvider::class -> R.string.title_image_provider_national_geographic
             CustomBackgroundProvider::class -> R.string.custom
             else -> error("there's no known name for the provider $clazz")
