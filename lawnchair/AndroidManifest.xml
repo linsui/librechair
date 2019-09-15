@@ -309,7 +309,10 @@
 
             <meta-data
                 android:name="service.api.version"
-                android:value="1" />
+                android:value="4" />
+            <meta-data
+                android:name="service.api.version.custom"
+                android:value="0"/>
         </service> <!-- DT2S using device admin -->
         <service
             android:exported="true"

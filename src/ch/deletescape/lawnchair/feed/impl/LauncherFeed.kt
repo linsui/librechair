@@ -1230,5 +1230,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
+    override fun shouldScrollLauncher() = feedController.animationDelegate.shouldScroll
+
     private data class ScreenData(val x: Float, val y: Float, val view: View)
 }

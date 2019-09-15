@@ -21,4 +21,5 @@ interface ILauncherOverlay {
     oneway void unusedMethod();
     oneway void setActivityState(in int flags);
     boolean startSearch(in byte[] data, in Bundle bundle);
+    boolean shouldScrollLauncher();
 }

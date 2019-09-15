@@ -58,6 +58,13 @@ public abstract class ServiceFactory implements ServiceConnection {
                 1 : resolveService.serviceInfo.metaData.getInt("service.api.version", 1);
     }
 
+    public int getCustomApiVersion() {
+        ResolveInfo resolveService = context.getPackageManager().resolveService(getService(),
+                PackageManager.GET_META_DATA);
+        return resolveService == null || resolveService.serviceInfo.metaData == null ?
+                -1 : resolveService.serviceInfo.metaData.getInt("service.api.version.custom", -1);
+    }
+
     public void setChangeListener(
             Consumer<ILauncherOverlay> changeListener) {
         this.changeListener = changeListener;

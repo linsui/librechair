@@ -290,4 +290,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         }
         return false;
     }
+
+    protected ILauncherOverlay getOverlay() {
+        return overlay;
+    }
 }

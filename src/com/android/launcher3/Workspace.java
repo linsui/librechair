@@ -16,14 +16,6 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherAnimUtils.OVERVIEW_TRANSITION_MS;
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.LauncherState.SPRING_LOADED;
-import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_OVERLAY;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.LayoutTransition;
@@ -56,8 +48,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.ClockVisibilityManager;
-import ch.deletescape.lawnchair.LawnchairLauncher;
+
 import com.android.launcher3.Launcher.LauncherOverlay;
 import com.android.launcher3.LauncherAppWidgetHost.ProviderChangedListener;
 import com.android.launcher3.LauncherStateManager.AnimationConfig;
@@ -94,9 +85,21 @@ import com.android.launcher3.widget.LauncherAppWidgetHostView;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
 import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import ch.deletescape.lawnchair.ClockVisibilityManager;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+
+import static com.android.launcher3.LauncherAnimUtils.OVERVIEW_TRANSITION_MS;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.SPRING_LOADED;
+import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_OVERLAY;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -1241,59 +1244,63 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * The overlay scroll is being controlled locally, just update our overlay effect
      */
     public void onOverlayScrollChanged(float scroll) {
-        if (Float.compare(scroll, 1f) == 0) {
-            if (!mOverlayShown) {
-                mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
-                        Action.Direction.LEFT, ContainerType.WORKSPACE, 0);
+        if (mLauncherOverlay != null && mLauncherOverlay.shouldScrollLauncher()) {
+            if (Float.compare(scroll, 1f) == 0) {
+                if (!mOverlayShown) {
+                    mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
+                            Action.Direction.LEFT, ContainerType.WORKSPACE, 0);
+                }
+                mOverlayShown = true;
+                // Not announcing the overlay page for accessibility since it announces itself.
+            } else if (Float.compare(scroll, 0f) == 0) {
+                if (mOverlayShown) {
+                    mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
+                            Action.Direction.RIGHT, ContainerType.WORKSPACE, -1);
+                } else if (Float.compare(mOverlayTranslation, 0f) != 0) {
+                    // When arriving to 0 overscroll from non-zero overscroll, announce page for
+                    // accessibility since default announcements were disabled while in overscroll
+                    // state.
+                    // Not doing this if mOverlayShown because in that case the accessibility service
+                    // will announce the launcher window description upon regaining focus after
+                    // switching from the overlay screen.
+                    announcePageForAccessibility();
+                }
+                mOverlayShown = false;
+                tryRunOverlayCallback();
             }
-            mOverlayShown = true;
-            // Not announcing the overlay page for accessibility since it announces itself.
-        } else if (Float.compare(scroll, 0f) == 0) {
-            if (mOverlayShown) {
-                mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
-                        Action.Direction.RIGHT, ContainerType.WORKSPACE, -1);
-            } else if (Float.compare(mOverlayTranslation, 0f) != 0) {
-                // When arriving to 0 overscroll from non-zero overscroll, announce page for
-                // accessibility since default announcements were disabled while in overscroll
-                // state.
-                // Not doing this if mOverlayShown because in that case the accessibility service
-                // will announce the launcher window description upon regaining focus after
-                // switching from the overlay screen.
-                announcePageForAccessibility();
+
+            float offset = 0f;
+
+            scroll = Math.max(scroll - offset, 0);
+            scroll = Math.min(1, scroll / (1 - offset));
+
+            float alpha = 1 - Interpolators.DEACCEL_3.getInterpolation(scroll);
+            float transX = mLauncher.getDragLayer().getMeasuredWidth() * scroll;
+
+            if (mIsRtl) {
+                transX = -transX;
             }
-            mOverlayShown = false;
-            tryRunOverlayCallback();
-        }
+            mOverlayTranslation = transX;
 
-        float offset = 0f;
+            // TODO(adamcohen): figure out a final effect here. We may need to recommend
+            // different effects based on device performance. On at least one relatively high-end
+            // device I've tried, translating the launcher causes things to get quite laggy.
+            mLauncher.getDragLayer().setTranslationX(transX);
+            mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
 
-        scroll = Math.max(scroll - offset, 0);
-        scroll = Math.min(1, scroll / (1 - offset));
+            if (mLauncher instanceof LawnchairLauncher && Utilities.getLawnchairPrefs(
+                    getContext()).getFeedBlur()) {
+                ((LawnchairLauncher) mLauncher).getBackground()
+                        .setBlurAlpha(Math.round(Utilities.getLawnchairPrefs(
+                                getContext()).getFeedBlurStrength() * scroll));
+                ((LawnchairLauncher) mLauncher).getBackground().invalidate();
+            }
+            mLauncher.mAllAppsController.setOverlayScroll(transX);
 
-        float alpha = 1 - Interpolators.DEACCEL_3.getInterpolation(scroll);
-        float transX = mLauncher.getDragLayer().getMeasuredWidth() * scroll;
-
-        if (mIsRtl) {
-            transX = -transX;
-        }
-        mOverlayTranslation = transX;
-
-        // TODO(adamcohen): figure out a final effect here. We may need to recommend
-        // different effects based on device performance. On at least one relatively high-end
-        // device I've tried, translating the launcher causes things to get quite laggy.
-        mLauncher.getDragLayer().setTranslationX(transX);
-        mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
-
-        if (mLauncher instanceof LawnchairLauncher && Utilities.getLawnchairPrefs(getContext()).getFeedBlur()) {
-            ((LawnchairLauncher) mLauncher).getBackground()
-                    .setBlurAlpha(Math.round(Utilities.getLawnchairPrefs(getContext()).getFeedBlurStrength() * scroll));
-            ((LawnchairLauncher) mLauncher).getBackground().invalidate();
-        }
-        mLauncher.mAllAppsController.setOverlayScroll(transX);
-
-        // TODO: implement this
+            // TODO: implement this
 //        if (mPillQsb)
 //            mQsbAlphaController.setAlphaAtIndex(alpha, QSB_ALPHA_INDEX_OVERLAY_SCROLL);
+        }
     }
 
     /**
