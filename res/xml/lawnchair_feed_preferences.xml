@@ -24,6 +24,11 @@
         android:key="pref_swipe_feed"
         android:summary="@string/summary_preference_swipe_feed"
         android:title="@string/title_preference_swipe_feed" />
+    <ch.deletescape.lawnchair.preferences.FeedProviderPreference
+        android:key="pref_feed_provider_package"
+        android:title="@string/title_pref_feed_provider_package"
+        android:defaultValue="{applicationId}"
+        android:summary="%s"/>
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:dependency="pref_swipe_feed"
         android:title="@string/drawer_tabs">
