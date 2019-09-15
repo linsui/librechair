@@ -678,4 +678,6 @@
     <string name="title_image_provider_wikipedia_featured">Wikipedia</string>
     <string name="feed_empty">Nothing\'s here</string>
     <string name="subtitle_feed_empty">You should come back later</string>
+    <string name="title_pref_feed_hide_unused_tabs">Hide unused tabs</string>
+    <string name="summary_pref_feed_hide_unused_tabs">Tabs without active feed providers will be hidden</string>
 </resources>

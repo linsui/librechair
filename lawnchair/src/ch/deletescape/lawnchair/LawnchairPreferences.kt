@@ -533,6 +533,7 @@ class LawnchairPreferences(val context: Context) :
             TitleAlignmentPreference.ALIGNMENT_END, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
+    val feedHideUnusedTabs by BooleanPref("pref_feed_hide_unused_tabs", true, ::restartOverlay)
     private val was1stApril = is1stApril()
 
     fun checkFools() {

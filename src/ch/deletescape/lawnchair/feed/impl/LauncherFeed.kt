@@ -531,6 +531,7 @@ class LauncherFeed(val originalContext: Context,
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
+                    processTabs()
                     if (backgroundColor.alpha > 35) {
                         tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
                         tabView.tabTextColors = ColorStateList(
@@ -606,6 +607,13 @@ class LauncherFeed(val originalContext: Context,
                                 tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
             }
         }
+        tabView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int,
+                                        oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                tabView.removeOnLayoutChangeListener(this)
+                processTabs()
+            }
+        })
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
             recyclerView.addOnScrollListener(object :
                     RecyclerView.OnScrollListener() {
@@ -997,6 +1005,15 @@ class LauncherFeed(val originalContext: Context,
                 start()
             }
             recyclerView.isLayoutFrozen = false
+        }
+    }
+
+    fun processTabs() {
+        val layout = tabView.getChildAt(0) as ViewGroup
+        for (i in 0 until tabs.size) {
+            if (tabbedProviders[tabs[i]]!!.size < 1) {
+                layout.getChildAt(i).visibility = View.GONE
+            }
         }
     }
 

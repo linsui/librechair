@@ -221,6 +221,11 @@
             android:key="pref_feed_hide_tab_text"
             android:title="@string/title_pref_feed_hide_tab_text"
             android:summary="@string/summary_pref_feed_hide_tab_text"/>
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_feed_hide_unused_tabs"
+            android:title="@string/title_pref_feed_hide_unused_tabs"
+            android:summary="@string/summary_pref_feed_hide_unused_tabs"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
