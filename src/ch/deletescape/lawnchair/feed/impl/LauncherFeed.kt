@@ -42,11 +42,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.core.graphics.ColorUtils
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
@@ -96,6 +99,8 @@ class LauncherFeed(val originalContext: Context,
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
+    private var previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
+    context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
@@ -120,7 +125,7 @@ class LauncherFeed(val originalContext: Context,
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers)
     private val tabs = tabController.allTabs
     private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
-        it.viewTreeObserver.addOnGlobalLayoutListener {  ->
+        it.viewTreeObserver.addOnGlobalLayoutListener { ->
             (it.getChildAt(0) as ViewGroup).childs.forEach {
                 val textView = it::class.java.getDeclaredField(
                         "textView").also { it.isAccessible = true }.get(it)
@@ -154,14 +159,15 @@ class LauncherFeed(val originalContext: Context,
             }
         }
     private var recyclerView = (feedController.findViewById(
-            R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
+            R.id.feed_recycler) as RecyclerView)
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
     private var googleColours = ColorProvider.Companion.inflate(
-            Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>).getColors(context)
+            Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
+            .getColors(context)
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
@@ -182,6 +188,13 @@ class LauncherFeed(val originalContext: Context,
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
+
+    private var previewRecyclerView =
+            feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
+        set(value) = {
+            field = value
+            value.visibility = View.GONE
+        }()
 
     init {
         reinitState()
@@ -272,13 +285,17 @@ class LauncherFeed(val originalContext: Context,
             }
             tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
             recyclerView = (feedController.findViewById(
-                    R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView)
+                    R.id.feed_recycler) as RecyclerView)
             adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
                     context.applicationContext, this)
             toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
             content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
+
+            previewRecyclerView = feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
+            previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
+                    context.applicationContext, this)
         }
 
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
@@ -398,6 +415,10 @@ class LauncherFeed(val originalContext: Context,
                         oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
                         oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
                         oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
+                previewRecyclerView.setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                        oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
+                        oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                        oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
             }
             toolbar.apply {
                 if (oldToolbarPaddingVertical == null) {
@@ -480,7 +501,8 @@ class LauncherFeed(val originalContext: Context,
             tabView.visibility = View.GONE
         } else {
             tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(
-                    Class.forName(context.lawnchairPrefs.feedIndicatorProvider).kotlin as KClass<out TabIndicatorProvider>,
+                    Class.forName(
+                            context.lawnchairPrefs.feedIndicatorProvider).kotlin as KClass<out TabIndicatorProvider>,
                     context).drawable)
             tabs.forEach {
                 tabView.addTab(tabView.newTab().apply {
@@ -524,6 +546,7 @@ class LauncherFeed(val originalContext: Context,
                                         tabView.tabRippleColor!!.defaultColor.setAlpha(
                                                 50)).toIntArray())
                     }
+                    previewAdapter.providers = tabbedProviders[tabs[tab.position]]!!
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
                     toolbar.menu.getItem(0).isVisible =
                             adapter.providers.any { it::class == FeedWidgetsProvider::class }
@@ -561,6 +584,7 @@ class LauncherFeed(val originalContext: Context,
             })
             d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
             adapter.providers = tabbedProviders[tabs.first()]!!
+            previewAdapter.providers = tabbedProviders[tabs.first()]!!
             if (backgroundColor.alpha > 35) {
                 tabView.tabTextColors = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
@@ -580,8 +604,8 @@ class LauncherFeed(val originalContext: Context,
         }
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
             recyclerView.addOnScrollListener(object :
-                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView,
                                         dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
@@ -595,8 +619,8 @@ class LauncherFeed(val originalContext: Context,
         }
         if (context.lawnchairPrefs.feedBackToTop) {
             recyclerView.addOnScrollListener(object :
-                    androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                    RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView,
                                         dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
@@ -610,7 +634,7 @@ class LauncherFeed(val originalContext: Context,
             })
         }
         adapter.registerAdapterDataObserver(object :
-                androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
+                RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 runOnMainThread {
                     if (adapter.itemCount == 0) {
@@ -984,8 +1008,8 @@ class LauncherFeed(val originalContext: Context,
                         recyclerView.layoutManager =
                                 object : androidx.recyclerview.widget.LinearLayoutManager(context) {
                                     override fun onLayoutChildren(
-                                            recycler: androidx.recyclerview.widget.RecyclerView.Recycler?,
-                                            state: androidx.recyclerview.widget.RecyclerView.State?) {
+                                            recycler: RecyclerView.Recycler?,
+                                            state: RecyclerView.State?) {
                                         try {
                                             super.onLayoutChildren(recycler, state)
                                         } catch (e: RuntimeException) {
@@ -993,6 +1017,9 @@ class LauncherFeed(val originalContext: Context,
                                         }
                                     }
                                 }
+                    }
+                    if (previewRecyclerView.layoutManager == null) {
+                        previewRecyclerView.layoutManager = LinearLayoutManager(context)
                     }
                     d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
                     if (lastOrientation != context.resources.configuration.orientation) {
@@ -1148,6 +1175,16 @@ class LauncherFeed(val originalContext: Context,
                 recyclerView.isLayoutFrozen = true
             }
         }
+        previewAdapter.refresh()
+        if (previewAdapter.itemCount > 0) {
+            runOnMainThread {
+                recyclerView.visibility = View.GONE
+                previewAdapter.notifyDataSetChanged()
+                previewRecyclerView.scrollToPosition(0)
+                previewRecyclerView.isLayoutFrozen = true
+                previewRecyclerView.visibility = View.VISIBLE
+            }
+        }
         val oldCards = adapter.immutableCards
         adapter.refresh()
         val cards = adapter.immutableCards
@@ -1170,6 +1207,8 @@ class LauncherFeed(val originalContext: Context,
                     }
                 }
                 recyclerView.isLayoutFrozen = false
+                recyclerView.visibility = View.VISIBLE
+                previewRecyclerView.visibility = View.GONE
             }
         }
     }

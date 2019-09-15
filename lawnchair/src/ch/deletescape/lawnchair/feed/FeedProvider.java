@@ -21,18 +21,21 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.view.WindowManager;
-import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+
+@SuppressWarnings("unchecked")
 public abstract class FeedProvider {
 
     private Context context;
     private Map<String, String> arguments;
     private FeedAdapter adapter;
     private LauncherFeed feed;
-    private boolean requestedRefresh;
     private FeedProviderContainer container;
     private WindowManager windowService;
 
@@ -69,13 +72,6 @@ public abstract class FeedProvider {
         this.adapter = adapter;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    protected void requestRefresh() {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     public int getBackgroundColor() {
         return adapter == null ? 0 : adapter.getBackgroundColor();
     }
@@ -88,9 +84,8 @@ public abstract class FeedProvider {
         this.feed = feed;
     }
 
-    protected void displayScreen(ProviderScreen screen, float x,
-            float y) {
-        screen.display(this, (int) x, (int) y);
+    public List<Card> getPreviewItems() {
+        return Collections.EMPTY_LIST;
     }
 
     public Map<String, String> getArguments() {
@@ -105,6 +100,7 @@ public abstract class FeedProvider {
         this.container = container;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public WindowManager getWindowService() {
         return windowService;
     }

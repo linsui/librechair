@@ -28,11 +28,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <ch.deletescape.lawnchair.views.SpringRecyclerView
-            android:clipToPadding="false"
-            android:id="@+id/feed_recycler"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <ch.deletescape.lawnchair.views.SpringRecyclerView
+                android:clipToPadding="false"
+                android:id="@+id/feed_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ch.deletescape.lawnchair.views.SpringRecyclerView
+                android:clipToPadding="false"
+                android:id="@+id/feed_recycler_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
         <FrameLayout
             android:fitsSystemWindows="false"
             android:id="@+id/feed_main_frame"
