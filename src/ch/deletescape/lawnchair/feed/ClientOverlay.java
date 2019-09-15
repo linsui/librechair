@@ -63,7 +63,10 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
 
             }
         }, () -> {
+            launcher.setLauncherOverlay(null);
             callbacks.onScrollChanged(0);
+        }, () -> {
+            launcher.setLauncherOverlay(this);
         });
     }
 

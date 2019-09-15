@@ -50,7 +50,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
     private ArrayList<Consumer<ILauncherOverlay>> overlayChangeListeners;
 
     public ServiceClient(Activity boundActivity,
-                         ServiceFactory factory, OverlayCallback callback, Runnable disconnectCallback) {
+                         ServiceFactory factory, OverlayCallback callback,
+                         Runnable disconnectCallback, Runnable connectCallback) {
         this.boundActivity = boundActivity;
         this.factory = factory;
         this.apiVersion = factory.getApiVersion();
@@ -77,6 +78,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
                 disconnectCallback.run();
                 new Handler(boundActivity.getMainLooper()).postDelayed(this::reconnect,
                         TimeUnit.SECONDS.toMillis(2));
+            } else {
+                connectCallback.run();
             }
         });
         factory.connect();
@@ -85,7 +88,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
     @Override
     public void openOverlay(boolean animate) {
         Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
+                throwable);
         if (overlay != null) {
             try {
                 overlay.openOverlay(animate ? 1 : 0);
@@ -191,7 +195,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
     @Override
     public void startScroll() {
         Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
+                throwable);
         if (overlay != null) {
             try {
                 overlay.startScroll();
@@ -215,7 +220,8 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
     @Override
     public void stopScroll() {
         Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called", throwable);
+        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
+                throwable);
         if (overlay != null) {
             try {
                 overlay.endScroll();
