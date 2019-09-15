@@ -19,6 +19,7 @@
 
 <ch.deletescape.lawnchair.feed.impl.FeedController xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overlay_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -41,6 +42,32 @@
                 android:id="@+id/feed_recycler_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
+            <FrameLayout
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/empty_view">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:text="@string/feed_empty"
+                        android:layout_gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:text="@string/subtitle_feed_empty"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+            </FrameLayout>
         </FrameLayout>
         <FrameLayout
             android:fitsSystemWindows="false"

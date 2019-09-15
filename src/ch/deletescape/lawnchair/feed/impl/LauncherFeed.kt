@@ -99,8 +99,9 @@ class LauncherFeed(val originalContext: Context,
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
-    private var previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
-    context.applicationContext, this)
+    private var previewAdapter =
+            FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
+                    context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
@@ -293,8 +294,10 @@ class LauncherFeed(val originalContext: Context,
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
 
-            previewRecyclerView = feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
-            previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
+            previewRecyclerView =
+                    feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
+            previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(),
+                    backgroundColor,
                     context.applicationContext, this)
         }
 
@@ -415,7 +418,8 @@ class LauncherFeed(val originalContext: Context,
                         oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
                         oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
                         oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
-                previewRecyclerView.setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                previewRecyclerView.setPadding(
+                        oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
                         oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
                         oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
                         oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
@@ -1209,6 +1213,8 @@ class LauncherFeed(val originalContext: Context,
                 recyclerView.isLayoutFrozen = false
                 recyclerView.visibility = View.VISIBLE
                 previewRecyclerView.visibility = View.INVISIBLE
+                feedController.findViewById<View>(R.id.empty_view).visibility =
+                        if (cards.isNotEmpty()) View.GONE else View.VISIBLE
             }
         }
     }

@@ -676,4 +676,6 @@
     <string name="title_pref_feed_tab_colors">Custom tab colors</string>
     <string name="title_color_resolver_feed_background">Feed background</string>
     <string name="title_image_provider_wikipedia_featured">Wikipedia</string>
+    <string name="feed_empty">Nothing\'s here</string>
+    <string name="subtitle_feed_empty">You should come back later</string>
 </resources>
