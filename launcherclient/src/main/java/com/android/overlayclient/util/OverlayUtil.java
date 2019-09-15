@@ -39,6 +39,7 @@ public class OverlayUtil {
         for (ResolveInfo ri : pm.queryIntentServices(intent, PackageManager.GET_RESOLVED_FILTER)) {
             if (ri.serviceInfo != null) {
                 ApplicationInfo ai = ri.serviceInfo.applicationInfo;
+                aiList.add(ai);
             }
         }
         return aiList;
