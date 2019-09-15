@@ -26,16 +26,16 @@ import android.os.Process;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
+import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
-import com.android.overlayclient.ServiceFactory;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
     private CustomServiceClient client;
 
     public ClientOverlay(Launcher launcher) {
-        client = new CustomServiceClient(launcher, new ServiceFactory(launcher) {
+        client = new CustomServiceClient(launcher, new CompanionServiceFactory(launcher) {
             @Override
             protected Intent getService() {
                 String pkg = Utilities.getLawnchairPrefs(launcher).getFeedProviderPackage();

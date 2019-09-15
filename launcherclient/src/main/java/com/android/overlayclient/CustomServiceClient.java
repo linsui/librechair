@@ -24,19 +24,21 @@ import android.app.Activity;
 import android.os.RemoteException;
 
 public class CustomServiceClient extends ServiceClient implements CustomOverscrollClient {
-    private int customApiVersion;
+    private int companionApiVersion;
+    private CompanionServiceFactory factory;
 
     public CustomServiceClient(Activity boundActivity,
-                               ServiceFactory factory, OverlayCallback callback,
+                               CompanionServiceFactory factory, OverlayCallback callback,
                                Runnable disconnectCallback, Runnable connectCallback) {
         super(boundActivity, factory, callback, disconnectCallback, connectCallback);
-        customApiVersion = factory.getCustomApiVersion();
+        this.factory = factory;
+        this.companionApiVersion = factory.getCompanionApiVersion();
     }
 
     @Override
     public boolean shouldScrollLauncher() {
         try {
-            return (getOverlay() == null || customApiVersion == -1) || getOverlay().shouldScrollLauncher();
+            return (getOverlay() == null || companionApiVersion == -1 || factory.getCompanion() == null) || factory.getCompanion().shouldScrollWorkspace();
         } catch (RemoteException e) {
             return false;
         }

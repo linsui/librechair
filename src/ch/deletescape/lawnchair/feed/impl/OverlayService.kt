@@ -26,18 +26,23 @@ import android.os.Process
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
+import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class OverlayService : Service(), () -> Unit {
-    lateinit var feed: LauncherFeed;
+    companion object {
+        lateinit var feed: LauncherFeed
+        val feedInitialized
+            get() = ::feed.isInitialized
+    }
     val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
 
     override fun onBind(intent: Intent): IBinder? {
-        if (!::feed.isInitialized) {
+        if (!feedInitialized) {
             this()
         }
-        return if (::feed.isInitialized) feed else null
+        return if (feedInitialized) feed else null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -71,5 +76,18 @@ class OverlayService : Service(), () -> Unit {
     override fun onDestroy() {
         d("onDestroy: killing overlay process", Throwable())
         super.onDestroy()
+    }
+
+    class CompanionService : Service() {
+        override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun shouldScrollWorkspace(): Boolean {
+                if (feedInitialized) {
+                    return feed.feedController.animationDelegate.shouldScroll
+                } else {
+                    return true
+                }
+            }
+
+        }
     }
 }

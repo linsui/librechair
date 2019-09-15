@@ -106,7 +106,7 @@ class LauncherFeed(val originalContext: Context,
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
     private var horizontalBackground: Drawable? = null
-    private var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
+    var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
             false) as FeedController)
             .also {
                 it.setLauncherFeed(this)
@@ -1229,8 +1229,6 @@ class LauncherFeed(val originalContext: Context,
             }
         }
     }
-
-    override fun shouldScrollLauncher() = feedController.animationDelegate.shouldScroll
 
     private data class ScreenData(val x: Float, val y: Float, val view: View)
 }

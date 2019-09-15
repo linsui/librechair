@@ -44,4 +44,11 @@ public class OverlayUtil {
         }
         return aiList;
     }
+
+    public static Intent resolveCompanion(String pkgName, Context context) {
+        Intent intent = new Intent("com.android.launcher3.WINDOW_OVERLAY_COMPANION")
+                .setPackage(pkgName);
+        return context.getPackageManager().resolveService(intent,
+                PackageManager.GET_RESOLVED_FILTER) != null ? intent : null;
+    }
 }
