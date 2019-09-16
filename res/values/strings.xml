@@ -683,4 +683,5 @@
     <string name="title_pref_feed_provider_package">Feed provider</string>
     <string name="title_animation_delegate_scale">Scale</string>
     <string name="title_animation_delegate_drawer">Drawer</string>
+    <string name="title_animation_delegate_glide">Glide</string>
 </resources>

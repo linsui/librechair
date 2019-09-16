@@ -36,6 +36,7 @@ interface AnimationDelegate {
         val allDelegates =
                 listOf(DefaultFeedTransitionDelegate::class,
                         SlidingFeedTransitionDelegate::class,
+                        GlidingFeedTransitionDelegate::class,
                         FadingFeedTransitionDelegate::class,
                         ScalingFeedTransitionDelegate::class,
                         SlideTopFeedTransitionDelegate::class,
@@ -44,6 +45,7 @@ interface AnimationDelegate {
         val delegateNames =
                 mapOf(DefaultFeedTransitionDelegate::class to R.string.title_animation_delegate_default,
                         SlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_slide,
+                        GlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_glide,
                         ScalingFeedTransitionDelegate::class to R.string.title_animation_delegate_scale,
                         FadingFeedTransitionDelegate::class to R.string.title_animation_delegate_fading,
                         SlideTopFeedTransitionDelegate::class to R.string.title_animation_delegate_slide_top,
