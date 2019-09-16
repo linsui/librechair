@@ -31,5 +31,8 @@ abstract class WidgetDatabase : RoomDatabase() {
     abstract fun dao(): WidgetDao
 
     companion object : SingletonHolder<WidgetDatabase, Context>(
-            { Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets").fallbackToDestructiveMigration().build() })
+            {
+                Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets")
+                        .enableMultiInstanceInvalidation().fallbackToDestructiveMigration().build()
+            })
 }
