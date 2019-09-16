@@ -47,7 +47,6 @@ import ch.deletescape.lawnchair.views.VerticalResizeView
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
@@ -102,19 +101,19 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
             init {
                 GlobalScope.launch {
                     try {
+                        prefList.clear()
                         prefList.addAll(WidgetDatabase.getInstance(c).dao().all)
                     } catch (e: RuntimeException) {
                         e.printStackTrace()
                     }
                     initHold.trigger()
+                    runOnMainThread {
+                        notifyDataSetChanged()
+                    }
                 }
             }
 
             var itemTouchHelper: ItemTouchHelper? = null
-
-            init {
-                runBlocking { initHold.waitFor() }
-            }
 
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): ProviderItemViewHolder = ProviderItemViewHolder(
@@ -139,7 +138,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 }
                 holder.dragHandle.visibility = View.VISIBLE
 
-                holder.title.text = appWidgetInfo?.loadLabel(holder.itemView.context.packageManager) ?: "!!!!"
+                holder.title.text =
+                        appWidgetInfo?.loadLabel(holder.itemView.context.packageManager) ?: "!!!!"
                 holder.itemView.setOnClickListener {
                     val widget = prefList[holder.adapterPosition]
                     val builder = object : AlertDialog(it.context,
@@ -327,9 +327,15 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
 
-                        prefList[fromPosition].entryOrder = toPosition
-                        WidgetDatabase.getInstance(c).dao()
-                                .setOrder(prefList[fromPosition].id, toPosition)
+                        GlobalScope.launch {
+                            synchronized(this@FeedWidgetsPreferenceAdapter) {
+                                for (i in 0 until prefList.size) {
+                                    prefList[i].entryOrder = i
+                                    WidgetDatabase.getInstance(c).dao()
+                                            .setOrder(prefList[i].id, i)
+                                }
+                            }
+                        }
 
                         if (fromPosition < toPosition) {
                             for (i in fromPosition until toPosition) {
