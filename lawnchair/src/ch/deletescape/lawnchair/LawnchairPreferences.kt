@@ -41,6 +41,8 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
+import ch.deletescape.lawnchair.feed.widgets.Widget
+import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
@@ -64,6 +66,8 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -265,25 +269,53 @@ class LawnchairPreferences(val context: Context) :
             setAll(getAll().filter { it != value } + value)
         }
 
-                override fun unflattenValue(value: String): Int {
-                    return Integer.valueOf(value)
-                }
-            }
+        override fun unflattenValue(value: String): Int {
+            return Integer.valueOf(value)
+        }
+    }
+
+
     var feedWidgetMetadata = object :
             MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata_2",
-                                                       ::restartOverlay, listOf()) {
+                    ::restartOverlay, listOf()) {
         override fun flattenValue(
                 value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
 
         override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
             return value.split("@")[0].toInt() to Gson().fromJson(value.split("@", limit = 2)[1],
-                                                                  WidgetMetadata::class.java)
+                    WidgetMetadata::class.java)
         }
 
         override fun customAdder(value: Pair<Int, WidgetMetadata>) {
             setAll(getAll().filter { it.first != value.first } + value)
         }
     }
+
+    init {
+        if (feedWidgetList.getAll().isNotEmpty()) {
+            GlobalScope.launch {
+                if (getCurrentProcessName(context) != ":overlay") {
+                    feedWidgetList.getAll().iterator().apply {
+                        forEach {
+                            val metadata = feedWidgetMetadata.getAll()
+                                    .firstOrNull { data -> data.first == it }?.second
+                            WidgetDatabase.getInstance(context).dao()
+                                    .addWidget(Widget(it, WidgetDatabase.getInstance(context).dao()
+                                            .all.size, metadata?.showCardTitle ?: false,
+                                            metadata?.sortable ?: false,
+                                            metadata?.customCardTitle,
+                                            metadata?.raiseCard ?: false,
+                                            metadata?.height ?: Widget.DEFAULT_HEIGHT))
+                        }
+                    }
+                    for (i in 0 until feedWidgetList.getAll().size) {
+                        feedWidgetList.remove(i)
+                    }
+                }
+            }
+        }
+    }
+
     var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null, ::restartOverlay)
     var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),
                                              ::restartOverlay);
