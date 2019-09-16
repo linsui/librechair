@@ -130,7 +130,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 }
                 holder.dragHandle.visibility = View.VISIBLE
 
-                holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
+                holder.title.text = appWidgetInfo?.loadLabel(holder.itemView.context.packageManager) ?: "!!!!"
                 holder.itemView.setOnClickListener {
                     val widget = prefList[holder.adapterPosition]
                     val builder = object : AlertDialog(it.context,
@@ -143,7 +143,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     builder.setView(dialogView)
                     builder.show()
                     val resizedAppWidgetInfo = holder.itemView.context.appWidgetManager
-                            .getAppWidgetInfo(widget.id).apply {
+                            .getAppWidgetInfo(widget.id)?.apply {
                                 minWidth = (dialogView.parent as View).width
                             }
                     val resizeView = dialogView.findViewById<VerticalResizeView>(R.id.resize_view)
@@ -203,7 +203,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                     .setShowCardTitle(widget.id, isChecked)
                         }
                     }
-                    val originalSize = resizedAppWidgetInfo.minHeight
+                    val originalSize = resizedAppWidgetInfo?.minHeight ?: -1
                     widgetView.apply {
                         viewTreeObserver.addOnGlobalLayoutListener {
                             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
@@ -224,9 +224,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                         width)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                        resizedAppWidgetInfo.minHeight)
+                                        resizedAppWidgetInfo?.minHeight ?: -1)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                        resizedAppWidgetInfo.minHeight)
+                                        resizedAppWidgetInfo?.minHeight ?: -1)
                             }
                         })
                     }
@@ -257,9 +257,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                                 width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                resizedAppWidgetInfo.minHeight)
+                                                resizedAppWidgetInfo?.minHeight ?: -1)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                resizedAppWidgetInfo.minHeight)
+                                                resizedAppWidgetInfo?.minHeight ?: -1)
                                     }
                                 })
                             }
@@ -288,9 +288,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                    resizedAppWidgetInfo.minHeight)
+                                                    resizedAppWidgetInfo?.minHeight ?: -1)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                    resizedAppWidgetInfo.minHeight)
+                                                    resizedAppWidgetInfo?.minHeight ?: -1)
                                         }
                                     }
                                 })
