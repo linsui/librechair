@@ -194,9 +194,6 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     @Override
     public void startScroll() {
-        Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
-                throwable);
         if (overlay != null) {
             try {
                 overlay.startScroll();
