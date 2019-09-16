@@ -294,18 +294,23 @@ class LawnchairPreferences(val context: Context) :
     init {
         if (feedWidgetList.getAll().isNotEmpty()) {
             GlobalScope.launch {
-                if (getCurrentProcessName(context) != ":overlay") {
+                if (getCurrentProcessName(context).contains("overlay").not()) {
                     feedWidgetList.getAll().iterator().apply {
                         forEach {
                             val metadata = feedWidgetMetadata.getAll()
                                     .firstOrNull { data -> data.first == it }?.second
-                            WidgetDatabase.getInstance(context).dao()
-                                    .addWidget(Widget(it, WidgetDatabase.getInstance(context).dao()
-                                            .all.size, metadata?.showCardTitle ?: false,
-                                            metadata?.sortable ?: false,
-                                            metadata?.customCardTitle,
-                                            metadata?.raiseCard ?: false,
-                                            metadata?.height ?: Widget.DEFAULT_HEIGHT))
+                            try {
+                                WidgetDatabase.getInstance(context).dao()
+                                        .addWidget(
+                                                Widget(it, WidgetDatabase.getInstance(context).dao()
+                                                        .all.size, metadata?.showCardTitle ?: false,
+                                                        metadata?.sortable ?: false,
+                                                        metadata?.customCardTitle,
+                                                        metadata?.raiseCard ?: false,
+                                                        metadata?.height ?: Widget.DEFAULT_HEIGHT))
+                            } catch (e: RuntimeException) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                     for (i in 0 until feedWidgetList.getAll().size) {
