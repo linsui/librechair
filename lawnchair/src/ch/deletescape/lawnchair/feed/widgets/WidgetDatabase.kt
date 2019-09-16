@@ -26,10 +26,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import ch.deletescape.lawnchair.util.SingletonHolder
 
-@Database(entities = [Widget::class], version = 1)
+@Database(entities = [Widget::class], version = 2)
 abstract class WidgetDatabase : RoomDatabase() {
     abstract fun dao(): WidgetDao
 
     companion object : SingletonHolder<WidgetDatabase, Context>(
-            { Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets").build() })
+            { Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets").fallbackToDestructiveMigration().build() })
 }

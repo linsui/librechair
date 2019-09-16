@@ -27,11 +27,11 @@ data class Widget(@PrimaryKey
                   val id: Int, var entryOrder: Int, var showCardTitle: Boolean = false,
                   var sortable: Boolean = false,
                   var customCardTitle: String? = DEFAULT_TITLE, var raiseCard: Boolean = false,
-                  var height: Int? = DEFAULT_HEIGHT) {
+                  var height: Int = DEFAULT_HEIGHT) {
     companion object {
         @JvmStatic
         @Transient
-        val DEFAULT_HEIGHT: Int? = null
+        val DEFAULT_HEIGHT: Int = -1
         @JvmStatic
         @Transient
         val DEFAULT_TITLE: String? = null

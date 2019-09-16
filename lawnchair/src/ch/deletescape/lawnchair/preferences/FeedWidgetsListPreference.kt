@@ -39,7 +39,6 @@ import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.widgets.Widget
 import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
-import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
@@ -154,10 +153,6 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                             appWidgetId, resizedAppWidgetInfo)
                     dialogView.findViewById<FrameLayout>(R.id.resize_view_container)
                             .addView(widgetView)
-                    widgetView.layoutParams = FrameLayout.LayoutParams(4600,
-                            (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                    ?: WidgetMetadata.DEFAULT).height
-                                    ?: resizedAppWidgetInfo.minHeight)
                     val widgetBackgroundCheckbox =
                             dialogView.findViewById<CheckBox>(R.id.add_widget_background)
                     val cardTitleCheckbox =
@@ -166,7 +161,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     val customTitle =
                             dialogView.findViewById<FolderNameEditText>(R.id.custom_card_title)
                     customTitle.setText(
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.customCardTitle)
+                            widget.customCardTitle)
                     customTitle.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(s: Editable?) {
                             widget.customCardTitle = s.toString()
@@ -211,23 +206,30 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     val originalSize = resizedAppWidgetInfo.minHeight
                     widgetView.apply {
                         widgetView.updateAppWidgetOptions(Bundle().apply {
-                            Bundle().apply {
-                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
-                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                            if (widget.height != -1) {
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                        width)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                        width)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                                ?: resizedAppWidgetInfo.minHeight)
+                                        widget.height)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                                ?: resizedAppWidgetInfo.minHeight)
+                                        widget.height)
+                            } else {
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                        width)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                        width)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                        resizedAppWidgetInfo.minHeight)
+                                putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                        resizedAppWidgetInfo.minHeight)
                             }
                         })
                     }
                     resizeView.setOnResizeCallback { difference ->
                         if (widgetView.height + difference > originalSize) {
-                            val toSize = alter(widgetView.height + difference < 0, null,
+                            val toSize = alter(widgetView.height + difference < 0, -1,
                                     (widgetView.height + difference).toInt())
                             widget.height = toSize
                             GlobalScope.launch {
@@ -237,22 +239,29 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
                             widgetView.apply {
                                 widgetView.updateAppWidgetOptions(Bundle().apply {
-                                    Bundle().apply {
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
+                                    if (toSize != -1) {
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                                width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                                width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                        ?: WidgetMetadata.DEFAULT).height
-                                                        ?: resizedAppWidgetInfo.minHeight)
+                                                widget.height)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                        ?: WidgetMetadata.DEFAULT).height
-                                                        ?: resizedAppWidgetInfo.minHeight)
+                                                widget.height)
+                                    } else {
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                                width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                                width)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                                resizedAppWidgetInfo.minHeight)
+                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                                resizedAppWidgetInfo.minHeight)
                                     }
                                 })
                             }
                         } else {
-                            val toSize = null
+                            val toSize = -1
                             widget.height = toSize
                             GlobalScope.launch {
                                 WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
@@ -261,16 +270,25 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             widgetView.apply {
                                 widgetView.updateAppWidgetOptions(Bundle().apply {
                                     Bundle().apply {
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                        ?: WidgetMetadata.DEFAULT).height
-                                                        ?: resizedAppWidgetInfo.minHeight)
-                                        putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                        ?: WidgetMetadata.DEFAULT).height
-                                                        ?: resizedAppWidgetInfo.minHeight)
+                                        if (toSize != -1) {
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                                    width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                                    width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                                    widget.height)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                                    widget.height)
+                                        } else {
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
+                                                    width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
+                                                    width)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
+                                                    resizedAppWidgetInfo.minHeight)
+                                            putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
+                                                    resizedAppWidgetInfo.minHeight)
+                                        }
                                     }
                                 })
                             }
