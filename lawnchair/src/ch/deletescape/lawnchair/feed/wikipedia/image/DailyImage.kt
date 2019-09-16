@@ -28,14 +28,20 @@ import org.apache.commons.io.IOUtils
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 object DailyImage {
     val uriCache = mutableMapOf<Long, String?>()
-    private val API_URL = "https://en.wikipedia.org/api/rest_v1/feed/featured/2496/04/01"
+    private val API_URL
+        get() = "https://en.wikipedia.org/api/rest_v1/feed/featured/${GregorianCalendar().get(
+                Calendar.YEAR)}/${"%02d".format(GregorianCalendar().get(
+                Calendar.MONTH) + 1)}/${GregorianCalendar().get(Calendar.DAY_OF_MONTH)}"
+
     suspend fun getFeaturedImage(): String? = uriCache[TimeUnit.MILLISECONDS.toDays(
             System.currentTimeMillis())] ?: GlobalScope.async {
-         JsonParser().parse(IOUtils.toString(URL(API_URL).openStream(), Charset.defaultCharset())).asJsonObject.getAsJsonObject(
+        JsonParser().parse(IOUtils.toString(URL(API_URL).openStream(), Charset.defaultCharset()))
+                .asJsonObject.getAsJsonObject(
                 "image")?.getAsJsonObject("image")?.getAsJsonPrimitive("source")?.asString
     }.await().also { uriCache[TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())] = it }
 
