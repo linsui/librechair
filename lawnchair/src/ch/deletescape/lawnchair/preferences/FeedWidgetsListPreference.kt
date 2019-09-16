@@ -205,7 +205,10 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     }
                     val originalSize = resizedAppWidgetInfo.minHeight
                     widgetView.apply {
-                        widgetView.updateAppWidgetOptions(Bundle().apply {
+                        viewTreeObserver.addOnGlobalLayoutListener {
+                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        }
+                        updateAppWidgetOptions(Bundle().apply {
                             if (widget.height != -1) {
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
                                         width)
@@ -339,9 +342,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         (viewHolder.itemView.context.applicationContext as LawnchairApp)
                                 .overlayWidgetHost
                                 .deleteAppWidgetId(prefList[viewHolder.adapterPosition].id)
-                        prefList.removeAt(viewHolder.adapterPosition)
                         WidgetDatabase.getInstance(c).dao()
                                 .removeWidget(prefList[viewHolder.adapterPosition].id)
+                        prefList.removeAt(viewHolder.adapterPosition)
                         notifyItemRemoved(viewHolder.adapterPosition)
                     }
 
