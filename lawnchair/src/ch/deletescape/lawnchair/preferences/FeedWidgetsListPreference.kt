@@ -35,22 +35,24 @@ import androidx.appcompat.app.AlertDialog
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.widgets.Widget
+import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
-import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.views.FolderNameEditText
 import ch.deletescape.lawnchair.views.VerticalResizeView
-import com.android.launcher3.Launcher
 import com.android.launcher3.R
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.*
 
 class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
-        DialogPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
-    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
-        updateSummary()
-    }
+        DialogPreference(context, attrs) {
 
     override fun getNegativeButtonText(): CharSequence? {
         return null
@@ -58,57 +60,68 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
     fun updateSummary() {
-        summary = context!!.lawnchairPrefs.feedWidgetList.getAll().mapNotNull {
-            context.appWidgetManager.getAppWidgetInfo(it)?.loadLabel(context.packageManager)
-        }.joinToString()
+        GlobalScope.launch {
+            val summary = WidgetDatabase.getInstance(context).dao().all.mapNotNull {
+                it.customCardTitle ?: context.appWidgetManager.getAppWidgetInfo(it.id)?.loadLabel(
+                        context.packageManager)
+            }.joinToString()
+            runOnMainThread {
+                this@FeedWidgetsListPreference.summary = summary
+            }
+        }
     }
 
     init {
         updateSummary()
-        context.lawnchairPrefs.addOnPreferenceChangeListener(this, "pref_feed_widgets")
+        WidgetDatabase.getInstance(context).invalidationTracker.addObserver(object :
+                InvalidationTracker.Observer("widget") {
+            override fun onInvalidated(tables: MutableSet<String>) {
+                runOnMainThread {
+                    updateSummary()
+                }
+            }
+        })
     }
 
     class Fragment : PreferenceDialogFragmentCompat() {
-        val preference by lazy { context!!.lawnchairPrefs.feedWidgetList }
         override fun onDialogClosed(positiveResult: Boolean) {
         }
 
         override fun onBindDialogView(view: View) {
             super.onBindDialogView(view)
-            d("onBindDialogView: bound to dialog view $view")
-            val recyclerView = view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list)
-            d("onBindDialogView: found recycler $recyclerView")
+            val recyclerView =
+                    view.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.list)
             recyclerView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
-            d("onBindDialogView: set layoutManager for RecyclerView $recyclerView")
-            recyclerView.adapter = FeedWidgetsPreferenceAdapter(preference)
-            d("onBindDialogView: set adapter for RecyclerView ${recyclerView.adapter}")
+            recyclerView.adapter = FeedWidgetsPreferenceAdapter(context!!)
         }
 
-        class FeedWidgetsPreferenceAdapter(
-                val preference: LawnchairPreferences.MutableListPref<Int>) :
+        class FeedWidgetsPreferenceAdapter(val c: Context) :
                 androidx.recyclerview.widget.RecyclerView.Adapter<ProviderItemViewHolder>() {
-            val prefList = preference.getList().filter {
-                Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-            }.toMutableList()
+            val prefList = mutableListOf<Widget>()
+            val initHold = SingleUseHold()
+
+            init {
+                GlobalScope.launch {
+                    prefList.addAll(WidgetDatabase.getInstance(c).dao().all)
+                    initHold.trigger()
+                }
+            }
+
             var itemTouchHelper: ItemTouchHelper? = null
-            fun synchronizeWithPreference() {
-                preference.setAll(prefList)
+
+            init {
+                runBlocking { initHold.waitFor() }
             }
 
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int): ProviderItemViewHolder = ProviderItemViewHolder(
                     LayoutInflater.from(parent.context).inflate(R.layout.event_provider_dialog_item,
-                                                                parent, false))
+                            parent, false))
 
             override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
-                d("onBindViewHolder: retrieving widget information for widget ${preference.getAll()[holder.adapterPosition]}")
                 val appWidgetInfo = holder.itemView.context.appWidgetManager
-                        .getAppWidgetInfo(preference.getAll().filter {
-                            Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                        }[holder.adapterPosition])
-                val appWidgetId = preference.getAll().filter {
-                    Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                }[holder.adapterPosition]
+                        .getAppWidgetInfo(prefList[holder.adapterPosition].id)
+                val appWidgetId = prefList[holder.adapterPosition].id
                 holder.dragHandle.setOnTouchListener { view: View, motionEvent: MotionEvent ->
                     if (motionEvent.action == MotionEvent.ACTION_DOWN) {
                         itemTouchHelper?.startDrag(holder)
@@ -120,32 +133,31 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
                 holder.title.text = appWidgetInfo.loadLabel(holder.itemView.context.packageManager)
                 holder.itemView.setOnClickListener {
+                    val widget = prefList[holder.adapterPosition]
                     val builder = object : AlertDialog(it.context,
-                                                       ThemeOverride.AlertDialog().getTheme(
-                                                               ThemeManager(
-                                                                       it.getContext()).getCurrentFlags())) {}
+                            ThemeOverride.AlertDialog().getTheme(
+                                    ThemeManager(
+                                            it.getContext()).getCurrentFlags())) {}
                     builder.setTitle(R.string.title_preference_resize_widget)
                     val dialogView: View = LayoutInflater.from(builder.context)
                             .inflate(R.layout.dialog_widget_resize, null, false)
                     builder.setView(dialogView)
                     builder.show()
                     val resizedAppWidgetInfo = holder.itemView.context.appWidgetManager
-                            .getAppWidgetInfo(preference.getAll().filter {
-                                Launcher.getInstance().appWidgetManager.getAppWidgetInfo(it) != null
-                            }[holder.adapterPosition]).apply {
+                            .getAppWidgetInfo(widget.id).apply {
                                 minWidth = (dialogView.parent as View).width
                             }
                     val resizeView = dialogView.findViewById<VerticalResizeView>(R.id.resize_view)
                     val widgetView =
                             (it.context.applicationContext as LawnchairApp).overlayWidgetHost
                                     .createView(LawnchairLauncher.getLauncher(it.context),
-                                                appWidgetId, resizedAppWidgetInfo)
+                                            appWidgetId, resizedAppWidgetInfo)
                     dialogView.findViewById<FrameLayout>(R.id.resize_view_container)
                             .addView(widgetView)
                     widgetView.layoutParams = FrameLayout.LayoutParams(4600,
-                                                                       (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                                        ?: WidgetMetadata.DEFAULT).height
-                                                                       ?: resizedAppWidgetInfo.minHeight)
+                            (it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                    ?: WidgetMetadata.DEFAULT).height
+                                    ?: resizedAppWidgetInfo.minHeight)
                     val widgetBackgroundCheckbox =
                             dialogView.findViewById<CheckBox>(R.id.add_widget_background)
                     val cardTitleCheckbox =
@@ -157,24 +169,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.customCardTitle)
                     customTitle.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(s: Editable?) {
-                            it.context.lawnchairPrefs.feedWidgetMetadata
-                                    .customAdder(appWidgetId to WidgetMetadata().apply {
-                                        height = it.context.lawnchairPrefs.feedWidgetMetadata
-                                                .getAll()
-                                                .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                ?.second?.height
-                                        raiseCard =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                                ?: false
-                                        sortable =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                                ?: sortable
-                                        customCardTitle =
-                                                if (s?.isEmpty() != false) null else s.toString()
-                                        showCardTitle =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                                                ?: false
-                                    })
+                            widget.customCardTitle = s.toString()
+                            GlobalScope.launch {
+                                WidgetDatabase.getInstance(c).dao()
+                                        .setCardTitle(widget.id, s.toString())
+                            }
                         }
 
                         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int,
@@ -186,70 +185,28 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         }
                     })
                     sortCards.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
-                            ?: false
+                            widget.sortable
                     sortCards.setOnCheckedChangeListener { buttonView, isChecked ->
-                        it.context.lawnchairPrefs.feedWidgetMetadata
-                                .customAdder(appWidgetId to WidgetMetadata().apply {
-                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                            ?.height
-                                    raiseCard =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                            ?: false
-                                    sortable = isChecked
-                                    customCardTitle =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                    ?.second?.customCardTitle
-                                    showCardTitle =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                                            ?: false
-                                })
+                        widget.sortable = isChecked
+                        GlobalScope.launch {
+                            WidgetDatabase.getInstance(c).dao().setSortable(widget.id, isChecked)
+                        }
                     }
                     widgetBackgroundCheckbox.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                            ?: false
+                            widget.raiseCard
                     widgetBackgroundCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
-                        it.context.lawnchairPrefs.feedWidgetMetadata
-                                .customAdder(appWidgetId to WidgetMetadata().apply {
-                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                            ?.height
-                                    raiseCard = isChecked
-                                    sortable =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
-                                            ?: false
-                                    customCardTitle =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                    ?.second?.customCardTitle
-                                    showCardTitle =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                                            ?: false
-                                })
+                        widget.raiseCard = isChecked
+                        GlobalScope.launch {
+                            WidgetDatabase.getInstance(c).dao().setRaised(widget.id, isChecked)
+                        }
                     }
-                    cardTitleCheckbox.isChecked =
-                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                            ?: false
+                    cardTitleCheckbox.isChecked = widget.showCardTitle
                     cardTitleCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
-                        it.context.lawnchairPrefs.feedWidgetMetadata
-                                .customAdder(appWidgetId to WidgetMetadata().apply {
-                                    showCardTitle = isChecked
-                                    height = it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                            .firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                            ?.height
-                                    raiseCard =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                            ?: false
-                                    sortable =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
-                                            ?: false
-                                    customCardTitle =
-                                            it.context.lawnchairPrefs.feedWidgetMetadata.getAll()
-                                                    .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                    ?.second?.customCardTitle
-                                })
+                        widget.showCardTitle = isChecked
+                        GlobalScope.launch {
+                            WidgetDatabase.getInstance(c).dao()
+                                    .setShowCardTitle(widget.id, isChecked)
+                        }
                     }
                     val originalSize = resizedAppWidgetInfo.minHeight
                     widgetView.apply {
@@ -258,39 +215,24 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                       (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                        ?: WidgetMetadata.DEFAULT).height
-                                       ?: resizedAppWidgetInfo.minHeight)
+                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                                ?: resizedAppWidgetInfo.minHeight)
                                 putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                       (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                        ?: WidgetMetadata.DEFAULT).height
-                                       ?: resizedAppWidgetInfo.minHeight)
+                                        (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                ?: WidgetMetadata.DEFAULT).height
+                                                ?: resizedAppWidgetInfo.minHeight)
                             }
                         })
                     }
                     resizeView.setOnResizeCallback { difference ->
-                        d("onBindViewHolder: resizing widget by $difference")
                         if (widgetView.height + difference > originalSize) {
                             val toSize = alter(widgetView.height + difference < 0, null,
-                                               (widgetView.height + difference).toInt())
-                            it.context.lawnchairPrefs.feedWidgetMetadata
-                                    .customAdder(appWidgetId to WidgetMetadata().apply {
-                                        height = toSize
-                                        raiseCard =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                                ?: false
-                                        showCardTitle =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                                                ?: false
-                                        sortable =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
-                                                ?: false
-                                        customCardTitle =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata
-                                                        .getAll()
-                                                        .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                        ?.second?.customCardTitle
-                                    })
+                                    (widgetView.height + difference).toInt())
+                            widget.height = toSize
+                            GlobalScope.launch {
+                                WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
+                            }
                             widgetView.layoutParams =
                                     FrameLayout.LayoutParams(widgetView.width, toSize ?: -1)
                             widgetView.apply {
@@ -299,35 +241,22 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                               ?: resizedAppWidgetInfo.minHeight)
+                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                        ?: WidgetMetadata.DEFAULT).height
+                                                        ?: resizedAppWidgetInfo.minHeight)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                               ?: resizedAppWidgetInfo.minHeight)
+                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                        ?: WidgetMetadata.DEFAULT).height
+                                                        ?: resizedAppWidgetInfo.minHeight)
                                     }
                                 })
                             }
                         } else {
-                            it.context.lawnchairPrefs.feedWidgetMetadata
-                                    .customAdder(appWidgetId to WidgetMetadata().apply {
-                                        height = null
-                                        raiseCard =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.raiseCard
-                                                ?: false
-                                        showCardTitle =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.showCardTitle
-                                                ?: false
-                                        sortable =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second?.sortable
-                                                ?: false
-                                        customCardTitle =
-                                                it.context.lawnchairPrefs.feedWidgetMetadata
-                                                        .getAll()
-                                                        .firstOrNull { it2 -> it2.first == appWidgetId }
-                                                        ?.second?.customCardTitle
-                                    })
+                            val toSize = null
+                            widget.height = toSize
+                            GlobalScope.launch {
+                                WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
+                            }
                             widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
                             widgetView.apply {
                                 widgetView.updateAppWidgetOptions(Bundle().apply {
@@ -335,13 +264,13 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, width)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                               ?: resizedAppWidgetInfo.minHeight)
+                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                        ?: WidgetMetadata.DEFAULT).height
+                                                        ?: resizedAppWidgetInfo.minHeight)
                                         putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                               (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
-                                                ?: WidgetMetadata.DEFAULT).height
-                                               ?: resizedAppWidgetInfo.minHeight)
+                                                (context.lawnchairPrefs.feedWidgetMetadata.getAll().firstOrNull { it2 -> it2.first == appWidgetId }?.second
+                                                        ?: WidgetMetadata.DEFAULT).height
+                                                        ?: resizedAppWidgetInfo.minHeight)
                                     }
                                 })
                             }
@@ -351,13 +280,15 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 }
             }
 
-            override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+            override fun onAttachedToRecyclerView(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView) {
                 super.onAttachedToRecyclerView(recyclerView)
                 ItemTouchHelper(object : ItemTouchHelper.Callback() {
-                    override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
-                                                  viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
+                    override fun getMovementFlags(
+                            recyclerView: androidx.recyclerview.widget.RecyclerView,
+                            viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
                         return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-                                                 ItemTouchHelper.START)
+                                ItemTouchHelper.START)
                     }
 
                     override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView,
@@ -365,6 +296,10 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                         target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
+
+                        prefList[fromPosition].entryOrder = toPosition
+                        WidgetDatabase.getInstance(c).dao()
+                                .setOrder(prefList[fromPosition].id, toPosition)
 
                         if (fromPosition < toPosition) {
                             for (i in fromPosition until toPosition) {
@@ -377,16 +312,18 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         }
 
                         notifyItemMoved(fromPosition, toPosition)
-                        synchronizeWithPreference()
                         return true
                     }
 
-                    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+                    override fun onSwiped(
+                            viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                            direction: Int) {
                         (viewHolder.itemView.context.applicationContext as LawnchairApp)
                                 .overlayWidgetHost
-                                .deleteAppWidgetId(prefList[viewHolder.adapterPosition])
+                                .deleteAppWidgetId(prefList[viewHolder.adapterPosition].id)
                         prefList.removeAt(viewHolder.adapterPosition)
-                        synchronizeWithPreference()
+                        WidgetDatabase.getInstance(c).dao()
+                                .removeWidget(prefList[viewHolder.adapterPosition].id)
                         notifyItemRemoved(viewHolder.adapterPosition)
                     }
 

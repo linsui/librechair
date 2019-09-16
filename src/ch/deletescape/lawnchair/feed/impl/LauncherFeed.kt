@@ -54,9 +54,7 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
-import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
-import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
-import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
+import ch.deletescape.lawnchair.feed.widgets.*
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -68,7 +66,9 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.hypot
 import kotlin.math.max
@@ -676,30 +676,19 @@ class LauncherFeed(val originalContext: Context,
                                         .pickWidget(object :
                                                 WidgetSelectionCallback.Stub() {
                                             override fun onWidgetSelected(i: Int) {
-                                                context.lawnchairPrefs.feedWidgetList
-                                                        .customAdder(i)
-                                                context.bindService(Intent(context,
-                                                        PreferenceSynchronizerService::class.java),
-                                                        object :
-                                                                ServiceConnection {
-                                                            override fun onServiceDisconnected(
-                                                                    name: ComponentName?) {
-                                                            }
-
-                                                            override fun onServiceConnected(
-                                                                    name: ComponentName?,
-                                                                    service: IBinder?) {
-                                                                PreferenceSynchronizer
-                                                                        .Stub
-                                                                        .asInterface(
-                                                                                service)
-                                                                        .requestSynchronization()
-                                                            }
-                                                        },
-                                                        Context.BIND_AUTO_CREATE)
-
-                                                runOnNewThread {
-                                                    refresh(0)
+                                                if (i != -1) {
+                                                    GlobalScope.launch {
+                                                        WidgetDatabase.getInstance(context)
+                                                                .dao()
+                                                                .addWidget(Widget(i,
+                                                                        WidgetDatabase.getInstance(
+                                                                                context)
+                                                                                .dao().all.size))
+                                                    }.invokeOnCompletion {
+                                                        if (it == null) {
+                                                            refresh(0)
+                                                        }
+                                                    }
                                                 }
                                             }
                                         })
