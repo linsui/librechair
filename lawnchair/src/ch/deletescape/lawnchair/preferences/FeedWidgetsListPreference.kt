@@ -342,8 +342,10 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         (viewHolder.itemView.context.applicationContext as LawnchairApp)
                                 .overlayWidgetHost
                                 .deleteAppWidgetId(prefList[viewHolder.adapterPosition].id)
-                        WidgetDatabase.getInstance(c).dao()
-                                .removeWidget(prefList[viewHolder.adapterPosition].id)
+                        GlobalScope.launch {
+                            WidgetDatabase.getInstance(c).dao()
+                                    .removeWidget(prefList[viewHolder.adapterPosition].id)
+                        }
                         prefList.removeAt(viewHolder.adapterPosition)
                         notifyItemRemoved(viewHolder.adapterPosition)
                     }
