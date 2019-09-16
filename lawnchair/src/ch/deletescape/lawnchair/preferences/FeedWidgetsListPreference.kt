@@ -102,7 +102,9 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                 GlobalScope.launch {
                     try {
                         prefList.clear()
-                        prefList.addAll(WidgetDatabase.getInstance(c).dao().all)
+                        prefList.addAll(WidgetDatabase.getInstance(c).dao().all.filter {
+                            c.appWidgetManager.getAppWidgetInfo(it.id) != null
+                        })
                     } catch (e: RuntimeException) {
                         e.printStackTrace()
                     }
