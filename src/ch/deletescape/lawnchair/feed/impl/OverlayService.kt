@@ -36,6 +36,7 @@ class OverlayService : Service(), () -> Unit {
         val feedInitialized
             get() = ::feed.isInitialized
     }
+
     val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -55,21 +56,21 @@ class OverlayService : Service(), () -> Unit {
         if (imageProvider == null) {
             feed = LauncherFeed(this)
         } else {
-                feed = LauncherFeed(this@OverlayService) {
-                    GlobalScope.launch {
-                        val refreshBitmap = {
-                            GlobalScope.launch {
-                                val bitmap = imageProvider?.getBitmap(this@OverlayService)
-                                if (bitmap != null) {
-                                    it(bitmap)
-                                }
+            feed = LauncherFeed(this@OverlayService) {
+                GlobalScope.launch {
+                    val refreshBitmap = {
+                        GlobalScope.launch {
+                            val bitmap = imageProvider?.getBitmap(this@OverlayService)
+                            if (bitmap != null) {
+                                it(bitmap)
                             }
-                            Unit
                         }
-                        refreshBitmap()
-                        imageProvider?.registerOnChangeListener(refreshBitmap)
+                        Unit
                     }
+                    refreshBitmap()
+                    imageProvider?.registerOnChangeListener(refreshBitmap)
                 }
+            }
         }
     }
 
@@ -80,6 +81,10 @@ class OverlayService : Service(), () -> Unit {
 
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun shouldFadeWorkspaceDuringScroll(): Boolean {
+                return true
+            }
+
             override fun shouldScrollWorkspace(): Boolean {
                 if (feedInitialized) {
                     return feed.feedController.animationDelegate.shouldScroll

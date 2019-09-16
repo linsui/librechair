@@ -22,4 +22,5 @@ package com.android.overlayclient;
 
 public interface CustomOverscrollClient extends WorkspaceOverscrollClient {
     boolean shouldScrollLauncher();
+    boolean shouldFadeWorkspaceDuringScroll();
 }

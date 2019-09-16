@@ -91,6 +91,11 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
     }
 
     @Override
+    public boolean shouldFadeWorkspaceDuringScroll() {
+        return client.shouldFadeWorkspaceDuringScroll();
+    }
+
+    @Override
     public boolean shouldScrollLauncher() {
         return client.shouldScrollLauncher();
     }

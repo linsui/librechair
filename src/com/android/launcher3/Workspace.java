@@ -1244,7 +1244,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * The overlay scroll is being controlled locally, just update our overlay effect
      */
     public void onOverlayScrollChanged(float scroll) {
-        if (mLauncherOverlay != null && mLauncherOverlay.shouldScrollLauncher()) {
+        if (mLauncherOverlay == null || mLauncherOverlay.shouldScrollLauncher()) {
             if (Float.compare(scroll, 1f) == 0) {
                 if (!mOverlayShown) {
                     mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,
@@ -1286,7 +1286,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             // different effects based on device performance. On at least one relatively high-end
             // device I've tried, translating the launcher causes things to get quite laggy.
             mLauncher.getDragLayer().setTranslationX(transX);
-            mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
+            if (mLauncherOverlay == null || mLauncherOverlay.shouldFadeWorkspaceDuringScroll()) {
+                mLauncher.getDragLayer().getAlphaProperty(ALPHA_INDEX_OVERLAY).setValue(alpha);
+            }
 
             if (mLauncher instanceof LawnchairLauncher && Utilities.getLawnchairPrefs(
                     getContext()).getFeedBlur()) {

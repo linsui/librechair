@@ -311,7 +311,7 @@
                 android:value="4" />
             <meta-data
                 android:name="service.api.companionVersion"
-                android:value="0"/>
+                android:value="1"/>
         </service>
 
         <service

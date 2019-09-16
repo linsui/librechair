@@ -40,7 +40,16 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
         try {
             return (getOverlay() == null || companionApiVersion == -1 || factory.getCompanion() == null) || factory.getCompanion().shouldScrollWorkspace();
         } catch (RemoteException e) {
-            return false;
+            return true;
+        }
+    }
+
+    @Override
+    public boolean shouldFadeWorkspaceDuringScroll() {
+        try {
+            return (getOverlay() == null || factory.getCompanion() == null || companionApiVersion < 1) || factory.getCompanion().shouldFadeWorkspaceDuringScroll();
+        } catch (RemoteException e) {
+            return true;
         }
     }
 }

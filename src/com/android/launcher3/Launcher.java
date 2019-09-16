@@ -890,6 +890,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         default boolean shouldScrollLauncher() {
             return true;
         }
+
+        default boolean shouldFadeWorkspaceDuringScroll() {
+            return true;
+        }
     }
 
     public interface LauncherOverlayCallbacks {
