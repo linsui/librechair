@@ -309,6 +309,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         }
                         null
                     }
+                    builder.applyAccent()
                 }
             }
 
