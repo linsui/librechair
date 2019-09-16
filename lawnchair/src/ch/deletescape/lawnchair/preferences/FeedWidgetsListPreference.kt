@@ -101,7 +101,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
             init {
                 GlobalScope.launch {
-                    prefList.addAll(WidgetDatabase.getInstance(c).dao().all)
+                    try {
+                        prefList.addAll(WidgetDatabase.getInstance(c).dao().all)
+                    } catch (e: RuntimeException) {
+                        e.printStackTrace()
+                    }
                     initHold.trigger()
                 }
             }
@@ -120,6 +124,11 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
             override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
                 val appWidgetInfo = holder.itemView.context.appWidgetManager
                         .getAppWidgetInfo(prefList[holder.adapterPosition].id)
+                if (appWidgetInfo == null) {
+                    holder.itemView.visibility = View.GONE
+                } else {
+                    holder.itemView.visibility = View.VISIBLE
+                }
                 val appWidgetId = prefList[holder.adapterPosition].id
                 holder.dragHandle.setOnTouchListener { view: View, motionEvent: MotionEvent ->
                     if (motionEvent.action == MotionEvent.ACTION_DOWN) {
@@ -343,8 +352,12 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                                 .overlayWidgetHost
                                 .deleteAppWidgetId(prefList[viewHolder.adapterPosition].id)
                         GlobalScope.launch {
-                            WidgetDatabase.getInstance(c).dao()
-                                    .removeWidget(prefList[viewHolder.adapterPosition].id)
+                            try {
+                                WidgetDatabase.getInstance(c).dao()
+                                        .removeWidget(prefList[viewHolder.adapterPosition].id)
+                            } catch (e: ArrayIndexOutOfBoundsException) {
+                                e.printStackTrace()
+                            }
                         }
                         prefList.removeAt(viewHolder.adapterPosition)
                         notifyItemRemoved(viewHolder.adapterPosition)
