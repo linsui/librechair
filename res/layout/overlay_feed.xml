@@ -111,6 +111,7 @@
                     <TextView
                         android:textStyle="bold"
                         android:layout_marginHorizontal="8dp"
+                        android:layout_marginVertical="4dp"
                         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
                         tools:text="sample infobox text"
                         android:layout_width="0dp"
