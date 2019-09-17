@@ -1145,7 +1145,10 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun startSearch(data: ByteArray?, bundle: Bundle?): Boolean {
-        return false
+        return if (searchWidgetView == null) false else run {
+            searchWidgetView?.performClick()
+            true
+        }
     }
 
     fun onProgress(progress: Float, isDragging: Boolean) {
