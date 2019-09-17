@@ -29,17 +29,6 @@
             task="^@string/about_role_lead">
         </me.jfenn.attribouter.wedges.ContributorWedge>
 
-        <!-- Special snowflake: chriskardas -->
-        <me.jfenn.attribouter.wedges.ContributorWedge
-            name="^Christopher Kardas"
-            avatar="https://avatars.githubusercontent.com/u/15703840"
-            bio="^@string/about_bio_chris"
-            blog="https://christopherkardas.me/"
-            login="chriskardas"
-            position="2"
-            task="^@string/about_role_special_snowflake">
-        </me.jfenn.attribouter.wedges.ContributorWedge>
-
         <!-- Developer: paphonb -->
         <me.jfenn.attribouter.wedges.ContributorWedge
             name="^paphonb"
