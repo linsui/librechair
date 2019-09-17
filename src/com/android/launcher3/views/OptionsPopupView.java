@@ -43,6 +43,8 @@ import com.android.launcher3.widget.WidgetsFullSheet;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.deletescape.lawnchair.LawnchairLauncher;
+
 import static com.android.launcher3.BaseDraggingActivity.INTENT_EXTRA_IGNORE_LAUNCH_ANIMATION;
 import static com.android.launcher3.Utilities.EXTRA_WALLPAPER_OFFSET;
 
@@ -164,6 +166,15 @@ public class OptionsPopupView extends ArrowPopup
                     -1,
                     v -> {
                         Utilities.restartLauncher(launcher);
+                        return true;
+                    }));
+            options.add(new OptionItem(R.string.title_options_item_restart_feed,
+                    R.drawable.ic_restart,
+                    -1,
+                    v -> {
+                        if (((LawnchairLauncher) launcher).getOverlay() != null) {
+                            ((LawnchairLauncher) launcher).getOverlay().getClient().restartProcess();
+                        }
                         return true;
                     }));
         }
