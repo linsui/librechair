@@ -40,10 +40,16 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public class ServiceClient extends ILauncherOverlayCallback.Stub
         implements OpenableOverscrollClient, DisconnectableOverscrollClient,
-        SearchableOverscrollClient, Handler.Callback {
+        SearchableOverscrollClient, DurationOpenableOverscrollClient, Handler.Callback {
 
     public static final int MESSAGE_CHANGE_SCROLL = 2;
     public static final int MESSAGE_CHANGE_STATUS = 4;
+
+    private static final int ANIMATE = 1;
+    private static final int ANIMATE_DURATION_LSHIFT = 2;
+
+    private static final int DEFAULT_ANIMATION_DURATION =
+            (int) TimeUnit.SECONDS.toMillis(1);
 
     private ILauncherOverlay overlay;
     private Activity boundActivity;
@@ -89,12 +95,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public void openOverlay(boolean animate) {
-        Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
-                throwable);
         if (overlay != null) {
             try {
-                overlay.openOverlay(animate ? 1 : 0);
+                overlay.openOverlay(getAnimationFlags(animate, DEFAULT_ANIMATION_DURATION));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -105,7 +108,29 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     public void closeOverlay(boolean animate) {
         if (overlay != null) {
             try {
-                overlay.closeOverlay(animate ? 1 : 0);
+                overlay.closeOverlay(getAnimationFlags(animate, DEFAULT_ANIMATION_DURATION));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void openOverlay(int duration) {
+        if (overlay != null) {
+            try {
+                overlay.openOverlay(getAnimationFlags(true, duration));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void closeOverlay(int duration) {
+        if (overlay != null) {
+            try {
+                overlay.closeOverlay(getAnimationFlags(true, duration));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -422,5 +447,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             default:
                 return false;
         }
+    }
+
+    private static int getAnimationFlags(boolean animate, int duration) {
+        return !animate ? 0 : ANIMATE | duration << ANIMATE_DURATION_LSHIFT;
     }
 }
