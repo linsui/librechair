@@ -58,8 +58,12 @@ class OverlayService : Service(), () -> Unit {
                     val refreshBitmap = {
                         GlobalScope.launch {
                             val bitmap = imageProvider?.getBitmap(this@OverlayService)
+                            val desc = imageProvider?.getDescription(this@OverlayService)
                             if (bitmap != null) {
                                 it(bitmap)
+                            }
+                            if (desc != null) {
+                                feed.infobox.text = desc
                             }
                         }
                         Unit

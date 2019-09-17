@@ -30,9 +30,10 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.images.bing.BingPictureResponse;
-import ch.deletescape.lawnchair.feed.images.bing.BingRetrofitServiceFactory;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,10 +41,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.images.bing.BingPictureResponse;
+import ch.deletescape.lawnchair.feed.images.bing.BingRetrofitServiceFactory;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.jvm.functions.Function0;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
 public class BingImageProvider extends BroadcastReceiver implements ImageProvider {
@@ -110,6 +114,24 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Nullable
+    @Override
+    public Object getDescription(@NotNull Context context,
+                                 @NotNull Continuation<? super String> o) {
+        try {
+            Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE
+                    .getApi(context)
+                    .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
+                    .execute();
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body().images[0].copyright;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @SuppressLint("DefaultLocale")

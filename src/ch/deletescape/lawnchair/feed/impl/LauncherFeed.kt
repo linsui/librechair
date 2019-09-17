@@ -186,6 +186,7 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
         }
+    var infobox = feedController.findViewById(R.id.info_box_text) as TextView
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
@@ -299,6 +300,9 @@ class LauncherFeed(val originalContext: Context,
             previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(),
                     backgroundColor,
                     context.applicationContext, this)
+            val oldInfobox = infobox.text
+            infobox = feedController.findViewById(R.id.info_box_text) as TextView
+            infobox.text = oldInfobox
         }
 
         if (context.lawnchairPrefs.feedHighContrastToolbar) {

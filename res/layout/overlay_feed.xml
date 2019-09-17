@@ -104,6 +104,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/SettingsTheme.Base" />
+                <LinearLayout
+                    android:id="@+id/info_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        tools:text="sample infobox text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:id="@+id/info_box_text"/>
+                </LinearLayout>
             </LinearLayout>
         </Toolbar>
     </FrameLayout>

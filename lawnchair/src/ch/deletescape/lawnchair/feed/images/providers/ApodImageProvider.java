@@ -29,9 +29,10 @@ import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.images.nasa.ApodResponse;
-import ch.deletescape.lawnchair.feed.images.nasa.ApodRetrofitServiceFactory;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -39,10 +40,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.images.nasa.ApodResponse;
+import ch.deletescape.lawnchair.feed.images.nasa.ApodRetrofitServiceFactory;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.jvm.functions.Function0;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
 public class ApodImageProvider extends BroadcastReceiver implements ImageProvider {
@@ -128,5 +132,22 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
                                                         },
                 SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date()).toInstant()
                         .toEpochMilli() - System.currentTimeMillis());
+    }
+
+    @Nullable
+    @Override
+    public Object getDescription(@NotNull Context context,
+                                 @NotNull Continuation<? super String> o) {
+        try {
+            Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            if (response.body().media_type.equals("image")) {
+                return response.body().explanation;
+            } else {
+                return null;
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
