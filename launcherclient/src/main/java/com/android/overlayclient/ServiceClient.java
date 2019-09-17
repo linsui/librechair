@@ -49,7 +49,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     private static final int ANIMATE_DURATION_LSHIFT = 2;
 
     private static final int DEFAULT_ANIMATION_DURATION =
-            (int) TimeUnit.SECONDS.toMillis(1);
+            (int) TimeUnit.SECONDS.toMillis(1) / 4;
 
     private ILauncherOverlay overlay;
     private Activity boundActivity;
