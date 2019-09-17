@@ -24,6 +24,8 @@ import android.app.Activity;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.WindowManager;
@@ -36,18 +38,24 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
-public class ServiceClient implements OpenableOverscrollClient, DisconnectableOverscrollClient,
-        SearchableOverscrollClient {
+public class ServiceClient extends ILauncherOverlayCallback.Stub
+        implements OpenableOverscrollClient, DisconnectableOverscrollClient,
+        SearchableOverscrollClient, Handler.Callback {
+
+    public static final int MESSAGE_CHANGE_SCROLL = 2;
 
     private ILauncherOverlay overlay;
     private Activity boundActivity;
     private ServiceFactory factory;
-    private ILauncherOverlayCallback overlayCallback;
     private WindowManager.LayoutParams params;
     private Bundle additionalParams;
     private boolean activityRunning;
     private int apiVersion;
+    private OverlayCallback callback;
     private ArrayList<Consumer<ILauncherOverlay>> overlayChangeListeners;
+    private int windowShift;
+    private ActivityState activityState;
+    private Handler mUIHandler;
 
     public ServiceClient(Activity boundActivity,
                          ServiceFactory factory, OverlayCallback callback,
@@ -55,24 +63,16 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         this.boundActivity = boundActivity;
         this.factory = factory;
         this.apiVersion = factory.getApiVersion();
+        this.callback = callback;
         this.overlayChangeListeners = new ArrayList<>();
-        this.overlayCallback = new ILauncherOverlayCallback.Stub() {
-            @Override
-            public void overlayScrollChanged(float progress) throws RemoteException {
-                boundActivity.runOnUiThread(() -> callback.overlayScrollChanged(progress));
-            }
-
-            @Override
-            public void overlayStatusChanged(int status) throws RemoteException {
-                boundActivity.runOnUiThread(() -> callback.overlayStatusChanged(status));
-            }
-        };
         factory.setChangeListener(l3overlay -> {
             this.overlay = l3overlay;
             ((ArrayList<Consumer<ILauncherOverlay>>) overlayChangeListeners.clone()).forEach(
                     consumer -> consumer.accept(l3overlay));
             if (params != null) {
                 acceptLayoutParams(params);
+            } else {
+                acceptLayoutParams(params = boundActivity.getWindow().getAttributes());
             }
             if (l3overlay == null) {
                 disconnectCallback.run();
@@ -82,7 +82,9 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
                 connectCallback.run();
             }
         });
+        activityState = new ActivityState();
         factory.connect();
+        mUIHandler = new Handler(Looper.getMainLooper(), this);
     }
 
     @Override
@@ -125,7 +127,11 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         activityRunning = false;
         if (overlay != null) {
             try {
-                overlay.onPause();
+                if (apiVersion >= 4) {
+                    overlay.setActivityState(activityState.onResume());
+                } else {
+                    overlay.onResume();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -137,7 +143,11 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         activityRunning = false;
         if (overlay != null) {
             try {
-                overlay.onPause();
+                if (apiVersion >= 4) {
+                    overlay.setActivityState(activityState.onPause());
+                } else {
+                    overlay.onPause();
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -149,7 +159,9 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         activityRunning = false;
         if (overlay != null) {
             try {
-                overlay.onPause();
+                if (apiVersion >= 4) {
+                    overlay.setActivityState(activityState.onStart());
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -161,7 +173,9 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
         activityRunning = false;
         if (overlay != null) {
             try {
-                overlay.onPause();
+                if (apiVersion >= 4) {
+                    overlay.setActivityState(activityState.onStop());
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -247,26 +261,27 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
     private void configure() {
         if (overlay != null) {
             try {
-                Point point = new Point();
-                boundActivity.getWindowManager().getDefaultDisplay().getRealSize(point);
+                Point p = new Point();
+                boundActivity.getWindowManager().getDefaultDisplay().getRealSize(p);
+                windowShift = Math.max(p.x, p.y);
                 if (apiVersion < 3) {
                     overlay.windowAttached(boundActivity.getWindow().getAttributes(),
-                            overlayCallback, 0);
+                            this, 3);
                 } else {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("layout_params",
                             params);
                     bundle.putParcelable("configuration",
                             boundActivity.getResources().getConfiguration());
-                    bundle.putInt("client_options", 0);
+                    bundle.putInt("client_options", 3);
                     if (additionalParams != null) {
                         bundle.putAll(additionalParams);
                     }
-                    overlay.windowAttached2(bundle, overlayCallback);
+                    overlay.windowAttached2(bundle, this);
                 }
                 if (apiVersion >= 4) {
-                    overlay.setActivityState(activityRunning ? 1 : 0); // TODO fix this
-                } else if (activityRunning) {
+                    overlay.setActivityState(activityState.toMask());
+                } else if (activityState.isActivityInForeground()) {
                     overlay.onResume();
                 } else {
                     overlay.onPause();
@@ -290,5 +305,50 @@ public class ServiceClient implements OpenableOverscrollClient, DisconnectableOv
 
     protected ILauncherOverlay getOverlay() {
         return overlay;
+    }
+
+    @Override
+    public void overlayScrollChanged(float progress) throws RemoteException {
+        mUIHandler.removeMessages(MESSAGE_CHANGE_SCROLL);
+        mUIHandler.obtainMessage(MESSAGE_CHANGE_SCROLL, progress).sendToTarget();
+    }
+
+    @Override
+    public void overlayStatusChanged(int status) throws RemoteException {
+        boundActivity.runOnUiThread(() -> callback.overlayStatusChanged(status));
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MESSAGE_CHANGE_SCROLL:
+                if (overlay != null) {
+                    boundActivity.runOnUiThread(
+                            () -> callback.overlayScrollChanged((float) msg.obj));
+                }
+                return true;
+            case 3:
+                WindowManager.LayoutParams attrs = params;
+                if ((boolean) msg.obj) {
+                    attrs.x = windowShift;
+                    attrs.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                } else {
+                    attrs.x = windowShift;
+                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
+                }
+                boundActivity.getWindowManager().updateViewLayout(
+                        boundActivity.getWindow().getDecorView(), attrs);
+                return true;
+            case 4:
+                if ((msg.arg1 & 1) != 0) {
+                    overlay = null;
+                }
+                if (callback instanceof PersistableScrollCallback) {
+                    ((PersistableScrollCallback) callback).setPersistentFlags(msg.arg1);
+                }
+                return true;
+            default:
+                return false;
+        }
     }
 }

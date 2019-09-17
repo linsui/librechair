@@ -40,13 +40,11 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             protected Intent getService() {
                 String pkg = Utilities.getLawnchairPrefs(launcher).getFeedProviderPackage();
                 return new Intent("com.android.launcher3.WINDOW_OVERLAY")
-                        .setPackage(Utilities.getLawnchairPrefs(launcher).getFeedProviderPackage())
-                        .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
-                                .append("app://")
-                                .append(pkg)
-                                .append(":")
-                                .append(Process.myUid())
-                                .toString())
+                        .setPackage(pkg)
+                        .setData(Uri.parse("app://" +
+                                launcher.getPackageName() +
+                                ":" +
+                                Process.myUid())
                                 .buildUpon()
                                 .appendQueryParameter("v", Integer.toString(7))
                                 .appendQueryParameter("cv", Integer.toString(9))
