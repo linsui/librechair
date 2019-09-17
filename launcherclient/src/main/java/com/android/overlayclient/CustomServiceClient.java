@@ -52,4 +52,15 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
             return true;
         }
     }
+
+    @Override
+    public void restartProcess() {
+        if (getOverlay() != null && factory.getCompanion() != null && companionApiVersion >= 2) {
+            try {
+                factory.getCompanion().restartProcess();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

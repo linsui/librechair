@@ -390,7 +390,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public boolean startSearch(byte[] options, Bundle parameters) {
-        if (overlay != null) {
+        if (overlay != null && apiVersion >= 6) {
             try {
                 return overlay.startSearch(options, parameters);
             } catch (RemoteException e) {

@@ -637,15 +637,7 @@ class LawnchairPreferences(val context: Context) :
 
     fun restartOverlay() {
         if (getCurrentProcessName(context) != ":overlay") {
-            try {
-                LawnchairLauncher.getLauncher(context).overlay?.client?.disconnect();
-            } catch (e: NullPointerException) {
-                e.printStackTrace();
-            } catch (e: IllegalArgumentException) {
-                e.printStackTrace();
-            } catch (e: RuntimeException) {
-                e.printStackTrace();
-            }
+            LawnchairLauncher.getLauncher(context).overlay?.client?.restartProcess()
         }
 
         sharedPrefs.edit().putString("pref_feed_preview", UUID.randomUUID().toString()).apply()

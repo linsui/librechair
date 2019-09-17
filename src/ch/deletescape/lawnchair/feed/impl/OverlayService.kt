@@ -25,7 +25,6 @@ import android.os.IBinder
 import android.os.Process
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.util.extensions.d
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -47,8 +46,6 @@ class OverlayService : Service(), () -> Unit {
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Process.killProcess(Process.myPid());
-        onDestroy()
         return true
     }
 
@@ -74,13 +71,12 @@ class OverlayService : Service(), () -> Unit {
         }
     }
 
-    override fun onDestroy() {
-        d("onDestroy: killing overlay process", Throwable())
-        super.onDestroy()
-    }
-
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun restartProcess() {
+                Process.killProcess(Process.myPid())
+            }
+
             override fun shouldFadeWorkspaceDuringScroll(): Boolean {
                 return true
             }
