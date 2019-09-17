@@ -308,7 +308,7 @@
 
             <meta-data
                 android:name="service.api.version"
-                android:value="4" />
+                android:value="7" />
             <meta-data
                 android:name="service.api.companionVersion"
                 android:value="2"/>
