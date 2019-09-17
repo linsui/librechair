@@ -352,7 +352,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     public void putAdditionalParams(Bundle params) {
         additionalParams = params;
-        configure();
+        if (apiVersion >= 7) {
+            configure();
+        }
     }
 
     private void configure() {
