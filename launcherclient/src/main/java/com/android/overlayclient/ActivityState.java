@@ -20,12 +20,16 @@
 
 package com.android.overlayclient;
 
+import java.util.function.Consumer;
+
 public class ActivityState {
     private static int FLAG_INITIALIZED = 1;
     private static int FLAG_ACTIVITY_IN_FOREGROUND = 1 << 1;
 
     private boolean connected;
     private boolean activityInForeground;
+
+    private Consumer<ActivityState> onChangeListener;
 
 
     public int toMask() {
@@ -35,22 +39,34 @@ public class ActivityState {
 
     public int onStart() {
         connected = true;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
         return toMask();
     }
 
     public int onPause() {
         connected = false;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
         return toMask();
     }
 
     public int onResume() {
         connected = true;
         activityInForeground = true;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
         return toMask();
     }
 
     public int onStop() {
         connected = false;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
         return toMask();
     }
 
@@ -60,6 +76,9 @@ public class ActivityState {
 
     public void setConnected(boolean connected) {
         this.connected = connected;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
     }
 
     public boolean isActivityInForeground() {
@@ -68,5 +87,13 @@ public class ActivityState {
 
     public void setActivityInForeground(boolean activityInForeground) {
         this.activityInForeground = activityInForeground;
+        if (onChangeListener != null) {
+            onChangeListener.accept(this);
+        }
+    }
+
+    public void setOnChangeListener(
+            Consumer<ActivityState> onChangeListener) {
+        this.onChangeListener = onChangeListener;
     }
 }
