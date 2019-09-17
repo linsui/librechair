@@ -27,7 +27,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.WindowManager;
 
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
@@ -327,9 +326,6 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public void stopScroll() {
-        Throwable throwable = new Throwable();
-        Log.d(getClass().getName(), throwable.getStackTrace()[0].getMethodName() + ": Called",
-                throwable);
         if (overlay != null) {
             try {
                 overlay.endScroll();
