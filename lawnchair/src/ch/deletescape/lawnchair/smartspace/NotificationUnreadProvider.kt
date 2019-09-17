@@ -18,9 +18,9 @@
 package ch.deletescape.lawnchair.smartspace
 
 import android.service.notification.StatusBarNotification
+import android.text.TextUtils
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat.PRIORITY_DEFAULT
-import android.text.TextUtils
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.flowerpot.FlowerpotApps
 import ch.deletescape.lawnchair.loadSmallIcon
@@ -29,7 +29,6 @@ import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Line
 import ch.deletescape.lawnchair.toBitmap
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.notification.NotificationInfo
 import com.android.launcher3.util.PackageUserKey
@@ -54,14 +53,8 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         zenModeEnabled = it
     }
 
-    init {
-        startListening()
-    }
-
     override fun startListening() {
         super.startListening()
-
-        d("startListening: registering notification listener")
 
         manager.addListener(this)
         zenModeListener.startListening()
@@ -74,7 +67,6 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun onNotificationsChanged() {
-        d("onNotificationsChanged: notifications changed")
         runOnMainThread {
             updateData(null, getEventCard())
         }
@@ -82,7 +74,7 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
 
     private fun isCommunicationApp(sbn: StatusBarNotification): Boolean {
         return tmpKey.updateFromNotification(sbn)
-               && flowerpotApps?.packageMatches?.contains(tmpKey) != false
+                && flowerpotApps?.packageMatches?.contains(tmpKey) != false
     }
 
     private fun getEventCard(): CardData? {
@@ -122,7 +114,7 @@ class NotificationUnreadProvider(controller: LawnchairSmartspaceController) :
         }
         return CardData(
                 sbn.loadSmallIcon(context)?.toBitmap(), lines,
-                LawnchairSmartspaceController.NotificationClickListener(sbn), true)
+                LawnchairSmartspaceController.NotificationClickListener(sbn))
     }
 
     private fun splitTitle(title: String): Array<String> {
