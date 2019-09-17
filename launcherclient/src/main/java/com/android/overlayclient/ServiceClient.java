@@ -43,13 +43,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         SearchableOverscrollClient, Handler.Callback {
 
     public static final int MESSAGE_CHANGE_SCROLL = 2;
+    public static final int MESSAGE_CHANGE_STATUS = 4;
 
     private ILauncherOverlay overlay;
     private Activity boundActivity;
     private ServiceFactory factory;
     private WindowManager.LayoutParams params;
     private Bundle additionalParams;
-    private boolean activityRunning;
     private int apiVersion;
     private OverlayCallback callback;
     private ArrayList<Consumer<ILauncherOverlay>> overlayChangeListeners;
@@ -124,7 +124,6 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public void onResume() {
-        activityRunning = false;
         if (overlay != null) {
             try {
                 if (apiVersion >= 4) {
@@ -135,12 +134,31 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else {
+            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
+                @Override
+                public void accept(ILauncherOverlay iLauncherOverlay) {
+                    if (iLauncherOverlay != null) {
+                        try {
+                            if (apiVersion >= 4) {
+                                iLauncherOverlay.setActivityState(activityState.onResume());
+                            } else {
+                                iLauncherOverlay.onResume();
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    synchronized (ServiceClient.this) {
+                        overlayChangeListeners.remove(this);
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void onPause() {
-        activityRunning = false;
         if (overlay != null) {
             try {
                 if (apiVersion >= 4) {
@@ -151,12 +169,31 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else {
+            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
+                @Override
+                public void accept(ILauncherOverlay iLauncherOverlay) {
+                    if (iLauncherOverlay != null) {
+                        try {
+                            if (apiVersion >= 4) {
+                                iLauncherOverlay.setActivityState(activityState.onPause());
+                            } else {
+                                iLauncherOverlay.onPause();
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    synchronized (ServiceClient.this) {
+                        overlayChangeListeners.remove(this);
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void onStart() {
-        activityRunning = false;
         if (overlay != null) {
             try {
                 if (apiVersion >= 4) {
@@ -165,12 +202,29 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else {
+            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
+                @Override
+                public void accept(ILauncherOverlay iLauncherOverlay) {
+                    if (iLauncherOverlay != null) {
+                        if (apiVersion >= 4) {
+                            try {
+                                iLauncherOverlay.setActivityState(activityState.onStart());
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    synchronized (ServiceClient.this) {
+                        overlayChangeListeners.remove(this);
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void onStop() {
-        activityRunning = false;
         if (overlay != null) {
             try {
                 if (apiVersion >= 4) {
@@ -179,6 +233,24 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else {
+            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
+                @Override
+                public void accept(ILauncherOverlay iLauncherOverlay) {
+                    if (iLauncherOverlay != null) {
+                        try {
+                            if (apiVersion >= 4) {
+                                iLauncherOverlay.setActivityState(activityState.onStop());
+                            }
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    synchronized (ServiceClient.this) {
+                        overlayChangeListeners.remove(this);
+                    }
+                }
+            });
         }
     }
 
@@ -315,7 +387,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public void overlayStatusChanged(int status) throws RemoteException {
-        boundActivity.runOnUiThread(() -> callback.overlayStatusChanged(status));
+        mUIHandler.obtainMessage(MESSAGE_CHANGE_STATUS, status, 0);
     }
 
     @Override
@@ -339,7 +411,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                 boundActivity.getWindowManager().updateViewLayout(
                         boundActivity.getWindow().getDecorView(), attrs);
                 return true;
-            case 4:
+            case MESSAGE_CHANGE_STATUS:
                 if ((msg.arg1 & 1) != 0) {
                     overlay = null;
                 }
