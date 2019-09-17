@@ -1128,6 +1128,20 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun openOverlay(flags: Int) {
+        startScroll()
+        val duration = flags shr 2
+        val animate = flags and 1 != 0
+        if (!animate) {
+            feedController.onScroll(1f)
+            endScroll()
+            return;
+        }
+        var f = 0f
+        while (f <= 1f) {
+            onScroll(Interpolators.ACCEL_1_5.getInterpolation(f))
+            f += 0.01f
+        }
+        endScroll()
     }
 
     override fun requestVoiceDetection(start: Boolean) {
