@@ -129,6 +129,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.OPEN
+                    mLauncherFeed?.endScroll()
                 }
             })
             mLauncherFeed?.startScroll()
