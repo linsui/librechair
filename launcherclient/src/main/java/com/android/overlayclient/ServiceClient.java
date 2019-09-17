@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unchecked")
 public class ServiceClient extends ILauncherOverlayCallback.Stub
-        implements OpenableOverscrollClient, DisconnectableOverscrollClient,
+        implements DisconnectableOverscrollClient,
         SearchableOverscrollClient, DurationOpenableOverscrollClient, Handler.Callback {
 
     public static final int MESSAGE_CHANGE_SCROLL = 2;
