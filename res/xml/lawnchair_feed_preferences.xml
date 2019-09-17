@@ -65,6 +65,11 @@
             android:key="pref_feed_background"
             android:title="@string/title_pref_feed_background"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_feed_infobox"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_infobox"
+            android:summary="@string/summary_pref_feed_infobox"/>
         <ch.deletescape.lawnchair.preferences.Preference
             android:dependency="pref_feed_background"
             android:key="pref_share_background_image"

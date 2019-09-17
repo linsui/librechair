@@ -684,4 +684,6 @@
     <string name="title_animation_delegate_scale">Scale</string>
     <string name="title_animation_delegate_drawer">Drawer</string>
     <string name="title_animation_delegate_glide">Glide</string>
+    <string name="summary_pref_feed_infobox">This option is not available with all background image providers</string>
+    <string name="title_pref_feed_infobox">Show background image description if available</string>
 </resources>

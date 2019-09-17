@@ -310,6 +310,9 @@ class LauncherFeed(val originalContext: Context,
         }
 
 
+        infobox.visibility = if (context.lawnchairPrefs.feedShowInfobox)
+            View.VISIBLE else View.GONE
+
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
         var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
         var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null

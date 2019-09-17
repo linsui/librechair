@@ -323,8 +323,9 @@ class LawnchairPreferences(val context: Context) :
 
     var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null, ::restartOverlay)
     var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),
-                                             ::restartOverlay);
+                                             ::restartOverlay)
 
+    var feedShowInfobox by BooleanPref("pref_feed_infobox", true, ::restartOverlay)
     var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, ::restartOverlay);
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restart);
 
