@@ -17,6 +17,7 @@ package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.*
 import android.content.Context
+import android.os.Handler
 import android.util.AttributeSet
 import android.util.Property
 import android.view.KeyEvent
@@ -101,21 +102,41 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     fun closeOverlay(animated: Boolean, duration: Int) {
-        var duration = duration
         if (!animated) {
             setProgress(0f, true)
         } else {
-            if (duration == 0) {
-                duration = 350
-            }
             val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
-            animator.duration = duration.toLong()
+            animator.duration = if (duration != 0) duration.toLong() else 350L
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.CLOSED
                 }
             })
+            animator.start()
+        }
+    }
+
+    fun openOverlay(animated: Boolean, duration: Int) {
+        if (!animated) {
+            setProgress(0f, true)
+        } else {
+            val handler = Handler()
+            visibility = View.VISIBLE
+            val animator = ObjectAnimator.ofFloat(0f, 1f)
+            animator.duration = if (duration != 0) duration.toLong() else 350L
+            animator.interpolator = Interpolators.ACCEL_1_5
+            animator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    mCurrentState = FeedState.OPEN
+                }
+            })
+            mLauncherFeed?.startScroll()
+            animator.addUpdateListener {
+                if (mLauncherFeed != null) {
+                    handler.post { mLauncherFeed!!.onScroll(it.animatedFraction) }
+                }
+            }
             animator.start()
         }
     }
