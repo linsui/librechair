@@ -125,7 +125,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             visibility = View.VISIBLE
             val animator = ObjectAnimator.ofFloat(0f, 1f)
             animator.duration = if (duration != 0) duration.toLong() else 350L
-            animator.interpolator = Interpolators.ACCEL_1_5
+            animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.OPEN
