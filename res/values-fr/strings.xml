@@ -138,13 +138,9 @@
     <string name="disabled_app_label" msgid="6673129024321402780">"<xliff:g id="APP_NAME">%1$s</xliff:g> est désactivé."</string>
     <!-- The format string for when an app has a notification dot (meaning it has associated notifications). -->
     <plurals name="badged_app_label" formatted="false" msgid="7948068486082879291">
-
       <item quantity="one"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notification</item>
-
       <item quantity="other"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notifications</item>
-
     </plurals>
-
     <skip />
 
     <!-- The format string for default page scroll text [CHAR_LIMIT=none] -->
@@ -370,7 +366,7 @@
     <string name="helpful_tip_01_03">Penses à appliquer de la crème solaire et bois de l\'eau!</string>
     <string name="helpful_tip_01n_03n">Penses à boire du café et ne conduis pas fatigué</string>
     <string name="helpful_tip_04">Aujourd\'hui, ce sera nuageux</string> <!-- Quick! Think up a helpful tip for cloudy days -->
-    <string name="helpful_tip_04n">Penses à prendre un insecticide!</string>
+    <string name="helpful_tip_04n">Il est tôt et le ciel est nuageux!</string>
     <string name="helpful_tip_09_10">Prends un parapluie et conduis doucement sur route glissante!</string>
     <string name="helpful_tip_10n">Routes glissantes et peu de visibilité, attention!</string>
     <string name="helpful_tip_11">Attention aux éclairs et dehors, ne t\'abrite pas sous un arbre</string>
@@ -397,7 +393,8 @@
     <string name="title_text_calendar_feed_in_d_hours">Dans %d heures</string>
     <string name="forecast_s">Prévisions météorologiques • %s</string>
     <string name="app_name_go">Librechair Go</string>
-    <string name="title_feed_card_wikipedia_news">Wikipedia • Dans l\'actualité</string>
+    <string name="title_feed_card_wikipedia_news">Wikipedia • Dans l\'actualité (Legacy)</string>
+    <string name="title_feed_provider_wikipedia_news_synd">Wikipedia • Dans l\'actualité</string>
     <string name="title_feed_provider_calendar">Calendrier</string>
     <string name="title_feed_provider_weather">Météo (legacy)</string>
     <string name="title_feed_provider_forecast">Prévisions météorologiques</string>
@@ -437,6 +434,7 @@
     <string name="hud_weather_information_sunny_occasional_snow">Clair avec occasionnellement de la neige</string>
     <string name="hud_weather_information_sunny_occasional_thunder">Clair avec occasionnellement des éclairs</string>
 
+
     <!-- HUD information for cloudy weather -->
 
     <string name="hud_weather_information_cloudy">Nuageux</string>
@@ -468,6 +466,7 @@
     <string name="hud_weather_information_thunder_occasional_sun">Ciel clair avec des orages</string>
     <string name="hud_weather_information_thunder_occasional_rain">Orageux avec de la pluie</string>
     <string name="hud_weather_information_thunder_occasional_snow">Orageux avec de la neige</string>
+
 
     <string name="title_context_menu_feed_dont_show">Ne plus afficher ce message</string>
     <string name="title_text_feed_empty">Votre page de diffusion est vide</string>
@@ -604,8 +603,11 @@
 
     <string name="title_pref_show_vertical_daily_forecast">Prévisions journalière verticales</string>
     <string name="summary_pref_show_vertical_daily_forecast">Les prévisions journalière seront affichées verticalement</string>
+    
+    <string name="title_pref_show_vertical_hourly_forecast">Prévisions par heure verticales</string>
+    <string name="summary_pref_show_vertical_hourly_forecast">Les prévisions horaires seront affichées verticalement</string>
     <string name="title_feed_provider_joined_weather">Tuile météo</string>
-
+    
     <string name="title_pref_feed_card_elevation">Élévation des tuiles</string>
     <string name="title_card_edit_notes">Modifier les notes</string>
     <string name="title_menu_item_note_style">Utiliser une vue verticale</string>
@@ -618,4 +620,43 @@
     <string name="title_clipart_web">Internet</string>
     
     <string name="title_pref_feed_search_url_template">URL du moteur de recherche</string>
+     <string name="title_image_provider_apod">NASA APOD</string>
+    
+    <string name="title_pref_feed_display_back_to_top_button">Afficher le bouton de retour en haut de la page</string>
+    <string name="summary_pref_feed_display_back_to_top_button">Un bouton apparaîtra, lorsque vous déroulerez la page vers le bas</string>
+    <string name="title_pref_feed_custom_background">Image de fond personnelle</string>
+    <string name="summary_pref_feed_custom_background">Vous pouvez appliquer votre image de fond au flux de diffusion</string>
+    <string name="title_image_provider_national_geographic">National Geographic</string>
+
+    <string name="title_pref_high_contrast_toolbar">Afficher le fond de la barre d\'outil</string>
+    <string name="summary_pref_high_contrast_toolbar">permet d\'améliorer sa visibilité en appliquant un fond partiellement opaque</string>
+
+    <string name="title_pref_share_background_image">Exporter l\image de fond</string>
+    <string name="summary_pref_share_background_image">Permer d\'exporter l\image de fonc actuelle</string>
+
+    <string name="title_pref_feed_calendar_days">Limiter le nombre des événements du calendrier</string>
+
+    <string name="title_pref_elevate_weather_card">Elever la tuile météo</string>
+    <string name="summary_pref_elevate_weather_card">La tuile météo sera affichée plus haut</string>
+
+    <string name="title_pref_display_feed_tabs_as_single_line">Afficher les éléments de la barre d\'onglet en une seule ligne</string>
+    <string name="summary_pref_display_feed_tabs_as_single_line">Les onglets setont affichés avec les icones et le texte sur la même ligne</string>
+
+    <string name="title_pref_feed_hide_tab_text">Cacher le titre des onglets</string>
+    <string name="summary_pref_feed_hide_tab_text">Permet de cacher le tritre des onglets du flux de diffusion</string>
+
+    <string name="title_pref_remove_feed_widget">Supprimer l\'onglet Widget</string>
+
+    <string name="title_pref_feed_toolbar_widget_force_style">Forcer le theme du widget</string>
+    <string name="summary_pref_feed_toolbar_widget_force_style">Librechair essaiera d'appliquer le theme choisi aux widgets</string>
+    <string name="title_card_feed_preview_header">Je suis votre flux de diffusion!</string>
+    <string name="title_animation_delegate_default">Défaut</string>
+
+    <string name="title_pref_feed_animation">Animation d\'ouverture</string>
+    <string name="title_animation_delegate_slide">Glisser</string>
+    <string name="title_animation_delegate_fading">Disparition</string>
+    <string name="title_animation_delegate_slide_top">Glisser vers le bas</string>
+    <string name="title_animation_delegate_slide_up">Glisser vers le haut</string>
+    <string name="title_pref_title_bar_home_widget">Use home widget as toolbar widget</string>
+    <string name="summary_pref_title_bar_home_widget">The title bar widget will be replaced by the home widget</string>
 </resources>
