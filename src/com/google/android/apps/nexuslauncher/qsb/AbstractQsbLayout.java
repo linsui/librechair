@@ -40,6 +40,9 @@ import android.view.View.OnLongClickListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.feed.SearchOverlayManager;
 import ch.deletescape.lawnchair.folder.FolderShape;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
@@ -496,8 +499,8 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
                 .getInstance(mActivity);
         SearchProvider provider = controller.getSearchProvider();
         if (view == mMicIconView) {
-            if (controller.isGoogle()) {
-                fallbackSearch(mShowAssistant ? Intent.ACTION_VOICE_COMMAND : "android.intent.action.VOICE_ASSIST");
+            if (controller.isOverlay()) {
+                startVoice(mShowAssistant ? Intent.ACTION_VOICE_COMMAND : "android.intent.action.VOICE_ASSIST");
             } else if(mShowAssistant && provider.getSupportsAssistant()) {
                 provider.startAssistant(intent -> {
                     getContext().startActivity(intent);
@@ -637,13 +640,13 @@ public abstract class AbstractQsbLayout extends FrameLayout implements OnSharedP
         return 0;
     }
 
-    protected void fallbackSearch(String action) {
-        try {
+    protected void startVoice(String action) {
+        if (((LawnchairLauncher) mActivity).getOverlay() != null) {
+            SearchOverlayManager.Companion.getInstance(LawnchairLauncher.getLauncher(getContext()))
+                    .getSearchClient().requestVoiceDetection(true);
+        } else {
             getContext().startActivity(new Intent(action)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    .setPackage(GOOGLE_QSB));
-        } catch (ActivityNotFoundException e) {
-            noGoogleAppSearch();
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
         }
     }
 

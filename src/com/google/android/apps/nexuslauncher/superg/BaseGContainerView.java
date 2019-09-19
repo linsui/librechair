@@ -3,14 +3,13 @@ package com.google.android.apps.nexuslauncher.superg;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
-import androidx.core.app.ActivityOptionsCompat;
+import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +17,17 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import ch.deletescape.lawnchair.globalsearch.SearchProvider;
-import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
+
+import androidx.core.app.ActivityOptionsCompat;
+
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.feed.SearchOverlayManager;
+import ch.deletescape.lawnchair.globalsearch.SearchProvider;
+import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -89,23 +94,11 @@ public abstract class BaseGContainerView extends FrameLayout implements View.OnC
 
     public void onClick(View paramView) {
         SearchProviderController controller = SearchProviderController.Companion.getInstance(getContext());
-        if (controller.isGoogle()) {
-            getContext().sendOrderedBroadcast(getPillAnimationIntent("com.google.nexuslauncher.FAST_TEXT_SEARCH"),
-                    null,
-                    new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (getResultCode() == 0) {
-                                startQsbActivity(BaseGContainerView.TEXT_ASSIST);
-                            } else {
-                                loadWindowFocus();
-                            }
-                        }
-                    },
-                    null,
-                    0,
-                    null,
-                    null);
+        if (controller.isOverlay()) {
+            if (SearchOverlayManager.Companion.getInstance(LawnchairLauncher.getLauncher(getContext())).getSearchClient() != null) {
+                SearchOverlayManager.Companion.getInstance(LawnchairLauncher.getLauncher(getContext()))
+                        .getSearchClient().startSearch(new byte[0], new Bundle());
+            }
         } else {
             SearchProvider provider = controller.getSearchProvider();
             provider.startSearch(new Function1<Intent, Unit>() {

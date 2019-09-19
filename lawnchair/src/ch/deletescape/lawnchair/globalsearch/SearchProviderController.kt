@@ -22,7 +22,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
 
     private val listeners = HashSet<OnProviderChangeListener>()
 
-    val isGoogle get() = false
+    val isOverlay get() = searchProvider is OverlaySearchProvider
 
     init {
         ThemeManager.getInstance(context).addOverride(themeOverride)
@@ -52,13 +52,15 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
             if (cache == null || cached != curr) {
                 cache = null
                 try {
-                    val constructor = Class.forName(prefs.searchProvider).getConstructor(Context::class.java)
+                    val constructor =
+                            Class.forName(prefs.searchProvider).getConstructor(Context::class.java)
                     val themedContext = ContextThemeWrapper(context, themeRes)
                     val prov = constructor.newInstance(themedContext) as SearchProvider
                     if (prov.isAvailable) {
                         cache = prov
                     }
-                } catch (ignored: Exception) { }
+                } catch (ignored: Exception) {
+                }
                 if (cache == null) cache = AppSearchSearchProvider(context)
                 cached = cache!!::class.java.name
                 notifyProviderChanged()
@@ -93,7 +95,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
         fun onSearchProviderChanged()
     }
 
-    companion object : SingletonHolder<SearchProviderController, Context>(ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
+    companion object : SingletonHolder<SearchProviderController, Context>(
+            ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
         fun getSearchProviders(context: Context) = listOf(
                 AppSearchSearchProvider(context),
                 JustSearchSearchProvider(context),
@@ -101,7 +104,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                 KISSLauncherSearchProvider(context),
                 ChromiumBromiteSearchProvider.BromiteSearchProvider(context),
                 ChromiumBromiteSearchProvider.ChromiumSearchProvider(context),
-                FennecSearchProvider(context)
+                FennecSearchProvider(context),
+                OverlaySearchProvider(context)
         ).filter { it.isAvailable }
     }
 }

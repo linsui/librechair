@@ -687,4 +687,5 @@
     <string name="summary_pref_feed_infobox">This option is not available with all background image providers</string>
     <string name="title_pref_feed_infobox">Show background image description if available</string>
     <string name="title_options_item_restart_feed">Restart feed</string>
+    <string name="title_search_provider_overlay">Overlay</string>
 </resources>

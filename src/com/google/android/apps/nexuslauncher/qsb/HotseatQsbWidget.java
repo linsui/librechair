@@ -5,7 +5,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -16,19 +15,19 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Process;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.graphics.ColorUtils;
 import android.util.AttributeSet;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.compat.LauncherAppsCompat;
-import com.android.launcher3.util.PackageManagerHelper;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +38,7 @@ import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
+import ch.deletescape.lawnchair.feed.SearchOverlayManager;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 
@@ -189,7 +189,7 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
     private void doOnClick() {
         SearchProviderController controller = SearchProviderController.Companion
                 .getInstance(mActivity);
-        if (controller.isGoogle()) {
+        if (controller.isOverlay()) {
             startGoogleSearch();
         } else {
             controller.getSearchProvider().startSearch(intent -> {
@@ -202,32 +202,14 @@ public class HotseatQsbWidget extends AbstractQsbLayout implements QsbChangeList
 
     private void startGoogleSearch() {
         final ConfigBuilder f = new ConfigBuilder(this, false);
-        if (!forceFallbackSearch() && ((LawnchairLauncher) mActivity).getOverlay() != null &&
-                ((LawnchairLauncher) mActivity).getOverlay().getClient()
-                        .startSearch(f.build(), f.getExtras())) {
+        if (((LawnchairLauncher) mActivity).getOverlay() != null &&
+                SearchOverlayManager.Companion.getInstance(LawnchairLauncher.getLauncher(getContext()))
+                        .getSearchClient().startSearch(f.build(), f.getExtras())) {
             SharedPreferences devicePrefs = Utilities.getDevicePrefs(getContext());
             devicePrefs.edit().putInt("key_hotseat_qsb_tap_count",
                     devicePrefs.getInt("key_hotseat_qsb_tap_count", 0) + 1).apply();
             mActivity.playQsbAnimation();
-        } else {
-            getContext().sendOrderedBroadcast(getSearchIntent(), null,
-                    new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (getResultCode() == 0) {
-                                fallbackSearch(
-                                        "com.google.android.googlequicksearchbox.TEXT_ASSIST");
-                            } else {
-                                mActivity.playQsbAnimation();
-                            }
-                        }
-                    }, null, 0, null, null);
         }
-    }
-
-    private boolean forceFallbackSearch() {
-        return !PackageManagerHelper.isAppEnabled(getContext().getPackageManager(),
-                "com.google.android.apps.nexuslauncher", 0);
     }
 
     @Override
