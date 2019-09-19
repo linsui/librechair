@@ -48,6 +48,7 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
+import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.images.ImageInformationScreen
 import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
@@ -63,6 +64,7 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
+import com.google.android.flexbox.*
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -97,6 +99,8 @@ class LauncherFeed(val originalContext: Context,
 
     private var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
+
+    private var chipAdapter: ChipAdapter = ChipAdapter(context)
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
@@ -191,6 +195,8 @@ class LauncherFeed(val originalContext: Context,
     private var reapplyInsetFlag = false
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
+
+    var chips: RecyclerView = feedController.findViewById(R.id.chip_container)
 
     private var previewRecyclerView =
             feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
@@ -304,7 +310,17 @@ class LauncherFeed(val originalContext: Context,
             val oldInfobox = infobox.text
             infobox = feedController.findViewById(R.id.info_box_text) as TextView
             infobox.text = oldInfobox
+            chips = feedController.findViewById(R.id.chip_container) as RecyclerView
+            chipAdapter = ChipAdapter(context)
         }
+
+        chips.adapter = chipAdapter
+        val flexboxLayoutManager = FlexboxLayoutManager(context)
+        flexboxLayoutManager.flexWrap = FlexWrap.WRAP
+        flexboxLayoutManager.flexDirection = FlexDirection.ROW
+        flexboxLayoutManager.justifyContent = JustifyContent.FLEX_START
+        flexboxLayoutManager.alignItems = AlignItems.FLEX_START
+        chips.layoutManager = flexboxLayoutManager
 
         infobox.text = infobox.text.take(40)
         if (infobox.text.length == 40) {

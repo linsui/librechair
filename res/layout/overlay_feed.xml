@@ -104,6 +104,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:theme="@style/SettingsTheme.Base" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/chip_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
                 <LinearLayout
                     android:id="@+id/info_box"
                     android:layout_width="match_parent"
