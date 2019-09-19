@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import com.android.launcher3.R;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,18 +34,21 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
+import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 
 public interface ChipProvider {
     List<Item> getItems(Context context);
 
     public class Cache {
         private static Map<ChipProviderContainer, ChipProvider> providerCache = new HashMap<>();
+
         public static ChipProvider get(ChipProviderContainer container, Context context) {
             if (providerCache.containsKey(container)) {
                 return providerCache.get(container);
             } else {
                 try {
-                    ChipProvider provider = (ChipProvider) Class.forName(container.clazz).getConstructor(Context.class).newInstance(context);
+                    ChipProvider provider = (ChipProvider) Class.forName(
+                            container.clazz).getConstructor(Context.class).newInstance(context);
                     providerCache.put(container, provider);
                     return provider;
                 } catch (IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
@@ -67,12 +69,14 @@ public interface ChipProvider {
         private static Map<Class, String> names = new LinkedHashMap<>();
 
         static {
-            names.put(BatteryStatusProvider.class, LawnchairApp.localizationContext.getString(R.string.battery_status));
+            names.put(BatteryStatusProvider.class,
+                    LawnchairApp.localizationContext.getString(R.string.battery_status));
+            names.put(UpcomingEventsProvider.class, LawnchairApp.localizationContext.getString(
+                    R.string.title_feed_provider_calendar));
         }
 
         public static List<ChipProviderContainer> getAll(Context c) {
-            return Arrays.asList(
-                    ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider.class).stream().map(it -> {
+            return names.keySet().stream().map(it -> {
                 ChipProviderContainer container = new ChipProviderContainer();
                 container.args = "";
                 container.clazz = it.getName();

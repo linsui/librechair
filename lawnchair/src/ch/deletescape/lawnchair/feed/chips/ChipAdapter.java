@@ -25,12 +25,14 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.InvalidationTracker;
 
 import com.android.launcher3.R;
+import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.chip.Chip;
 
 import java.util.List;
@@ -86,6 +88,15 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                 dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
                         R.color.qsb_background)));
         chipViewHolder.itemView.setTextColor(dark ? Color.WHITE : Color.BLACK);
+        chipViewHolder.itemView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).leftMargin = (int) LawnchairUtilsKt.applyAsDip(8f, context);
+                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).rightMargin = (int) LawnchairUtilsKt.applyAsDip(8f, context);
+                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).topMargin = (int) LawnchairUtilsKt.applyAsDip(4f, context);
+                chipViewHolder.itemView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        });
         if (item.click != null) {
             chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
         } else {
