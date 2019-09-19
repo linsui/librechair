@@ -72,6 +72,11 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void rebindData() {
+        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(
+                Collectors.toList());
+    }
+
     @Override
     public ChipViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         return new ChipViewHolder(new Chip(viewGroup.getContext()));

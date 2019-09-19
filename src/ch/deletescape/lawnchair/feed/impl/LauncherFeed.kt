@@ -1220,7 +1220,10 @@ class LauncherFeed(val originalContext: Context,
                 recyclerView.isLayoutFrozen = true
             }
         }
-        runOnMainThread { chipAdapter.notifyDataSetChanged() }
+        chipAdapter.rebindData()
+        runOnMainThread {
+            chipAdapter.notifyDataSetChanged()
+        }
         previewAdapter.refresh()
         if (previewAdapter.itemCount > 0) {
             runOnMainThread {
