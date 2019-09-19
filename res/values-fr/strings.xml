@@ -631,8 +631,8 @@
     <string name="title_pref_high_contrast_toolbar">Afficher le fond de la barre d\'outil</string>
     <string name="summary_pref_high_contrast_toolbar">permet d\'améliorer sa visibilité en appliquant un fond partiellement opaque</string>
 
-    <string name="title_pref_share_background_image">Exporter l\image de fond</string>
-    <string name="summary_pref_share_background_image">Permer d\'exporter l\image de fonc actuelle</string>
+    <string name="title_pref_share_background_image">Exporter l\'image de fond</string>
+    <string name="summary_pref_share_background_image">Permet d\'exporter l\'image de fonc actuelle</string>
 
     <string name="title_pref_feed_calendar_days">Limiter le nombre des événements du calendrier</string>
 
