@@ -29,8 +29,9 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
 
     public CustomServiceClient(Activity boundActivity,
                                CompanionServiceFactory factory, OverlayCallback callback,
-                               Runnable disconnectCallback, Runnable connectCallback) {
-        super(boundActivity, factory, callback, disconnectCallback, connectCallback);
+                               Runnable disconnectCallback, Runnable connectCallback,
+                               ServiceMode mode) {
+        super(boundActivity, factory, callback, disconnectCallback, connectCallback, mode);
         this.factory = factory;
         this.companionApiVersion = factory.getCompanionApiVersion();
     }

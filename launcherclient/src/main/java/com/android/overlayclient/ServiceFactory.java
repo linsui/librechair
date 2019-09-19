@@ -62,4 +62,11 @@ public abstract class ServiceFactory implements ServiceConnection {
             Consumer<ILauncherOverlay> changeListener) {
         this.changeListener = changeListener;
     }
+
+    public boolean supportsUnifiedConnection() {
+        ResolveInfo resolveService = context.getPackageManager().resolveService(getService(),
+                PackageManager.GET_META_DATA);
+        return resolveService != null && resolveService.serviceInfo.metaData != null && resolveService.serviceInfo.metaData.getInt(
+                "service.api.unifiedConnection", 0) > 0;
+    }
 }

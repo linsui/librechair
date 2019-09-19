@@ -29,6 +29,7 @@ import com.android.launcher3.Utilities;
 import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
+import com.android.overlayclient.ServiceMode;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
@@ -65,7 +66,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             callbacks.onScrollChanged(0);
         }, () -> {
             launcher.setLauncherOverlay(this);
-        });
+        }, ServiceMode.OVERLAY);
     }
 
     @Override

@@ -39,7 +39,7 @@ import java.util.function.Consumer;
 @SuppressWarnings("unchecked")
 public class ServiceClient extends ILauncherOverlayCallback.Stub
         implements DisconnectableOverscrollClient,
-        SearchableOverscrollClient, DurationOpenableOverscrollClient, Handler.Callback {
+        SearchClient, DurationOpenableOverscrollClient, Handler.Callback {
 
     public static final int MESSAGE_CHANGE_SCROLL = 2;
     public static final int MESSAGE_CHANGE_STATUS = 4;
@@ -62,9 +62,12 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     private ActivityState activityState;
     private Handler mUIHandler;
 
+    private final ServiceMode mode;
+
     public ServiceClient(Activity boundActivity,
                          ServiceFactory factory, OverlayCallback callback,
-                         Runnable disconnectCallback, Runnable connectCallback) {
+                         Runnable disconnectCallback, Runnable connectCallback, ServiceMode mode) {
+        this.mode = mode;
         this.boundActivity = boundActivity;
         this.factory = factory;
         this.apiVersion = factory.getApiVersion();
@@ -368,14 +371,16 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                 windowShift = Math.max(p.x, p.y);
                 if (apiVersion < 3) {
                     overlay.windowAttached(boundActivity.getWindow().getAttributes(),
-                            this, 3);
+                            this,
+                            factory.supportsUnifiedConnection() ? 0 : mode == ServiceMode.SEARCH ? 2 : 3);
                 } else {
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("layout_params",
                             params);
                     bundle.putParcelable("configuration",
                             boundActivity.getResources().getConfiguration());
-                    bundle.putInt("client_options", 3);
+                    bundle.putInt("client_options",
+                            factory.supportsUnifiedConnection() ? 0 : mode == ServiceMode.SEARCH ? 2 : 3);
                     if (additionalParams != null) {
                         bundle.putAll(additionalParams);
                     }
@@ -395,17 +400,61 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public boolean startSearch(byte[] options, Bundle parameters) {
-        if (overlay != null && apiVersion >= 6) {
+        if (overlay != null && apiVersion >= 6 && factory.supportsUnifiedConnection() && mode == ServiceMode.SEARCH) {
             try {
                 return overlay.startSearch(options, parameters);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        } else if (!factory.supportsUnifiedConnection() && mode != ServiceMode.SEARCH) {
+            throw new IllegalStateException("this client doesn't support search");
         }
         return false;
     }
 
-    protected ILauncherOverlay getOverlay() {
+    @Override
+    public void requestVoiceDetection(boolean start) {
+        if ((factory.supportsUnifiedConnection() || mode == ServiceMode.SEARCH)
+                && overlay != null) {
+            try {
+                overlay.requestVoiceDetection(start);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else if (mode != ServiceMode.SEARCH && !factory.supportsUnifiedConnection() && !factory.supportsUnifiedConnection()) {
+            throw new IllegalStateException("this client doesn't support search");
+        }
+    }
+
+    @Override
+    public String getVoiceSearchLanguage() {
+        if ((factory.supportsUnifiedConnection() || mode == ServiceMode.SEARCH)
+                && overlay != null) {
+            try {
+                return overlay.getVoiceSearchLanguage();
+            } catch (RemoteException ignored) {
+            }
+        } else if (mode != ServiceMode.SEARCH && !factory.supportsUnifiedConnection()) {
+            throw new IllegalStateException("this client doesn't support search");
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isVoiceDetectionRunning() {
+        if ((factory.supportsUnifiedConnection() || mode == ServiceMode.SEARCH)
+                && overlay != null) {
+            try {
+                return overlay.isVoiceDetectionRunning();
+            } catch (RemoteException ignored) {
+            }
+        } else if (mode != ServiceMode.SEARCH && !factory.supportsUnifiedConnection()) {
+            throw new IllegalStateException("this client doesn't support search");
+        }
+        return false;
+    }
+
+    public ILauncherOverlay getOverlay() {
         return overlay;
     }
 
