@@ -239,6 +239,14 @@
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:title="@string/pref_category_chips">
+        <ch.deletescape.lawnchair.preferences.ChipProvidersPreference
+            android:key="pref_feed_chips_dummy_key"
+            android:title="@string/title_pref_feed_chips_dummy_key"
+            android:summary="%s"/>
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:title="@string/pref_category_providers"
         android:dependency="pref_swipe_feed">
         <ch.deletescape.lawnchair.preferences.FeedProvidersPreference

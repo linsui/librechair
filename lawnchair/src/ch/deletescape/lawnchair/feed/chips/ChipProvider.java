@@ -23,7 +23,10 @@ package ch.deletescape.lawnchair.feed.chips;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface ChipProvider {
     List<Item> getItems(Context context);
@@ -32,5 +35,17 @@ public interface ChipProvider {
         public String title;
         public Runnable click;
         public Drawable icon;
+    }
+
+    public class Names {
+        private static Map<Class, String> names = new LinkedHashMap<>();
+
+        public static List<ChipProviderContainer> getAll(Context c) {
+            return Collections.emptyList();
+        }
+
+        public static String getNameForClass(Class<? extends ChipProviderContainer> clazz) {
+            return names.get(clazz);
+        }
     }
 }
