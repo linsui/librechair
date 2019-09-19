@@ -620,35 +620,35 @@
     <string name="title_clipart_web">Internet</string>
     
     <string name="title_pref_feed_search_url_template">URL du moteur de recherche</string>
-     <string name="title_image_provider_apod">NASA APOD</string>
+    <string name="title_image_provider_apod">NASA APOD</string>
     
-    <string name="title_pref_feed_display_back_to_top_button">Afficher le bouton de retour en haut de la page</string>
+    <string name="title_pref_feed_display_back_to_top_button">Afficher le bouton de retour vers le haut</string>
     <string name="summary_pref_feed_display_back_to_top_button">Un bouton apparaîtra, lorsque vous déroulerez la page vers le bas</string>
     <string name="title_pref_feed_custom_background">Image de fond personnelle</string>
     <string name="summary_pref_feed_custom_background">Vous pouvez appliquer votre image de fond au flux de diffusion</string>
     <string name="title_image_provider_national_geographic">National Geographic</string>
 
     <string name="title_pref_high_contrast_toolbar">Afficher le fond de la barre d\'outil</string>
-    <string name="summary_pref_high_contrast_toolbar">permet d\'améliorer sa visibilité en appliquant un fond partiellement opaque</string>
+    <string name="summary_pref_high_contrast_toolbar">Permet d\'améliorer sa visibilité en appliquant un fond partiellement opaque</string>
 
     <string name="title_pref_share_background_image">Exporter l\'image de fond</string>
-    <string name="summary_pref_share_background_image">Permet d\'exporter l\'image de fonc actuelle</string>
+    <string name="summary_pref_share_background_image">Permet d\'exporter l\'image de fond actuelle</string>
 
-    <string name="title_pref_feed_calendar_days">Limiter le nombre des événements du calendrier</string>
+    <string name="title_pref_feed_calendar_days">Limiter le nombre d\'événements du calendrier</string>
 
     <string name="title_pref_elevate_weather_card">Elever la tuile météo</string>
-    <string name="summary_pref_elevate_weather_card">La tuile météo sera affichée plus haut</string>
+    <string name="summary_pref_elevate_weather_card">La tuile météo sera surrélevée</string>
 
     <string name="title_pref_display_feed_tabs_as_single_line">Afficher les éléments de la barre d\'onglet en une seule ligne</string>
-    <string name="summary_pref_display_feed_tabs_as_single_line">Les onglets setont affichés avec les icones et le texte sur la même ligne</string>
+    <string name="summary_pref_display_feed_tabs_as_single_line">Les onglets seront affichés avec les icônes et le texte sur la même ligne</string>
 
     <string name="title_pref_feed_hide_tab_text">Cacher le titre des onglets</string>
-    <string name="summary_pref_feed_hide_tab_text">Permet de cacher le tritre des onglets du flux de diffusion</string>
+    <string name="summary_pref_feed_hide_tab_text">Permet de cacher le titre des onglets du flux de diffusion</string>
 
     <string name="title_pref_remove_feed_widget">Supprimer l\'onglet Widget</string>
 
-    <string name="title_pref_feed_toolbar_widget_force_style">Forcer le theme du widget</string>
-    <string name="summary_pref_feed_toolbar_widget_force_style">Librechair essaiera d'appliquer le theme choisi aux widgets</string>
+    <string name="title_pref_feed_toolbar_widget_force_style">Forcer le thème du widget</string>
+    <string name="summary_pref_feed_toolbar_widget_force_style">Librechair essaiera d'appliquer le thème choisi aux widgets</string>
     <string name="title_card_feed_preview_header">Je suis votre flux de diffusion!</string>
     <string name="title_animation_delegate_default">Défaut</string>
 
