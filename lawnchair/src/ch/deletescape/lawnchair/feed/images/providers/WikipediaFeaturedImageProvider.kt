@@ -26,15 +26,23 @@ import android.graphics.BitmapFactory
 import android.os.SystemClock
 import ch.deletescape.lawnchair.feed.wikipedia.image.DailyImage
 import ch.deletescape.lawnchair.mainHandler
+import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
 import java.util.concurrent.TimeUnit
 
-class WikipediaFeaturedImageProvider(ignored: Context) : ImageProvider {
+class WikipediaFeaturedImageProvider(val context: Context) : ImageProvider {
     override val expiryTime: Long = TimeUnit.DAYS.toMillis(1)
+    val cache: File
+        get() = File(context.cacheDir,
+                "wp_daily_cache_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}.png")
 
     override suspend fun getBitmap(context: Context): Bitmap? = try {
-        BitmapFactory.decodeStream(URL(DailyImage.safeGetFeaturedImage()).openStream())
+        if (cache.exists().not()) BitmapFactory.decodeStream(
+                URL(DailyImage.safeGetFeaturedImage()).openStream()).also {
+            it.compress(Bitmap.CompressFormat.PNG, 70, FileOutputStream(cache))
+        } else BitmapFactory.decodeFile(cache.absolutePath)
     } catch (e: IOException) {
         null
     }
