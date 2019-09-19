@@ -1072,7 +1072,8 @@ fun Int.fromDrawableRes(c: Context): Drawable {
 }
 
 fun Drawable.tint(colour: Int): Drawable {
-    return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
+    return constantState?.newDrawable()?.mutate()?.also { it.setTint(colour) } ?:
+    this.also { setTint(colour) }
 }
 
 fun Int.fromDimenRes(c: Context): Float {

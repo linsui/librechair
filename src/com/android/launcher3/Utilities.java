@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.Manifest;
 import android.Manifest.permission;
+import android.annotation.ColorInt;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -33,7 +34,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -1083,5 +1086,20 @@ public final class Utilities {
         Canvas canvas = new Canvas(dest);
         canvas.drawBitmap(source, null, targetRect, null);
         return dest;
+    }
+
+    @ColorInt
+    public static int getColorStateListDefaultColor(Context context, int resId) {
+        final ColorStateList list =
+                context.getResources().getColorStateList(resId, context.getTheme());
+        return list.getDefaultColor();
+    }
+
+    @ColorInt
+    public static int getColorAttrDefaultColor(Context context, int attr) {
+        TypedArray ta = context.obtainStyledAttributes(new int[]{attr});
+        @ColorInt int colorAccent = ta.getColor(0, 0);
+        ta.recycle();
+        return colorAccent;
     }
 }
