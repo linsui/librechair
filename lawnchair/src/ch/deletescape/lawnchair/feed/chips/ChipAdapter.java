@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.chips;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,62 +30,43 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.InvalidationTracker;
 
+import com.android.launcher3.R;
 import com.google.android.material.chip.Chip;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.FeedAdapter;
+
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
+    private boolean dark;
     private List<ChipProvider.Item> items;
     private ChipDao dao;
+    private Context context;
 
-    public ChipAdapter(Context context) {
+    public ChipAdapter(Context context, boolean dark) {
         dao = ChipDatabase.Holder.getInstance(context).dao();
-        providers = dao.getAll().stream().map(it -> {
-            try {
-                return (ChipProvider) Class.forName(it.clazz).getConstructor().newInstance();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }).filter(it -> it != null).collect(Collectors.toList());
+        this.context = context;
+        providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
+                it -> it != null).collect(Collectors.toList());
+        this.dark = dark;
         ChipDatabase.Holder.getInstance(context).getInvalidationTracker().addObserver(
                 new InvalidationTracker.Observer("chipprovidercontainer") {
                     @Override
                     public void onInvalidated(@NonNull Set<String> tables) {
-                        providers = dao.getAll().stream().map(it -> {
-                            try {
-                                return (ChipProvider) Class.forName(it.clazz).getConstructor().newInstance();
-                            } catch (IllegalAccessException e) {
-                                e.printStackTrace();
-                            } catch (InstantiationException e) {
-                                e.printStackTrace();
-                            } catch (InvocationTargetException e) {
-                                e.printStackTrace();
-                            } catch (NoSuchMethodException e) {
-                                e.printStackTrace();
-                            } catch (ClassNotFoundException e) {
-                                e.printStackTrace();
-                            }
-                            return null;
-                        }).filter(it -> it != null).collect(Collectors.toList());
-                        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(Collectors.toList());
+                        providers = dao.getAll().stream().map(
+                                val -> ChipProvider.Cache.get(val, context)).filter(
+                                it -> it != null).collect(Collectors.toList());
+                        items = providers.stream().map(it -> it.getItems(context)).flatMap(
+                                List::stream).collect(Collectors.toList());
                         notifyDataSetChanged();
                     }
                 });
-        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(Collectors.toList());
+        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(
+                Collectors.toList());
         notifyDataSetChanged();
     }
 
@@ -96,10 +78,19 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     @Override
     public void onBindViewHolder(ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
-        chipViewHolder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
+                FeedAdapter.Companion.getOverrideColor(context));
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
-        chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
+        chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
+                dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
+                        R.color.qsb_background)));
+        chipViewHolder.itemView.setTextColor(dark ? Color.WHITE : Color.BLACK);
+        if (item.click != null) {
+            chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
+        } else {
+            chipViewHolder.itemView.setOnClickListener(null);
+        }
     }
 
     @Override

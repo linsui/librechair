@@ -100,7 +100,7 @@ class LauncherFeed(val originalContext: Context,
     private var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
 
-    private var chipAdapter: ChipAdapter = ChipAdapter(context)
+    private var chipAdapter: ChipAdapter = ChipAdapter(context, dark)
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
@@ -311,7 +311,7 @@ class LauncherFeed(val originalContext: Context,
             infobox = feedController.findViewById(R.id.info_box_text) as TextView
             infobox.text = oldInfobox
             chips = feedController.findViewById(R.id.chip_container) as RecyclerView
-            chipAdapter = ChipAdapter(context)
+            chipAdapter = ChipAdapter(context, dark)
         }
 
         chips.adapter = chipAdapter

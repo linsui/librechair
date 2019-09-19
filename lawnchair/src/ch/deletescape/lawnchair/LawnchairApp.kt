@@ -65,6 +65,7 @@ class LawnchairApp : Application(), () -> Unit {
 
     override fun onCreate() {
         super.onCreate()
+        localizationContext = this
         ch.deletescape.lawnchair.location.LocationManager.location
         d("Current process: " + getCurrentProcessName(this))
         if (getCurrentProcessName(this).contains("overlay")) {
@@ -192,6 +193,10 @@ class LawnchairApp : Application(), () -> Unit {
             return false
         }
         return true
+    }
+
+    companion object {
+        lateinit var localizationContext: Context
     }
 }
 

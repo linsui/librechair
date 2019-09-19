@@ -23,10 +23,24 @@ package ch.deletescape.lawnchair.feed.chips;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import java.util.List;
+import java.util.Objects;
 
 @Entity
 public final class ChipProviderContainer {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChipProviderContainer)) return false;
+        ChipProviderContainer that = (ChipProviderContainer) o;
+        return Objects.equals(args, that.args) &&
+                Objects.equals(clazz, that.clazz);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(args, clazz);
+    }
+
     public String args;
     public String clazz;
     @PrimaryKey

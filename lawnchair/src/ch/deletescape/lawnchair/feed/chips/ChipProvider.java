@@ -23,13 +23,39 @@ package ch.deletescape.lawnchair.feed.chips;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import java.util.Collections;
+import com.android.launcher3.R;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import ch.deletescape.lawnchair.LawnchairApp;
+import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
 
 public interface ChipProvider {
     List<Item> getItems(Context context);
+
+    public class Cache {
+        private static Map<ChipProviderContainer, ChipProvider> providerCache = new HashMap<>();
+        public static ChipProvider get(ChipProviderContainer container, Context context) {
+            if (providerCache.containsKey(container)) {
+                return providerCache.get(container);
+            } else {
+                try {
+                    ChipProvider provider = (ChipProvider) Class.forName(container.clazz).getConstructor(Context.class).newInstance(context);
+                    providerCache.put(container, provider);
+                    return provider;
+                } catch (IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
 
     public class Item {
         public String title;
@@ -40,8 +66,18 @@ public interface ChipProvider {
     public class Names {
         private static Map<Class, String> names = new LinkedHashMap<>();
 
+        static {
+            names.put(BatteryStatusProvider.class, LawnchairApp.localizationContext.getString(R.string.battery_status));
+        }
+
         public static List<ChipProviderContainer> getAll(Context c) {
-            return Collections.emptyList();
+            return Arrays.asList(
+                    ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider.class).stream().map(it -> {
+                ChipProviderContainer container = new ChipProviderContainer();
+                container.args = "";
+                container.clazz = it.getName();
+                return container;
+            }).collect(Collectors.toList());
         }
 
         public static String getNameForClass(Class<? extends ChipProviderContainer> clazz) {
