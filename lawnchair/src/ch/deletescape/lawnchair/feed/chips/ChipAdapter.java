@@ -31,7 +31,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.InvalidationTracker;
 
 import com.android.launcher3.R;
-import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.material.chip.Chip;
 
 import java.util.List;
@@ -97,11 +96,19 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 v.removeOnLayoutChangeListener(this);
-                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).leftMargin = (int) LawnchairUtilsKt.applyAsDip(8f, context);
-                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).rightMargin = (int) LawnchairUtilsKt.applyAsDip(8f, context);
-                ((FlexboxLayoutManager.LayoutParams) chipViewHolder.itemView.getLayoutParams()).topMargin = (int) LawnchairUtilsKt.applyAsDip(4f, context);
+                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).leftMargin = (int) LawnchairUtilsKt.applyAsDip(
+                        8f, context);
+                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).rightMargin = (int) LawnchairUtilsKt.applyAsDip(
+                        8f, context);
+                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).topMargin = (int) LawnchairUtilsKt.applyAsDip(
+                        4f, context);
                 v.requestLayout();
             }
+        });
+        chipViewHolder.itemView.setOnTouchListener((v, event) -> {
+            v.getParent().getParent().requestDisallowInterceptTouchEvent(true);
+            v.getParent().getParent().getParent().requestDisallowInterceptTouchEvent(true);
+            return false;
         });
         if (item.click != null) {
             chipViewHolder.itemView.setOnClickListener(v -> item.click.run());

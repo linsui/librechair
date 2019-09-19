@@ -64,7 +64,6 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
-import com.google.android.flexbox.*
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -315,12 +314,12 @@ class LauncherFeed(val originalContext: Context,
         }
 
         chips.adapter = chipAdapter
-        val flexboxLayoutManager = FlexboxLayoutManager(context)
-        flexboxLayoutManager.flexWrap = FlexWrap.WRAP
-        flexboxLayoutManager.flexDirection = FlexDirection.ROW
-        flexboxLayoutManager.justifyContent = JustifyContent.FLEX_START
-        flexboxLayoutManager.alignItems = AlignItems.FLEX_START
-        chips.layoutManager = flexboxLayoutManager
+        chips.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        chips.setOnTouchListener { v, event ->
+            v.parent?.requestDisallowInterceptTouchEvent(true)
+            true
+        }
 
         infobox.text = infobox.text.take(40)
         if (infobox.text.length == 40) {
