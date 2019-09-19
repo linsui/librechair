@@ -96,7 +96,7 @@ class LauncherFeed(val originalContext: Context,
     private var lastScroll = 0f
 
     private var context = ContextThemeWrapper(originalContext,
-            if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+            if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
@@ -242,7 +242,7 @@ class LauncherFeed(val originalContext: Context,
 
             dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
             context = ContextThemeWrapper(originalContext,
-                    if (dark) R.style.SettingsTheme_V2_Dark else R.style.SettingsTheme_V2)
+                    if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
             feedAttached = false
             closeOverlay(0)
             verticalBackground = null
