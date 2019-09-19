@@ -38,6 +38,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
@@ -51,6 +52,14 @@ public abstract class ProviderScreen extends ContextWrapper {
 
     protected abstract View getView(ViewGroup parent);
     protected abstract void bindView(View view);
+
+    public final void display(LauncherFeed feed, int tX, int tY) {
+        feed.displayPreferenceScreen(this, tX, tY, viewGroup -> {
+            View v = getView(viewGroup);
+            bindView(v);
+            return v;
+        });
+    }
 
     public final void display(FeedProvider provider, int touchX, int touchY) {
         if (provider.getFeed() != null) {

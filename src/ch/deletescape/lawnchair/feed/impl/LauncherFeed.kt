@@ -49,6 +49,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.images.ImageInformationScreen
 import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
@@ -303,6 +304,16 @@ class LauncherFeed(val originalContext: Context,
             val oldInfobox = infobox.text
             infobox = feedController.findViewById(R.id.info_box_text) as TextView
             infobox.text = oldInfobox
+        }
+
+        infobox.text = infobox.text.take(40)
+        if (infobox.text.length == 40) {
+            infobox.text = infobox.text.toString() + "..."
+        }
+
+        infobox.setOnClickListener {
+            val screen = ImageInformationScreen(context, infobox.text)
+            screen.display(this, it.x.toInt(), it.y.toInt())
         }
 
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
