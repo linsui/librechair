@@ -39,6 +39,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.android.launcher3.R;
 import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 
 import java.time.Instant;
@@ -147,9 +153,14 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     RecyclerView recyclerView = v.findViewById(R.id.daily_summary_information);
                     Adapter adapter = new Adapter(parent.getContext(), this);
                     recyclerView.setAdapter(adapter);
+                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(parent.getContext());
+                    layoutManager.setFlexWrap(FlexWrap.WRAP);
+                    layoutManager.setFlexDirection(FlexDirection.ROW);
+                    layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                    layoutManager.setAlignItems(AlignItems.FLEX_START);
                     recyclerView.setLayoutManager(
                             new GridLayoutManager(parent.getContext(),
-                                    1)); /* TODO proper grid layout span sizes */
+                                    1));
                     adapter.refresh();
                     return v;
                 },

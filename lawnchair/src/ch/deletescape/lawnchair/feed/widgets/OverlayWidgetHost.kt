@@ -24,6 +24,7 @@ import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -188,14 +189,20 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             var lightSubst = mapOf(
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_light
-                                .fromColorRes(it.context)));
+                        it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimaryInverse
+                                .fromColorRes(it.context)))
                         Unit
                     },
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_light.fromColorRes(it.context)))
+                            try {
+                                it.setImageBitmap(processDrawable(it.drawable, it.context,
+                                        R.color.textColorPrimaryInverse.fromColorRes(
+                                                it.context)))
+                            } catch (e: Resources.NotFoundException) {
+                                // TODO why COSP throw random notfoundexception
+                            }
                         }
                         Unit
                     }
@@ -203,14 +210,20 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
             var darkSubst = mapOf(
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_dark
+                        it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimary
                                 .fromColorRes(it.context)));
                         Unit
                     },
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_dark.fromColorRes(it.context)))
+                            try {
+                                it.setImageBitmap(processDrawable(it.drawable, it.context,
+                                        R.color.textColorPrimary.fromColorRes(
+                                                it.context)))
+                            } catch (e: Resources.NotFoundException) {
+                                // TODO why COSP throw random notfoundexception
+                            }
                         }
                         Unit
                     }
