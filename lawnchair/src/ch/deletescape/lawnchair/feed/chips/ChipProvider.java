@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairApp;
+import ch.deletescape.lawnchair.feed.chips.alarm.AlarmChipProvider;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
 import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 
@@ -73,6 +74,8 @@ public interface ChipProvider {
                     LawnchairApp.localizationContext.getString(R.string.battery_status));
             names.put(UpcomingEventsProvider.class, LawnchairApp.localizationContext.getString(
                     R.string.title_feed_provider_calendar));
+            names.put(AlarmChipProvider.class,
+                    LawnchairApp.localizationContext.getString(R.string.title_chip_provider_alarm));
         }
 
         public static List<ChipProviderContainer> getAll(Context c) {
