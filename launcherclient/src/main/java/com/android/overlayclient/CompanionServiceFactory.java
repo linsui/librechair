@@ -38,6 +38,7 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
     private Consumer<ILauncherOverlayCompanion> companionChangeListener;
     private int companionApiVersion;
     private Context context;
+    private ServiceConnection companionServiceConnection;
 
     protected CompanionServiceFactory(Context context) {
         super(context);
@@ -53,7 +54,7 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
         if (companionApiVersion != -1) {
             Intent i = OverlayUtil.resolveCompanion(getService().getPackage(), context);
             if (i != null) {
-                context.bindService(i, new ServiceConnection() {
+                context.bindService(i, companionServiceConnection = new ServiceConnection() {
                     @Override
                     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                         if (companionChangeListener != null) {
@@ -67,6 +68,7 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
 
                     @Override
                     public void onServiceDisconnected(ComponentName componentName) {
+                        companionServiceConnection = null;
                         if (companionChangeListener != null) {
                             companionChangeListener.accept(companion = null);
                         } else {
@@ -75,6 +77,14 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
                     }
                 }, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
             }
+        }
+    }
+
+    @Override
+    public void disconnect() {
+        super.disconnect();
+        if (companionServiceConnection != null) {
+            context.unbindService(companionServiceConnection);
         }
     }
 
