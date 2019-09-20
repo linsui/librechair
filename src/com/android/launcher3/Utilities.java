@@ -193,11 +193,11 @@ public final class Utilities {
      * Given a coordinate relative to the descendant, find the coordinate in a parent view's
      * coordinates.
      *
-     * @param descendant The descendant to which the passed coordinate is relative.
-     * @param ancestor The root view to make the coordinates relative to.
-     * @param coord The coordinate that we want mapped.
+     * @param descendant        The descendant to which the passed coordinate is relative.
+     * @param ancestor          The root view to make the coordinates relative to.
+     * @param coord             The coordinate that we want mapped.
      * @param includeRootScroll Whether or not to account for the scroll of the descendant:
-     * sometimes this is relevant as in a child's coordinates within the descendant.
+     *                          sometimes this is relevant as in a child's coordinates within the descendant.
      * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
      * this scale factor is assumed to be equal in X and Y, and so if at any point this assumption
      * fails, we will need to return a pair of scale factors.
@@ -329,15 +329,15 @@ public final class Utilities {
     /**
      * Maps t from one range to another range.
      *
-     * @param t The value to map.
+     * @param t       The value to map.
      * @param fromMin The lower bound of the range that t is being mapped from.
      * @param fromMax The upper bound of the range that t is being mapped from.
-     * @param toMin The lower bound of the range that t is being mapped to.
-     * @param toMax The upper bound of the range that t is being mapped to.
+     * @param toMin   The lower bound of the range that t is being mapped to.
+     * @param toMax   The upper bound of the range that t is being mapped to.
      * @return The mapped value of t.
      */
     public static float mapToRange(float t, float fromMin, float fromMax, float toMin, float toMax,
-            Interpolator interpolator) {
+                                   Interpolator interpolator) {
         if (fromMin == fromMax || toMin == toMax) {
             Log.e(TAG, "mapToRange: range has 0 length");
             return toMin;
@@ -554,7 +554,7 @@ public final class Utilities {
      * Wraps a message with a TTS span, so that a different message is spoken than what is getting
      * displayed.
      *
-     * @param msg original message
+     * @param msg    original message
      * @param ttsMsg message to be spoken
      */
     public static CharSequence wrapForTts(CharSequence msg, String ttsMsg) {
@@ -600,7 +600,8 @@ public final class Utilities {
                 WallpaperManager wm = context.getSystemService(WallpaperManager.class);
                 return (Boolean) wm.getClass().getDeclaredMethod("isSetWallpaperAllowed")
                         .invoke(wm);
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
         return true;
     }
@@ -689,7 +690,9 @@ public final class Utilities {
      */
     public /* private */ static void onLauncherStart() {
         Log.d(TAG, "onLauncherStart: " + onStart.size());
-        for (Runnable r : onStart) { r.run(); }
+        for (Runnable r : onStart) {
+            r.run();
+        }
         onStart.clear();
     }
 
@@ -793,8 +796,12 @@ public final class Utilities {
 
     public static void setLightUi(Window window) {
         int flags = window.getDecorView().getSystemUiVisibility();
-        if (ATLEAST_MARSHMALLOW) { flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR; }
-        if (ATLEAST_OREO) { flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR; }
+        if (ATLEAST_MARSHMALLOW) {
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        if (ATLEAST_OREO) {
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
@@ -830,7 +837,9 @@ public final class Utilities {
     }
 
     public static void pinSettingsShortcut(Context context) {
-        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) { return; }
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+            return;
+        }
         ShortcutManagerCompat
                 .requestPinShortcut(context, new ShortcutInfoCompat.Builder(context, "settings")
                         .setIntent(new Intent(context, SettingsActivity.class)
@@ -862,7 +871,7 @@ public final class Utilities {
     }
 
     public static int parseResourceIdentifier(Resources res, String identifier,
-            String packageName) {
+                                              String packageName) {
         try {
             return Integer.parseInt(identifier.substring(1));
         } catch (NumberFormatException e) {
@@ -901,7 +910,7 @@ public final class Utilities {
     }
 
     public static void openURLinBrowser(Context context, String url, Rect sourceBounds,
-            Bundle options) {
+                                        Bundle options) {
         if (url == null) {
             return;
         }
@@ -920,16 +929,18 @@ public final class Utilities {
     }
 
     /**
-     * @param bitmap the Bitmap to be scaled
-     * @param threshold the maxium dimension (either width or height) of the scaled bitmap
+     * @param bitmap                the Bitmap to be scaled
+     * @param threshold             the maxium dimension (either width or height) of the scaled bitmap
      * @param isNecessaryToKeepOrig is it necessary to keep the original bitmap? If not recycle the
-     * original bitmap to prevent memory leak.
-     *
-     * Credit: https://gist.github.com/vxhviet/873d142b41217739a1302d337b7285ba
+     *                              original bitmap to prevent memory leak.
+     *                              <p>
+     *                              Credit: https://gist.github.com/vxhviet/873d142b41217739a1302d337b7285ba
      */
     public static Bitmap getScaledDownBitmap(Bitmap bitmap, int threshold,
-            boolean isNecessaryToKeepOrig) {
-        if (bitmap == null) { return null; }
+                                             boolean isNecessaryToKeepOrig) {
+        if (bitmap == null) {
+            return null;
+        }
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -970,7 +981,7 @@ public final class Utilities {
     }
 
     private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight,
-            boolean isNecessaryToKeepOrig) {
+                                           boolean isNecessaryToKeepOrig) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -1036,8 +1047,10 @@ public final class Utilities {
     }
 
     public static float getScrimProgress(Launcher launcher, LauncherState toState,
-            float targetProgress) {
-        if (Utilities.getLawnchairPrefs(launcher).getDockGradientStyle()) { return targetProgress; }
+                                         float targetProgress) {
+        if (Utilities.getLawnchairPrefs(launcher).getDockGradientStyle()) {
+            return targetProgress;
+        }
         if (toState == LauncherState.OVERVIEW) {
             return OverviewState.getNormalVerticalProgress(launcher);
         }
@@ -1071,6 +1084,20 @@ public final class Utilities {
         throw new IllegalArgumentException(message);
     }
 
+    public static Bitmap scaleToSize(Bitmap source, int newHeight, int newWidth) {
+        if (source.getWidth() >= newWidth &&
+                source.getHeight() >= newHeight) {
+            return cropToCenter(source, newHeight, newWidth);
+        } else {
+            int scale = Math.max(newWidth / source.getWidth(), newHeight / source.getHeight());
+            int targetHeight = source.getHeight() * scale;
+            int targetWidth = source.getWidth() * scale;
+
+            return cropToCenter(Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true),
+                    newHeight, newWidth);
+        }
+    }
+
     public static Bitmap cropToCenter(Bitmap source, int newHeight, int newWidth) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
@@ -1080,7 +1107,8 @@ public final class Utilities {
         float scaledWidth = scale * sourceWidth;
         float scaledHeight = scale * sourceHeight;
         float left = (newWidth - scaledWidth) / 2;
-        float top = (newHeight - scaledHeight) / 2;
+        float top = newHeight <= scaledHeight ? 0 :
+                (newHeight - scaledHeight) / 2;
         RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
         Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
         Canvas canvas = new Canvas(dest);

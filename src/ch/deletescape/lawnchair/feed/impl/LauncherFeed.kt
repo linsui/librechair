@@ -261,26 +261,26 @@ class LauncherFeed(val originalContext: Context,
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                             verticalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                    Utilities.cropToCenter(
+                                    Utilities.scaleToSize(
                                             background,
                                             it.measuredHeight,
                                             it.measuredWidth))
                             horizontalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                    Utilities.cropToCenter(
+                                    Utilities.scaleToSize(
                                             background,
                                             it.measuredWidth,
                                             it.measuredHeight))
                         } else {
                             horizontalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                    Utilities.cropToCenter(
+                                    Utilities.scaleToSize(
                                             background,
                                             it.measuredHeight,
                                             it.measuredWidth))
                             verticalBackground = if (background == null) ColorDrawable(
                                     backgroundColor) else BitmapDrawable(context.resources,
-                                    Utilities.cropToCenter(
+                                    Utilities.scaleToSize(
                                             background,
                                             it.measuredWidth,
                                             it.measuredHeight))
