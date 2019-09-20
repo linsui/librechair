@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.InvalidationTracker;
 
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
@@ -90,8 +92,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
-                dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
-                        R.color.qsb_background)));
+                ColorUtils.setAlphaComponent(
+                        dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
+                                R.color.qsb_background),
+                        (int) Math.round(FeedPersistence.Companion.getInstance(context).getChipOpacity() * (255f)))));
         chipViewHolder.itemView.setTextColor(dark ? Color.WHITE : Color.BLACK);
         chipViewHolder.itemView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
