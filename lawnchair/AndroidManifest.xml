@@ -280,6 +280,12 @@
                 <action android:name="ch.deletescape.lawnchair.FEED_PROVIDER" />
             </intent-filter>
         </service>
+        <service android:name="ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider$Demo"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="ch.deletescape.lawnchair.feed.chips.CHIP_PROVIDER"/>
+            </intent-filter>
+        </service>
         <service
             android:enabled="true"
             android:exported="true"

@@ -35,6 +35,10 @@ public class RemoteItem implements Parcelable {
     public Bitmap icon;
     public IRunnable click;
 
+    public RemoteItem() {
+
+    }
+
     @SuppressWarnings("WeakerAccess")
     protected RemoteItem(Parcel in) {
         title = in.readString();

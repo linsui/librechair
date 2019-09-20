@@ -20,12 +20,19 @@
 
 package ch.deletescape.lawnchair.feed.chips.remote;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +62,7 @@ public class RemoteChipProvider implements ChipProvider {
 
     @Override
     public void acceptArguments(String args) {
+        Log.d(getClass().getName(), "acceptArguments: componentName: " + args);
         ComponentName name = ComponentName.unflattenFromString(args);
         context.bindService(new Intent().setComponent(name), new ServiceConnection() {
             @Override
@@ -67,5 +75,23 @@ public class RemoteChipProvider implements ChipProvider {
                 connection = null;
             }
         }, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+    }
+
+    public static class Demo extends Service {
+
+        @Nullable
+        @Override
+        public IBinder onBind(Intent intent) {
+            return new IChipProvider.Stub() {
+                @Override
+                public List<RemoteItem> getChips() throws RemoteException {
+                    Log.d(Demo.class.getName(), "getChips: retrieving demo chip");
+                    RemoteItem item = new RemoteItem();
+                    item.icon = Utilities.drawableToBitmap(getDrawable(R.drawable.ic_smartspace_preferences));
+                    item.title = "DE MO";
+                    return Collections.singletonList(item);
+                }
+            };
+        }
     }
 }
