@@ -65,11 +65,7 @@ class ColorEngine private constructor(val context: Context) :
                 prefs.addOnPreferenceChangeListener(this, key)
             }
             colorListeners[key]?.add(listener)
-            if (listener !is OnColorChangeListenerDefault) {
-                listener.onColorChange(ResolveInfo(key, getResolver(key)))
-            } else {
-                listener.onColorChange(ResolveInfo(key, getResolver(key)), true)
-            }
+                listener.onColorChange(ResolveInfo(key, getResolver(key)).apply { init = true })
         }
     }
 
@@ -150,13 +146,6 @@ class ColorEngine private constructor(val context: Context) :
 
     interface OnColorChangeListener {
         fun onColorChange(resolveInfo: ResolveInfo)
-    }
-
-    interface OnColorChangeListenerDefault : OnColorChangeListener {
-        fun onColorChange(resolveInfo: ResolveInfo, init: Boolean)
-        override fun onColorChange(resolveInfo: ResolveInfo) {
-            onColorChange(resolveInfo, false)
-        }
     }
 
     internal class Resolvers {
@@ -303,5 +292,8 @@ class ColorEngine private constructor(val context: Context) :
         val luminance = color.luminance
         val isDark = luminance < 0.5f
         val resolverClass = resolver::class.java
+
+        @Transient
+        var init: Boolean = false
     }
 }
