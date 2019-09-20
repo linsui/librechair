@@ -20,25 +20,32 @@
 
 package ch.deletescape.lawnchair.feed.chips;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
 import com.android.launcher3.R;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.feed.chips.alarm.AlarmChipProvider;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
 import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
+import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider;
+import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProviderUtilities;
 
 public interface ChipProvider {
     List<Item> getItems(Context context);
+
+    default void acceptArguments(String args) {
+    }
 
     public class Cache {
         private static Map<ChipProviderContainer, ChipProvider> providerCache = new HashMap<>();
@@ -50,6 +57,7 @@ public interface ChipProvider {
                 try {
                     ChipProvider provider = (ChipProvider) Class.forName(
                             container.clazz).getConstructor(Context.class).newInstance(context);
+                    provider.acceptArguments(container.args);
                     providerCache.put(container, provider);
                     return provider;
                 } catch (IllegalAccessException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException e) {
@@ -67,28 +75,49 @@ public interface ChipProvider {
     }
 
     public class Names {
-        private static Map<Class, String> names = new LinkedHashMap<>();
+        private static Map<ChipProviderContainer, String> names = new LinkedHashMap<>();
 
         static {
-            names.put(BatteryStatusProvider.class,
+            names.put(buildEmptyContainer(BatteryStatusProvider.class),
                     LawnchairApp.localizationContext.getString(R.string.battery_status));
-            names.put(UpcomingEventsProvider.class, LawnchairApp.localizationContext.getString(
-                    R.string.title_feed_provider_calendar));
-            names.put(AlarmChipProvider.class,
+            names.put(buildEmptyContainer(UpcomingEventsProvider.class),
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_feed_provider_calendar));
+            names.put(buildEmptyContainer(AlarmChipProvider.class),
                     LawnchairApp.localizationContext.getString(R.string.title_chip_provider_alarm));
+            for (ComponentName name : RemoteChipProviderUtilities.getRemoteChipProviders(
+                    LawnchairApp.localizationContext)) {
+                ChipProviderContainer container = new ChipProviderContainer();
+                container.clazz = RemoteChipProvider.class.getName();
+                container.args = name.flattenToString();
+                try {
+                    names.put(container,
+                            LawnchairApp.localizationContext.getPackageManager().getServiceInfo(
+                                    name, 0).loadLabel(
+                                    LawnchairApp.localizationContext.getPackageManager()).toString());
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private static ChipProviderContainer buildEmptyContainer(Class clazz) {
+            ChipProviderContainer container = new ChipProviderContainer();
+            container.clazz = clazz.getName();
+            container.args = "";
+            return container;
         }
 
         public static List<ChipProviderContainer> getAll(Context c) {
-            return names.keySet().stream().map(it -> {
-                ChipProviderContainer container = new ChipProviderContainer();
-                container.args = "";
-                container.clazz = it.getName();
-                return container;
-            }).collect(Collectors.toList());
+            return new ArrayList<>(names.keySet());
         }
 
         public static String getNameForClass(Class<? extends ChipProviderContainer> clazz) {
-            return names.get(clazz);
+            return names.get(buildEmptyContainer(clazz));
+        }
+
+        public static String getNameForContainer(ChipProviderContainer container) {
+            return names.get(container);
         }
     }
 }

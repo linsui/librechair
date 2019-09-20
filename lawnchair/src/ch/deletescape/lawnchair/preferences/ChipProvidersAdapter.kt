@@ -191,8 +191,7 @@ class ChipProvidersAdapter(private val context: Context)
     }
 
     inner class ProviderInfo(val name: ChipProviderContainer) {
-
-        val displayName = ChipProvider.Names.getNameForClass(Class.forName(name.clazz) as Class<out ChipProviderContainer>);
+        val displayName = ChipProvider.Names.getNameForContainer(name)
     }
 
     class HeaderHolder(itemView: View) : Holder(itemView) {
