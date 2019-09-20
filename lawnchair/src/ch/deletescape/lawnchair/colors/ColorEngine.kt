@@ -65,7 +65,11 @@ class ColorEngine private constructor(val context: Context) :
                 prefs.addOnPreferenceChangeListener(this, key)
             }
             colorListeners[key]?.add(listener)
-            listener.onColorChange(ResolveInfo(key, getResolver(key)))
+            if (listener !is OnColorChangeListenerDefault) {
+                listener.onColorChange(ResolveInfo(key, getResolver(key)))
+            } else {
+                listener.onColorChange(ResolveInfo(key, getResolver(key)), true)
+            }
         }
     }
 
@@ -146,6 +150,13 @@ class ColorEngine private constructor(val context: Context) :
 
     interface OnColorChangeListener {
         fun onColorChange(resolveInfo: ResolveInfo)
+    }
+
+    interface OnColorChangeListenerDefault : OnColorChangeListener {
+        fun onColorChange(resolveInfo: ResolveInfo, init: Boolean)
+        override fun onColorChange(resolveInfo: ResolveInfo) {
+            onColorChange(resolveInfo, false)
+        }
     }
 
     internal class Resolvers {

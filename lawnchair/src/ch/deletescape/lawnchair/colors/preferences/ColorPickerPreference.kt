@@ -29,7 +29,7 @@ import me.priyesh.chroma.ColorMode
 
 
 open class ColorPickerPreference(context: Context, attrs: AttributeSet?)
-    : Preference(context, attrs), ColorEngine.OnColorChangeListener {
+    : Preference(context, attrs), ColorEngine.OnColorChangeListenerDefault {
 
     private val engine = ColorEngine.getInstance(context)
     private val colorMode: ColorMode
@@ -63,7 +63,7 @@ open class ColorPickerPreference(context: Context, attrs: AttributeSet?)
         engine.removeColorChangeListeners(this, key)
     }
 
-    override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
+    override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo, init: Boolean) {
         if (resolveInfo.key == key) {
             val resolver = engine.getResolver(key)
             summary = resolver.getDisplayName()
@@ -71,7 +71,8 @@ open class ColorPickerPreference(context: Context, attrs: AttributeSet?)
                 icon = context.resources.getDrawable(R.drawable.color_preview, null)
             }
             icon.setColorFilter(resolveInfo.color, PorterDuff.Mode.SRC)
-            if (key == ColorEngine.Resolvers.FEED_BACKGROUND || key == ColorEngine.Resolvers.FEED_CARD) {
+            if ((key == ColorEngine.Resolvers.FEED_BACKGROUND ||
+                    key == ColorEngine.Resolvers.FEED_CARD) && !init) {
                 LawnchairPreferences.getInstance(context).restartOverlay()
             }
         }
