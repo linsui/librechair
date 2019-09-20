@@ -316,6 +316,8 @@ class LauncherFeed(val originalContext: Context,
         chips.adapter = chipAdapter
         chips.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+        chipAdapter.setController(feedController)
+
         chips.isNestedScrollingEnabled = true
         chips.setOnTouchListener { v, event ->
             feedController.disallowInterceptTouchEventsUntilNextUp = true

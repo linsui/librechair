@@ -39,10 +39,12 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
+import ch.deletescape.lawnchair.feed.impl.FeedController;
 
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
     private boolean dark;
+    private FeedController controller;
     private List<ChipProvider.Item> items;
     private ChipDao dao;
     private Context context;
@@ -105,6 +107,12 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                 v.requestLayout();
             }
         });
+        chipViewHolder.itemView.setOnTouchListener((v, event) -> {
+            if (controller != null) {
+                controller.setDisallowInterceptTouchEventsUntilNextUp(true);
+            }
+            return false;
+        });
         if (item.click != null) {
             chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
         } else {
@@ -115,6 +123,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setController(FeedController controller) {
+        this.controller = controller;
     }
 }
 
