@@ -316,9 +316,10 @@ class LauncherFeed(val originalContext: Context,
         chips.adapter = chipAdapter
         chips.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+        chips.isNestedScrollingEnabled = true
         chips.setOnTouchListener { v, event ->
-            v.parent?.requestDisallowInterceptTouchEvent(true)
-            true
+            feedController.disallowInterceptTouchEventsUntilNextUp = true
+            false
         }
 
         infobox.text = infobox.text.take(40)

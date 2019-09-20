@@ -105,11 +105,6 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                 v.requestLayout();
             }
         });
-        chipViewHolder.itemView.setOnTouchListener((v, event) -> {
-            v.getParent().getParent().requestDisallowInterceptTouchEvent(true);
-            v.getParent().getParent().getParent().requestDisallowInterceptTouchEvent(true);
-            return false;
-        });
         if (item.click != null) {
             chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
         } else {

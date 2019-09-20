@@ -64,6 +64,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
     private var mLauncherFeed: LauncherFeed? = null
+    var disallowInterceptTouchEventsUntilNextUp = false
     var animationDelegate: AnimationDelegate =
             AnimationDelegate.inflate(context.lawnchairPrefs.feedAnimationDelegate)
 
@@ -183,7 +184,14 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (mCurrentAnimationPlaybackController != null && mFromState === FeedState.OPEN) {
+        if (ev.action == MotionEvent.ACTION_UP) {
+            disallowInterceptTouchEventsUntilNextUp = false
+        }
+        if (disallowInterceptTouchEventsUntilNextUp) {
+            return false
+        }
+        if (mCurrentAnimationPlaybackController != null &&
+                mFromState === FeedState.OPEN) {
             return false
         }
         mDetector.setDetectableScrollConditions(swipeDirection,
