@@ -184,8 +184,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_UP ||
-                ev.action == MotionEvent.ACTION_CANCEL) {
+        if (ev.action == MotionEvent.ACTION_UP) {
             disallowInterceptTouchEventsUntilNextUp = false
         }
         if (disallowInterceptTouchEventsUntilNextUp) {
