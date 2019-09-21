@@ -695,4 +695,6 @@
     <string name="title_pref_feed_chips_on_top">Chips on top</string>
     <string name="summary_pref_feed_chips_on_top">Chips will be displayed at the top of the feed</string>
     <string name="title_animation_delegate_gliding_drawer">Glide (drawer)</string>
+    <string name="title_pref_feed_outline_chips">Display chip outlines</string>
+    <string name="summary_pref_feed_outline_chips">Chips will be displayed with a MDC outlined background</string>
 </resources>

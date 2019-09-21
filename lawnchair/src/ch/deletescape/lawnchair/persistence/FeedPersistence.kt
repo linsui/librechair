@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.util.SingletonHolder
 class FeedPersistence private constructor(val context: Context) {
     val chipOpacity by DoubleDelegate(context, "feed_chip_opacity", 1.0)
     val chipsOnTop by BooleanDelegate(context, "feed_chips_on_top", false)
+    val outlineChips by BooleanDelegate(context, "feed_outline_chips", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

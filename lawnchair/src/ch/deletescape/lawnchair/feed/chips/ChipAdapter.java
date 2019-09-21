@@ -92,6 +92,13 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         ChipProvider.Item item = items.get(i);
         item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
                 FeedAdapter.Companion.getOverrideColor(context));
+        if (FeedPersistence.Companion.getInstance(context).getOutlineChips()) {
+            chipViewHolder.itemView.setChipStrokeColor(ColorStateList.valueOf(dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
+                    R.color.qsb_background)));
+            chipViewHolder.itemView.setChipStrokeWidth(LawnchairUtilsKt.applyAsDip(1f, context));
+        } else {
+            chipViewHolder.itemView.setChipStrokeWidth(0f);
+        }
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
