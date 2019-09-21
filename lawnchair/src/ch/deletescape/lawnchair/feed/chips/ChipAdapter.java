@@ -41,7 +41,9 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
+import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import kotlin.Unit;
 
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
@@ -117,6 +119,11 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
             }
             return false;
         });
+        CustomFontManager.Companion.getInstance(context)
+                .loadFont(CustomFontManager.FONT_BUTTON, -1, typeface -> {
+                    chipViewHolder.itemView.setTypeface(typeface);
+                    return Unit.INSTANCE;
+                });
         if (item.click != null) {
             chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
         } else {
