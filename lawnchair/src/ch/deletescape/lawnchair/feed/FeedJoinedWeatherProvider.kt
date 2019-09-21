@@ -31,6 +31,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.persistence.cache.CacheTime
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
@@ -53,6 +54,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
     @StringRes
     private var weatherTypeResource: Int? = null
     private val refreshExecutor = Executors.newSingleThreadExecutor()
+    private val cache = CacheTime();
 
     init {
         c.applicationContext.lawnchairApp.smartspace.addListener(this)
@@ -228,7 +230,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
     }
 
     override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
-        if (weatherData?.coordLat != null && weatherData.coordLon != null) {
+        if (weatherData?.coordLat != null && weatherData.coordLon != null && cache.expired) {
             d("onDataUpdated: updating forcast HUD", Throwable())
             refreshExecutor.submit {
                 this.weatherData = weatherData;
@@ -295,6 +297,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                     weatherTypeResource = WeatherTypes.getStringResource(type)
 
                     d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
+                    cache.trigger()
                 } catch (e: ForecastProvider.ForecastException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {
