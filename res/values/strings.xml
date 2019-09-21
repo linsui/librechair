@@ -694,4 +694,5 @@
     <string name="title_pref_feed_chip_opacity">Chip opacity</string>
     <string name="title_pref_feed_chips_on_top">Chips on top</string>
     <string name="summary_pref_feed_chips_on_top">Chips will be displayed at the top of the feed</string>
+    <string name="title_animation_delegate_gliding_drawer">Glide (drawer)</string>
 </resources>
