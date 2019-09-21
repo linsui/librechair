@@ -36,7 +36,7 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
 
         override fun onReceive(context: Context?, intent: Intent) {
             val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-            charging = status == BatteryManager.BATTERY_STATUS_CHARGING
+            charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) != 0;
             full = status == BatteryManager.BATTERY_STATUS_FULL
             level = (100f
                     * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
