@@ -58,10 +58,12 @@ public class RemoteItem implements Parcelable {
         item.title = title;
         item.icon = new BitmapDrawable(context.getResources(), icon);
         item.click = () -> {
-            try {
-                click.run();
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            if (click != null) {
+                try {
+                    click.run();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         };
         return item;
