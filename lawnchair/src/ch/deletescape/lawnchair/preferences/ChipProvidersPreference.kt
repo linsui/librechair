@@ -85,10 +85,7 @@ class ChipProvidersPreference(context: Context, attrs: AttributeSet?) :
 
     private fun updateSummary() {
         val providerNames = ChipDatabase.Holder.getInstance(context).dao().all
-                .map {
-                    ChipProvider.Names.getNameForClass(
-                            Class.forName(it.clazz) as Class<out ChipProviderContainer>)
-                }
+                .map { ChipProvider.Names.getNameForContainer(it) }
         if (providerNames.isNotEmpty()) {
             summary = TextUtils.join(", ", providerNames)
         } else {
