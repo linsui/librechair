@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
+import ch.deletescape.lawnchair.feed.chips.battery.BatteryMeterDrawableBase;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
@@ -110,6 +111,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                         8f, context);
                 ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).topMargin = (int) LawnchairUtilsKt.applyAsDip(
                         4f, context);
+                if (item.icon instanceof BatteryMeterDrawableBase) {
+                    ((BatteryMeterDrawableBase) item.icon).postInvalidate();
+                }
                 v.requestLayout();
             }
         });

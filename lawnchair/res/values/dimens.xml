@@ -65,4 +65,22 @@
     <dimen name="qsb_radius_square">8dp</dimen>
     <dimen name="qsb_radius_squircle">16dp</dimen>
     <dimen name="hotseat_navbar_padding">24dp</dimen>
+
+    <!-- Margin on the right side of the system icon group on Keyguard. -->
+    <fraction name="battery_button_height_fraction">10.5%</fraction>
+    <!-- Ratio between height of button part and height of total -->
+    <fraction name="bt_battery_button_height_fraction">7.8%</fraction>
+    <!-- Ratio between width and height -->
+    <fraction name="bt_battery_ratio_fraction">35%</fraction>
+    <!-- Ratio of height between battery icon and bluetooth icon -->
+    <fraction name="bt_battery_scale_fraction">75%</fraction>
+
+    <!-- Fraction value to smooth the edges of the battery icon. The path will be inset by this
+         fraction of a pixel.-->
+    <fraction name="battery_subpixel_smoothing_left">0%</fraction>
+    <fraction name="battery_subpixel_smoothing_right">0%</fraction>
+
+    <dimen name="battery_height">14.5dp</dimen>
+    <dimen name="battery_width">9.5dp</dimen>
+    <dimen name="battery_powersave_outline_thickness">1dp</dimen>
 </resources>
