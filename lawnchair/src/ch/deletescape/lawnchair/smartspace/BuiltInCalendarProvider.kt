@@ -76,7 +76,8 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                        arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
                                CalendarContract.Instances.DTEND,
                                CalendarContract.Instances.DESCRIPTION, CalendarContract.Events._ID,
-                               CalendarContract.Instances.CUSTOM_APP_PACKAGE), query, null,
+                               CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                               CalendarContract.Instances.EVENT_LOCATION), query, null,
                        CalendarContract.Instances.DTSTART + " ASC")
         if (eventCursorNullable == null) {
             card = null
@@ -92,6 +93,7 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             val eventEndTime = GregorianCalendar()
             eventEndTime.timeInMillis = eventCursor.getLong(2)
             val description = eventCursor.getString(3);
+            val address = eventCursor.getString(6);
             val diff = startTime.timeInMillis - currentTime.timeInMillis
             val diffSeconds = TimeUnit.MILLISECONDS.toSeconds(diff)
             val diffMinutes = TimeUnit.MILLISECONDS.toMinutes(diff)
@@ -100,7 +102,7 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                     R.string.reusable_str_now) else controller.context.getString(
                     if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                     diffMinutes)
-            val intent = Intent(Intent.ACTION_VIEW)
+            var intent = Intent(Intent.ACTION_VIEW)
             if (eventCursor.getString(5) != null) {
                 if (controller.context.packageManager.getApplicationEnabledSetting(
                                 eventCursor.getString(
@@ -110,22 +112,28 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             }
             intent.data = Uri.parse("content://com.android.calendar/events/" + eventCursor.getLong(
                     4).toString())
+            val lines = mutableListOf(LawnchairSmartspaceController.Line(
+                    if (title == null || title.trim().isEmpty()) controller.context.getString(
+                            R.string.placeholder_empty_title) else title,
+                    TextUtils.TruncateAt.MARQUEE),
+            LawnchairSmartspaceController.Line(
+                    text,
+                    TextUtils.TruncateAt.END),
+            LawnchairSmartspaceController.Line(
+                    formatTime(startTime,
+                            context)))
+            if (address?.trim()?.isEmpty() == false) {
+                lines += LawnchairSmartspaceController.Line(address, TextUtils.TruncateAt.END)
+                intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"));
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!),
-                                                          listOf(LawnchairSmartspaceController.Line(
-                                                                  if (title == null || title.trim().isEmpty()) controller.context.getString(
-                                                                          R.string.placeholder_empty_title) else title,
-                                                                  TextUtils.TruncateAt.MARQUEE),
-                                                                 LawnchairSmartspaceController.Line(
-                                                                         text,
-                                                                         TextUtils.TruncateAt.END),
-                                                                 LawnchairSmartspaceController.Line(
-                                                                         formatTime(startTime,
-                                                                                    context))),
+                                                          lines,
                                                           PendingIntent.getActivity(
                                                                   controller.context, 0, intent, 0,
                                                                   null))
-            eventCursor.close();
+            eventCursor.close()
             updateData(null, card)
         } catch (e: CursorIndexOutOfBoundsException) {
             updateData(null, null)
