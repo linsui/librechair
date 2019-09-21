@@ -65,10 +65,10 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
             lines.add(LawnchairSmartspaceController.Line("$level%"))
         }
         return listOf(ChipProvider.Item().apply {
-            title = lines.map { it.text }.joinToString(" - ")
+            title = lines.joinToString(" - ") { it.text }
             icon = BatteryMeterDrawableBase(context, FeedAdapter.getOverrideColor(context)).apply {
-                this.batteryLevel = level
-                this.charging = charging
+                this.batteryLevel = this@BatteryStatusProvider.level
+                this.charging = this@BatteryStatusProvider.charging
             }
         })
     }
