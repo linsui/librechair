@@ -253,6 +253,11 @@
             app:steps="100"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="100"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_chips_on_top"
+            android:defaultValue="false"
+            android:title="@string/title_pref_feed_chips_on_top"
+            android:summary="@string/summary_pref_feed_chips_on_top"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

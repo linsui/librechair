@@ -24,7 +24,7 @@ import android.content.Context
 import kotlin.reflect.KProperty
 
 class StringDelegate<T>(val context: Context, val key: String) {
-    operator fun setValue(t: T, property: KProperty<*>, value: String)  =
+    operator fun setValue(t: T, property: KProperty<*>, value: String) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value)
 
     operator fun getValue(t: T, property: KProperty<*>): String =
@@ -33,9 +33,20 @@ class StringDelegate<T>(val context: Context, val key: String) {
 
 class DoubleDelegate<T>(val context: Context, val key: String, val defValue: Double) {
 
-    operator fun setValue(t: T, property: KProperty<*>, value: Double)  =
+    operator fun setValue(t: T, property: KProperty<*>, value: Double) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())
 
     operator fun getValue(t: T, property: KProperty<*>): Double =
-            SimplePersistence.InstanceHolder.getInstance(context).get(key, defValue.toString()).toDouble()
+            SimplePersistence.InstanceHolder.getInstance(context).get(key,
+                    defValue.toString()).toDouble()
+}
+
+class BooleanDelegate<T>(val context: Context, val key: String, val defValue: Boolean) {
+
+    operator fun setValue(t: T, property: KProperty<*>, value: Boolean) =
+            SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())
+
+    operator fun getValue(t: T, property: KProperty<*>): Boolean =
+            SimplePersistence.InstanceHolder.getInstance(context).get(key,
+                    defValue.toString())?.toBoolean() ?: defValue
 }

@@ -48,7 +48,7 @@ public class SimplePersistence {
         }
     }
 
-    public void put(String key, String value) {
+    public synchronized void put(String key, String value) {
         File file = new File(context.getFilesDir(), "persist_" + key);
         try {
             FileOutputStream stream = new FileOutputStream(file);

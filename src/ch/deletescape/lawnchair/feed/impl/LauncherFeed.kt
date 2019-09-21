@@ -59,6 +59,7 @@ import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.*
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -324,6 +325,12 @@ class LauncherFeed(val originalContext: Context,
         chips.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
         chipAdapter.setController(feedController)
+
+        if (context.feedPrefs.chipsOnTop) {
+            val cP = chips.parent as ViewGroup
+            cP.removeView(chips)
+            cP.addView(chips, 0)
+        }
 
         chips.isNestedScrollingEnabled = true
         chips.setOnTouchListener { v, event ->
@@ -1231,6 +1238,17 @@ class LauncherFeed(val originalContext: Context,
         }
         chipAdapter.rebindData()
         runOnMainThread {
+            if (!context.feedPrefs.chipsOnTop) {
+                val cP = chips.parent as ViewGroup
+                cP.removeView(chips)
+                cP.addView(chips, 1)
+            } else {
+                if (!context.feedPrefs.chipsOnTop) {
+                    val cP = chips.parent as ViewGroup
+                    cP.removeView(chips)
+                    cP.addView(chips, 0)
+                }
+            }
             if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
                 chips.visibility = View.GONE
             } else {

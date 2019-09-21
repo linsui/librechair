@@ -692,4 +692,6 @@
     <string name="title_pref_feed_chips_dummy_key">Chip providers</string>
     <string name="title_chip_provider_alarm">Alarm</string>
     <string name="title_pref_feed_chip_opacity">Chip opacity</string>
+    <string name="title_pref_feed_chips_on_top">Chips on top</string>
+    <string name="summary_pref_feed_chips_on_top">Chips will be displayed at the top of the feed</string>
 </resources>
