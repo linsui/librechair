@@ -43,6 +43,8 @@ import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 public class RemoteChipProvider implements ChipProvider {
     private IChipProvider connection;
     private Context context;
+    private String args;
+    private boolean connectLock;
 
     public RemoteChipProvider(Context context) {
         this.context = context;
@@ -51,6 +53,9 @@ public class RemoteChipProvider implements ChipProvider {
     @Override
     public List<Item> getItems(Context context) {
         try {
+            if (connection == null) {
+                tryConnect();
+            }
             return connection == null ? Collections.EMPTY_LIST :
                     connection.getChips().stream().map(
                             remoteItem -> remoteItem.toItem(context)).collect(
@@ -62,19 +67,27 @@ public class RemoteChipProvider implements ChipProvider {
 
     @Override
     public void acceptArguments(String args) {
-        Log.d(getClass().getName(), "acceptArguments: componentName: " + args);
-        ComponentName name = ComponentName.unflattenFromString(args);
-        context.bindService(new Intent().setComponent(name), new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                connection = IChipProvider.Stub.asInterface(service);
-            }
+        this.args = args;
+    }
 
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                connection = null;
-            }
-        }, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+    private synchronized void tryConnect() {
+        if (!connectLock) {
+            connectLock = true;
+            ComponentName name = ComponentName.unflattenFromString(args);
+            context.bindService(new Intent().setComponent(name), new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    connection = IChipProvider.Stub.asInterface(service);
+                    connectLock = false;
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name) {
+                    connection = null;
+                    connectLock = false;
+                }
+            }, Context.BIND_AUTO_CREATE | Context.BIND_IMPORTANT);
+        }
     }
 
     public static class Demo extends Service {
