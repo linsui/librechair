@@ -107,6 +107,9 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider {
             eventCursor.close()
         } catch (e: SecurityException) {
             e.printStackTrace()
+            return listOf(ChipProvider.Item().apply { 
+                title = context.getString(R.string.title_chip_need_calendar_permissions)
+            })
         }
         return chips
     }
