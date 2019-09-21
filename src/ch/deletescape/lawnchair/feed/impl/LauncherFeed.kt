@@ -49,6 +49,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
+import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.images.ImageInformationScreen
 import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
@@ -311,6 +312,12 @@ class LauncherFeed(val originalContext: Context,
             infobox.text = oldInfobox
             chips = feedController.findViewById(R.id.chip_container) as RecyclerView
             chipAdapter = ChipAdapter(context, dark)
+        }
+
+        if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
+            chips.visibility = View.GONE
+        } else {
+            chips.visibility = View.VISIBLE
         }
 
         chips.adapter = chipAdapter
@@ -1224,6 +1231,11 @@ class LauncherFeed(val originalContext: Context,
         }
         chipAdapter.rebindData()
         runOnMainThread {
+            if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
+                chips.visibility = View.GONE
+            } else {
+                chips.visibility = View.VISIBLE
+            }
             chipAdapter.notifyDataSetChanged()
         }
         previewAdapter.refresh()
