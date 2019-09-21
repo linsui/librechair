@@ -25,7 +25,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import com.android.launcher3.R
@@ -66,10 +65,10 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
         }
         return listOf(ChipProvider.Item().apply {
             title = lines.map { it.text }.joinToString(" - ")
-            icon = ThemedBatteryDrawable(context, FeedAdapter.getOverrideColor(context)).apply {
+            /* icon = ThemedBatteryDrawable(context, FeedAdapter.getOverrideColor(context)).apply {
                 this.charging = charging
                 this.setBatteryLevel(level)
-            }
+            } */
         })
     }
 }
