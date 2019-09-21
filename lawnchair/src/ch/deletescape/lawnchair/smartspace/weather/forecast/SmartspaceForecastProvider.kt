@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast
 
 import android.text.TextUtils
 import ch.deletescape.lawnchair.forecastProvider
+import ch.deletescape.lawnchair.persistence.cache.CacheTime
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
@@ -31,6 +32,8 @@ import java.util.concurrent.TimeUnit
 
 class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
         PeriodicDataProvider(controller), Listener {
+
+    private var cacheTime = CacheTime()
     override fun onDataUpdated(weather: WeatherData?, card: CardData?) {
         if (weather?.coordLat != null && weather.coordLon != null) {
             lat = weather.coordLat
@@ -49,50 +52,53 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
     }
 
     override fun updateData() {
-        runOnNewThread {
-            if (lat != null && lon != null) {
-                val lat = lat!!
-                val lon = lon!!
-                try {
-                    val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
-                    if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
-                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.SNOW, false), listOf(Line(
-                                context.getString(R.string.title_card_incoming_snow),
-                                TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                        if (current.condCodes.any { it in 600..699 }) {
-                            runOnMainThread {
-                                updateData(null, data)
+        if (cacheTime.expired) {
+            runOnNewThread {
+                if (lat != null && lon != null) {
+                    val lat = lat!!
+                    val lon = lon!!
+                    try {
+                        val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
+                        if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
+                            val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                    WeatherIconManager.Icon.SNOW, false), listOf(Line(
+                                    context.getString(R.string.title_card_incoming_snow),
+                                    TextUtils.TruncateAt.END)), true)
+                            val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                            if (current.condCodes.any { it in 600..699 }) {
+                                runOnMainThread {
+                                    updateData(null, data)
+                                }
+                            }
+                        } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
+                            val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                    WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(Line(
+                                    context.getString(R.string.title_card_incoming_thunder),
+                                    TextUtils.TruncateAt.END)), true)
+                            val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                            if (current.condCodes.any { it in 200..299 }) {
+                                runOnMainThread {
+                                    updateData(null, data)
+                                }
+                            }
+                        } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
+                            val data = CardData(WeatherIconManager.getInstance(context).getIcon(
+                                    WeatherIconManager.Icon.RAIN, false), listOf(Line(
+                                    context.getString(R.string.title_card_upcoming_rain),
+                                    TextUtils.TruncateAt.END)), true)
+                            val current = context.forecastProvider.getCurrentWeather(lat, lon)
+                            if (current.condCodes.any { it in 300..599 }) {
+                                runOnMainThread {
+                                    updateData(null, data)
+                                }
                             }
                         }
-                    } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 200..299 }?.size ?: 0 > 0) {
-                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(Line(
-                                context.getString(R.string.title_card_incoming_thunder),
-                                TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                        if (current.condCodes.any { it in 200..299 }) {
-                            runOnMainThread {
-                                updateData(null, data)
-                            }
-                        }
-                    } else if (forecast.data.firstOrNull()?.condCode?.filter { it in 300..599 }?.size ?: 0 > 0) {
-                        val data = CardData(WeatherIconManager.getInstance(context).getIcon(
-                                WeatherIconManager.Icon.RAIN, false), listOf(Line(
-                                context.getString(R.string.title_card_upcoming_rain),
-                                TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
-                        if (current.condCodes.any { it in 300..599 }) {
-                            runOnMainThread {
-                                updateData(null, data)
-                            }
-                        }
+                    } catch (e: ForecastProvider.ForecastException) {
+                        e.printStackTrace()
                     }
-                } catch (e: ForecastProvider.ForecastException) {
-                    e.printStackTrace()
                 }
             }
+            cacheTime.trigger()
         }
     }
 }

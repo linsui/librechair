@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuDailyForecastsGSon
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
 import ch.deletescape.lawnchair.util.Temperature
+import ch.deletescape.lawnchair.util.extensions.d
 import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
@@ -57,6 +58,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     }
 
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
+        d("getHourlyForecast: ", Throwable())
         synchronized(this) {
             try {
                 val responseResult: Response<List<AccuHourlyForecastGSon>>?
