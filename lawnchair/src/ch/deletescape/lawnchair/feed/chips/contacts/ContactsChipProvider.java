@@ -22,7 +22,9 @@ package ch.deletescape.lawnchair.feed.chips.contacts;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.BitmapDrawable;
+
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +42,11 @@ public class ContactsChipProvider extends ChipProvider {
         return ContactsUtil.queryContacts(context).stream().map(it -> {
             Item item = new Item();
             item.title = it.name;
-            item.icon = it.avatar != null ? new BitmapDrawable(context.getResources(), it.avatar) : null;
+            if (it.avatar != null) {
+                item.icon = RoundedBitmapDrawableFactory.create(context.getResources(), it.avatar);
+                ((RoundedBitmapDrawable) item.icon).setCornerRadius(
+                        Math.max(it.avatar.getHeight(), it.avatar.getWidth()));
+            }
             item.click = () -> context.startActivity(it.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return item;
         }).collect(Collectors.toList());
