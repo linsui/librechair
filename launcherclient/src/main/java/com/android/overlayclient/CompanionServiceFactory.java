@@ -45,7 +45,12 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
         this.context = context;
         ResolveInfo info = context.getPackageManager().resolveService(getService(),
                 PackageManager.GET_META_DATA);
-        companionApiVersion = info.serviceInfo.metaData.getInt("service.api.companionVersion", -1);
+        try {
+            companionApiVersion = info.serviceInfo.metaData.getInt("service.api.companionVersion",
+                    -1);
+        } catch (NullPointerException e) {
+            companionApiVersion = -1;
+        }
     }
 
     @Override
