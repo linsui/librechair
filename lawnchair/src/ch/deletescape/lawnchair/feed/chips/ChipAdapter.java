@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.chips;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.VectorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -91,9 +92,11 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     @Override
     public void onBindViewHolder(ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
-        item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
-                ColorEngine.getInstance(context).getResolverCache(
-                        ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
+        if (item.icon instanceof VectorDrawable) {
+            item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
+                    ColorEngine.getInstance(context).getResolverCache(
+                            ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
+        }
         if (FeedPersistence.Companion.getInstance(context).getOutlineChips()) {
             chipViewHolder.itemView.setChipStrokeColor(
                     ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
