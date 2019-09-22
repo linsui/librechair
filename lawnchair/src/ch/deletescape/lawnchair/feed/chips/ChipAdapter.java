@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryMeterDrawableBase;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.font.CustomFontManager;
@@ -93,7 +92,8 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     public void onBindViewHolder(ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
         item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
-                FeedAdapter.Companion.getOverrideColor(context));
+                ColorEngine.getInstance(context).getResolverCache(
+                        ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
         if (FeedPersistence.Companion.getInstance(context).getOutlineChips()) {
             chipViewHolder.itemView.setChipStrokeColor(
                     ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
