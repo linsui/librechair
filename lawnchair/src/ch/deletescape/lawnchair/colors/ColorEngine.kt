@@ -160,6 +160,7 @@ class ColorEngine private constructor(val context: Context) :
             const val ALLAPPS_BACKGROUND = "pref_allAppsBackgroundColorResolver"
             const val SUPERG_BACKGROUND = "pref_superGBackgroundColorResolver"
             const val FEED_BACKGROUND = "pref_feedBackgroundColorResolver"
+            const val FEED_CHIP = "pref_feedChipColorResolver"
             const val FEED_CARD = "pref_feedCardColorResolver"
             fun getDefaultResolver(key: String, engine: ColorEngine): ColorResolver {
                 val context = engine.context
@@ -186,6 +187,7 @@ class ColorEngine private constructor(val context: Context) :
                     SUPERG_BACKGROUND -> {
                         SuperGAutoResolver(createConfig(key, engine))
                     }
+                    FEED_CHIP-> FeedCardResolver(createConfig(key, engine))
                     else -> {
                         engine.createColorResolverNullable(key, LawnchairConfig.getInstance(
                                 context).defaultColorResolver) ?: PixelAccentResolver(

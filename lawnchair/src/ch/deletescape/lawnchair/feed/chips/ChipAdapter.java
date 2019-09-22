@@ -31,7 +31,6 @@ import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.InvalidationTracker;
 
-import com.android.launcher3.R;
 import com.google.android.material.chip.Chip;
 
 import java.util.List;
@@ -39,6 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryMeterDrawableBase;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
@@ -95,8 +95,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
                 FeedAdapter.Companion.getOverrideColor(context));
         if (FeedPersistence.Companion.getInstance(context).getOutlineChips()) {
-            chipViewHolder.itemView.setChipStrokeColor(ColorStateList.valueOf(dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
-                    R.color.qsb_background)));
+            chipViewHolder.itemView.setChipStrokeColor(
+                    ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
+                            ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor()));
             chipViewHolder.itemView.setChipStrokeWidth(LawnchairUtilsKt.applyAsDip(1f, context));
         } else {
             chipViewHolder.itemView.setChipStrokeWidth(0f);
@@ -104,11 +105,14 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
-                ColorUtils.setAlphaComponent(
-                        dark ? context.getColor(R.color.qsb_background_dark) : context.getColor(
-                                R.color.qsb_background),
-                        (int) Math.round(FeedPersistence.Companion.getInstance(context).getChipOpacity() * (255f)))));
-        chipViewHolder.itemView.setTextColor(dark ? Color.WHITE : Color.BLACK);
+                ColorUtils.setAlphaComponent(ColorEngine.getInstance(context).getResolverCache(
+                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
+                        (int) Math.round(FeedPersistence.Companion.getInstance(
+                                context).getChipOpacity() * (255f)))));
+        chipViewHolder.itemView.setTextColor(
+                LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(
+                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
+                        context) ? Color.WHITE : Color.BLACK);
         chipViewHolder.itemView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
