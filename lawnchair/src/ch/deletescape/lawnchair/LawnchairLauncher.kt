@@ -32,13 +32,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
-import androidx.core.app.ActivityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.app.ActivityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
@@ -67,7 +66,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 import java.util.concurrent.Semaphore
-import java.util.concurrent.atomic.AtomicBoolean
 
 open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferenceChangeListener,
         ColorEngine.OnColorChangeListener {
@@ -84,7 +82,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val drawerLayout by lazy {
         (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout
     }
-    val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
     val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
     val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
     var overlay: ClientOverlay? = null
@@ -530,57 +527,10 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    fun pickWidget(callback: (i: Int) -> Unit) {
-        val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
-        startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
-            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-            queuedWidgetCallbacks += id to AtomicBoolean(false) to callback
-        }, id)
-    }
-
-    fun pickWidget(callback: WidgetSelectionCallback) {
-        pickWidget {
-            callback.onWidgetSelected(it)
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         d("onActivityResult: image selector requests are $imageResuestCallbacks")
 
         super.onActivityResult(requestCode, resultCode, data)
-
-        if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get().not() } && resultCode == Activity.RESULT_OK) {
-            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
-                it.second.let { callback ->
-                    val id = requestCode
-                    val widgetInfo = appWidgetManager.getAppWidgetInfo(id)
-                    d("onActivityResult: requested widget info: $widgetInfo")
-                    if (widgetInfo?.configure != null) {
-                        startActivityForResult(Intent().setComponent(widgetInfo.configure).also {
-                            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-                        }, id)
-                        it.first.second.set(true)
-                    } else {
-                        callback(id)
-                    }
-                }
-            }
-        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get() }) {
-            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
-                it.second.let {
-                    if (resultCode == Activity.RESULT_OK) {
-                        it(requestCode)
-                    } else {
-                        (applicationContext as LawnchairApp).overlayWidgetHost
-                                .deleteAppWidgetId(requestCode)
-                        it(-1)
-                    }
-                }
-            }
-        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode }) {
-            (applicationContext as LawnchairApp).overlayWidgetHost
-                    .deleteAppWidgetId(requestCode shr 1)
-        }
 
         if (imageResuestCallbacks.containsKey(requestCode)) {
             d("onActivityResult: image selector activity returned with data ${data?.extras}, $data")

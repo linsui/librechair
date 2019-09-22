@@ -24,9 +24,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+
 import ch.deletescape.lawnchair.IWidgetSelector.Stub;
-import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.WidgetSelectionCallback;
+import ch.deletescape.lawnchair.cp.CallbackManager;
+import kotlin.Unit;
 
 public class WidgetSelectionService extends Service {
 
@@ -41,7 +43,14 @@ public class WidgetSelectionService extends Service {
             @Override
             public void pickWidget(WidgetSelectionCallback callback) throws RemoteException {
                 Log.d(getClass().getName(), "pickWidget: starting widget picker");
-                LawnchairLauncher.getLauncher(getApplicationContext()).pickWidget(callback);
+                CallbackManager.INSTANCE.postWidgetRequest(WidgetSelectionService.this, id -> {
+                    try {
+                        callback.onWidgetSelected(id);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return Unit.INSTANCE;
+                });
             }
         });
     }
