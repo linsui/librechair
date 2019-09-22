@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.chips;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.VectorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,12 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.feed.chips.battery.BatteryMeterDrawableBase;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import kotlin.Unit;
+
+import static java.lang.StrictMath.round;
 
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
@@ -85,6 +87,23 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     }
 
     @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
+                                       @NonNull RecyclerView parent,
+                                       @NonNull RecyclerView.State state) {
+                super.getItemOffsets(outRect, view, parent, state);
+                outRect.top = round(LawnchairUtilsKt.applyAsDip(8f, context));
+                outRect.bottom = round(LawnchairUtilsKt.applyAsDip(4f, context));
+                outRect.left = round(LawnchairUtilsKt.applyAsDip(8f, context));
+                outRect.right = round(LawnchairUtilsKt.applyAsDip(8f, context));
+            }
+        });
+    }
+
+    @Override
     public ChipViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         return new ChipViewHolder(new Chip(viewGroup.getContext()));
     }
@@ -116,23 +135,6 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                 LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(
                         ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
                         context) ? Color.WHITE : Color.BLACK);
-        chipViewHolder.itemView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                                       int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                v.removeOnLayoutChangeListener(this);
-                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).leftMargin = (int) LawnchairUtilsKt.applyAsDip(
-                        8f, context);
-                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).rightMargin = (int) LawnchairUtilsKt.applyAsDip(
-                        8f, context);
-                ((RecyclerView.LayoutParams) chipViewHolder.itemView.getLayoutParams()).topMargin = (int) LawnchairUtilsKt.applyAsDip(
-                        4f, context);
-                if (item.icon instanceof BatteryMeterDrawableBase) {
-                    ((BatteryMeterDrawableBase) item.icon).postInvalidate();
-                }
-                v.requestLayout();
-            }
-        });
         chipViewHolder.itemView.setOnTouchListener((v, event) -> {
             if (controller != null) {
                 controller.setDisallowInterceptTouchEventsUntilNextUp(true);
