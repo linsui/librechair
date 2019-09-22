@@ -24,11 +24,14 @@ import android.app.AlarmManager.AlarmClockInfo;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
 public class AlarmEventProvider extends FeedProvider {
 
@@ -59,6 +62,9 @@ public class AlarmEventProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        if (manager == null) {
+            return Collections.EMPTY_LIST;
+        }
         AlarmClockInfo info = manager.getNextAlarmClock();
         if (info != null) {
             Drawable alarm = getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp);
