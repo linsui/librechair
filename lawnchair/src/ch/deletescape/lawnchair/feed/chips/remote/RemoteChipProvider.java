@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
-public class RemoteChipProvider implements ChipProvider {
+public class RemoteChipProvider extends ChipProvider {
     private IChipProvider connection;
     private Context context;
     private String args;

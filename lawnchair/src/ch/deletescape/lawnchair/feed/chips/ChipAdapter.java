@@ -59,6 +59,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         this.context = context;
         providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
                 it -> it != null).collect(Collectors.toList());
+        providers.forEach(it -> it.setAdapter(ChipAdapter.this));
         this.dark = dark;
         ChipDatabase.Holder.getInstance(context).getInvalidationTracker().addObserver(
                 new InvalidationTracker.Observer("chipprovidercontainer") {
@@ -67,6 +68,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                         providers = dao.getAll().stream().map(
                                 val -> ChipProvider.Cache.get(val, context)).filter(
                                 it -> it != null).collect(Collectors.toList());
+                        providers.forEach(it -> it.setAdapter(ChipAdapter.this));
                         items = providers.stream().map(it -> it.getItems(context)).flatMap(
                                 List::stream).collect(Collectors.toList());
                         notifyDataSetChanged();

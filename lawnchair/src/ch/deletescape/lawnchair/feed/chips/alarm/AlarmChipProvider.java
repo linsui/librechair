@@ -32,7 +32,7 @@ import java.util.List;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
-public class AlarmChipProvider implements ChipProvider {
+public class AlarmChipProvider extends ChipProvider {
 
     public AlarmChipProvider(Context ignored) {
 

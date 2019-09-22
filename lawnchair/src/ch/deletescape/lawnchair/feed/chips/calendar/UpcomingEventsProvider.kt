@@ -33,7 +33,7 @@ import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.util.*
 
-class UpcomingEventsProvider(val context: Context) : ChipProvider {
+class UpcomingEventsProvider(val context: Context) : ChipProvider() {
     override fun getItems(context: Context):
             List<ChipProvider.Item> {
         val chips = mutableListOf<ChipProvider.Item>()

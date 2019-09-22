@@ -30,7 +30,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.fromStringRes
 import com.android.launcher3.R
 
-class BatteryStatusProvider(val context: Context) : ChipProvider {
+class BatteryStatusProvider(val context: Context) : ChipProvider() {
 
     private val batteryReceiver = object : BroadcastReceiver() {
 
@@ -45,6 +45,7 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
             level = (100f
                     * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                     / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
+            refresh()
         }
     }
     private var charging = false

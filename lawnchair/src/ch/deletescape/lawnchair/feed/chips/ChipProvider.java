@@ -41,13 +41,26 @@ import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProviderUtilities;
 
-public interface ChipProvider {
-    List<Item> getItems(Context context);
+public abstract class ChipProvider {
+    private ChipAdapter adapter;
 
-    default void acceptArguments(String args) {
+    public abstract List<Item> getItems(Context context);
+
+    public void acceptArguments(String args) {
     }
 
-    public class Cache {
+    public final void setAdapter(ChipAdapter adapter) {
+        this.adapter = adapter;
+    }
+
+    protected final void refresh() {
+        if (this.adapter != null) {
+            this.adapter.rebindData();
+            this.adapter.notifyDataSetChanged();
+        }
+    }
+
+    public static class Cache {
         private static Map<ChipProviderContainer, ChipProvider> providerCache = new HashMap<>();
 
         public static ChipProvider get(ChipProviderContainer container, Context context) {
@@ -68,13 +81,13 @@ public interface ChipProvider {
         }
     }
 
-    public class Item {
+    public static class Item {
         public String title;
         public Runnable click;
         public Drawable icon;
     }
 
-    public class Names {
+    public static class Names {
         private static Map<ChipProviderContainer, String> names = new LinkedHashMap<>();
 
         static {
