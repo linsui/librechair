@@ -27,7 +27,7 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
+import ch.deletescape.lawnchair.fromStringRes
 import com.android.launcher3.R
 
 class BatteryStatusProvider(val context: Context) : ChipProvider {
@@ -36,7 +36,11 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
 
         override fun onReceive(context: Context?, intent: Intent) {
             val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-            charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) != 0;
+            charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0).let {
+                it == BatteryManager.BATTERY_PLUGGED_AC ||
+                        it == BatteryManager.BATTERY_PLUGGED_USB ||
+                        it == BatteryManager.BATTERY_PLUGGED_WIRELESS
+            }
             full = status == BatteryManager.BATTERY_STATUS_FULL
             level = (100f
                     * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
@@ -52,20 +56,17 @@ class BatteryStatusProvider(val context: Context) : ChipProvider {
     }
 
     override fun getItems(context: Context): List<ChipProvider.Item> {
-        val lines = mutableListOf<LawnchairSmartspaceController.Line>()
+        val lines = mutableListOf<Any>()
         when {
-            full -> lines.add(LawnchairSmartspaceController.Line(context, R.string.battery_full))
-            charging -> lines.add(
-                    LawnchairSmartspaceController.Line(context, R.string.battery_charging))
-            level <= 15 -> lines.add(
-                    LawnchairSmartspaceController.Line(context, R.string.battery_low))
-            else -> return emptyList()
-        }
-        if (!full) {
-            lines.add(LawnchairSmartspaceController.Line("$level%"))
+            full -> lines.add(R.string.battery_full)
+            charging -> lines.add(R.string.battery_charging)
+            level <= 15 -> lines.add(R.string.battery_low)
+            else -> lines.add("$level%")
         }
         return listOf(ChipProvider.Item().apply {
-            title = lines.joinToString(" - ") { it.text }
+            title = lines.joinToString(" - ") {
+                if (it is Int) it.fromStringRes(context) else it as CharSequence
+            }
             icon = BatteryMeterDrawableBase(context, FeedAdapter.getOverrideColor(context)).apply {
                 this.batteryLevel = this@BatteryStatusProvider.level
                 this.charging = this@BatteryStatusProvider.charging
