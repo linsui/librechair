@@ -48,6 +48,6 @@ public class AlarmChipProvider extends ChipProvider {
             item.title = LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), context);
             return Collections.singletonList(item);
         }
-        return null;
+        return Collections.EMPTY_LIST;
     }
 }
