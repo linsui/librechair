@@ -174,7 +174,11 @@ class LauncherFeed(val originalContext: Context,
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
     private var googleColours = ColorProvider.Companion.inflate(
             Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
-            .getColors(context)
+            .getColors(context).toMutableList().also {
+                if (it.isEmpty()) {
+                    it += 0
+                }
+            }
     private lateinit var oldIconTint: ColorStateList
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
