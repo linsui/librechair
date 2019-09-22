@@ -34,6 +34,7 @@ public abstract class ChipDatabase extends RoomDatabase {
             return sInstance != null ? sInstance : (sInstance = Room.databaseBuilder(context,
                     ChipDatabase.class, "feed_chips")
                     .allowMainThreadQueries()
+                    .enableMultiInstanceInvalidation()
                     .fallbackToDestructiveMigration()
                     .build());
         }
