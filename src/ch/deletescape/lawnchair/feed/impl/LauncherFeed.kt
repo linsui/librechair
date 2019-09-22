@@ -338,10 +338,12 @@ class LauncherFeed(val originalContext: Context,
             false
         }
 
-        infobox.text = infobox.text.take(40)
-        if (infobox.text.length == 40) {
+        infobox.text = infobox.text.take(60)
+        if (infobox.text.length == 60) {
             infobox.text = infobox.text.toString() + "..."
         }
+
+        infobox.visibility = if (infobox.text.length > 1) View.VISIBLE else View.GONE
 
         infobox.setOnClickListener {
             val screen = ImageInformationScreen(context, infobox.text)
