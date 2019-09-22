@@ -40,7 +40,7 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
                             context)) R.color.textColorPrimaryInverse.fromColorRes(
                     context) else R.color.textColorPrimary.fromColorRes(context)),
             context.getString(R.string.title_card_feed_preview_header), { v, _ -> View(context) },
-            Card.NO_HEADER, "nosort,top"),
+            Card.TEXT_ONLY, "nosort,top"),
             Card(R.drawable.ic_information.fromDrawableRes(context).tint(
                     FeedAdapter.getOverrideColor(context)),
                     context.getString(R.string.title_card_feed_preview_header),
