@@ -23,10 +23,11 @@ package ch.deletescape.lawnchair.feed.contacts
 import android.content.Context
 import android.content.Intent
 import android.view.View
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
-import ch.deletescape.lawnchair.toDrawable
 import ch.deletescape.lawnchair.util.extensions.d
+import kotlin.math.max
 
 class FeedContactsProvider(c: Context?) : FeedProvider(c) {
     override fun onFeedShown() {
@@ -48,7 +49,13 @@ class FeedContactsProvider(c: Context?) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         return ContactsUtil.queryContacts(context).map {
             d("getCards: contact: $it")
-            Card(it.avatar.toDrawable(), it.name, { _, _ -> View(context) },
+            Card(if (it.avatar == null) null else RoundedBitmapDrawableFactory.create(
+                    context.resources,
+                    it.avatar).apply {
+                cornerRadius =
+                        max(it.avatar.height, it.avatar.width).toFloat()
+            },
+                    it.name, { _, _ -> View(context) },
                     Card.RAISE or Card.TEXT_ONLY, "",
                     it.name.hashCode()).apply {
                 globalClickListener = { v ->
