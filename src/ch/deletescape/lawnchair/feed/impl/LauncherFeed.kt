@@ -51,7 +51,7 @@ import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.getFeedController
-import ch.deletescape.lawnchair.feed.images.ImageInformationScreen
+import ch.deletescape.lawnchair.feed.images.screen.ImageDataScreen
 import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
@@ -342,6 +342,8 @@ class LauncherFeed(val originalContext: Context,
             false
         }
 
+        val oldText = infobox.text
+
         infobox.text = infobox.text.take(60)
         if (infobox.text.length == 60) {
             infobox.text = infobox.text.toString() + "..."
@@ -350,7 +352,7 @@ class LauncherFeed(val originalContext: Context,
         infobox.visibility = if (infobox.text.length > 1) View.VISIBLE else View.GONE
 
         infobox.setOnClickListener {
-            val screen = ImageInformationScreen(context, infobox.text)
+            val screen = ImageDataScreen(context, backgroundToProcess!!, oldText.toString())
             screen.display(this, it.x.toInt(), it.y.toInt())
         }
 
