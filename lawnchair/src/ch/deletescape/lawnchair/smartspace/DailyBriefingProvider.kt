@@ -80,6 +80,7 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                 }, TextUtils.TruncateAt.MARQUEE))
                         val query =
                                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + tomorrow().time + " ))"
+                        var hasCalendar = false
                         try {
                             val eventCursor: Cursor =
                                     context.contentResolver.query(
@@ -99,6 +100,7 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                         .Line(R.plurals.title_daily_briefing_calendar_events.fromPluralRes(
                                                 context, eventCursor.count))
                             }
+                            hasCalendar = true
                             eventCursor.close()
                         } catch (e: SecurityException) {
                             e.printStackTrace()
@@ -114,7 +116,7 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                     updateData(null,
                                                LawnchairSmartspaceController.CardData(null, lines,
                                                                                       forceSingleLine = false))
-                                    if (lines.size > 1) {
+                                    if (hasCalendar) {
                                         mainHandler.postDelayed(updateDataWithEvents, 1000 * 2)
                                     }
                                 } else {
