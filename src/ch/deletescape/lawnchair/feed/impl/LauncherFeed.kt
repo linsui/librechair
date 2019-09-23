@@ -74,10 +74,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlin.math.hypot
-import kotlin.math.max
-import kotlin.math.roundToInt
-import kotlin.math.sign
+import kotlin.math.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
@@ -365,7 +362,6 @@ class LauncherFeed(val originalContext: Context,
             View.VISIBLE else View.GONE
 
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
-        var oldRecyclerViewPaddingVertical: Pair<Int, Int>? = null
         var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
         var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
         if (context.lawnchairPrefs.feedToolbarWidget != -1) {
@@ -445,13 +441,6 @@ class LauncherFeed(val originalContext: Context,
                         }
                     }
                     if (reapplyInsetFlag) {
-                        reapplyInsetFlag = false
-                        oldRecyclerViewPaddingVertical =
-                                (if (!tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
-                                        R.dimen.feed_app_bar_bottom_padding).toInt() else recyclerView.paddingTop) to
-                                        (if (tabsOnBottom) toolbar.measuredHeight + context.resources.getDimension(
-                                                R.dimen.feed_app_bar_bottom_padding).toInt()
-                                        else recyclerView.paddingBottom)
                         feedController.requestApplyInsets()
                     }
                 }
@@ -459,29 +448,6 @@ class LauncherFeed(val originalContext: Context,
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
-            recyclerView.apply {
-                if (oldRecyclerViewPaddingVertical == null) {
-                    oldRecyclerViewPaddingVertical = (if (!tabsOnBottom) toolbar.also {
-                        it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                    }.measuredHeight + context.resources.getDimension(
-                            R.dimen.feed_app_bar_bottom_padding).toInt() else paddingTop) to (if (tabsOnBottom) toolbar.also {
-                        it.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                    }.measuredHeight + context.resources.getDimension(
-                            R.dimen.feed_app_bar_bottom_padding).toInt() else paddingBottom)
-                }
-                if (oldRecyclerViewPaddingHorizontal == null) {
-                    oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
-                }
-                setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                        oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
-                        oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                        oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
-                previewRecyclerView.setPadding(
-                        oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                        oldRecyclerViewPaddingVertical!!.first + statusBarHeight!!,
-                        oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                        oldRecyclerViewPaddingVertical!!.second + navigationBarHeight!!)
-            }
             toolbar.apply {
                 if (oldToolbarPaddingVertical == null) {
                     oldToolbarPaddingVertical = paddingTop to paddingBottom
@@ -502,6 +468,24 @@ class LauncherFeed(val originalContext: Context,
             upButton.animate().translationY(
                     (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
                     .duration = 500
+            toolbar.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                val height = abs(bottom - top)
+                val rvPaddingTop = height + 16f.applyAsDip(context).toInt()
+                recyclerView.apply {
+                    if (oldRecyclerViewPaddingHorizontal == null) {
+                        oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
+                    }
+                    setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                            if (tabsOnBottom) paddingTop else rvPaddingTop + statusBarHeight!!,
+                            oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                            if (!tabsOnBottom) paddingBottom else rvPaddingTop + navigationBarHeight!!)
+                    previewRecyclerView.setPadding(
+                            oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                            if (tabsOnBottom) paddingTop else rvPaddingTop + statusBarHeight!!,
+                            oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                            if (!tabsOnBottom) paddingBottom else rvPaddingTop + navigationBarHeight!!)
+                }
+            }
             insets
         }
         feedController.mOpenedCallback = {
