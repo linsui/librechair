@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
 
@@ -59,13 +60,21 @@ public class ForecastChipProvider extends ChipProvider
 
     @Override
     public List<Item> getItems(Context context) {
-        return forecast == null ? Collections.EMPTY_LIST : Arrays.stream(forecast.getData()).map(it -> {
-            Item item = new Item();
-            item.icon = new BitmapDrawable(context.getResources(), it.getData().getIcon());
-            item.title = String.format("%s, %s", it.getData().getTemperature().toString(Utilities.getLawnchairPrefs(context).getWeatherUnit()), LawnchairUtilsKt.formatTime(ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-                    it.getDate().getTime()), ZoneId.of("UTC")).withZoneSameInstant(TimeZone.getDefault().toZoneId()), context));
-            return item;
-        }).limit(5).collect(Collectors.toList());
+        return forecast == null ? Collections.EMPTY_LIST : Arrays.stream(forecast.getData()).map(
+                it -> {
+                    Item item = new Item();
+                    item.icon = new BitmapDrawable(context.getResources(), it.getData().getIcon());
+                    item.title = String.format("%s, %s", it.getData().getTemperature().toString(
+                            Utilities.getLawnchairPrefs(context).getWeatherUnit()),
+                            LawnchairUtilsKt.formatTime(
+                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(
+                                            it.getDate().getTime()),
+                                            ZoneId.of("UTC")).withZoneSameInstant(
+                                            TimeZone.getDefault().toZoneId()), context));
+                    return item;
+                }).limit((int) Math.round(
+                FeedPersistence.Companion.getInstance(context).getWeatherItems())).collect(
+                Collectors.toList());
     }
 
     @Override

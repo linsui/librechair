@@ -698,4 +698,5 @@
     <string name="title_pref_feed_outline_chips">Display chip outlines</string>
     <string name="summary_pref_feed_outline_chips">Chips will be displayed with a MDC outlined background</string>
     <string name="title_chip_need_calendar_permissions">Calendar permissions required</string>
+    <string name="title_pref_feed_chip_weather_item_count">Weather item count</string>
 </resources>

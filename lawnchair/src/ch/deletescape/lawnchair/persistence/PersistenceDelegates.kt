@@ -31,7 +31,7 @@ class StringDelegate<T>(val context: Context, val key: String) {
             SimplePersistence.InstanceHolder.getInstance(context).get(key, "")
 }
 
-class DoubleDelegate<T>(val context: Context, val key: String, val defValue: Double) {
+class NumberDelegate<T>(val context: Context, val key: String, val defValue: Double) {
 
     operator fun setValue(t: T, property: KProperty<*>, value: Double) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())

@@ -24,9 +24,10 @@ import android.content.Context
 import ch.deletescape.lawnchair.util.SingletonHolder
 
 class FeedPersistence private constructor(val context: Context) {
-    val chipOpacity by DoubleDelegate(context, "feed_chip_opacity", 1.0)
+    val chipOpacity by NumberDelegate(context, "feed_chip_opacity", 1.0)
     val chipsOnTop by BooleanDelegate(context, "feed_chips_on_top", false)
     val outlineChips by BooleanDelegate(context, "feed_outline_chips", false)
+    val weatherItems by NumberDelegate(context, "feed_chip_weather_item_count", 5.0)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
