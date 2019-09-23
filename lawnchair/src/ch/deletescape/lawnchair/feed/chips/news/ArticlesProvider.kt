@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.chips.news
 import android.content.Context
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.fromDrawableRes
+import ch.deletescape.lawnchair.persistence.cache.CacheTime
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
@@ -30,24 +31,26 @@ import com.rometools.rome.io.FeedException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 abstract class ArticlesProvider(val context: Context) : ChipProvider() {
     lateinit var feed: SyndFeed
-    internal abstract fun getFeed(): SyndFeed
+    private val cacheTime = CacheTime(TimeUnit.DAYS.toMillis(1))
 
-    init {
-        GlobalScope.launch {
-            try {
-                feed = getFeed()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: FeedException) {
-                e.printStackTrace();
+    internal abstract fun getFeed(): SyndFeed
+    override fun getItems(context: Context): List<Item> {
+        if (cacheTime.expired) {
+            GlobalScope.launch {
+                try {
+                    feed = getFeed()
+                    cacheTime.trigger()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                } catch (e: FeedException) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
-
-    override fun getItems(context: Context): List<Item> {
         return if (::feed.isInitialized) feed.entries.take(5).map {
             val item = Item()
             item.icon = R.drawable.ic_newspaper_24dp.fromDrawableRes(context)

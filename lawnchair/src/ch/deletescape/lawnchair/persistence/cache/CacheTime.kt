@@ -23,7 +23,7 @@ package ch.deletescape.lawnchair.persistence.cache
 import java.util.concurrent.TimeUnit
 
 class CacheTime(val timeout: Long = TimeUnit.MINUTES.toMillis(10)) {
-    var lastTriggered = 0L
+    private var lastTriggered = 0L
     val expired
         get() = System.currentTimeMillis() - lastTriggered > timeout
     fun trigger() {
