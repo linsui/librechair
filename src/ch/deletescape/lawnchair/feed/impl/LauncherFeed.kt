@@ -470,7 +470,7 @@ class LauncherFeed(val originalContext: Context,
                     .duration = 500
             toolbar.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                 val height = abs(bottom - top)
-                val rvPaddingTop = height + 16f.applyAsDip(context).toInt()
+                val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
                 recyclerView.apply {
                     if (oldRecyclerViewPaddingHorizontal == null) {
                         oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
