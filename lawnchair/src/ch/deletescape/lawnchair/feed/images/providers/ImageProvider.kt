@@ -28,6 +28,7 @@ interface ImageProvider {
     val expiryTime: Long
     suspend fun getBitmap(context: Context): Bitmap?
     suspend fun getDescription(context: Context): String? = null
+    suspend fun getUrl(context: Context): String? = null
     fun registerOnChangeListener(listener: () -> Unit)
 
     companion object {

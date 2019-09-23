@@ -150,4 +150,20 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
             return null;
         }
     }
+
+    @Nullable
+    @Override
+    public Object getUrl(@NotNull Context context, @NotNull Continuation<? super String> o) {
+        try {
+            Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            if (response.body().media_type.equals("image")) {
+                return response.body().url;
+            } else {
+                return null;
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

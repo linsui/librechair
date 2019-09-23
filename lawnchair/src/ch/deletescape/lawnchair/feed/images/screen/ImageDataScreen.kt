@@ -24,18 +24,23 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
+import kotlinx.android.synthetic.lawnchair.image_information_screen.view.*
 
-class ImageDataScreen(base: Context, val bitmap: Bitmap, val desc: String)
+class ImageDataScreen(base: Context, val bitmap: Bitmap, val desc: String, val actionClickListener: (() -> Unit)?)
     : ProviderScreen(base) {
     override fun getView(parent: ViewGroup) = parent.inflate(R.layout.image_information_screen)
 
     override fun bindView(view: View) {
-        view.findViewById<ImageView>(R.id.image).setImageBitmap(bitmap)
-        view.findViewById<TextView>(R.id.image_description).text = desc
+        view.image.setImageBitmap(bitmap)
+        view.image_description.text = desc
+        view.more.let { mb ->
+            mb.visibility = if (actionClickListener != null) View.VISIBLE else View.GONE
+            mb.setOnClickListener {
+                actionClickListener?.invoke()
+            }
+        }
     }
 }

@@ -157,4 +157,21 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
                 SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date()).toInstant()
                         .toEpochMilli() - System.currentTimeMillis());
     }
+
+    @Nullable
+    @Override
+    public Object getUrl(@NotNull Context context, @NotNull Continuation<? super String> o) {
+        try {
+            Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE
+                    .getApi(context)
+                    .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
+                    .execute();
+            if (response.isSuccessful() && response.body() != null) {
+                return response.body().images[0].quiz;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

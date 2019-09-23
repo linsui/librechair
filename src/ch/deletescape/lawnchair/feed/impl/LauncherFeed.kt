@@ -109,6 +109,7 @@ class LauncherFeed(val originalContext: Context,
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
     private var horizontalBackground: Drawable? = null
+    var readMoreUrl: String? = null
     var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
             false) as FeedController)
             .also {
@@ -349,7 +350,11 @@ class LauncherFeed(val originalContext: Context,
         infobox.visibility = if (infobox.text.length > 1) View.VISIBLE else View.GONE
 
         infobox.setOnClickListener {
-            val screen = ImageDataScreen(context, backgroundToProcess!!, oldText.toString())
+            val screen = ImageDataScreen(context, backgroundToProcess!!, oldText.toString(),
+                    if (readMoreUrl != null)
+                        ({
+                            Utilities.openURLinBrowser(context, readMoreUrl)
+                        } as () -> Unit) else null)
             screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
         }
 
