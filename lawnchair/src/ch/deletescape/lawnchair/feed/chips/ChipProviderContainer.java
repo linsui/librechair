@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.chips;
 
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Objects;
@@ -40,6 +41,9 @@ public final class ChipProviderContainer {
     public int hashCode() {
         return Objects.hash(args, clazz);
     }
+
+    @Ignore
+    public transient boolean remote;
 
     public String args;
     public String clazz;

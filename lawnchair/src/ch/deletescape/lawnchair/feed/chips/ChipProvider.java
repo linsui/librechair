@@ -123,6 +123,7 @@ public abstract class ChipProvider {
                 ChipProviderContainer container = new ChipProviderContainer();
                 container.clazz = RemoteChipProvider.class.getName();
                 container.args = name.flattenToString();
+                container.remote = true;
                 try {
                     names.put(container,
                             LawnchairApp.localizationContext.getPackageManager().getServiceInfo(

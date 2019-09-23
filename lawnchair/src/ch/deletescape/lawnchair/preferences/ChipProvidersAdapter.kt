@@ -37,6 +37,7 @@
 
 package ch.deletescape.lawnchair.preferences
 
+import android.content.ComponentName
 import android.content.Context
 import android.os.Handler
 import android.view.LayoutInflater
@@ -83,9 +84,10 @@ class ChipProvidersAdapter(private val context: Context)
         return when (viewType) {
             TYPE_HEADER -> createHolder(parent, R.layout.event_provider_text_item, ::HeaderHolder)
             TYPE_ITEM -> createHolder(parent, R.layout.event_provider_dialog_item, ::ProviderHolder)
-            TYPE_DIVIDER -> createHolder(parent, R.layout.event_providers_divider_item, ::DividerHolder)
+            TYPE_DIVIDER -> createHolder(parent, R.layout.event_providers_divider_item,
+                    ::DividerHolder)
             else -> throw IllegalArgumentException("type must be either TYPE_TEXT, " +
-                                                   "TYPE_PROVIDER or TYPE_DIVIDER")
+                    "TYPE_PROVIDER or TYPE_DIVIDER")
         }
     }
 
@@ -114,7 +116,7 @@ class ChipProvidersAdapter(private val context: Context)
         return newSpecs
     }
 
-    private fun fillItems(){
+    private fun fillItems() {
         otherItems.clear()
         otherItems.addAll(allProviders)
 
@@ -155,7 +157,8 @@ class ChipProvidersAdapter(private val context: Context)
         notifyItemMoved(from, to)
     }
 
-    private inline fun createHolder(parent: ViewGroup, resource: Int, creator: (View) -> Holder): Holder {
+    private inline fun createHolder(parent: ViewGroup, resource: Int,
+                                    creator: (View) -> Holder): Holder {
         return creator(LayoutInflater.from(parent.context).inflate(resource, parent, false))
     }
 
@@ -183,7 +186,8 @@ class ChipProvidersAdapter(private val context: Context)
         override val type = TYPE_DIVIDER
     }
 
-    abstract class Holder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    abstract class Holder(itemView: View) :
+            androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
         open fun bind(item: Item) {
 
@@ -192,6 +196,11 @@ class ChipProvidersAdapter(private val context: Context)
 
     inner class ProviderInfo(val name: ChipProviderContainer) {
         val displayName = ChipProvider.Names.getNameForContainer(name)
+        val remote = name.remote
+        val source
+            get() = context.packageManager.getApplicationLabel(
+                    context.packageManager.getApplicationInfo(
+                            ComponentName.unflattenFromString(name.args)!!.packageName, 0))
     }
 
     class HeaderHolder(itemView: View) : Holder(itemView) {
@@ -204,13 +213,15 @@ class ChipProvidersAdapter(private val context: Context)
         }
     }
 
-    open inner class ProviderHolder(itemView: View) : Holder(itemView), View.OnClickListener, View.OnTouchListener {
+    open inner class ProviderHolder(itemView: View) : Holder(itemView), View.OnClickListener,
+            View.OnTouchListener {
 
         val title: TextView = itemView.findViewById(android.R.id.title)
         val summary: TextView = itemView.findViewById(android.R.id.summary)
         private val dragHandle: View = itemView.findViewById(R.id.drag_handle)
-        private val packItem get() = adapterItems[adapterPosition] as? ProviderItem
-                                     ?: throw IllegalArgumentException("item must be ProviderItem")
+        private val packItem
+            get() = adapterItems[adapterPosition] as? ProviderItem
+                    ?: throw IllegalArgumentException("item must be ProviderItem")
 
         init {
             itemView.setOnClickListener(this)
@@ -219,10 +230,14 @@ class ChipProvidersAdapter(private val context: Context)
 
         override fun bind(item: Item) {
             val packItem = item as? ProviderItem
-                           ?: throw IllegalArgumentException("item must be ProviderItem")
+                    ?: throw IllegalArgumentException("item must be ProviderItem")
             title.text = packItem.info.displayName
             itemView.isClickable = !packItem.isStatic
-            dragHandle.isVisible = !packItem.isStatic;
+            dragHandle.isVisible = !packItem.isStatic
+            summary.visibility = if (item.info.remote) View.VISIBLE else View.INVISIBLE
+            if (item.info.remote) {
+                summary.text = item.info.source
+            }
         }
 
         override fun onClick(v: View) {
@@ -269,27 +284,35 @@ class ChipProvidersAdapter(private val context: Context)
 
     inner class TouchHelperCallback : ItemTouchHelper.Callback() {
 
-        override fun onSelectedChanged(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?, actionState: Int) {
+        override fun onSelectedChanged(
+                viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?,
+                actionState: Int) {
             super.onSelectedChanged(viewHolder, actionState)
             isDragging = actionState == ItemTouchHelper.ACTION_STATE_DRAG
             handler.post { notifyItemChanged(dividerIndex) }
         }
 
-        override fun canDropOver(recyclerView: androidx.recyclerview.widget.RecyclerView, current: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
+        override fun canDropOver(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                 current: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                                 target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return target.adapterPosition in 1..dividerIndex
         }
 
-        override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
+        override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                                      viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
             val item = adapterItems[viewHolder.adapterPosition]
             val dragFlags = if (item.isStatic) 0 else ItemTouchHelper.UP or ItemTouchHelper.DOWN
             return makeMovementFlags(dragFlags, 0)
         }
 
-        override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView, viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
+        override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView,
+                            viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                            target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
             return move(viewHolder.adapterPosition, target.adapterPosition)
         }
 
-        override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
+        override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                              direction: Int) {
 
         }
     }
