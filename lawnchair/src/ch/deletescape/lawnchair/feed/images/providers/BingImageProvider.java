@@ -167,7 +167,7 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
                     .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
                     .execute();
             if (response.isSuccessful() && response.body() != null) {
-                return response.body().images[0].quiz;
+                return "https://www.bing.com" + response.body().images[0].quiz;
             }
         } catch (IOException e) {
             e.printStackTrace();
