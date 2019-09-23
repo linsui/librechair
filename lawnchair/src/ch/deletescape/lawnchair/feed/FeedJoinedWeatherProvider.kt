@@ -25,6 +25,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -114,13 +115,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 val icon = findViewById(
                                                         R.id.forecast_weather_icon) as ImageView
 
-                                                viewTreeObserver.addOnPreDrawListener {
+                                                viewTreeObserver.addOnGlobalLayoutListener {
                                                     if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {
-                                                                    it.measure(
-                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                                                                }.width, WRAP_CONTENT)
+                                                                MATCH_PARENT, WRAP_CONTENT)
                                                     }
                                                     true
                                                 }
@@ -153,13 +151,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                viewTreeObserver.addOnPreDrawListener {
+                                                viewTreeObserver.addOnGlobalLayoutListener {
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {
-                                                                    it.measure(
-                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                                                                }.width, WRAP_CONTENT)
+                                                                MATCH_PARENT, WRAP_CONTENT)
                                                     }
                                                     true
                                                 }
