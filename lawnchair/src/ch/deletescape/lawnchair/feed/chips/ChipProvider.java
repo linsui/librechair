@@ -39,6 +39,7 @@ import ch.deletescape.lawnchair.feed.chips.alarm.AlarmChipProvider;
 import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
 import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 import ch.deletescape.lawnchair.feed.chips.contacts.ContactsChipProvider;
+import ch.deletescape.lawnchair.feed.chips.news.TheGuardianArticleProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProviderUtilities;
 import ch.deletescape.lawnchair.feed.chips.weather.ForecastChipProvider;
@@ -102,11 +103,17 @@ public abstract class ChipProvider {
             names.put(buildEmptyContainer(AlarmChipProvider.class),
                     LawnchairApp.localizationContext.getString(R.string.title_chip_provider_alarm));
             names.put(buildEmptyContainer(ContactsChipProvider.class),
-                    LawnchairApp.localizationContext.getString(R.string.title_feed_provider_feed_contacts));
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_feed_provider_feed_contacts));
             names.put(buildEmptyContainer(WeatherChipProvider.class),
-                    LawnchairApp.localizationContext.getString(R.string.title_feed_provider_weather_stats));
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_feed_provider_weather_stats));
             names.put(buildEmptyContainer(ForecastChipProvider.class),
-                    LawnchairApp.localizationContext.getString(R.string.title_feed_provider_forecast));
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_feed_provider_forecast));
+            names.put(buildEmptyContainer(TheGuardianArticleProvider.class),
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_feed_provider_the_guardian));
             for (ComponentName name : RemoteChipProviderUtilities.getRemoteChipProviders(
                     LawnchairApp.localizationContext)) {
                 ChipProviderContainer container = new ChipProviderContainer();
