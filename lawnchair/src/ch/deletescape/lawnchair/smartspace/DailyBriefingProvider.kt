@@ -80,22 +80,28 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                 }, TextUtils.TruncateAt.MARQUEE))
                         val query =
                                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + tomorrow().time + " ))"
-                        val eventCursor: Cursor =
-                                context.contentResolver.query(CalendarContract.Events.CONTENT_URI,
-                                                              arrayOf(CalendarContract.Instances.TITLE,
-                                                                      CalendarContract.Instances.DTSTART,
-                                                                      CalendarContract.Instances.DTEND,
-                                                                      CalendarContract.Instances.DESCRIPTION,
-                                                                      CalendarContract.Events._ID,
-                                                                      CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                                                      CalendarContract.Events.EVENT_LOCATION),
-                                                              query, null,
-                                                              CalendarContract.Instances.DTSTART + " ASC")!!
+                        try {
+                            val eventCursor: Cursor =
+                                    context.contentResolver.query(
+                                            CalendarContract.Events.CONTENT_URI,
+                                            arrayOf(CalendarContract.Instances.TITLE,
+                                                    CalendarContract.Instances.DTSTART,
+                                                    CalendarContract.Instances.DTEND,
+                                                    CalendarContract.Instances.DESCRIPTION,
+                                                    CalendarContract.Events._ID,
+                                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                                    CalendarContract.Events.EVENT_LOCATION),
+                                            query, null,
+                                            CalendarContract.Instances.DTSTART + " ASC")!!
 
-                        if (eventCursor.count >= 1) {
-                            lines += LawnchairSmartspaceController
-                                    .Line(R.plurals.title_daily_briefing_calendar_events.fromPluralRes(
-                                            context, eventCursor.count))
+                            if (eventCursor.count >= 1) {
+                                lines += LawnchairSmartspaceController
+                                        .Line(R.plurals.title_daily_briefing_calendar_events.fromPluralRes(
+                                                context, eventCursor.count))
+                            }
+                            eventCursor.close()
+                        } catch (e: SecurityException) {
+                            e.printStackTrace()
                         }
 
                         d("updateData: formatted information into $lines")
@@ -108,13 +114,10 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                     updateData(null,
                                                LawnchairSmartspaceController.CardData(null, lines,
                                                                                       forceSingleLine = false))
-                                    if (eventCursor.count > 0) {
+                                    if (lines.size > 1) {
                                         mainHandler.postDelayed(updateDataWithEvents, 1000 * 2)
-                                    } else {
-                                        eventCursor.close()
                                     }
                                 } else {
-                                    eventCursor.close()
                                     updateData(null, null)
                                 }
                             }
@@ -128,7 +131,6 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                                                                             forceSingleLine = false))
                                     mainHandler.postDelayed(updateDataNoEvents, 1000 * 2)
                                 } else {
-                                    eventCursor.close()
                                     updateData(null, null)
                                 }
                             }
