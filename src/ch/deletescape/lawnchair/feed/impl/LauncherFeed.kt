@@ -476,14 +476,18 @@ class LauncherFeed(val originalContext: Context,
                         oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
                     }
                     setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                            if (tabsOnBottom) paddingTop else rvPaddingTop + statusBarHeight!!,
+                            if (tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
                             oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                            if (!tabsOnBottom) paddingBottom else rvPaddingTop + navigationBarHeight!!)
+                            if (!tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
                     previewRecyclerView.setPadding(
                             oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                            if (tabsOnBottom) paddingTop else rvPaddingTop + statusBarHeight!!,
+                            if (tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
                             oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                            if (!tabsOnBottom) paddingBottom else rvPaddingTop + navigationBarHeight!!)
+                            if (!tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
                 }
             }
             insets
@@ -1233,7 +1237,7 @@ class LauncherFeed(val originalContext: Context,
             if (!context.feedPrefs.chipsOnTop) {
                 val cP = chips.parent as ViewGroup
                 cP.removeView(chips)
-                cP.addView(chips, 1)
+                cP.addView(chips, cP.childCount)
             } else {
                 if (!context.feedPrefs.chipsOnTop) {
                     val cP = chips.parent as ViewGroup
