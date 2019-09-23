@@ -353,7 +353,7 @@ class LauncherFeed(val originalContext: Context,
 
         infobox.setOnClickListener {
             val screen = ImageDataScreen(context, backgroundToProcess!!, oldText.toString())
-            screen.display(this, it.x.toInt(), it.y.toInt())
+            screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
         }
 
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
