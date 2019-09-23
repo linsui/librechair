@@ -59,7 +59,7 @@ class OverlayService : Service(), () -> Unit {
                         GlobalScope.launch {
                             val bitmap = imageProvider?.getBitmap(this@OverlayService)
                             val desc = imageProvider?.getDescription(this@OverlayService)
-                            val rmUrl = imageProvider?.getDescription(this@OverlayService)
+                            val rmUrl = imageProvider?.getUrl(this@OverlayService)
                             if (rmUrl != null) {
                                 feed.readMoreUrl = rmUrl
                             }
