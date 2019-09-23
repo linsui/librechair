@@ -26,13 +26,10 @@ import android.os.RemoteException;
 
 import androidx.annotation.Nullable;
 
-import com.android.launcher3.Launcher;
-
-import java.util.Objects;
-
 import ch.deletescape.lawnchair.IImageSelector;
-import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.cp.CallbackManager;
 import ch.deletescape.lawnchair.feed.IImageStoreCallback;
+import kotlin.Unit;
 
 public class ImageSelectorService extends Service {
 
@@ -44,12 +41,14 @@ public class ImageSelectorService extends Service {
         return selector != null ? selector : (selector = new IImageSelector.Stub() {
             @Override
             public void selectImage(IImageStoreCallback callback) throws RemoteException {
-                if (Launcher.getInstance() == null) {
-                    callback.onImageRetrieved(null);
-                } else {
-                    ((LawnchairLauncher) Objects
-                            .requireNonNull(Launcher.getInstance())).selectImage(callback);
-                }
+                CallbackManager.INSTANCE.postImageRequest(ImageSelectorService.this, imageId -> {
+                    try {
+                        callback.onImageRetrieved(imageId);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                    return Unit.INSTANCE;
+                });
             }
         });
     }

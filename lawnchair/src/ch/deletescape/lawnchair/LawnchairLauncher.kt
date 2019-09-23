@@ -19,7 +19,6 @@ package ch.deletescape.lawnchair
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -43,9 +42,7 @@ import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.ClientOverlay
-import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.feed.ProviderScreen
-import ch.deletescape.lawnchair.feed.images.ImageStore
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -53,7 +50,6 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -64,7 +60,6 @@ import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 import java.util.concurrent.Semaphore
 
 open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferenceChangeListener,
@@ -82,8 +77,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val drawerLayout by lazy {
         (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout
     }
-    val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
-    val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
     var overlay: ClientOverlay? = null
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
@@ -147,12 +140,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     .playLaunchAnimation(this, v, intent)
         }
         return success
-    }
-
-    fun selectImage(callback: IImageStoreCallback) {
-        val id = UUID.randomUUID().hashCode();
-        imageResuestCallbacks += id to { imageId -> callback.onImageRetrieved(imageId) }
-        startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
     }
 
     override fun onStart() {
@@ -524,25 +511,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     }
                 })
             })
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        d("onActivityResult: image selector requests are $imageResuestCallbacks")
-
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (imageResuestCallbacks.containsKey(requestCode)) {
-            d("onActivityResult: image selector activity returned with data ${data?.extras}, $data")
-            if (data == null) {
-                imageResuestCallbacks[requestCode]!!(null)
-            } else if (data.hasExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)) {
-                imageResuestCallbacks[requestCode]!!(
-                        data.extras!![ImageStore.ImageStoreActivity.IMAGE_UUID] as String);
-            } else {
-                imageResuestCallbacks[requestCode]!!(null)
-            }
-            imageResuestCallbacks.remove(requestCode)
         }
     }
 }

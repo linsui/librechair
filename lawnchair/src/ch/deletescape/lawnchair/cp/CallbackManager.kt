@@ -27,10 +27,12 @@ import android.content.Intent
 import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
+import ch.deletescape.lawnchair.feed.images.ImageStore
 import java.util.*
 
 object CallbackManager {
     private val widgetRequests = mutableListOf<WidgetRequest>()
+    private val imageRequests = mutableListOf<ImageRequest>()
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
         val id = UUID.randomUUID().hashCode();
@@ -41,9 +43,21 @@ object CallbackManager {
         })
     }
 
+    fun postImageRequest(context: Context, callback: (storeUUID: String?) -> Unit) {
+        val id = UUID.randomUUID().hashCode()
+        imageRequests += ImageRequest(id, callback)
+        context.startActivity(Intent(context, ImageRequestActivity::class.java).apply {
+            putExtra("request_id", id)
+            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
+        })
+    }
+
+
     data class WidgetRequest(val id: Int, val callback: (arg: Int) -> Unit) {
         var configured = false
     }
+
+    data class ImageRequest(val id: Int, val callback: (storeUUID: String?) -> Unit)
 
     class WidgetRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
@@ -70,6 +84,28 @@ object CallbackManager {
                 }
             } else {
                 request.callback(-1)
+                finish()
+            }
+        }
+    }
+
+    class ImageRequestActivity : Activity() {
+        val id by lazy { intent.extras!!["request_id"] as Int }
+        val request by lazy { imageRequests.first { it.id == id } }
+
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+
+            val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
+            startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
+        }
+
+        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            if (resultCode == RESULT_OK) {
+                request.callback(data!!.getStringExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)!!)
+                finish()
+            } else {
+                request.callback(null)
                 finish()
             }
         }

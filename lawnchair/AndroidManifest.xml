@@ -217,7 +217,7 @@
             android:screenOrientation="locked"
             android:theme="@style/SleepTimeoutTheme" />
         <activity android:name="ch.deletescape.lawnchair.cp.CallbackManager$WidgetRequestActivity" />
-
+        <activity android:name="ch.deletescape.lawnchair.cp.CallbackManager$ImageRequestActivity" />
         <activity-alias
             android:icon="@mipmap/ic_launcher_settings"
             android:label="@string/librechair_settings"
