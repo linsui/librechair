@@ -25,6 +25,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.VectorDrawable;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -35,6 +36,7 @@ import androidx.room.InvalidationTracker;
 
 import com.google.android.material.chip.Chip;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,6 +62,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private Context context;
 
     public ChipAdapter(Context context, boolean dark) {
+        items = new ArrayList<>();
         dao = ChipDatabase.Holder.getInstance(context).dao();
         this.context = context;
         providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
@@ -74,38 +77,27 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                                 val -> ChipProvider.Cache.get(val, context)).filter(
                                 it -> it != null).collect(Collectors.toList());
                         providers.forEach(it -> it.setAdapter(ChipAdapter.this));
-                        SortingAlgorithm<ChipProvider.Item> algo;
-                        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
-                            algo = new MixerSortHelper();
-                        } else {
-                            algo = new NormalSortHelper();
-                        }
-                        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
+                        rebindData();
                         LawnchairUtilsKt.runOnMainThread(() -> {
                             notifyDataSetChanged();
                             return Unit.INSTANCE;
                         });
                     }
                 });
-        SortingAlgorithm<ChipProvider.Item> algo;
-        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
-            algo = new MixerSortHelper();
-        } else {
-            algo = new NormalSortHelper();
-        }
-        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
-        notifyDataSetChanged();
+
     }
 
-    public void rebindData() {
+    public synchronized void rebindData() {
         SortingAlgorithm<ChipProvider.Item> algo;
         if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
             algo = new MixerSortHelper();
         } else {
             algo = new NormalSortHelper();
         }
-        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
-        notifyDataSetChanged();
+        items = algo.sort(providers.stream().map(it -> {
+            Log.d(getClass().getName(), "rebindData: retrieving data for provider: " + it);
+            return it.getItems(context);
+        }).toArray(List[]::new));
     }
 
     @Override

@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.persistence.cache.CacheTime
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
+import com.rometools.rome.feed.synd.SyndEntry
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.FeedException
 import kotlinx.coroutines.GlobalScope
@@ -34,29 +35,33 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 abstract class ArticlesProvider(val context: Context) : ChipProvider() {
-    lateinit var feed: SyndFeed
+    var feed: SyndFeed? = null
+    var entries: List<SyndEntry>? = null
     private val cacheTime = CacheTime(TimeUnit.DAYS.toMillis(1))
 
-    internal abstract fun getFeed(): SyndFeed
-    override fun getItems(context: Context): List<Item> {
-        if (cacheTime.expired) {
-            GlobalScope.launch {
-                try {
-                    feed = getFeed()
-                    cacheTime.trigger()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } catch (e: FeedException) {
-                    e.printStackTrace();
-                }
+    init {
+        GlobalScope.launch {
+            try {
+                feed = getFeed()
+                entries = feed!!.entries.take(3)
+                cacheTime.trigger()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: FeedException) {
+                e.printStackTrace();
             }
         }
-        return if (::feed.isInitialized) feed.entries.take(5).map {
+    }
+
+    internal abstract fun getFeed(): SyndFeed
+    
+    override fun getItems(context: Context): List<Item> {
+        return entries?.map {
             val item = Item()
             item.icon = R.drawable.ic_newspaper_24dp.fromDrawableRes(context)
             item.title = it.title.take(10) + "..."
             item.click = Runnable { Utilities.openURLinBrowser(context, it.uri) }
             item
-        } else emptyList()
+        } ?: emptyList()
     }
 }
