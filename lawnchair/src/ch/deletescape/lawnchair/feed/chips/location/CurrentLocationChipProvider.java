@@ -48,7 +48,7 @@ public class CurrentLocationChipProvider extends ChipProvider {
                 try {
                     Pair<Double, Double> loc = LocationManager.INSTANCE.getLocation();
                     if (loc != null) {
-                        degeocoder = new GeocoderCompat(context, true);
+                        degeocoder = new GeocoderCompat(context, false);
                         name = degeocoder.nearestPlace(loc.getFirst(), loc.getSecond());
                         break;
                     }
