@@ -25,7 +25,6 @@ import android.os.IBinder
 import android.os.Process
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.runOnMainThread
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -64,13 +63,11 @@ class OverlayService : Service(), () -> Unit {
                             if (rmUrl != null) {
                                 feed.readMoreUrl = rmUrl
                             }
-                            if (desc != null) {
-                                runOnMainThread {
-                                    feed.infobox.text = desc;
-                                }
-                            }
                             if (bitmap != null) {
                                 it(bitmap)
+                            }
+                            if (desc != null) {
+                                feed.infobox.text = desc
                             }
                         }
                         Unit

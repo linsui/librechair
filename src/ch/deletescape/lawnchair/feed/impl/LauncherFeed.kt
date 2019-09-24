@@ -1237,27 +1237,25 @@ class LauncherFeed(val originalContext: Context,
                 recyclerView.isLayoutFrozen = true
             }
         }
-        runOnNewThread {
-            chipAdapter.rebindData()
-            runOnMainThread {
+        chipAdapter.rebindData()
+        runOnMainThread {
+            if (!context.chipPrefs.chipsOnTop) {
+                val cP = chips.parent as ViewGroup
+                cP.removeView(chips)
+                cP.addView(chips, cP.childCount)
+            } else {
                 if (!context.chipPrefs.chipsOnTop) {
                     val cP = chips.parent as ViewGroup
                     cP.removeView(chips)
-                    cP.addView(chips, cP.childCount)
-                } else {
-                    if (!context.chipPrefs.chipsOnTop) {
-                        val cP = chips.parent as ViewGroup
-                        cP.removeView(chips)
-                        cP.addView(chips, 0)
-                    }
+                    cP.addView(chips, 0)
                 }
-                if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
-                    chips.visibility = View.GONE
-                } else {
-                    chips.visibility = View.VISIBLE
-                }
-                chipAdapter.notifyDataSetChanged()
             }
+            if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
+                chips.visibility = View.GONE
+            } else {
+                chips.visibility = View.VISIBLE
+            }
+            chipAdapter.notifyDataSetChanged()
         }
         previewAdapter.refresh()
         if (previewAdapter.itemCount > 0) {
