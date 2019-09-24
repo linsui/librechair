@@ -83,7 +83,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                             if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                             diffMinutes)
                 }
-                val intent = Intent(Intent.ACTION_VIEW)
+                var intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri
                         .parse("content://com.android.calendar/events/" + eventCursor.getLong(
                                 4).toString())
@@ -94,8 +94,13 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                         intent.`package` = eventCursor.getString(5)!!
                     }
                 }
-                intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK;
-                chips += ChipProvider.Item().apply {
+                val address = eventCursor.getString(6)
+                intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
+                if (address?.trim()?.isEmpty() == false) {
+                    intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"));
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                chips += Item().apply {
                     title = "${eventCursor.getString(0)} ($text)"
                     icon = R.drawable.ic_event_black_24dp.fromDrawableRes(context)
                     click = Runnable {
@@ -107,7 +112,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
             eventCursor.close()
         } catch (e: SecurityException) {
             e.printStackTrace()
-            return listOf(ChipProvider.Item().apply { 
+            return listOf(Item().apply {
                 title = context.getString(R.string.title_chip_need_calendar_permissions)
             })
         }
