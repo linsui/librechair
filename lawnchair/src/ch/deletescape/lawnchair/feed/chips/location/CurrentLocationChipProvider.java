@@ -21,6 +21,10 @@
 package ch.deletescape.lawnchair.feed.chips.location;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.android.launcher3.R;
 
@@ -28,6 +32,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
@@ -43,7 +48,8 @@ public class CurrentLocationChipProvider extends ChipProvider {
 
     @SuppressWarnings("unused")
     public CurrentLocationChipProvider(Context context) {
-        Executors.newSingleThreadExecutor().submit(() -> {
+        AtomicReference<Runnable> refresh = new AtomicReference<>();
+        refresh.set(() -> {
             while (true) {
                 try {
                     Pair<Double, Double> loc = LocationManager.INSTANCE.getLocation();
@@ -52,6 +58,11 @@ public class CurrentLocationChipProvider extends ChipProvider {
                         name = degeocoder.nearestPlace(loc.getFirst(), loc.getSecond());
                         break;
                     }
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        Executors.newSingleThreadExecutor().submit(() -> {
+                            refresh.get().run();
+                        });
+                    }, 10 * 60 * 1000);
                     Thread.sleep(1000);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -61,6 +72,7 @@ public class CurrentLocationChipProvider extends ChipProvider {
                 }
             }
         });
+        Executors.newSingleThreadExecutor().submit(refresh.get());
     }
 
     @Override
@@ -69,6 +81,9 @@ public class CurrentLocationChipProvider extends ChipProvider {
             Item item = new Item();
             item.icon = context.getDrawable(R.drawable.ic_location);
             item.title = name.name;
+            item.click = () -> context.startActivity(
+                    new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address")).addFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK));
             return item;
         }).get()) : Collections.EMPTY_LIST;
     }

@@ -122,7 +122,7 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
                             context)))
             if (address?.trim()?.isEmpty() == false) {
                 lines += LawnchairSmartspaceController.Line(address, TextUtils.TruncateAt.END)
-                intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"));
+                intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"))
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
