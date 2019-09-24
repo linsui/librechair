@@ -24,13 +24,12 @@ import android.content.Context
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.persistence.cache.CacheTime
+import ch.deletescape.lawnchair.runOnNewThread
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndEntry
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.FeedException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
@@ -40,7 +39,7 @@ abstract class ArticlesProvider(val context: Context) : ChipProvider() {
     private val cacheTime = CacheTime(TimeUnit.DAYS.toMillis(1))
 
     init {
-        GlobalScope.launch {
+        runOnNewThread {
             try {
                 feed = getFeed()
                 entries = feed!!.entries.take(3)
@@ -54,7 +53,7 @@ abstract class ArticlesProvider(val context: Context) : ChipProvider() {
     }
 
     internal abstract fun getFeed(): SyndFeed
-    
+
     override fun getItems(context: Context): List<Item> {
         return entries?.map {
             val item = Item()
