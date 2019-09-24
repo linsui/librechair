@@ -21,9 +21,11 @@
 package ch.deletescape.lawnchair.feed.images.screen
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
+import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
@@ -41,6 +43,7 @@ class ImageDataScreen(base: Context, val bitmap: Bitmap, val desc: String, val a
             mb.setOnClickListener {
                 actionClickListener?.invoke()
             }
+            mb.backgroundTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(this))
         }
     }
 }
