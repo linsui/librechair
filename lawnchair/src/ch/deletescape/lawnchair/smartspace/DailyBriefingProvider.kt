@@ -96,11 +96,11 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                                             CalendarContract.Instances.DTSTART + " ASC")!!
 
                             if (eventCursor.count >= 1) {
+                                hasCalendar = true
                                 lines += LawnchairSmartspaceController
                                         .Line(R.plurals.title_daily_briefing_calendar_events.fromPluralRes(
                                                 context, eventCursor.count))
                             }
-                            hasCalendar = true
                             eventCursor.close()
                         } catch (e: SecurityException) {
                             e.printStackTrace()
@@ -125,11 +125,7 @@ class DailyBriefingProvider(controller: LawnchairSmartspaceController) :
                             }
                             updateDataWithEvents = {
                                 if (currentTime.hourOfDay == hour && currentTime.minuteOfHour >= minute - 10 && currentTime.minuteOfHour <= minute + 10) {
-                                    updateData(null, LawnchairSmartspaceController.CardData(null,
-                                                                                            lines.filter {
-                                                                                                lines.indexOf(
-                                                                                                        it) == 2
-                                                                                            },
+                                    updateData(null, LawnchairSmartspaceController.CardData(null, listOf(lines[1]),
                                                                                             forceSingleLine = false))
                                     mainHandler.postDelayed(updateDataNoEvents, 1000 * 2)
                                 } else {
