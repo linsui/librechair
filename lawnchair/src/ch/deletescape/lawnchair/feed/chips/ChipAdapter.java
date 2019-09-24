@@ -41,9 +41,12 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.feed.SortingAlgorithm;
+import ch.deletescape.lawnchair.feed.chips.sorting.MixerSortHelper;
+import ch.deletescape.lawnchair.feed.chips.sorting.NormalSortHelper;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.font.CustomFontManager;
-import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import ch.deletescape.lawnchair.persistence.ChipPersistence;
 import kotlin.Unit;
 
 import static java.lang.StrictMath.round;
@@ -71,19 +74,35 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                                 val -> ChipProvider.Cache.get(val, context)).filter(
                                 it -> it != null).collect(Collectors.toList());
                         providers.forEach(it -> it.setAdapter(ChipAdapter.this));
-                        items = providers.stream().map(it -> it.getItems(context)).flatMap(
-                                List::stream).collect(Collectors.toList());
+                        SortingAlgorithm<ChipProvider.Item> algo;
+                        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
+                            algo = new MixerSortHelper();
+                        } else {
+                            algo = new NormalSortHelper();
+                        }
+                        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
                         notifyDataSetChanged();
                     }
                 });
-        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(
-                Collectors.toList());
+        SortingAlgorithm<ChipProvider.Item> algo;
+        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
+            algo = new MixerSortHelper();
+        } else {
+            algo = new NormalSortHelper();
+        }
+        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
         notifyDataSetChanged();
     }
 
     public void rebindData() {
-        items = providers.stream().map(it -> it.getItems(context)).flatMap(List::stream).collect(
-                Collectors.toList());
+        SortingAlgorithm<ChipProvider.Item> algo;
+        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
+            algo = new MixerSortHelper();
+        } else {
+            algo = new NormalSortHelper();
+        }
+        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
+        notifyDataSetChanged();
     }
 
     @Override
@@ -116,7 +135,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                     ColorEngine.getInstance(context).getResolverCache(
                             ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
         }
-        if (FeedPersistence.Companion.getInstance(context).getOutlineChips()) {
+        if (ChipPersistence.Companion.getInstance(context).getOutlineChips()) {
             chipViewHolder.itemView.setChipStrokeColor(
                     ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
                             ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor()));
@@ -129,7 +148,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
                 ColorUtils.setAlphaComponent(ColorEngine.getInstance(context).getResolverCache(
                         ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
-                        (int) Math.round(FeedPersistence.Companion.getInstance(
+                        (int) Math.round(ChipPersistence.Companion.getInstance(
                                 context).getChipOpacity() * (255f)))));
         chipViewHolder.itemView.setTextColor(
                 LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(

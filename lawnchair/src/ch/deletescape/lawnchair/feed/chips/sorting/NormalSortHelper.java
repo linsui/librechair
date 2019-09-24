@@ -18,19 +18,21 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.persistence
+package ch.deletescape.lawnchair.feed.chips.sorting;
 
-import android.content.Context
-import ch.deletescape.lawnchair.util.SingletonHolder
+import org.jetbrains.annotations.NotNull;
 
-class FeedPersistence private constructor(val context: Context) {
-    val chipOpacity by NumberDelegate(context, "feed_chip_opacity", 1.0)
-    val chipsOnTop by BooleanDelegate(context, "feed_chips_on_top", false)
-    val outlineChips by BooleanDelegate(context, "feed_outline_chips", false)
-    val weatherItems by NumberDelegate(context, "feed_chip_weather_item_count", 5.0)
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
-    companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
+import ch.deletescape.lawnchair.feed.SortingAlgorithm;
+import ch.deletescape.lawnchair.feed.chips.ChipProvider;
+
+public class NormalSortHelper implements SortingAlgorithm<ChipProvider.Item> {
+    @NotNull
+    @Override
+    public List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
+        return Arrays.stream(ts).flatMap(List::stream).collect(Collectors.toList());
+    }
 }
-
-val Context.feedPrefs
-    get() = FeedPersistence.getInstance(this)

@@ -59,7 +59,7 @@ import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.*
 import ch.deletescape.lawnchair.font.CustomFontManager
-import ch.deletescape.lawnchair.persistence.feedPrefs
+import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -328,7 +328,7 @@ class LauncherFeed(val originalContext: Context,
 
         chipAdapter.setController(feedController)
 
-        if (context.feedPrefs.chipsOnTop) {
+        if (context.chipPrefs.chipsOnTop) {
             val cP = chips.parent as ViewGroup
             cP.removeView(chips)
             cP.addView(chips, 0)
@@ -1239,12 +1239,12 @@ class LauncherFeed(val originalContext: Context,
         }
         chipAdapter.rebindData()
         runOnMainThread {
-            if (!context.feedPrefs.chipsOnTop) {
+            if (!context.chipPrefs.chipsOnTop) {
                 val cP = chips.parent as ViewGroup
                 cP.removeView(chips)
                 cP.addView(chips, cP.childCount)
             } else {
-                if (!context.feedPrefs.chipsOnTop) {
+                if (!context.chipPrefs.chipsOnTop) {
                     val cP = chips.parent as ViewGroup
                     cP.removeView(chips)
                     cP.addView(chips, 0)

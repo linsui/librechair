@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
-import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import ch.deletescape.lawnchair.persistence.ChipPersistence;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
 
@@ -73,7 +73,7 @@ public class ForecastChipProvider extends ChipProvider
                                             TimeZone.getDefault().toZoneId()), context));
                     return item;
                 }).limit((int) Math.round(
-                FeedPersistence.Companion.getInstance(context).getWeatherItems())).collect(
+                ChipPersistence.Companion.getInstance(context).getWeatherItems())).collect(
                 Collectors.toList());
     }
 
