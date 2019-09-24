@@ -72,6 +72,12 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                 this.batteryLevel = this@BatteryStatusProvider.level
                 this.charging = this@BatteryStatusProvider.charging
             }
+            click = Runnable {
+                Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).also {
+                    context.startActivity(it)
+                }
+            }
         })
     }
 }
