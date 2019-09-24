@@ -53,17 +53,15 @@ import java.util.concurrent.TimeUnit
 @Keep
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.PeriodicDataProvider(controller) {
-    private var silentlyFail: Boolean = false
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
     override val timeout = TimeUnit.SECONDS.toMillis(5)
 
     private fun updateInformation() {
-        silentlyFail = controller.context.checkSelfPermission(
-                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED
-        if (silentlyFail) {
-            updateData(null, null);
+        if (controller.context.checkSelfPermission(
+                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            updateData(null, null)
             return;
         }
         val currentTime = GregorianCalendar();
