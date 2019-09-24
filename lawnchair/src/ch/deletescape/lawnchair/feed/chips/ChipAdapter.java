@@ -81,7 +81,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                             algo = new NormalSortHelper();
                         }
                         items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
-                        notifyDataSetChanged();
+                        LawnchairUtilsKt.runOnMainThread(() -> {
+                            notifyDataSetChanged();
+                            return Unit.INSTANCE;
+                        });
                     }
                 });
         SortingAlgorithm<ChipProvider.Item> algo;
