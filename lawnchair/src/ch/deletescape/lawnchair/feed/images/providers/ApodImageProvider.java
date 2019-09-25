@@ -123,6 +123,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
         new Handler(context.getMainLooper()).postAtTime(new Runnable() {
                                                             @Override
                                                             public void run() {
+                                                                cache.delete();
                                                                 listener.invoke();
                                                                 new Handler(context.getMainLooper()).postAtTime(this,
                                                                         SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date())
