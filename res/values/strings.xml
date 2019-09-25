@@ -703,4 +703,6 @@
     <string name="title_pref_feed_mix_chips">Mix chips</string>
     <string name="summary_pref_feed_mix_chips">Chips will be mixed before they are displayed</string>
     <string name="title_chip_provider_current_location">Location</string>
+    <string name="title_pref_feed_background_as_screen_background">Use background image as background for overlay views</string>
+    <string name="summary_pref_feed_background_as_screen_background">The feed background will be used as the background for overlay views</string>
 </resources>

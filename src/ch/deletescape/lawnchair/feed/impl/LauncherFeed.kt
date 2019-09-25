@@ -60,6 +60,7 @@ import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.*
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -952,6 +953,11 @@ class LauncherFeed(val originalContext: Context,
                             originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
                             originalPaddingVertical!!.second + if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
                                     context).toInt() + statusBarHeight!! else statusBarHeight!!)
+                }
+                if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
+                    background = feedController.background
+                } else {
+                    background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
                 }
                 windowInsets
             }
