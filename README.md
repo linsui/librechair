@@ -1,3 +1,5 @@
+# Note: due to ~~political events~~ national day in China, I will temporarily be unavailable on Telegram due to heightened internet censorship
+
 # Downloads
 
 You can download directly from CI / CD or [join the Telegram releases channel](https://t.me/librechair)
