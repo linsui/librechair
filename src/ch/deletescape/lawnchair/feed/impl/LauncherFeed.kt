@@ -1054,7 +1054,7 @@ class LauncherFeed(val originalContext: Context,
     private var callback: ILauncherOverlayCallback? = null
     private lateinit var layoutParams: WindowManager.LayoutParams
     private var feedAttached = false
-        set(value) {
+        set(value) = synchronized(this) {
             if (field != value) {
                 field = value
                 if (field) {
@@ -1137,7 +1137,7 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun endScroll() {
-        handler.post { feedController.endScroll() }
+        handler.post { synchronized(this@LauncherFeed) { feedController.endScroll() } }
     }
 
     override fun windowAttached(lp: WindowManager.LayoutParams, cb: ILauncherOverlayCallback,
@@ -1234,6 +1234,7 @@ class LauncherFeed(val originalContext: Context,
         Thread.sleep(sleep + 150)
         recyclerView.apply {
             post {
+                feedController.disallowInterceptTouchEventsUntilNextUp = true
                 recyclerView.isLayoutFrozen = true
             }
         }
