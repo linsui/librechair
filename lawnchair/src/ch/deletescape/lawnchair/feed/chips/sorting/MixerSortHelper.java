@@ -23,6 +23,8 @@ package ch.deletescape.lawnchair.feed.chips.sorting;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import ch.deletescape.lawnchair.feed.SortingAlgorithm;
@@ -32,28 +34,23 @@ public class MixerSortHelper implements SortingAlgorithm<ChipProvider.Item> {
     @NotNull
     @Override
     public List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
-        int pos = 0;
+        if (ts.length == 0 || Arrays.stream(ts).allMatch(it -> it.isEmpty())) {
+            return Collections.EMPTY_LIST;
+        }
         List<ChipProvider.Item> results = new ArrayList<>();
 
-        while (true) {
-            boolean b = true;
-            for (List<? extends ChipProvider.Item> it : ts) {
-                if (it.size() > pos) {
-                    b = false;
-                    break;
+        int itemPos = 0;
+        int max = Arrays.stream(ts).mapToInt(List::size).max().getAsInt();
+        while (max > itemPos) {
+            int listPos = 0;
+            while (ts.length > listPos) {
+                if (ts[listPos].size() > itemPos) {
+                    results.add(ts[listPos].get(itemPos));
                 }
+                ++listPos;
             }
-            if (b) break;
-            for (List<? extends ChipProvider.Item> chips : ts) {
-                if (chips.size() <= pos) {
-                    continue;
-                } else {
-                    results.add(chips.get(pos));
-                    ++pos;
-                }
-            }
+            ++itemPos;
         }
-
         return results;
     }
 }
