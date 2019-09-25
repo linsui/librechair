@@ -38,6 +38,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
 public class RemoteChipProvider extends ChipProvider {
@@ -57,7 +59,8 @@ public class RemoteChipProvider extends ChipProvider {
                 tryConnect();
             }
             return connection == null ? Collections.EMPTY_LIST :
-                    connection.getChips().stream().map(
+                    connection.getChips(
+                            FeedAdapter.Companion.getOverrideColor(context)).stream().map(
                             remoteItem -> remoteItem.toItem(context)).collect(
                             Collectors.toList());
         } catch (RemoteException e) {
@@ -97,10 +100,12 @@ public class RemoteChipProvider extends ChipProvider {
         public IBinder onBind(Intent intent) {
             return new IChipProvider.Stub() {
                 @Override
-                public List<RemoteItem> getChips() throws RemoteException {
+                public List<RemoteItem> getChips(int loa) throws RemoteException {
                     Log.d(Demo.class.getName(), "getChips: retrieving demo chip");
                     RemoteItem item = new RemoteItem();
-                    item.icon = Utilities.drawableToBitmap(getDrawable(R.drawable.ic_smartspace_preferences));
+                    item.icon = Utilities.drawableToBitmap(
+                            LawnchairUtilsKt.tint(getDrawable(R.drawable.ic_smartspace_preferences),
+                                    loa));
                     item.title = "DE MO";
                     return Collections.singletonList(item);
                 }
