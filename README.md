@@ -79,7 +79,7 @@ make sure to inform yourself before creating your own project based on Lawnchair
 (I am not a Lawyer, don't take this as legally binding advice):
 
  * We will ALWAYS use all our legal options if you simply rename our app, strip it of all credit and upload it anywhere as your own, be this with or without monetization.
- * We usually do not enforce the GPL clause which would force you to release the source of your entire project, but do however ask you to release any direct modifications to Lawnchair code.
+ * Librechair does enforce the GPL clause which would force you to release the source of your entire project
  * You are required to give us full credits for any work you may be using from us.
  * If you're simply using Lawnchair as a reference for minor implementation details or utility functions (not entire features of our app) you can treat that as if it were licensed under Apache2 and properly credit us.
  * We kindly ask you to use common sense and don't profit entirely off the work of others.
