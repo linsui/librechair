@@ -28,6 +28,7 @@ import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.feed.images.ImageStore
+import com.android.launcher3.R
 import java.util.*
 
 object CallbackManager {
@@ -66,7 +67,9 @@ object CallbackManager {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
+            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
+            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
                 it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
             }, id)
@@ -95,18 +98,21 @@ object CallbackManager {
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-
+            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
             startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
+            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
         }
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (resultCode == RESULT_OK) {
                 request.callback(data!!.getStringExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)!!)
                 finish()
+                overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             } else {
                 request.callback(null)
                 finish()
+                overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             }
         }
     }
