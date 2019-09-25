@@ -39,6 +39,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         SwipeDetector.Listener {
     var mOpenedCallback: (() -> Unit)? = null
     val mDetector: SwipeDetector
+    var discardTouchEvents = false
     protected var mStartState: FeedState? = null
     protected var mFromState: FeedState? = null
     protected var mToState: FeedState? = null
@@ -202,7 +203,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return mDetector.onTouchEvent(event)
+        return if (discardTouchEvents) true else mDetector.onTouchEvent(event)
     }
 
     /**

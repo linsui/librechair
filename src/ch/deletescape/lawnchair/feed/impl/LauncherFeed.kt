@@ -1234,7 +1234,7 @@ class LauncherFeed(val originalContext: Context,
         Thread.sleep(sleep + 150)
         recyclerView.apply {
             post {
-                feedController.disallowInterceptTouchEventsUntilNextUp = true
+                feedController.discardTouchEvents = true
                 recyclerView.isLayoutFrozen = true
             }
         }
@@ -1294,6 +1294,7 @@ class LauncherFeed(val originalContext: Context,
                 previewRecyclerView.visibility = View.INVISIBLE
                 feedController.findViewById<View>(R.id.empty_view).visibility =
                         if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                feedController.discardTouchEvents = false
             }
         }
     }
