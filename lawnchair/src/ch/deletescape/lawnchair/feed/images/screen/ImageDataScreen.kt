@@ -47,5 +47,6 @@ class ImageDataScreen(base: Context, val bitmap: Bitmap, val desc: String, val a
             mb.backgroundTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(this))
             CustomFontManager.getInstance(this).setCustomFont(mb, CustomFontManager.FONT_BUTTON);
         }
+        CustomFontManager.getInstance(this).setCustomFont(view.image_description, CustomFontManager.FONT_TEXT);
     }
 }
