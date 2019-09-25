@@ -955,9 +955,11 @@ class LauncherFeed(val originalContext: Context,
                                     context).toInt() + statusBarHeight!! else statusBarHeight!!)
                 }
                 if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
-                    background = feedController.background
+                    background =
+                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
                 } else {
-                    background = ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
+                    background =
+                            ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
                 }
                 windowInsets
             }
