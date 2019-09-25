@@ -30,7 +30,6 @@ import ch.deletescape.lawnchair.IImageSelector
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.inflate
-import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.GlobalScope
@@ -61,11 +60,9 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                                                                             .insert(Image(id,
                                                                                           "normal"))
                                                                 }.invokeOnCompletion {
-                                                                    runOnMainThread {
-                                                                        images += ImageStore.getInstance(context).getBitmap(id) to id
-                                                                        if (feed != null) {
-                                                                            feed.refresh(0)
-                                                                        }
+                                                                    images += ImageStore.getInstance(context).getBitmap(id) to id
+                                                                    if (feed != null) {
+                                                                        feed.refresh(10, 0, true)
                                                                     }
                                                                 }
                                                             }

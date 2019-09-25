@@ -1238,7 +1238,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun refresh(sleep: Long, count: Int = 0): Unit = synchronized(this) {
+    fun refresh(sleep: Long, count: Int = 0, quick: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
         recyclerView.apply {
             post {
@@ -1279,30 +1279,42 @@ class LauncherFeed(val originalContext: Context,
         adapter.refresh()
         val cards = adapter.immutableCards
         Thread.sleep(10)
-        if (oldCards.isEmpty() && count == 0) {
-            this.refresh(150, 1)
-        } else {
-            val patch = DiffUtils.diff(oldCards, cards)
-
+        if (quick) {
             runOnMainThread {
-                patch.deltas.forEach {
-                    when (it.type!!) {
-                        DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
-                                it.source.lines.size)
-                        DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
-                                it.source.lines.size)
-                        DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
-                                it.source.lines.size)
-                        DeltaType.EQUAL -> {
-                        }
-                    }
-                }
+                adapter.notifyDataSetChanged()
                 recyclerView.isLayoutFrozen = false
                 recyclerView.visibility = View.VISIBLE
                 previewRecyclerView.visibility = View.INVISIBLE
                 feedController.findViewById<View>(R.id.empty_view).visibility =
                         if (cards.isNotEmpty()) View.GONE else View.VISIBLE
                 feedController.discardTouchEvents = false
+            }
+        } else if (oldCards.isEmpty() && count == 0) {
+            this.refresh(150, 1)
+        } else {
+            val patch = DiffUtils.diff(oldCards, cards)
+
+            runOnMainThread {
+                if (!quick) {
+                    patch.deltas.forEach {
+                        when (it.type!!) {
+                            DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
+                                    it.source.lines.size)
+                            DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
+                                    it.source.lines.size)
+                            DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
+                                    it.source.lines.size)
+                            DeltaType.EQUAL -> {
+                            }
+                        }
+                    }
+                    recyclerView.isLayoutFrozen = false
+                    recyclerView.visibility = View.VISIBLE
+                    previewRecyclerView.visibility = View.INVISIBLE
+                    feedController.findViewById<View>(R.id.empty_view).visibility =
+                            if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                    feedController.discardTouchEvents = false
+                }
             }
         }
     }
