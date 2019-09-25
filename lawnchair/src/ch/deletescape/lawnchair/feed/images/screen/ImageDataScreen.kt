@@ -27,6 +27,7 @@ import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.ProviderScreen
+import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.image_information_screen.view.*
@@ -44,6 +45,7 @@ class ImageDataScreen(base: Context, val bitmap: Bitmap, val desc: String, val a
                 actionClickListener?.invoke()
             }
             mb.backgroundTintList = ColorStateList.valueOf(FeedAdapter.getOverrideColor(this))
+            CustomFontManager.getInstance(this).setCustomFont(mb, CustomFontManager.FONT_BUTTON);
         }
     }
 }
