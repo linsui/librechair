@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.FeedAdapter;
+import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
 public class RemoteChipProvider extends ChipProvider {
@@ -60,7 +60,8 @@ public class RemoteChipProvider extends ChipProvider {
             }
             return connection == null ? Collections.EMPTY_LIST :
                     connection.getChips(
-                            FeedAdapter.Companion.getOverrideColor(context)).stream().map(
+                            ColorEngine.getInstance(context).getResolverCache(
+                                    ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor()).stream().map(
                             remoteItem -> remoteItem.toItem(context)).collect(
                             Collectors.toList());
         } catch (RemoteException e) {
