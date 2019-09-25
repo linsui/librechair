@@ -26,6 +26,8 @@ import ch.deletescape.lawnchair.util.SingletonHolder
 class FeedPersistence private constructor(val context: Context) {
     val useBackgroundImageAsScreenBackground
             by BooleanDelegate(context, "feed_background_as_screen_background", true)
+    val useBoxBackgroundBlur
+            by BooleanDelegate(context, "feed_boxed_background_blur", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

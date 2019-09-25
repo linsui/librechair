@@ -64,6 +64,7 @@ import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
@@ -1208,7 +1209,8 @@ fun Float.applyAsSip(c: Context): Float {
 }
 
 fun Bitmap.blur(c: Context): Bitmap = BlurProcessor.Builder(c)
-            .mode(HokoBlur.MODE_STACK)
+            .mode(if (c.feedPrefs.useBoxBackgroundBlur)
+                HokoBlur.MODE_BOX else HokoBlur.MODE_STACK)
             .scheme(HokoBlur.SCHEME_OPENGL)
             .context(c)
             .radius(c.lawnchairPrefs.feedBlurStrength.roundToInt() / (BlurWallpaperProvider.DOWNSAMPLE_FACTOR / 2))
