@@ -35,17 +35,22 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
     private val batteryReceiver = object : BroadcastReceiver() {
 
         override fun onReceive(context: Context?, intent: Intent) {
-            val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-            charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0).let {
-                it == BatteryManager.BATTERY_PLUGGED_AC ||
-                        it == BatteryManager.BATTERY_PLUGGED_USB ||
-                        it == BatteryManager.BATTERY_PLUGGED_WIRELESS
+            if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
+                val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0).let {
+                    it == BatteryManager.BATTERY_PLUGGED_AC ||
+                            it == BatteryManager.BATTERY_PLUGGED_USB ||
+                            it == BatteryManager.BATTERY_PLUGGED_WIRELESS
+                }
+                full = status == BatteryManager.BATTERY_STATUS_FULL
+                level = (100f
+                        * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
+                        / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
+                refresh()
+            } else {
+                charging = intent.action == Intent.ACTION_POWER_CONNECTED
+                refresh()
             }
-            full = status == BatteryManager.BATTERY_STATUS_FULL
-            level = (100f
-                    * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
-                    / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
-            refresh()
         }
     }
     private var charging = false
@@ -53,7 +58,10 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
     private var level = 100
 
     init {
-        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED).apply {
+            addAction(Intent.ACTION_POWER_CONNECTED)
+            addAction(Intent.ACTION_POWER_DISCONNECTED)
+        })
     }
 
     override fun getItems(context: Context): List<ChipProvider.Item> {
