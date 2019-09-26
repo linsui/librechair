@@ -51,7 +51,7 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun getCards(): List<Card> {
-        return context.lawnchairPrefs.feedWebApplications.mapNotNull {
+        return context.lawnchairPrefs.feedWebApplications.map {
             Card(null, it.title, { v, _ ->
                 if (!it.isArticle) {
                     if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(
