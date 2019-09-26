@@ -707,4 +707,5 @@
     <string name="summary_pref_feed_background_as_screen_background">The feed background will be used as the background for overlay views</string>
     <string name="title_pref_feed_boxed_background_blur">Use boxed background blur</string>
     <string name="summary_pref_feed_boxed_background_blur">Only available with a background image provider</string>
+    <string name="title_animation_delegate_default_drawer">Fading drawer</string>
 </resources>
