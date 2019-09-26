@@ -23,7 +23,7 @@ import android.content.Context
 import ch.deletescape.lawnchair.lawnchairPrefs
 
 class LastKnownLocationProvider(context: Context) : LocationManager.LocationProvider(context) {
-    override val location: Pair<Double, Double>?
+    val location: Pair<Double, Double>?
         get() = if (context.lawnchairPrefs.lastKnownLocation.isNotEmpty()) context.lawnchairPrefs.lastKnownLocation.split(
                 ",")[0].toDouble() to context.lawnchairPrefs.lastKnownLocation.split(
                 ",")[1].toDouble() else null
@@ -31,6 +31,11 @@ class LastKnownLocationProvider(context: Context) : LocationManager.LocationProv
     init {
         LocationManager.changeCallbacks += { lat, lon ->
             context.lawnchairPrefs.lastKnownLocation = "$lat,$lon"
+            updateLocation(lat, lon, false)
         }
+    }
+
+    override fun refresh() {
+        updateLocation(location?.first, location?.second)
     }
 }

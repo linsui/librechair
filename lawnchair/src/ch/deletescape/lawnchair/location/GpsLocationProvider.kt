@@ -25,7 +25,11 @@ import ch.deletescape.lawnchair.lastKnownPosition
 import ch.deletescape.lawnchair.locationManager
 
 class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c) {
-    override val location: Pair<Double, Double>?
+    override fun refresh() {
+        updateLocation(location?.first, location?.second)
+    }
+
+    val location: Pair<Double, Double>?
         get() = run {
             try {
                 if (context.checkLocationAccess()) {

@@ -24,7 +24,6 @@ import android.content.Context;
 import com.android.launcher3.Utilities;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executors;
 
@@ -44,32 +43,25 @@ public class WeatherCityLocationProvider extends LocationProvider implements
         super(context);
         Utilities.getLawnchairPrefs(context)
                 .addOnPreferenceChangeListener("pref_weather_city", this);
+
+    }
+
+    @Override
+    public void refresh() {
         Executors.newSingleThreadExecutor().submit(() -> {
             try {
                 location = LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
                         Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
+                updateLocation(location.getFirst(), location.getSecond(), true);
             } catch (ForecastException e) {
                 e.printStackTrace();
             }
         });
-    }
-
-    @Nullable
-    @Override
-    public Pair<Double, Double> getLocation() {
-        return location;
     }
 
     @Override
     public void onValueChanged(@NotNull String key, @NotNull LawnchairPreferences prefs,
             boolean force) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try {
-                location = LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
-                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
-            } catch (ForecastException e) {
-                e.printStackTrace();
-            }
-        });
+        refresh();
     }
 }

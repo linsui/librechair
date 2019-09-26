@@ -21,46 +21,56 @@ package ch.deletescape.lawnchair.location
 
 import android.annotation.SuppressLint
 import android.content.Context
-import ch.deletescape.lawnchair.util.extensions.d
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.apache.commons.lang3.tuple.MutablePair
 
 @SuppressLint("StaticFieldLeak")
 object LocationManager {
-    var cache: Pair<Long, Pair<Double, Double>?>? = null
+    val slots: MutableList<Pair<LocationProvider, MutablePair<Double?, Double?>>> = mutableListOf()
     var context: Context? = null
         set(value) = {
             providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value),
                                     LastKnownLocationProvider(value),
                                     WeatherCityLocationProvider(value)))
+            slots.clear()
+            providers.forEach {
+                slots.add(it to MutablePair.of<Double?, Double?>(null, null))
+                GlobalScope.launch {
+                    it.refresh()
+                }
+            }
             field = value
         }()
     val changeCallbacks: MutableList<(lat: Double, lon: Double) -> Unit> = mutableListOf()
+
     val providers: MutableList<LocationProvider> = mutableListOf()
     val location: Pair<Double, Double>?
-        get() = run {
-            if (cache == null || System.currentTimeMillis() - cache!!.first > TimeUnit.MINUTES.toMillis(
-                            10) || cache!!.second == null) internalGet().also {
-                cache = System.currentTimeMillis() to it
-            }
-            changeCallbacks.forEach {
-                if (cache?.second != null) {
-                    it(cache!!.second!!.first, cache!!.second!!.second)
-                }
-            }
-            cache?.second.also { d("location: location is ${cache?.second}") }
-        }
+        get() = slots.firstOrNull { it.second.left != null && it.second.right != null }?.second?.let { it.left!! to it.right!! }
 
-    fun internalGet(): Pair<Double, Double>? {
-        providers.forEach {
-            val loc = it.location
-            if (loc != null && loc != .0 to .0) {
-                return loc
-            }
+    fun addCallback(callback: (lat: Double, lon: Double) -> Unit) {
+        if (location != null) {
+            callback(location!!.first, location!!.second)
         }
-        return null
+        changeCallbacks += callback
     }
 
     abstract class LocationProvider(val context: Context) {
-        abstract val location: Pair<Double, Double>?
+
+        abstract fun refresh()
+
+        fun updateLocation(lat: Double?, lon: Double?, notifyCallbacks: Boolean = true) {
+            slots.first { it.first == this }.second.apply {
+                left = lat
+                right = lon
+            }
+            if (notifyCallbacks) {
+                changeCallbacks.forEach {
+                    if (location != null) {
+                        it(location!!.first, location!!.second)
+                    }
+                }
+            }
+        }
     }
 }

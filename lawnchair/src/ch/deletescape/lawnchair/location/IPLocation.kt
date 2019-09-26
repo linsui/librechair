@@ -23,6 +23,7 @@ import android.os.SystemClock
 import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.Request
 import org.json.JSONObject
@@ -37,11 +38,17 @@ class IPLocation(context: Context,
         }
     }
 
-    override val location: Pair<Double, Double>?
-        get() = run {
-            d("location: IP location is $cache")
-            if (cacheValid && get().success) get().lat to get().lon else null
+    override fun refresh() {
+        if (get().success) {
+            updateLocation(get().lat, get().lon)
+        } else {
+            GlobalScope.launch {
+                delay(1000)
+                refresh()
+            }
         }
+    }
+
     private val client = OkHttpClientBuilder().build(context)
 
     private val cacheValid get() = cache != null && cache!!.success && timeLast + cacheValidityMs > SystemClock.uptimeMillis()
