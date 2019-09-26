@@ -22,8 +22,10 @@ package ch.deletescape.lawnchair.location
 import android.annotation.SuppressLint
 import android.content.Context
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.tuple.MutablePair
+import java.util.concurrent.TimeUnit
 
 @SuppressLint("StaticFieldLeak")
 object LocationManager {
@@ -37,7 +39,10 @@ object LocationManager {
             providers.forEach {
                 slots.add(it to MutablePair.of<Double?, Double?>(null, null))
                 GlobalScope.launch {
-                    it.refresh()
+                    while (true) {
+                        it.refresh()
+                        delay(TimeUnit.MINUTES.toMillis(10))
+                    }
                 }
             }
             field = value
