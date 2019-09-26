@@ -860,10 +860,8 @@ class LauncherFeed(val originalContext: Context,
                             }
                         }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
-            if (hasWidgetTab) {
-                toolbar.menu.getItem(0).isVisible =
-                        adapter.providers.any { it::class == FeedWidgetsProvider::class }
-            }
+            toolbar.menu.getItem(0).isVisible =
+                    adapter.providers.any { it::class == FeedWidgetsProvider::class }
 
             upButton.supportImageTintList =
                     ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
@@ -1082,7 +1080,8 @@ class LauncherFeed(val originalContext: Context,
                                     }
                                 }
                     }
-                    callback?.overlayStatusChanged(ServiceState.FLAG_ATTACHED or ServiceState.FLAG_SEARCH_ATTACHED)
+                    callback?.overlayStatusChanged(
+                            ServiceState.FLAG_ATTACHED or ServiceState.FLAG_SEARCH_ATTACHED)
                     if (previewRecyclerView.layoutManager == null) {
                         previewRecyclerView.layoutManager = LinearLayoutManager(context)
                     }
