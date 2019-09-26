@@ -22,6 +22,8 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
 
 import com.android.launcher3.Launcher;
@@ -34,8 +36,10 @@ import com.android.overlayclient.ServiceMode;
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
     private CustomServiceClient client;
+    private Handler mainThread;
 
     public ClientOverlay(Launcher launcher) {
+        mainThread = new Handler(Looper.getMainLooper());
         client = new CustomServiceClient(launcher, new CompanionServiceFactory(launcher) {
             @Override
             protected Intent getService() {
@@ -54,7 +58,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         }, new OverlayCallback() {
             @Override
             public void overlayScrollChanged(float progress) {
-                callbacks.onScrollChanged(progress);
+                mainThread.post(() -> callbacks.onScrollChanged(progress));
             }
 
             @Override
