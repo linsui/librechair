@@ -1244,7 +1244,10 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
      * The overlay scroll is being controlled locally, just update our overlay effect
      */
     public void onOverlayScrollChanged(float scroll) {
-        if (mLauncherOverlay == null || mLauncherOverlay.shouldScrollLauncher()) {
+        boolean scrollOrNot = mLauncherOverlay == null ||
+                mLauncherOverlay.shouldScrollLauncher();
+
+        if (scrollOrNot) {
             if (Float.compare(scroll, 1f) == 0) {
                 if (!mOverlayShown) {
                     mLauncher.getUserEventDispatcher().logActionOnContainer(Action.Touch.SWIPE,

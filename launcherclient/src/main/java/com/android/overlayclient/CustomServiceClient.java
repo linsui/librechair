@@ -38,8 +38,11 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
 
     @Override
     public boolean shouldScrollLauncher() {
+        if (companionApiVersion < 0 || factory.getCompanion() == null) {
+            return true;
+        }
         try {
-            return (getOverlay() == null || companionApiVersion == -1 || factory.getCompanion() == null) || factory.getCompanion().shouldScrollWorkspace();
+            return factory.getCompanion().shouldScrollWorkspace();
         } catch (RemoteException e) {
             return true;
         }
@@ -47,8 +50,11 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
 
     @Override
     public boolean shouldFadeWorkspaceDuringScroll() {
+        if (companionApiVersion < 1 || factory.getCompanion() == null) {
+            return true;
+        }
         try {
-            return (getOverlay() == null || factory.getCompanion() == null || companionApiVersion < 1) || factory.getCompanion().shouldFadeWorkspaceDuringScroll();
+            return (factory.getCompanion() == null || companionApiVersion < 1) || factory.getCompanion().shouldFadeWorkspaceDuringScroll();
         } catch (RemoteException e) {
             return true;
         }
@@ -56,7 +62,7 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
 
     @Override
     public void restartProcess() {
-        if (getOverlay() != null && factory.getCompanion() != null && companionApiVersion >= 2) {
+        if (factory.getCompanion() != null && companionApiVersion >= 2) {
             try {
                 factory.getCompanion().restartProcess();
             } catch (RemoteException e) {
