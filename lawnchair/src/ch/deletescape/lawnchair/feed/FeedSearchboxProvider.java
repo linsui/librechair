@@ -75,9 +75,12 @@ public class FeedSearchboxProvider extends FeedProvider {
             editText.setMaxLines(1);
             editText.setOnEditorActionListener((v, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    Utilities.openURLinBrowser(getContext(), String.format(
+                    int x, y;
+                    x = LawnchairUtilsKt.getPostionOnScreen(v).getFirst();
+                    y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
+                    new WebViewScreen(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
-                            editText.getText().toString()));
+                            editText.getText().toString()), wv -> {}).display(this, x, y);
                 }
                 return true;
             });
