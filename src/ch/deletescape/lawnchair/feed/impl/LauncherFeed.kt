@@ -990,7 +990,7 @@ class LauncherFeed(val originalContext: Context,
         })
         if (toolbar.menu.findItem(R.id.cancel) == null) {
             toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
-                icon = R.drawable.ic_close.fromDrawableRes(context)
+                icon = R.drawable.ic_arrow_back.fromDrawableRes(context)
                         .tint(if (useWhiteText(backgroundColor,
                                         context)) R.color.textColorPrimary.fromColorRes(
                                 context) else R.color.textColorPrimaryInverse.fromColorRes(context))
