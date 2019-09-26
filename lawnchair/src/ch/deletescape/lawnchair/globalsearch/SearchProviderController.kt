@@ -5,6 +5,7 @@ import androidx.appcompat.view.ContextThemeWrapper
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.ensureOnMainThread
 import ch.deletescape.lawnchair.globalsearch.providers.*
+import ch.deletescape.lawnchair.globalsearch.providers.web.*
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.useApplicationContext
@@ -105,7 +106,15 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                 ChromiumBromiteSearchProvider.BromiteSearchProvider(context),
                 ChromiumBromiteSearchProvider.ChromiumSearchProvider(context),
                 FennecSearchProvider(context),
-                OverlaySearchProvider(context)
+                OverlaySearchProvider(context),
+                DDGWebSearchProvider(context),
+                BingWebSearchProvider(context),
+                StartpageWebSearchProvider(context),
+                BaiduWebSearchProvider(context),
+                YandexWebSearchProvider(context),
+                QwantWebSearchProvider(context),
+                EcosiaWebSearchProvider(context),
+                NaverWebSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }
