@@ -46,7 +46,7 @@ interface AnimationDelegate {
                         DrawerFeedTransitionDelegate::class)
         val delegateNames =
                 mapOf(DefaultFeedTransitionDelegate::class to R.string.title_animation_delegate_default,
-                        DrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_default_drawer,
+                        DefaultDrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_default_drawer,
                         SlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_slide,
                         GlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_glide,
                         GlidingDrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_gliding_drawer,
