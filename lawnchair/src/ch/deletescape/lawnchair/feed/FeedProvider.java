@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.WindowManager;
 
 import java.util.Collections;
@@ -65,7 +66,6 @@ public abstract class FeedProvider {
 
     public abstract void onDestroy();
 
-
     public abstract List<Card> getCards();
 
     protected void onAttachedToAdapter(FeedAdapter adapter) {
@@ -100,8 +100,26 @@ public abstract class FeedProvider {
         this.container = container;
     }
 
+    public List<Action> getActions(boolean exclusive) {
+        return Collections.EMPTY_LIST;
+    }
+
     @SuppressWarnings("WeakerAccess")
     public WindowManager getWindowService() {
         return windowService;
+    }
+
+
+    public static class Action {
+
+        public Action(Drawable item, String name, Runnable onClick) {
+            this.icon = item;
+            this.name = name;
+            this.onClick = onClick;
+        }
+
+        public String name;
+        public Runnable onClick;
+        public Drawable icon;
     }
 }

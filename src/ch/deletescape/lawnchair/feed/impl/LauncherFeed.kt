@@ -57,7 +57,8 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
-import ch.deletescape.lawnchair.feed.widgets.*
+import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
+import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -72,9 +73,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.*
 import kotlin.reflect.KClass
@@ -183,7 +182,6 @@ class LauncherFeed(val originalContext: Context,
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
     private val tabsOnBottom = originalContext.lawnchairPrefs.feedTabsOnBottom
-    private val hasWidgetTab = tabs.any { it.isWidgetTab }
     private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
         set(value) {
@@ -606,15 +604,6 @@ class LauncherFeed(val originalContext: Context,
                     }
                     previewAdapter.providers = tabbedProviders[tabs[tab.position]]!!
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
-                    toolbar.menu.getItem(0).isVisible =
-                            adapter.providers.any { it::class == FeedWidgetsProvider::class }
-                    if (hasWidgetTab) {
-                        toolbar.menu.getItem(0).icon = R.drawable.ic_add.fromDrawableRes(context)
-                                .tint(if (useWhiteText(backgroundColor,
-                                                context)) R.color.textColorPrimary.fromColorRes(
-                                        context)
-                                else R.color.textColorPrimaryInverse.fromColorRes(context))
-                    }
                     if (context.lawnchairPrefs.feedHideTabText) {
                         for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
                             val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
@@ -637,6 +626,7 @@ class LauncherFeed(val originalContext: Context,
                                     }
                         }
                     }
+                    updateActions()
                     runOnNewThread { refresh(0) }
                 }
             })
@@ -659,6 +649,7 @@ class LauncherFeed(val originalContext: Context,
                         arrayOf(getColorForIndex(0).setAlpha(50),
                                 tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
             }
+            updateActions()
         }
         if (context.lawnchairPrefs.feedAutoHideToolbar) {
             recyclerView.addOnScrollListener(object :
@@ -711,44 +702,6 @@ class LauncherFeed(val originalContext: Context,
             toolbar.title = ""
         }
         if (!FeatureFlags.GO_DISABLE_WIDGETS) {
-            toolbar.menu.add(context.getString(R.string.title_feed_toolbar_add_widget))
-            toolbar.menu.getItem(0).icon = R.drawable.ic_widget.fromDrawableRes(context)
-                    .tint(if (useWhiteText(backgroundColor,
-                                    context)) R.color.textColorPrimary.fromColorRes(context)
-                    else R.color.textColorPrimaryInverse.fromColorRes(context))
-            toolbar.menu.getItem(0).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            toolbar.menu.getItem(0).setOnMenuItemClickListener {
-                context.bindService(Intent(context, WidgetSelectionService::class.java),
-                        object : ServiceConnection {
-                            override fun onServiceDisconnected(name: ComponentName?) {
-                            }
-
-                            override fun onServiceConnected(name: ComponentName?,
-                                                            service: IBinder?) {
-                                IWidgetSelector.Stub.asInterface(service)
-                                        .pickWidget(object :
-                                                WidgetSelectionCallback.Stub() {
-                                            override fun onWidgetSelected(i: Int) {
-                                                if (i != -1) {
-                                                    GlobalScope.launch {
-                                                        WidgetDatabase.getInstance(context)
-                                                                .dao()
-                                                                .addWidget(Widget(i,
-                                                                        WidgetDatabase.getInstance(
-                                                                                context)
-                                                                                .dao().all.size))
-                                                    }.invokeOnCompletion {
-                                                        if (it == null) {
-                                                            refresh(0)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        })
-                            }
-                        }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
-                true
-            }
             toolbar.setOnLongClickListener {
                 context.bindService(Intent(context, WidgetSelectionService::class.java),
                         object : ServiceConnection {
@@ -860,8 +813,6 @@ class LauncherFeed(val originalContext: Context,
                             }
                         }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
             }
-            toolbar.menu.getItem(0).isVisible =
-                    adapter.providers.any { it::class == FeedWidgetsProvider::class }
 
             upButton.supportImageTintList =
                     ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
@@ -1315,6 +1266,35 @@ class LauncherFeed(val originalContext: Context,
                     feedController.findViewById<View>(R.id.empty_view).visibility =
                             if (cards.isNotEmpty()) View.GONE else View.VISIBLE
                     feedController.discardTouchEvents = false
+                }
+            }
+        }
+    }
+
+    fun updateActions() {
+        toolbar.menu.clear()
+        if (adapter.providers.size == 1) {
+            adapter.providers[0].getActions(true).forEach {
+                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
+                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                    icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                    setOnMenuItemClickListener { _ ->
+                        it.onClick.run()
+                        true
+                    }
+                }
+            }
+        } else {
+            adapter.providers.forEach {
+                it.getActions(false).forEach {
+                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
+                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                        icon = it.icon
+                        setOnMenuItemClickListener { _ ->
+                            it.onClick.run()
+                            true
+                        }
+                    }
                 }
             }
         }
