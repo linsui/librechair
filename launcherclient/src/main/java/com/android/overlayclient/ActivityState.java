@@ -34,7 +34,7 @@ public class ActivityState {
 
     public int toMask() {
         return connected && !activityInForeground ? FLAG_INITIALIZED :
-                connected && activityInForeground ? FLAG_INITIALIZED | FLAG_ACTIVITY_IN_FOREGROUND : 0;
+                connected ? FLAG_INITIALIZED | FLAG_ACTIVITY_IN_FOREGROUND : 0;
     }
 
     public int onStart() {

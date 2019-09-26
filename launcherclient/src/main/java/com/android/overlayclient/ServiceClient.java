@@ -41,8 +41,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         implements DisconnectableOverscrollClient,
         SearchClient, DurationOpenableOverscrollClient, Handler.Callback {
 
-    public static final int MESSAGE_CHANGE_SCROLL = 2;
-    public static final int MESSAGE_CHANGE_STATUS = 4;
+    private static final int MESSAGE_CHANGE_SCROLL = 2;
+    private static final int MESSAGE_CHANGE_STATUS = 4;
 
     private static final int ANIMATE = 1;
     private static final int ANIMATE_DURATION_LSHIFT = 2;
@@ -63,6 +63,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     private Handler mUIHandler;
 
     private final ServiceMode mode;
+    private final ServiceState serviceState;
 
     public ServiceClient(Activity boundActivity,
                          ServiceFactory factory, OverlayCallback callback,
@@ -73,6 +74,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         this.apiVersion = factory.getApiVersion();
         this.callback = callback;
         this.overlayChangeListeners = new ArrayList<>();
+        this.serviceState = new ServiceState();
         factory.setChangeListener(l3overlay -> {
             this.overlay = l3overlay;
             ((ArrayList<Consumer<ILauncherOverlay>>) overlayChangeListeners.clone()).forEach(
@@ -99,6 +101,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             }
         });
         factory.connect();
+        serviceState.setChangeListener(state -> {
+            if (!state.isOverlayAttached()) {
+                overlay = null;
+            }
+        });
         mUIHandler = new Handler(Looper.getMainLooper(), this);
     }
 
@@ -289,8 +296,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     }
 
     @Override
-    public void acceptLayoutParams(WindowManager.LayoutParams params) {
-        this.params = params;
+    public void acceptLayoutParams(WindowManager.LayoutParams ogParams) {
+        if (ogParams == null) {
+            this.params = null;
+        } else {
+            this.params = new WindowManager.LayoutParams();
+            params.copyFrom(ogParams);
+        }
         if (overlay != null && params == null) {
             try {
                 overlay.windowDetached(boundActivity.isChangingConfigurations());
@@ -352,7 +364,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public void disconnect() {
-        overlay = null;
+        serviceState.setSearchAttached(false);
+        serviceState.setOverlayAttached(false);
         factory.disconnect();
     }
 
@@ -400,7 +413,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     @Override
     public boolean startSearch(byte[] options, Bundle parameters) {
-        if (overlay != null && apiVersion >= 6 && factory.supportsUnifiedConnection() && mode == ServiceMode.SEARCH) {
+        if (overlay != null && apiVersion >= 6 && (factory.supportsUnifiedConnection() ||
+                mode == ServiceMode.SEARCH)) {
             try {
                 return overlay.startSearch(options, parameters);
             } catch (RemoteException e) {
@@ -459,13 +473,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     }
 
     @Override
-    public void overlayScrollChanged(float progress) throws RemoteException {
+    public void overlayScrollChanged(float progress) {
         mUIHandler.removeMessages(MESSAGE_CHANGE_SCROLL);
         mUIHandler.obtainMessage(MESSAGE_CHANGE_SCROLL, progress).sendToTarget();
     }
 
     @Override
-    public void overlayStatusChanged(int status) throws RemoteException {
+    public void overlayStatusChanged(int status) {
         mUIHandler.obtainMessage(MESSAGE_CHANGE_STATUS, status, 0);
     }
 
@@ -491,9 +505,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                         boundActivity.getWindow().getDecorView(), attrs);
                 return true;
             case MESSAGE_CHANGE_STATUS:
-                if ((msg.arg1 & 1) != 0) {
-                    overlay = null;
-                }
+                serviceState.setOverlayAttached((msg.arg1 & ServiceState.FLAG_ATTACHED) != 0);
+                serviceState.setSearchAttached((msg.arg1 & ServiceState.FLAG_SEARCH_ATTACHED) != 0);
                 if (callback instanceof PersistableScrollCallback) {
                     ((PersistableScrollCallback) callback).setPersistentFlags(msg.arg1);
                 }

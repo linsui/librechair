@@ -65,6 +65,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
+import com.android.overlayclient.ServiceState
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
@@ -1081,6 +1082,7 @@ class LauncherFeed(val originalContext: Context,
                                     }
                                 }
                     }
+                    callback?.overlayStatusChanged(ServiceState.FLAG_ATTACHED or ServiceState.FLAG_SEARCH_ATTACHED)
                     if (previewRecyclerView.layoutManager == null) {
                         previewRecyclerView.layoutManager = LinearLayoutManager(context)
                     }
