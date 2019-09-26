@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.contacts;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 
@@ -47,7 +48,13 @@ public class ContactsChipProvider extends ChipProvider {
                 ((RoundedBitmapDrawable) item.icon).setCornerRadius(
                         Math.max(it.avatar.getHeight(), it.avatar.getWidth()));
             }
-            item.click = () -> context.startActivity(it.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            item.click = () -> {
+                try {
+                    context.startActivity(it.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
+            };
             return item;
         }).collect(Collectors.toList());
     }

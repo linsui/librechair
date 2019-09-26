@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.location;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -81,9 +82,16 @@ public class CurrentLocationChipProvider extends ChipProvider {
             Item item = new Item();
             item.icon = context.getDrawable(R.drawable.ic_location);
             item.title = name.name;
-            item.click = () -> context.startActivity(
-                    new Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address")).addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK));
+            item.click = () -> {
+                try {
+                    context.startActivity(
+                            new Intent(Intent.ACTION_VIEW,
+                                    Uri.parse("geo:0,0?q=$address")).addFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK));
+                } catch (ActivityNotFoundException e) {
+                    e.printStackTrace();
+                }
+            };
             return item;
         }).get()) : Collections.EMPTY_LIST;
     }
