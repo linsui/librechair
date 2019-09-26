@@ -19,10 +19,7 @@
 
 package ch.deletescape.lawnchair.smartspace
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.location.Location
-import android.location.LocationManager
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.PeriodicDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
@@ -37,11 +34,6 @@ class UnifiedWeatherDataProvider(
     override val timeout: Long
         get() = TimeUnit.MINUTES.toMillis(10)
 
-    private val locationManager: LocationManager? by lazy {
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    }
-
-    @SuppressLint("MissingPermission")
     override fun updateData() {
         try {
             runOnNewThread {
@@ -63,33 +55,18 @@ class UnifiedWeatherDataProvider(
                                 null)
                     }
                 } else {
-                    val updateWeather = {
-                        val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
+                    context.lawnchairLocationManager.addCallback { lat, lon ->
                         val currentWeather = context.forecastProvider
-                                .getCurrentWeather(lat ?: (-1).toDouble(), lon ?: (-1).toDouble());
-                        d("updateData: current weather is ${Gson().toJson(currentWeather)}")
+                                .getCurrentWeather(lat, lon);
                         runOnMainThread {
                             updateData(
                                     LawnchairSmartspaceController.WeatherData(currentWeather.icon,
-                                                                              currentWeather.temperature,
-                                                                              null,
-                                                                              null, null, lat, lon,
-                                                                              "-1d"),
+                                            currentWeather.temperature,
+                                            null,
+                                            null, null, lat, lon,
+                                            "-1d"),
                                     null)
                         }
-                    }
-                    if (!context.checkLocationAccess()) {
-                        runOnMainThread {
-                            BlankActivity.requestPermission(context,
-                                                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                                                            LawnchairLauncher.REQUEST_PERMISSION_LOCATION_ACCESS) {
-                                runOnNewThread {
-                                    updateWeather()
-                                }
-                            }
-                        }
-                    } else {
-                        updateWeather()
                     }
                 }
             }

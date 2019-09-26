@@ -28,6 +28,8 @@ import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import geocode.GeocoderCompat
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
@@ -35,23 +37,16 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     final override fun bindFeed(callback: BindCallback) {
         try {
             if (context.checkLocationAccess() && context.lawnchairPrefs.overrideLocale.isEmpty()) {
-                val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
-                runOnNewThread {
-                    if (lat != null && lon != null) {
-                        val country = GeocoderCompat(context, true).nearestPlace(lat, lon).country
-                        d("bindFeed: country is $country")
+                context.lawnchairLocationManager.addCallback { lat, lon ->
+                    GlobalScope.launch {
+                        val country =
+                                GeocoderCompat(context, true).nearestPlace(lat, lon).country
                         try {
                             callback.onBind(getLocationAwareFeed(lat to lon,
-                                                                 Locale("", country).isO3Country))
+                                    Locale("", country).isO3Country))
                         } catch (e: Exception) {
                             e.printStackTrace()
                             callback.onBind(getFallbackFeed())
-                        }
-                    } else {
-                        try {
-                            callback.onBind(getFallbackFeed())
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
                 }
@@ -59,8 +54,8 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                 runOnNewThread {
                     try {
                         callback.onBind(getLocationAwareFeed(0.toDouble() to 0.toDouble(),
-                                                             Locale("",
-                                                                    context.lawnchairPrefs.overrideLocale).isO3Country))
+                                Locale("",
+                                        context.lawnchairPrefs.overrideLocale).isO3Country))
                     } catch (e: Exception) {
                         callback.onBind(getFallbackFeed())
                     }

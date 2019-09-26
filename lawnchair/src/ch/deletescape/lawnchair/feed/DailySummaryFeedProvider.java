@@ -42,7 +42,6 @@ import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
-import com.google.android.flexbox.FlexboxLayout;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
@@ -60,6 +59,7 @@ import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import kotlin.Pair;
+import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
 
@@ -70,20 +70,15 @@ public class DailySummaryFeedProvider extends FeedProvider {
     @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
-        Pair<Double, Double> location = LawnchairUtilsKt.getLawnchairLocationManager(c)
-                .getLocation();
-        if (location != null) {
+        LawnchairUtilsKt.getLawnchairLocationManager(c).addCallback((lat, lon) -> {
             Calendar sunrise = SunriseSunsetCalculator
-                    .getSunrise(location.getFirst(), location.getSecond(),
+                    .getSunrise(lat, lon,
                             Calendar.getInstance().getTimeZone(),
                             new GregorianCalendar(), 6);
             Calendar sunset = SunriseSunsetCalculator
-                    .getSunset(location.getFirst(), location.getSecond(),
+                    .getSunset(lat, lon,
                             Calendar.getInstance().getTimeZone(),
                             new GregorianCalendar(), 6);
-            Log.d(getClass().getName(),
-                    "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                            + sunset);
             sunriseSunset = new Pair<>(ZonedDateTime
                     .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
                             ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
@@ -92,7 +87,8 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             ZoneId
                                     .of(Calendar.getInstance().getTimeZone().getID())));
             sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
-        }
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
