@@ -84,6 +84,7 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
                           "GUY" to "https://www.theguardian.com/world/guyana",
                           "HTI" to "https://www.theguardian.com/world/haiti",
                           "HND" to "https://www.theguardian.com/world/honduras",
+                          "HKG" to "https://www.theguardian.com/world/hong-kong",
                           "HUN" to "https://www.theguardian.com/world/hungary",
                           "ISL" to "https://www.theguardian.com/world/iceland",
                           "IND" to "https://www.theguardian.com/world/india",
