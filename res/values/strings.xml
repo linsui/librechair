@@ -709,4 +709,6 @@
     <string name="summary_pref_feed_boxed_background_blur">Only available with a background image provider</string>
     <string name="title_animation_delegate_default_drawer">Fading drawer</string>
     <string name="title_action_new_calendar_event">New calendar event</string>
+    <string name="title_pref_feed_javascript_in_search_screen">Use EMCAScript in search screen</string>
+    <string name="summary_pref_feed_javascript_in_search_screen">EMCAScript will be enabled in the search screen</string>
 </resources>

@@ -363,5 +363,10 @@
             android:defaultValue="https://example.com/search?q=%s"
             android:key="pref_feed_search_url_template"
             android:title="@string/title_pref_feed_search_url_template"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_javascript_in_search_screen"
+            android:title="@string/title_pref_feed_javascript_in_search_screen"
+            android:summary="@string/summary_pref_feed_javascript_in_search_screen"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

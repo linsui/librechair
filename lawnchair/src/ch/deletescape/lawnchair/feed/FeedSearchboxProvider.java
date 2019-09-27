@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class FeedSearchboxProvider extends FeedProvider {
 
@@ -121,16 +122,22 @@ public class FeedSearchboxProvider extends FeedProvider {
                                 adapter.clear();
                                 adapter.addAll(suggestions.stream().toArray(String[]::new));
                                 adapter.notifyDataSetChanged();
-                                predictions.setOnItemClickListener((parent1, view, position, id) -> {
-                                    int x, y;
-                                    x = LawnchairUtilsKt.getPostionOnScreen(view).getFirst();
-                                    y = LawnchairUtilsKt.getPostionOnScreen(view).getSecond();
-                                    new WebViewScreen(parent.getContext(), String.format(
-                                            Utilities.getLawnchairPrefs(
-                                                    getContext()).getFeedSearchUrl(),
-                                            suggestions.get(position)), wv -> {
-                                    }).display(FeedSearchboxProvider.this, x, y);
-                                });
+                                predictions.setOnItemClickListener(
+                                        (parent1, view, position, id) -> {
+                                            int x, y;
+                                            x = LawnchairUtilsKt.getPostionOnScreen(
+                                                    view).getFirst();
+                                            y = LawnchairUtilsKt.getPostionOnScreen(
+                                                    view).getSecond();
+                                            new WebViewScreen(parent.getContext(), String.format(
+                                                    Utilities.getLawnchairPrefs(
+                                                            getContext()).getFeedSearchUrl(),
+                                                    suggestions.get(position)), wv -> {
+                                                wv.getSettings().setJavaScriptEnabled(
+                                                        FeedPersistence.Companion.getInstance(
+                                                                getContext()).getUseJavascriptInSearchScreen());
+                                            }).display(FeedSearchboxProvider.this, x, y);
+                                        });
                             });
                         }
                     });
@@ -146,6 +153,8 @@ public class FeedSearchboxProvider extends FeedProvider {
                     new WebViewScreen(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
                             editText.getText().toString()), wv -> {
+                        wv.getSettings().setJavaScriptEnabled(FeedPersistence.Companion.getInstance(
+                                getContext()).getUseJavascriptInSearchScreen());
                     }).display(this, x, y);
                 }
                 return true;
