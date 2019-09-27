@@ -63,6 +63,7 @@ object CallbackManager {
     class WidgetRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
         val request by lazy { widgetRequests.first { it.id == id } }
+        var configurable = false
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -78,13 +79,16 @@ object CallbackManager {
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             if (resultCode == RESULT_OK) {
                 val widgetInfo = appWidgetManager.getAppWidgetInfo(requestCode)
-                if (widgetInfo?.configure != null && !request.configured) {
+                if (widgetInfo.configure != null && !request.configured) {
+                    configurable = true
                     request.configured = true
-                    startActivityForResult(Intent().setComponent(widgetInfo.configure), requestCode);
-                } else {
-                    request.callback(requestCode)
-                    finish()
+                    startActivityForResult(Intent().setComponent(widgetInfo.configure), requestCode)
+                    return
                 }
+            }
+            if ((!configurable || request.configured) && resultCode == RESULT_OK) {
+                request.callback(requestCode)
+                finish()
             } else {
                 request.callback(-1)
                 finish()
