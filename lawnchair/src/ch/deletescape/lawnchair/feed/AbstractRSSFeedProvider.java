@@ -239,7 +239,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         new ArticleViewerScreen(getContext(), entry.getTitle(),
                                 entry.getCategories().stream().map(it -> it.getName())
                                         .collect(Collectors.joining(", ")),
-                                entry.getUri(),
+                                entry.getLink(),
                                 entry.getDescription() != null ? entry.getDescription().getValue() : "")
                                 .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
                                                 + v2.getWidth() / 2),
@@ -382,7 +382,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 new ArticleViewerScreen(getContext(), entry.getTitle(),
                         entry.getCategories().stream().map(it -> it.getName())
                                 .collect(Collectors.joining(", ")),
-                        entry.getUri(),
+                        entry.getLink(),
                         entry.getDescription() != null ? entry.getDescription().getValue() : "")
                         .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
                                         + v2.getWidth() / 2),
