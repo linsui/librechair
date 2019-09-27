@@ -112,11 +112,15 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                 actionListener = { actionOnCardActionSelectedListener?.onAction() }
                 actionName = this@RemoteCard.actionName
             }
-            onRemoveListener = {
-                this@RemoteCard.onRemoveListener?.onRemove()
+            if (this@RemoteCard.onRemoveListener != null) {
+                onRemoveListener = {
+                    this@RemoteCard.onRemoveListener?.onRemove()
+                }
             }
-            globalClickListener = {
-                this@RemoteCard.globalClickListener?.run()
+            if (this@RemoteCard.globalClickListener != null) {
+                globalClickListener = {
+                    this@RemoteCard.globalClickListener?.run()
+                }
             }
         }
     }
