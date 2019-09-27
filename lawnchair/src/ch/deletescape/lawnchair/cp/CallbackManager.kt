@@ -118,7 +118,11 @@ object CallbackManager {
                 finish()
                 overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             } else {
-                request.callback(null)
+                try {
+                    request.callback(null)
+                } catch (e: RuntimeException) {
+                    e.printStackTrace();
+                }
                 finish()
                 overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             }
