@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,6 +31,7 @@ import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -37,6 +39,7 @@ import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class CalendarEventProvider(context: Context) : FeedProvider(context) {
@@ -76,25 +79,25 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             val currentTime = GregorianCalendar()
             val endTime = GregorianCalendar()
             endTime.add(Calendar.DAY_OF_MONTH,
-                        context.lawnchairPrefs.feedCalendarEventThreshold)
+                    context.lawnchairPrefs.feedCalendarEventThreshold)
             Log.v(javaClass.name,
-                  "getCards: searching for events between " + currentTime + " and " + endTime.toString())
+                    "getCards: searching for events between " + currentTime + " and " + endTime.toString())
             val query =
                     "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
             val eventCursorNullable: Cursor? = context.contentResolver
                     .query(CalendarContract.Events.CONTENT_URI,
-                           arrayOf(CalendarContract.Instances.TITLE,
-                                   CalendarContract.Instances.DTSTART,
-                                   CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Events._ID,
-                                   CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                   CalendarContract.Events.EVENT_LOCATION,
-                                   CalendarContract.Calendars.CALENDAR_COLOR), query, null,
-                           CalendarContract.Instances.DTSTART + " ASC")
+                            arrayOf(CalendarContract.Instances.TITLE,
+                                    CalendarContract.Instances.DTSTART,
+                                    CalendarContract.Instances.DTEND,
+                                    CalendarContract.Instances.DESCRIPTION,
+                                    CalendarContract.Events._ID,
+                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                    CalendarContract.Events.EVENT_LOCATION,
+                                    CalendarContract.Calendars.CALENDAR_COLOR), query, null,
+                            CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
-                      "getCards: query is null, probably since there are no events that meet the specified criteria")
+                        "getCards: query is null, probably since there are no events that meet the specified criteria")
                 return emptyList()
             }
             try {
@@ -175,20 +178,21 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         run {
             val currentTime = GregorianCalendar()
             Log.v(javaClass.name,
-                  "getCards: searching for events that are active at ${currentTime}")
+                    "getCards: searching for events that are active at ${currentTime}")
             val query =
                     "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
             val eventCursorNullable: Cursor? = context.contentResolver
                     .query(CalendarContract.Events.CONTENT_URI,
-                           arrayOf(CalendarContract.Instances.TITLE,
-                                   CalendarContract.Instances.DTSTART,
-                                   CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
-                           query, null, CalendarContract.Instances.DTSTART + " ASC")
+                            arrayOf(CalendarContract.Instances.TITLE,
+                                    CalendarContract.Instances.DTSTART,
+                                    CalendarContract.Instances.DTEND,
+                                    CalendarContract.Instances.DESCRIPTION,
+                                    CalendarContract.Instances.ALL_DAY,
+                                    CalendarContract.Events._ID),
+                            query, null, CalendarContract.Instances.DTSTART + " ASC")
             if (eventCursorNullable == null) {
                 Log.v(javaClass.name,
-                      "getCards: query is null, probably since there are no events that meet the specified criteria")
+                        "getCards: query is null, probably since there are no events that meet the specified criteria")
                 return cards
             }
             try {
@@ -221,5 +225,24 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             }
         }
         return cards
+    }
+
+    override fun getActions(exclusive: Boolean): List<Action> {
+        return listOf(
+                Action((if (exclusive) R.drawable.ic_add else R.drawable.ic_event_black_24dp).fromDrawableRes(
+                        context),
+                        context.getString(
+                                R.string.title_action_new_calendar_event), Runnable {
+                    val intent = Intent(Intent.ACTION_INSERT)
+                    intent.setPackage("com.android.calendar")
+                    intent.data = CalendarContract.Events.CONTENT_URI
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(context, "The AOSP calendar app was not found",
+                                Toast.LENGTH_LONG).show()
+                    }
+                }))
     }
 }

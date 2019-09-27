@@ -708,4 +708,5 @@
     <string name="title_pref_feed_boxed_background_blur">Use boxed background blur</string>
     <string name="summary_pref_feed_boxed_background_blur">Only available with a background image provider</string>
     <string name="title_animation_delegate_default_drawer">Fading drawer</string>
+    <string name="title_action_new_calendar_event">New calendar event</string>
 </resources>
