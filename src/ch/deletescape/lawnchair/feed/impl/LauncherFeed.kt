@@ -1052,7 +1052,7 @@ class LauncherFeed(val originalContext: Context,
                     try {
                         windowService.removeViewImmediate(feedController)
                     } catch (e: RuntimeException) {
-                        e.printStackTrace()
+                        windowService.removeView(feedController)
                     }
                 }
             }
