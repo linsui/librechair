@@ -42,7 +42,7 @@ public class ClickbaitRanker {
     public static final int TITLE_MATCH_PRIZE = 5;
 
     public static class Token {
-
+        public boolean retainCase;
         public String text;
         public int confidence;
     }
@@ -77,6 +77,16 @@ public class ClickbaitRanker {
                     token.confidence += CAPS_PRIZE;
                 }
             }
+            int upper = 0;
+            for (char iter : token.text.toCharArray()) {
+                if (Character.isUpperCase(iter)) {
+                    ++upper;
+                }
+            }
+
+            if ((token.text.length() / (float) upper) > 0.7) {
+                token.retainCase = true;
+            }
         });
         return tokens;
     }
@@ -90,7 +100,9 @@ public class ClickbaitRanker {
         return tokens.stream()
                 .map(it -> tokens.indexOf(it) == 0 || finalConfidence < 15 ? it
                         : ((Function<Token, Token>) tok -> {
-                            tok.text = tok.text.toLowerCase();
+                            if (!tok.retainCase) {
+                                tok.text = tok.text.toLowerCase();
+                            }
                             return tok;
                         }).apply(it)).collect(Collectors.toList());
     }
