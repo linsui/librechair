@@ -25,11 +25,16 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
-import ch.deletescape.lawnchair.feed.RemoteCard.Types;
+
 import com.android.launcher3.R;
+
 import java.util.Collections;
 import java.util.List;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
+import ch.deletescape.lawnchair.feed.RemoteCard.Types;
+import ch.deletescape.lawnchair.util.IRunnable;
 
 public class RemoteDemoService extends Service {
 
@@ -66,6 +71,18 @@ public class RemoteDemoService extends Service {
                 demoCard.setActionName("Action demo");
                 demoCard.setCanHide(true);
                 return Collections.singletonList(demoCard);
+            }
+
+            @Override
+            public List<RemoteAction> getActions(boolean exclusive) throws RemoteException {
+                return Collections.singletonList(new RemoteAction("Demo", LawnchairUtilsKt.drawableToBitmap(
+                        getDrawable(R.drawable.ic_smartspace_preferences)),
+                        new IRunnable.Stub() {
+                            @Override
+                            public void run() throws RemoteException {
+                                Toast.makeText(RemoteDemoService.this, "works for me", Toast.LENGTH_SHORT).show();
+                            }
+                        }));
             }
         });
     }

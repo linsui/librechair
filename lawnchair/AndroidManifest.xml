@@ -281,6 +281,10 @@
             <intent-filter>
                 <action android:name="ch.deletescape.lawnchair.FEED_PROVIDER" />
             </intent-filter>
+
+            <meta-data
+                android:name="api.version"
+                android:value="1"/>
         </service>
         <service android:name="ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider$Demo"
             android:exported="true">

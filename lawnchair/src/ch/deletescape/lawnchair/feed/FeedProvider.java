@@ -111,7 +111,6 @@ public abstract class FeedProvider {
 
 
     public static class Action {
-
         public Action(Drawable item, String name, Runnable onClick) {
             this.icon = item;
             this.name = name;
@@ -122,4 +121,5 @@ public abstract class FeedProvider {
         public Runnable onClick;
         public Drawable icon;
     }
+
 }
