@@ -40,7 +40,6 @@ import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.LauncherAppWidgetHost
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
@@ -81,7 +80,7 @@ class LawnchairApp : Application(), () -> Unit {
             }
             LeakCanary.install(this)
         }
-        overlayWidgetHost = OverlayWidgetHost(this, LauncherAppWidgetHost.APPWIDGET_HOST_ID)
+        overlayWidgetHost = OverlayWidgetHost(this, "OVERLAY".hashCode())
                 .also { it.startListening() }
         ClipartCache.providers += ResourceClipartResolver(this)
         ClipartCache.providers += FancyClipartResolver(this)
