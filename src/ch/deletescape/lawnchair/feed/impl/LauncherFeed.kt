@@ -1049,7 +1049,11 @@ class LauncherFeed(val originalContext: Context,
                 } else {
                     feedController.visibility = View.INVISIBLE
                     feedController.alpha = 0f
-                    windowService.removeView(feedController)
+                    try {
+                        windowService.removeViewImmediate(feedController)
+                    } catch (e: RuntimeException) {
+                        e.printStackTrace()
+                    }
                 }
             }
         }
