@@ -120,6 +120,7 @@ public class FeedSearchboxProvider extends FeedProvider {
                             editText.post(() -> {
                                 adapter.clear();
                                 adapter.addAll(suggestions.stream().toArray(String[]::new));
+                                adapter.notifyDataSetChanged();
                                 predictions.setOnItemClickListener((parent1, view, position, id) -> {
                                     int x, y;
                                     x = LawnchairUtilsKt.getPostionOnScreen(view).getFirst();
