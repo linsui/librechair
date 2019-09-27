@@ -30,11 +30,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -84,12 +86,16 @@ public class FeedSearchboxProvider extends FeedProvider {
             editText.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
             layout.addView(editText);
+            ListView predictions = new ListView(parent.getContext());
+            layout.addView(predictions);
+            predictions.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
             editText.setThreshold(0);
             editText.setInputType(editText.getInputType() & ~InputType.TYPE_TEXT_FLAG_MULTI_LINE);
             ArrayAdapter<String> adapter;
-            editText.setAdapter(adapter = new ArrayAdapter(getContext(),
-                    android.R.layout.simple_expandable_list_item_1,
-                    new String[0]));
+            predictions.setAdapter(adapter = new ArrayAdapter(parent.getContext(),
+                    android.R.layout.simple_list_item_1,
+                    new ArrayList<String>()));
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -114,7 +120,7 @@ public class FeedSearchboxProvider extends FeedProvider {
                             editText.post(() -> {
                                 adapter.clear();
                                 adapter.addAll(suggestions.stream().toArray(String[]::new));
-                                editText.setOnItemClickListener((parent1, view, position, id) -> {
+                                predictions.setOnItemClickListener((parent1, view, position, id) -> {
                                     int x, y;
                                     x = LawnchairUtilsKt.getPostionOnScreen(view).getFirst();
                                     y = LawnchairUtilsKt.getPostionOnScreen(view).getSecond();
