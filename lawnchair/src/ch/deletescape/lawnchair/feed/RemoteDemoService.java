@@ -64,8 +64,10 @@ public class RemoteDemoService extends Service {
                         new RemoteOnCardActionSelectedListener.Stub() {
                             @Override
                             public void onAction() throws RemoteException {
-                                Toast.makeText(getApplicationContext(),
-                                        "demonstration action clicked", Toast.LENGTH_SHORT).show();
+                                LawnchairUtilsKt.getMainHandler().post(() -> {
+                                    Toast.makeText(RemoteDemoService.this, "works for me",
+                                            Toast.LENGTH_SHORT).show();
+                                });
                             }
                         });
                 demoCard.setActionName("Action demo");
@@ -80,7 +82,10 @@ public class RemoteDemoService extends Service {
                         new IRunnable.Stub() {
                             @Override
                             public void run() throws RemoteException {
-                                Toast.makeText(RemoteDemoService.this, "works for me", Toast.LENGTH_SHORT).show();
+                                LawnchairUtilsKt.getMainHandler().post(() -> {
+                                    Toast.makeText(RemoteDemoService.this, "works for me",
+                                            Toast.LENGTH_SHORT).show();
+                                });
                             }
                         }));
             }
