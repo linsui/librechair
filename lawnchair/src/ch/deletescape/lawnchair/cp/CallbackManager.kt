@@ -90,7 +90,11 @@ object CallbackManager {
                 request.callback(requestCode)
                 finish()
             } else {
-                request.callback(-1)
+                try {
+                    request.callback(-1)
+                } catch (e: RuntimeException) {
+                    e.printStackTrace()
+                }
                 finish()
             }
         }
