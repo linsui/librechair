@@ -20,20 +20,29 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.MultiAutoCompleteTextView;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.globalsearch.SearchProvider;
+import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
+import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
 
 public class FeedSearchboxProvider extends FeedProvider {
 
@@ -68,10 +77,59 @@ public class FeedSearchboxProvider extends FeedProvider {
                 LawnchairUtilsKt.tint(getContext().getDrawable(R.drawable.ic_search),
                         FeedAdapter.Companion.getOverrideColor(getContext())),
                 getContext().getString(R.string.search), parent -> {
-            EditText editText = new EditText(parent.getContext());
+            LinearLayout layout = new LinearLayout(getContext());
+            layout.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            AutoCompleteTextView editText = new MultiAutoCompleteTextView(parent.getContext());
             editText.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
+            layout.addView(editText);
+            editText.setThreshold(0);
             editText.setInputType(editText.getInputType() & ~InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+            ArrayAdapter<String> adapter;
+            editText.setAdapter(adapter = new ArrayAdapter(getContext(),
+                    android.R.layout.simple_expandable_list_item_1,
+                    new String[0]));
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        SearchProvider provider;
+                        if ((provider = SearchProviderController.Companion.getInstance(
+                                getContext()).getSearchProvider()) instanceof WebSearchProvider) {
+                            List<String> suggestions = ((WebSearchProvider) provider).getSuggestions(
+                                    s.toString());
+                            Log.d(FeedSearchboxProvider.this.getClass().getName(),
+                                    "afterTextChanged: suggestions " + suggestions);
+                            editText.post(() -> {
+                                adapter.clear();
+                                adapter.addAll(suggestions.stream().toArray(String[]::new));
+                                editText.setOnItemClickListener((parent1, view, position, id) -> {
+                                    int x, y;
+                                    x = LawnchairUtilsKt.getPostionOnScreen(view).getFirst();
+                                    y = LawnchairUtilsKt.getPostionOnScreen(view).getSecond();
+                                    new WebViewScreen(parent.getContext(), String.format(
+                                            Utilities.getLawnchairPrefs(
+                                                    getContext()).getFeedSearchUrl(),
+                                            suggestions.get(position)), wv -> {
+                                    }).display(FeedSearchboxProvider.this, x, y);
+                                });
+                            });
+                        }
+                    });
+                }
+            });
+            editText.setDropDownHeight((int) LawnchairUtilsKt.applyAsDip(256f, getContext()));
             editText.setMaxLines(1);
             editText.setOnEditorActionListener((v, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -80,12 +138,13 @@ public class FeedSearchboxProvider extends FeedProvider {
                     y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
                     new WebViewScreen(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
-                            editText.getText().toString()), wv -> {}).display(this, x, y);
+                            editText.getText().toString()), wv -> {
+                    }).display(this, x, y);
                 }
                 return true;
             });
             editText.setImeOptions(editText.getImeOptions() | EditorInfo.IME_ACTION_SEARCH);
-            return editText;
+            return layout;
         }, Card.Companion.getRAISE(),
                 "nosort,top", "searchBar".hashCode()));
     }

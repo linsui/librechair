@@ -46,7 +46,11 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                                     Locale("", country).isO3Country))
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            callback.onBind(getFallbackFeed())
+                            try {
+                                callback.onBind(getFallbackFeed())
+                            } catch (e: RuntimeException) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                 }
