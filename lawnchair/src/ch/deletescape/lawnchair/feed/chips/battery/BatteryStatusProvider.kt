@@ -47,9 +47,6 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                         * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                         / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
                 refresh()
-            } else {
-                charging = intent.action == Intent.ACTION_POWER_CONNECTED
-                refresh()
             }
         }
     }
@@ -58,10 +55,7 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
     private var level = 100
 
     init {
-        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED).apply {
-            addAction(Intent.ACTION_POWER_CONNECTED)
-            addAction(Intent.ACTION_POWER_DISCONNECTED)
-        })
+        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     override fun getItems(context: Context): List<ChipProvider.Item> {
