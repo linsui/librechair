@@ -1278,7 +1278,7 @@ class LauncherFeed(val originalContext: Context,
     fun updateActions() {
         toolbar.menu.clear()
         if (adapter.providers.size == 1) {
-            adapter.providers[0].getActions(true).forEach {
+            adapter.providers[0].getActions(true).sortedBy { it.name }.forEach {
                 toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
                     setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                     icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
@@ -1290,7 +1290,7 @@ class LauncherFeed(val originalContext: Context,
             }
         } else {
             adapter.providers.forEach {
-                it.getActions(false).forEach {
+                it.getActions(false).sortedBy { it.name }.forEach {
                     toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
                         setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                         icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
