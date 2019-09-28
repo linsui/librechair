@@ -244,6 +244,8 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
 
+            internalActions.clear()
+
             backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
                     ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
                     (LawnchairPreferences.getInstance(
