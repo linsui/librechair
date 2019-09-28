@@ -995,6 +995,7 @@ class LauncherFeed(val originalContext: Context,
                     }
                 })
                 start()
+                animate().setDuration(300).translationZ(0f)
             }
             recyclerView.isLayoutFrozen = false
         }
