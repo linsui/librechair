@@ -1199,6 +1199,9 @@ class LauncherFeed(val originalContext: Context,
 
     fun refresh(sleep: Long, count: Int = 0, quick: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
+        runOnMainThread {
+            updateActions()
+        }
         recyclerView.apply {
             post {
                 feedController.discardTouchEvents = true
