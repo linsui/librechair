@@ -47,6 +47,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
@@ -95,6 +96,8 @@ class LauncherFeed(val originalContext: Context,
     }
 
     private var lastScroll = 0f
+
+    private var internalActions = mutableMapOf<Int, FeedProvider.Action>()
 
     private var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
@@ -842,6 +845,20 @@ class LauncherFeed(val originalContext: Context,
             inflater(it).also { view = it }
         }, x, y)
         preferenceScreens.add(screen to ScreenData(x, y, view!!))
+        synchronized(internalActions) {
+            if (!internalActions.containsKey(R.id.cancel)) {
+                internalActions.put(R.id.cancel, FeedProvider.Action(
+                        R.drawable.ic_arrow_back.fromDrawableRes(context), context.getString(
+                        R.string.title_action_back), Runnable {
+                    if (preferenceScreens.isEmpty() || preferenceScreens.size == 1) {
+                        internalActions.remove(R.id.cancel)
+                        updateActions()
+                    }
+                    removeLastPreferenceScreen()
+                }))
+            }
+            updateActions()
+        }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -940,22 +957,6 @@ class LauncherFeed(val originalContext: Context,
                 }
             })
         })
-        if (toolbar.menu.findItem(R.id.cancel) == null) {
-            toolbar.menu.add(0, R.id.cancel, 0, android.R.string.cancel).apply {
-                icon = R.drawable.ic_arrow_back.fromDrawableRes(context)
-                        .tint(if (useWhiteText(backgroundColor,
-                                        context)) R.color.textColorPrimary.fromColorRes(
-                                context) else R.color.textColorPrimaryInverse.fromColorRes(context))
-                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                setOnMenuItemClickListener {
-                    if (preferenceScreens.isEmpty() || preferenceScreens.size == 1) {
-                        toolbar.menu.removeItem(R.id.cancel)
-                    }
-                    removeLastPreferenceScreen()
-                    true
-                }
-            }
-        }
         for (i in 0 until toolbar.menu.size()) {
             toolbar.menu.getItem(i).icon?.setTint(tabView.tabTextColors?.defaultColor ?: 0);
         }
@@ -1280,19 +1281,22 @@ class LauncherFeed(val originalContext: Context,
     fun updateActions() {
         toolbar.menu.clear()
         if (adapter.providers.size == 1) {
-            adapter.providers[0].getActions(true).sortedBy { it.name }.forEach {
-                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
-                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                    icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
-                    setOnMenuItemClickListener { _ ->
-                        it.onClick.run()
-                        true
+            (adapter.providers[0].getActions(true)).sortedBy { it.name }
+                    .forEach {
+                        toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                                .apply {
+                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                    icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                                    setOnMenuItemClickListener { _ ->
+                                        it.onClick.run()
+                                        true
+                                    }
+                                }
                     }
-                }
-            }
         } else {
             adapter.providers.forEach {
-                it.getActions(false).sortedBy { it.name }.forEach {
+                (adapter.providers[0].getActions(
+                        false)).sortedBy { it.name }.forEach {
                     toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
                         setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                         icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
@@ -1303,6 +1307,18 @@ class LauncherFeed(val originalContext: Context,
                     }
                 }
             }
+        }
+        internalActions.values.forEach {
+
+            toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                    .apply {
+                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                        icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                        setOnMenuItemClickListener { _ ->
+                            it.onClick.run()
+                            true
+                        }
+                    }
         }
     }
 

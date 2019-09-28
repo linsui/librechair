@@ -711,4 +711,5 @@
     <string name="title_action_new_calendar_event">New calendar event</string>
     <string name="title_pref_feed_javascript_in_search_screen">Use JavaScript in search screen</string>
     <string name="summary_pref_feed_javascript_in_search_screen">JavaScript will be enabled in the search screen</string>
+    <string name="title_action_back">Back</string>
 </resources>
