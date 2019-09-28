@@ -19,9 +19,7 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.content.ActivityNotFoundException
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
@@ -49,6 +47,20 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val calendarDrawableColoured by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!
                 .tint(FeedAdapter.getOverrideColor(context))
+    }
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (feed != null) {
+                feed.refresh(0)
+            }
+        }
+    }
+
+    init {
+        context.registerReceiver(broadcastReceiver, IntentFilter(Intent.ACTION_PROVIDER_CHANGED).apply {
+            addDataScheme("content")
+            addDataAuthority("com.android.calendar", null)
+        })
     }
 
     override fun onFeedShown() {
