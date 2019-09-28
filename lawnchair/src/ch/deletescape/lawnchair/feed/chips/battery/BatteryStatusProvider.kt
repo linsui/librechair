@@ -82,7 +82,9 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
             full -> lines.add(R.string.battery_full)
             charging -> lines.add(R.string.battery_charging)
             level <= 15 -> lines.add(R.string.battery_low)
-            else -> lines.add("$level%")
+        }
+        if (!full) {
+            lines.add("$level%")
         }
         return listOf(ChipProvider.Item().apply {
             title = lines.joinToString(" - ") {
