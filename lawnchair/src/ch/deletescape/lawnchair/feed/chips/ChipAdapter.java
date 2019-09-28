@@ -151,7 +151,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                         context) ? Color.WHITE : Color.BLACK);
         chipViewHolder.itemView.setOnTouchListener((v, event) -> {
             if (controller != null) {
-                controller.setDisallowInterceptTouchEventsUntilNextUp(true);
+                controller.setDisallowInterceptCurrentTouchEvent(true);
             }
             return false;
         });
