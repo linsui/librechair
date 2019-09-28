@@ -32,8 +32,24 @@ import com.android.launcher3.R
 
 class BatteryStatusProvider(val context: Context) : ChipProvider() {
 
-    private val batteryReceiver = object : BroadcastReceiver() {
+    private fun updateData(intent: Intent?) {
+        if (intent != null) {
+            if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
+                val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
+                charging = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0).let {
+                    it == BatteryManager.BATTERY_PLUGGED_AC ||
+                            it == BatteryManager.BATTERY_PLUGGED_USB ||
+                            it == BatteryManager.BATTERY_PLUGGED_WIRELESS
+                }
+                full = status == BatteryManager.BATTERY_STATUS_FULL
+                level = (100f
+                        * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
+                        / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
+            }
+        }
+    }
 
+    private val reciever = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
             if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
                 val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
@@ -50,15 +66,17 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
             }
         }
     }
+
     private var charging = false
     private var full = false
     private var level = 100
 
     init {
-        context.registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        context.registerReceiver(reciever, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     }
 
     override fun getItems(context: Context): List<ChipProvider.Item> {
+        updateData(context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)))
         val lines = mutableListOf<Any>()
         when {
             full -> lines.add(R.string.battery_full)
@@ -77,8 +95,8 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
             click = Runnable {
                 Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).also {
-                    context.startActivity(it)
-                }
+                            context.startActivity(it)
+                        }
             }
         })
     }
