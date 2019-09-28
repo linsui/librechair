@@ -1285,7 +1285,9 @@ class LauncherFeed(val originalContext: Context,
                     .forEach {
                         toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
                                 .apply {
-                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                    if (!context.feedPrefs.displayActionsAsMenu) {
+                                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                    }
                                     icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
                                     setOnMenuItemClickListener { _ ->
                                         it.onClick.run()
@@ -1298,7 +1300,9 @@ class LauncherFeed(val originalContext: Context,
                 (it.getActions(
                         false)).sortedBy { it.name }.forEach {
                     toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
-                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                        if (!context.feedPrefs.displayActionsAsMenu) {
+                            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                        }
                         icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
                         setOnMenuItemClickListener { _ ->
                             it.onClick.run()

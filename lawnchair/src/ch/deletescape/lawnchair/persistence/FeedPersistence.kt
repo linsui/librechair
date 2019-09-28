@@ -30,6 +30,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_boxed_background_blur", false)
     val useJavascriptInSearchScreen
             by BooleanDelegate(context, "feed_javascript_in_search_screen", false)
+    val displayActionsAsMenu
+            by BooleanDelegate(context, "feed_actions_as_menu", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

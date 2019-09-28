@@ -246,6 +246,11 @@
             android:key="feed_boxed_background_blur"
             android:title="@string/title_pref_feed_boxed_background_blur"
             android:summary="@string/summary_pref_feed_boxed_background_blur"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_actions_as_menu"
+            android:title="@string/title_pref_feed_actions_as_menu"
+            android:summary="@string/summary_pref_feed_actions_as_menu"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

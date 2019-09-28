@@ -712,4 +712,6 @@
     <string name="title_pref_feed_javascript_in_search_screen">Use JavaScript in search screen</string>
     <string name="summary_pref_feed_javascript_in_search_screen">JavaScript will be enabled in the search screen</string>
     <string name="title_action_back">Back</string>
+    <string name="title_pref_feed_actions_as_menu">Display actions as menu</string>
+    <string name="summary_pref_feed_actions_as_menu">Actions will be displayed in a drop-down menu, instead of as separate icons</string>
 </resources>
