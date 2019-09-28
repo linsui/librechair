@@ -30,6 +30,7 @@ import com.rometools.rome.feed.synd.SyndFeed
 import geocode.GeocoderCompat
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
@@ -49,6 +50,8 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                             try {
                                 callback.onBind(getFallbackFeed())
                             } catch (e: RuntimeException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
                                 e.printStackTrace()
                             }
                         }
