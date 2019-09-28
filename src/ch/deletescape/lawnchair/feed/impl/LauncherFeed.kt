@@ -926,6 +926,7 @@ class LauncherFeed(val originalContext: Context,
                         duration = 300
                         start()
                     }
+                    animate().setDuration(300).translationZ(8f.applyAsDip(context))
                     recyclerView.isLayoutFrozen = true
                     toolbar.animate().translationY(0f)
                     return true;

@@ -48,13 +48,14 @@ class ImageStore private constructor(val context: Context) {
     fun storeBitmap(bitmap: Bitmap): String {
         val id = UUID.randomUUID()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100,
-                        FileOutputStream(File(fileDir, "$[$id].png")))
+                FileOutputStream(File(fileDir, "$[$id].png")))
         cache += id.toString() to bitmap
         return id.toString()
     }
 
     fun getBitmap(id: String): Bitmap {
         return cache[id] ?: BitmapFactory.decodeFile(File(fileDir, "$[$id].png").path)
+        ?: Bitmap.createBitmap(100, 100, Bitmap.Config.RGB_565)
     }
 
     fun remove(id: String) {
@@ -85,12 +86,12 @@ class ImageStore private constructor(val context: Context) {
                     val imageStream = contentResolver.openInputStream(data.data!!)
                     try {
                         setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID,
-                                                                        ImageStore.getInstance(
-                                                                                this@ImageStoreActivity).storeBitmap(
-                                                                                BitmapFactory.decodeStream(
-                                                                                        imageStream)).also {
-                                                                            d("onResult: image ID is $it")
-                                                                        }))
+                                ImageStore.getInstance(
+                                        this@ImageStoreActivity).storeBitmap(
+                                        BitmapFactory.decodeStream(
+                                                imageStream)).also {
+                                    d("onResult: image ID is $it")
+                                }))
                     } catch (e: IOException) {
                         e.printStackTrace()
                         setResult(Activity.RESULT_CANCELED)
