@@ -31,7 +31,6 @@ import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -240,8 +239,14 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     try {
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        Toast.makeText(context, "The AOSP calendar app was not found",
-                                Toast.LENGTH_LONG).show()
+                        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_INSERT, Intent.CATEGORY_APP_CALENDAR)
+                        intent.data = CalendarContract.Events.CONTENT_URI
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+
+                        }
                     }
                 }))
     }

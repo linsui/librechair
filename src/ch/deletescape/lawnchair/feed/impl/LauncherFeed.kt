@@ -1293,7 +1293,7 @@ class LauncherFeed(val originalContext: Context,
                 it.getActions(false).forEach {
                     toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
                         setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                        icon = it.icon
+                        icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
                         setOnMenuItemClickListener { _ ->
                             it.onClick.run()
                             true
