@@ -22,13 +22,16 @@ package ch.deletescape.lawnchair.feed.widgets
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
@@ -113,13 +116,18 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
             feed?.pickWidget {
                 d("getActions: got widget $it")
                 if (it != -1) {
-                    runOnUiWorkerThread {
-                        WidgetDatabase.getInstance(context)
-                                .dao()
-                                .addWidget(Widget(it,
-                                        WidgetDatabase.getInstance(
-                                                context)
-                                                .dao().all.size))
+                    FeedScope.launch {
+                        try {
+                            WidgetDatabase.getInstance(context)
+                                    .dao()
+                                    .addWidget(Widget(it,
+                                            WidgetDatabase.getInstance(
+                                                    context)
+                                                    .dao().all.size))
+                        } catch (e: SQLiteConstraintException) {
+                            e.printStackTrace() // todo dirty hack
+                        }
+                    }.invokeOnCompletion {
                         feed?.refresh(0, 0, true)
                     }
                 }

@@ -47,12 +47,9 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
-import ch.deletescape.lawnchair.feed.FeedAdapter
-import ch.deletescape.lawnchair.feed.FeedProvider
-import ch.deletescape.lawnchair.feed.ProviderScreen
+import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
-import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.images.screen.ImageDataScreen
 import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
 import ch.deletescape.lawnchair.feed.tabs.TabController
@@ -74,7 +71,6 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -94,8 +90,8 @@ class LauncherFeed(val originalContext: Context,
     private val accessingPackages = mutableSetOf<String>()
 
     init {
-        GlobalScope.launch {
-            context.lawnchairApp.overlayWidgetHost.prune()
+        FeedScope.launch {
+            originalContext.lawnchairApp.overlayWidgetHost.prune()
         }
         d("init: dark ${dark}")
     }
