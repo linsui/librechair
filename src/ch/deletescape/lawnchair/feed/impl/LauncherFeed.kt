@@ -1207,7 +1207,6 @@ class LauncherFeed(val originalContext: Context,
         }
         recyclerView.apply {
             post {
-                feedController.discardTouchEvents = true
                 recyclerView.isLayoutFrozen = true
             }
         }
@@ -1252,7 +1251,6 @@ class LauncherFeed(val originalContext: Context,
                 previewRecyclerView.visibility = View.INVISIBLE
                 feedController.findViewById<View>(R.id.empty_view).visibility =
                         if (cards.isNotEmpty()) View.GONE else View.VISIBLE
-                feedController.discardTouchEvents = false
             }
         } else if (oldCards.isEmpty() && count == 0) {
             this.refresh(150, 1)
@@ -1278,7 +1276,6 @@ class LauncherFeed(val originalContext: Context,
                     previewRecyclerView.visibility = View.INVISIBLE
                     feedController.findViewById<View>(R.id.empty_view).visibility =
                             if (cards.isNotEmpty()) View.GONE else View.VISIBLE
-                    feedController.discardTouchEvents = false
                 }
             }
         }
