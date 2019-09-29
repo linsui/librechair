@@ -39,6 +39,8 @@ public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
     private final double lat;
     private final double lon;
+    private MapView mapView;
+    private ViewGroup parent, layout;
 
     public MapScreen(Context base, LauncherFeed feed, double lat, double lon) {
         super(base);
@@ -49,6 +51,7 @@ public class MapScreen extends ProviderScreen {
 
     @Override
     protected View getView(ViewGroup parent) {
+        this.parent = parent;
         LinearLayout layout = new LinearLayout(parent.getContext()) {
             @Override
             public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -58,22 +61,35 @@ public class MapScreen extends ProviderScreen {
                 return super.onInterceptTouchEvent(ev);
             }
         };
-        MapView view = new MapView(parent.getContext());
         layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        layout.addView(view);
+        layout.addView(mapView = getMapView());
+        this.layout = layout;
         return layout;
+    }
+
+    private MapView getMapView() {
+        MapView mapView = new MapView(parent.getContext());
+        mapView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        return mapView;
     }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void bindView(View view) {
-        MapView mapView = (MapView) ((ViewGroup) view).getChildAt(0);
         mapView.getTileProvider().setTileSource(TileSourceFactory.MAPNIK);
         mapView.getController().setCenter(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
-        mapView.onResume();
         mapView.getController().zoomTo(9.0);
-        ((ViewGroup) view).setClipToPadding(false);
+    }
+
+    @Override
+    public void onPause() {
+        layout.removeAllViews();
+    }
+
+    @Override
+    public void onResume() {
+        layout.addView(mapView = getMapView());
+        bindView(null);
     }
 }

@@ -185,7 +185,7 @@ class LauncherFeed(val originalContext: Context,
     private var oldIndicatorTint: Int = -1
     private lateinit var oldTextColor: ColorStateList
     private val tabsOnBottom = originalContext.lawnchairPrefs.feedTabsOnBottom
-    private val preferenceScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
+    private val providerScreens: MutableList<Pair<ProviderScreen, ScreenData>> = mutableListOf()
     private var searchWidgetView: AppWidgetHostView? = null
         set(value) {
             field = value
@@ -237,7 +237,7 @@ class LauncherFeed(val originalContext: Context,
             val background =
                     if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
                             originalContext)
-            preferenceScreens.iterator().let {
+            providerScreens.iterator().let {
                 it.forEach { screen ->
                     frame.removeView(screen.second.view)
                     it.remove()
@@ -840,19 +840,19 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun displayPreferenceScreen(screen: ProviderScreen, x: Float, y: Float,
-                                inflater: (parent: ViewGroup) -> View) {
+    fun displayProviderScreen(screen: ProviderScreen, x: Float, y: Float,
+                              inflater: (parent: ViewGroup) -> View) {
         var view: View? = null
         displayView({
             inflater(it).also { view = it }
         }, x, y)
-        preferenceScreens.add(screen to ScreenData(x, y, view!!))
+        providerScreens.add(screen to ScreenData(x, y, view!!))
         synchronized(internalActions) {
             if (!internalActions.containsKey(R.id.cancel)) {
                 internalActions.put(R.id.cancel, FeedProvider.Action(
                         R.drawable.ic_arrow_back.fromDrawableRes(context), context.getString(
                         R.string.title_action_back), Runnable {
-                    if (preferenceScreens.isEmpty() || preferenceScreens.size == 1) {
+                    if (providerScreens.isEmpty() || providerScreens.size == 1) {
                         internalActions.remove(R.id.cancel)
                         updateActions()
                     }
@@ -865,9 +865,9 @@ class LauncherFeed(val originalContext: Context,
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun removeLastPreferenceScreen() {
-        removeDisplayedView(preferenceScreens.last().second.view, preferenceScreens.last().second.x,
-                preferenceScreens.last().second.y);
-        preferenceScreens.remove(preferenceScreens.last())
+        removeDisplayedView(providerScreens.last().second.view, providerScreens.last().second.x,
+                providerScreens.last().second.y);
+        providerScreens.remove(providerScreens.last())
     }
 
     private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
@@ -1051,6 +1051,7 @@ class LauncherFeed(val originalContext: Context,
                     }
                     feedController.visibility = View.VISIBLE
                     windowService.addView(feedController, layoutParams)
+                    providerScreens.forEach { it.first.onResume() }
                 } else {
                     feedController.visibility = View.INVISIBLE
                     feedController.alpha = 0f
@@ -1059,6 +1060,7 @@ class LauncherFeed(val originalContext: Context,
                     } catch (e: RuntimeException) {
                         windowService.removeView(feedController)
                     }
+                    providerScreens.forEach { it.first.onPause() }
                 }
             }
         }

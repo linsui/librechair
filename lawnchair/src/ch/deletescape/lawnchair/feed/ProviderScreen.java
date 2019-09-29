@@ -19,9 +19,6 @@
 
 package ch.deletescape.lawnchair.feed;
 
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-
 import android.animation.Animator;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -36,13 +33,18 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
+
+import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherState;
+
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
-import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherState;
 import kotlin.Pair;
+
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 
 public abstract class ProviderScreen extends ContextWrapper {
 
@@ -53,8 +55,15 @@ public abstract class ProviderScreen extends ContextWrapper {
     protected abstract View getView(ViewGroup parent);
     protected abstract void bindView(View view);
 
+    public void onPause() {
+
+    }
+    public void onResume() {
+
+    }
+
     public final void display(LauncherFeed feed, int tX, int tY) {
-        feed.displayPreferenceScreen(this, tX, tY, viewGroup -> {
+        feed.displayProviderScreen(this, tX, tY, viewGroup -> {
             View v = getView(viewGroup);
             bindView(v);
             return v;
@@ -63,7 +72,7 @@ public abstract class ProviderScreen extends ContextWrapper {
 
     public final void display(FeedProvider provider, int touchX, int touchY) {
         if (provider.getFeed() != null) {
-            provider.getFeed().displayPreferenceScreen(this, touchX, touchY, viewGroup -> {
+            provider.getFeed().displayProviderScreen(this, touchX, touchY, viewGroup -> {
                 View v = getView(viewGroup);
                 bindView(v);
                 return v;
