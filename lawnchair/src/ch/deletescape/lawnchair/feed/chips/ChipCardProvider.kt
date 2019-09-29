@@ -57,7 +57,7 @@ class ChipCardProvider(c: Context?) : FeedProvider(c) {
                 adapter = feed!!.chipAdapter
                 setOnTouchListener { v, event ->
                     controllerView?.disallowInterceptCurrentTouchEvent = true
-                    true
+                    false
                 }
                 recycler = this
             }
