@@ -151,9 +151,9 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     recyclerView.setAdapter(adapter);
                     FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(parent.getContext());
                     layoutManager.setFlexWrap(FlexWrap.WRAP);
-                    layoutManager.setFlexDirection(FlexDirection.ROW);
+                    layoutManager.setFlexDirection(FlexDirection.COLUMN);
                     layoutManager.setJustifyContent(JustifyContent.FLEX_START);
-                    layoutManager.setAlignItems(AlignItems.FLEX_START);
+                    layoutManager.setAlignItems(AlignItems.CENTER);
                     recyclerView.setLayoutManager(
                             new GridLayoutManager(parent.getContext(),
                                     1));
