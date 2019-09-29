@@ -23,11 +23,14 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.WindowManager;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 
 @SuppressWarnings("unchecked")
@@ -109,6 +112,14 @@ public abstract class FeedProvider {
         return windowService;
     }
 
+    @Nullable
+    public FeedController getControllerView() {
+        if (getFeed() != null) {
+            return getFeed().getFeedController();
+        } else {
+            return null;
+        }
+    }
 
     public static class Action {
         public Action(Drawable item, String name, Runnable onClick) {
