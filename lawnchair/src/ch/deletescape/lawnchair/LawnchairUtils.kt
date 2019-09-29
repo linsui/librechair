@@ -64,6 +64,7 @@ import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -89,7 +90,11 @@ import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
 import org.json.JSONArray
 import org.json.JSONObject
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
 import org.xmlpull.v1.XmlPullParser
+import java.io.IOException
 import java.lang.reflect.Field
 import java.security.MessageDigest
 import java.time.ZonedDateTime
@@ -991,11 +996,42 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     val description = v.findViewById(R.id.calendar_event_title) as TextView
     val address = v.findViewById(R.id.calendar_event_address) as TextView
     val directions = v.findViewById(R.id.calendar_event_directions) as TextView
+    val maps = v.findViewById<MapView>(R.id.maps_view)
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
+        maps.visibility = View.GONE
     } else {
         address.text = addressNullable
+        maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
+        maps.onResume()
+        runOnNewThread {
+            try {
+                d("getCalendarFeedView: retrieving location for $addressNullable")
+                val response = NominatimFactory.getInstance(context)
+                        .query(addressNullable).execute()
+                d("getCalendarFeedView: response for $addressNullable was $response")
+                if (!response.isSuccessful || response.body() == null
+                        || response.body()!!.isEmpty()) {
+                    maps.post { maps.visibility = View.GONE }
+                } else {
+                    val locations = response.body()!!
+                    val (lat, lon) = locations[0].lat to locations[0].lon
+                    d("getCalendarFeedView: location for $addressNullable is $lat, $lon")
+                    maps.post {
+                        maps.apply {
+                            controller.apply {
+                                setZoom(13.0)
+                                setCenter(GeoPoint(lat, lon))
+                            }
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                maps.post { maps.visibility = View.GONE }
+            }
+        }
         directions.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

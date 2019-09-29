@@ -40,9 +40,11 @@ import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
+import java.io.File
 
 class LawnchairApp : Application(), () -> Unit {
     override fun invoke() {
@@ -86,6 +88,9 @@ class LawnchairApp : Application(), () -> Unit {
         ClipartCache.providers += FancyClipartResolver(this)
 
         ThemeManager.getInstance(this).changeCallbacks += this
+
+        org.osmdroid.config.Configuration.getInstance().osmdroidBasePath = File(filesDir, "osmdroid")
+        org.osmdroid.config.Configuration.getInstance().userAgentValue = "Librechair-" + BuildConfig.VERSION_CODE
     }
 
     fun onLauncherAppStateCreated() {
