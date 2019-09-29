@@ -92,6 +92,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.xmlpull.v1.XmlPullParser
 import java.io.IOException
@@ -1005,19 +1006,17 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         address.text = addressNullable
         maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
         maps.onResume()
-        runOnNewThread {
+        maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        runOnUiWorkerThread {
             try {
-                d("getCalendarFeedView: retrieving location for $addressNullable")
                 val response = NominatimFactory.getInstance(context)
                         .query(addressNullable).execute()
-                d("getCalendarFeedView: response for $addressNullable was $response")
                 if (!response.isSuccessful || response.body() == null
                         || response.body()!!.isEmpty()) {
                     maps.post { maps.visibility = View.GONE }
                 } else {
                     val locations = response.body()!!
                     val (lat, lon) = locations[0].lat to locations[0].lon
-                    d("getCalendarFeedView: location for $addressNullable is $lat, $lon")
                     maps.post {
                         maps.apply {
                             controller.apply {
