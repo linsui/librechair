@@ -24,10 +24,7 @@ package ch.deletescape.lawnchair.feed.impl
 import android.animation.Animator
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHostView
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -35,7 +32,10 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.*
+import android.os.Binder
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -46,6 +46,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.ProviderScreen
@@ -59,7 +60,6 @@ import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
-import ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -713,115 +713,103 @@ class LauncherFeed(val originalContext: Context,
         }
         if (!FeatureFlags.GO_DISABLE_WIDGETS) {
             toolbar.setOnLongClickListener {
-                context.bindService(Intent(context, WidgetSelectionService::class.java),
-                        object : ServiceConnection {
-                            override fun onServiceDisconnected(name: ComponentName?) {
-                            }
+                OverlayCallbacks.postWidgetRequest(context) {
+                    context.lawnchairPrefs.feedToolbarWidget = it
+                    if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+                        val widgetContainer =
+                                toolbar.findViewById<LinearLayout>(
+                                        R.id.feed_widget_layout)
+                        if (searchWidgetView != null) {
+                            widgetContainer.removeView(searchWidgetView)
+                        }
+                        var deleting = false
+                        searchWidgetView =
+                                (context.applicationContext as LawnchairApp)
+                                        .overlayWidgetHost
+                                        .createView(context,
+                                                context.lawnchairPrefs.feedToolbarWidget,
+                                                context.appWidgetManager
+                                                        .getAppWidgetInfo(
+                                                                context.lawnchairPrefs.feedToolbarWidget))
+                        searchWidgetView!!.layoutParams =
+                                LinearLayout.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT,
+                                        context.appWidgetManager
+                                                .getAppWidgetInfo(
+                                                        context.lawnchairPrefs.feedToolbarWidget)?.minHeight
+                                                ?: 32f.applyAsDip(
+                                                        context).toInt())
+                                        .apply {
+                                            marginStart = 8f.applyAsDip(
+                                                    context)
+                                                    .toInt()
+                                            marginEnd = 8f.applyAsDip(
+                                                    context)
+                                                    .toInt()
+                                            topMargin = 8f.applyAsDip(
+                                                    context)
+                                                    .toInt()
+                                            bottomMargin =
+                                                    4f.applyAsDip(
+                                                            context)
+                                                            .toInt()
+                                        }
+                        searchWidgetView!!.setOnLongClickListener {
+                            searchWidgetView!!.animate()
+                                    .scaleX(0.7f)
+                                    .scaleY(0.7f)
+                                    .setInterpolator(
+                                            Interpolators.ACCEL_1_5)
+                                    .duration = 500
+                            deleting = true
+                            true
+                        }
+                        searchWidgetView!!.setOnTouchListener { v, event ->
+                            if (deleting && event.action == MotionEvent.ACTION_UP) {
+                                searchWidgetView!!.animate()
+                                        .scaleX(0f)
+                                        .scaleY(0f)
+                                        .setDuration(500)
+                                        .setListener(object :
+                                                Animator.AnimatorListener {
+                                            override fun onAnimationRepeat(
+                                                    animation: Animator?) {
 
-                            override fun onServiceConnected(name: ComponentName?,
-                                                            service: IBinder?) {
-                                IWidgetSelector.Stub.asInterface(service)
-                                        .pickWidget(object :
-                                                WidgetSelectionCallback.Stub() {
-                                            override fun onWidgetSelected(i: Int) {
-                                                context.lawnchairPrefs.feedToolbarWidget = i
-                                                if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-                                                    val widgetContainer =
-                                                            toolbar.findViewById<LinearLayout>(
-                                                                    R.id.feed_widget_layout)
-                                                    if (searchWidgetView != null) {
-                                                        widgetContainer.removeView(searchWidgetView)
-                                                    }
-                                                    var deleting = false
-                                                    searchWidgetView =
-                                                            (context.applicationContext as LawnchairApp)
-                                                                    .overlayWidgetHost
-                                                                    .createView(context,
-                                                                            context.lawnchairPrefs.feedToolbarWidget,
-                                                                            context.appWidgetManager
-                                                                                    .getAppWidgetInfo(
-                                                                                            context.lawnchairPrefs.feedToolbarWidget))
-                                                    searchWidgetView!!.layoutParams =
-                                                            LinearLayout.LayoutParams(
-                                                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                                                    context.appWidgetManager
-                                                                            .getAppWidgetInfo(
-                                                                                    context.lawnchairPrefs.feedToolbarWidget)?.minHeight
-                                                                            ?: 32f.applyAsDip(
-                                                                                    context).toInt())
-                                                                    .apply {
-                                                                        marginStart = 8f.applyAsDip(
-                                                                                context)
-                                                                                .toInt()
-                                                                        marginEnd = 8f.applyAsDip(
-                                                                                context)
-                                                                                .toInt()
-                                                                        topMargin = 8f.applyAsDip(
-                                                                                context)
-                                                                                .toInt()
-                                                                        bottomMargin =
-                                                                                4f.applyAsDip(
-                                                                                        context)
-                                                                                        .toInt()
-                                                                    }
-                                                    searchWidgetView!!.setOnLongClickListener {
-                                                        searchWidgetView!!.animate()
-                                                                .scaleX(0.7f)
-                                                                .scaleY(0.7f)
-                                                                .setInterpolator(
-                                                                        Interpolators.ACCEL_1_5)
-                                                                .duration = 500
-                                                        deleting = true
-                                                        true
-                                                    }
-                                                    searchWidgetView!!.setOnTouchListener { v, event ->
-                                                        if (deleting && event.action == MotionEvent.ACTION_UP) {
-                                                            searchWidgetView!!.animate()
-                                                                    .scaleX(0f)
-                                                                    .scaleY(0f)
-                                                                    .setDuration(500)
-                                                                    .setListener(object :
-                                                                            Animator.AnimatorListener {
-                                                                        override fun onAnimationRepeat(
-                                                                                animation: Animator?) {
-
-                                                                        }
-
-                                                                        override fun onAnimationEnd(
-                                                                                animation: Animator?) {
-                                                                            context.lawnchairPrefs.feedToolbarWidget =
-                                                                                    -1
-                                                                            reapplyInsetFlag = true
-                                                                            widgetContainer.removeView(
-                                                                                    searchWidgetView)
-                                                                            searchWidgetView = null
-                                                                        }
-
-                                                                        override fun onAnimationCancel(
-                                                                                animation: Animator?) {
-
-                                                                        }
-
-                                                                        override fun onAnimationStart(
-                                                                                animation: Animator?) {
-
-                                                                        }
-
-                                                                    })
-                                                        } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
-                                                            deleting = false
-                                                            searchWidgetView!!.animate().scaleX(1f)
-                                                                    .scaleY(1f).setDuration(250)
-                                                        }
-                                                        true
-                                                    }
-                                                    reapplyInsetFlag = true
-                                                    widgetContainer.addView(searchWidgetView, 0)
-                                                }
                                             }
+
+                                            override fun onAnimationEnd(
+                                                    animation: Animator?) {
+                                                context.lawnchairPrefs.feedToolbarWidget =
+                                                        -1
+                                                reapplyInsetFlag = true
+                                                widgetContainer.removeView(
+                                                        searchWidgetView)
+                                                searchWidgetView = null
+                                            }
+
+                                            override fun onAnimationCancel(
+                                                    animation: Animator?) {
+
+                                            }
+
+                                            override fun onAnimationStart(
+                                                    animation: Animator?) {
+
+                                            }
+
                                         })
+                            } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                                deleting = false
+                                searchWidgetView!!.animate().scaleX(1f)
+                                        .scaleY(1f).setDuration(250)
                             }
-                        }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+                            true
+                        }
+                        reapplyInsetFlag = true
+                        widgetContainer.addView(searchWidgetView, 0)
+                    }
+                }
+                true
             }
 
             upButton.supportImageTintList =
@@ -1290,22 +1278,7 @@ class LauncherFeed(val originalContext: Context,
 
     fun pickWidget(callback: (id: Int) -> Unit) {
         handler.post {
-            context.bindService(Intent(context, WidgetSelectionService::class.java),
-                    object : ServiceConnection {
-                        override fun onServiceDisconnected(name: ComponentName?) {
-
-                        }
-
-                        override fun onServiceConnected(name: ComponentName?, service: IBinder) {
-                            IWidgetSelector.Stub.asInterface(service)
-                                    .pickWidget(object : WidgetSelectionCallback.Stub() {
-                                        override fun onWidgetSelected(i: Int) {
-                                            callback(i)
-                                        }
-                                    })
-                        }
-
-                    }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+            OverlayCallbacks.postWidgetRequest(context, callback)
         }
     }
 

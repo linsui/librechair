@@ -27,9 +27,8 @@ import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 
 class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
@@ -112,15 +111,15 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                         context) else R.color.textColorPrimaryInverse.fromColorRes(context)),
                 R.string.title_feed_toolbar_add_widget.fromStringRes(context), Runnable {
             feed?.pickWidget {
+                d("getActions: got widget $it")
                 if (it != -1) {
-                    GlobalScope.launch {
+                    runOnUiWorkerThread {
                         WidgetDatabase.getInstance(context)
                                 .dao()
                                 .addWidget(Widget(it,
                                         WidgetDatabase.getInstance(
                                                 context)
                                                 .dao().all.size))
-                    }.invokeOnCompletion {
                         feed?.refresh(0, 0, true)
                     }
                 }

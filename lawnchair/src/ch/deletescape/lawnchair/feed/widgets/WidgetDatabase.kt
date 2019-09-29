@@ -32,7 +32,7 @@ abstract class WidgetDatabase : RoomDatabase() {
 
     companion object : SingletonHolder<WidgetDatabase, Context>(
             {
-                Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets")
+                Room.databaseBuilder(it, WidgetDatabase::class.java, "feed_widgets2")
                         .allowMainThreadQueries()
                         .enableMultiInstanceInvalidation().fallbackToDestructiveMigration().build()
             })

@@ -32,7 +32,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
-object CallbackManager {
+object OverlayCallbacks {
     private val widgetRequests = mutableListOf<WidgetRequest>()
     private val imageRequests = mutableListOf<ImageRequest>()
 

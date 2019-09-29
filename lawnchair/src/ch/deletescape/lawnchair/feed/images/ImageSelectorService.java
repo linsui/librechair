@@ -27,7 +27,7 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 
 import ch.deletescape.lawnchair.IImageSelector;
-import ch.deletescape.lawnchair.cp.CallbackManager;
+import ch.deletescape.lawnchair.cp.OverlayCallbacks;
 import ch.deletescape.lawnchair.feed.IImageStoreCallback;
 import kotlin.Unit;
 
@@ -41,7 +41,7 @@ public class ImageSelectorService extends Service {
         return selector != null ? selector : (selector = new IImageSelector.Stub() {
             @Override
             public void selectImage(IImageStoreCallback callback) throws RemoteException {
-                CallbackManager.INSTANCE.postImageRequest(ImageSelectorService.this, imageId -> {
+                OverlayCallbacks.INSTANCE.postImageRequest(ImageSelectorService.this, imageId -> {
                     try {
                         callback.onImageRetrieved(imageId);
                     } catch (RemoteException e) {
