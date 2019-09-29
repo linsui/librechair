@@ -24,9 +24,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import ch.deletescape.lawnchair.feed.Card
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.AbstractImageProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Call
@@ -48,7 +48,7 @@ class NgDailyImageProvider(c: Context) : AbstractImageProvider<String>(c) {
             override fun onResponse(call: Call<Gallery>, response: Response<Gallery>) {
                 if (response.isSuccessful && response.body() != null) {
                     images.clear()
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         response.body()!!.items.take(4).forEach {
                             images += withContext(Dispatchers.Default) {
                                 BitmapFactory.decodeStream(URL(it.originalUrl).openStream())

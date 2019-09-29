@@ -66,7 +66,6 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
@@ -293,7 +292,7 @@ class LawnchairPreferences(val context: Context) :
 
     init {
         if (feedWidgetList.getAll().isNotEmpty()) {
-            GlobalScope.launch {
+            FeedScope.launch {
                 if (getCurrentProcessName(context).contains("overlay").not()) {
                     feedWidgetList.getAll().iterator().apply {
                         forEach {

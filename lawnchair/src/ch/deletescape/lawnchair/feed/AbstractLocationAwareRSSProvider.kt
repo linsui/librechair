@@ -28,7 +28,6 @@ import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import geocode.GeocoderCompat
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
@@ -39,7 +38,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
         try {
             if (context.checkLocationAccess() && context.lawnchairPrefs.overrideLocale.isEmpty()) {
                 context.lawnchairLocationManager.addCallback { lat, lon ->
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         val country =
                                 GeocoderCompat(context, true).nearestPlace(lat, lon).country
                         try {

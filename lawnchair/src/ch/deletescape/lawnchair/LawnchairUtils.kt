@@ -64,6 +64,7 @@ import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.nominatim.NominatimFactory
@@ -90,6 +91,8 @@ import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
@@ -1009,7 +1012,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
         maps.onResume()
         maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
-        runOnUiWorkerThread {
+        FeedScope.launch(Dispatchers.IO) {
             try {
                 val response = NominatimFactory.getInstance(context)
                         .query(addressNullable).execute()

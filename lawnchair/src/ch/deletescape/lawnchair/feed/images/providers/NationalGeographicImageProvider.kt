@@ -25,9 +25,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.SystemClock
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicRetrofitServiceFactory
 import ch.deletescape.lawnchair.tomorrow
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import java.io.File
 import java.io.FileInputStream
@@ -44,7 +44,7 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     val cache: File
         get() = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
 
-    override suspend fun getBitmap(context: Context): Bitmap? = GlobalScope.async {
+    override suspend fun getBitmap(context: Context): Bitmap? = FeedScope.async {
         if (cache.exists()) {
             return@async BitmapFactory.decodeStream(FileInputStream(cache))
         } else {

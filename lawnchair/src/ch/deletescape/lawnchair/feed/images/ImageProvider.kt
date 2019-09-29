@@ -24,10 +24,11 @@ import android.graphics.Bitmap
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
@@ -37,7 +38,7 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
             setOnClickListener {
                OverlayCallbacks.postImageRequest(context) {
                    if (it != null) {
-                       GlobalScope.launch {
+                       FeedScope.launch(Dispatchers.IO) {
                            ImageDatabase.getInstance(
                                    context).access()
                                    .insert(Image(it,
@@ -57,13 +58,13 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val onRemoveListener: (id: String) -> Unit = {
             d("(id: String) -> Unit: removing image with id $it")
             ImageStore.getInstance(context).remove(it)
-            GlobalScope.launch {
+            FeedScope.launch {
                 ImageDatabase.getInstance(context).access().remove(it)
             }
         }
 
     init {
-        GlobalScope.launch {
+        FeedScope.launch {
             ImageDatabase.getInstance(context).apply {
                 access().getAll().forEach {
                     images += ImageStore.getInstance(context).getBitmap(it.id) to it.id

@@ -20,9 +20,9 @@
 
 package ch.deletescape.lawnchair.feed.wikipedia.image
 
+import ch.deletescape.lawnchair.feed.FeedScope
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.apache.commons.io.IOUtils
 import java.io.IOException
@@ -39,7 +39,7 @@ object DailyImage {
                 Calendar.MONTH) + 1)}/${GregorianCalendar().get(Calendar.DAY_OF_MONTH)}"
 
     suspend fun getFeaturedImage(): String? = uriCache[TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis())] ?: GlobalScope.async {
+            System.currentTimeMillis())] ?: FeedScope.async {
         JsonParser().parse(IOUtils.toString(URL(API_URL).openStream(), Charset.defaultCharset()))
                 .asJsonObject.getAsJsonObject(
                 "image")?.getAsJsonObject("image")?.getAsJsonPrimitive("source")?.asString

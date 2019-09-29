@@ -7,10 +7,10 @@ import android.database.MatrixCursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.Utilities
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
@@ -48,7 +48,7 @@ class CurrentImageProvider : ContentProvider() {
         val currentBitmap = File(context!!.cacheDir, uri.lastPathSegment)
         currentBitmap.delete()
         var flag = false
-        GlobalScope.launch {
+        FeedScope.launch {
             try {
                 ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground,
                                       context!!)?.getBitmap(context!!)!!

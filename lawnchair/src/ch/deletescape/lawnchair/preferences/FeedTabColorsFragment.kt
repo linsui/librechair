@@ -24,13 +24,12 @@ import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.DialogFragment
 import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.colors.SingleUseColorDialog
-import ch.deletescape.lawnchair.colors.preferences.ColorPickerDialog
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.Color
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.ColorDb
 import ch.deletescape.lawnchair.getColorEngineAccent
@@ -38,15 +37,11 @@ import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.SingleUseHold
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.priyesh.chroma.ColorMode
-import java.util.*
-import java.util.stream.Collectors
 
 class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
     override fun onBindDialogView(view: View) {
@@ -62,7 +57,7 @@ class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
             SingleUseColorDialog(context, context.getColorEngineAccent(),
                     context.resources.getStringArray(R.array.resolvers_accent).toList(),
                     ColorMode.RGB) {
-                GlobalScope.launch {
+                FeedScope.launch {
                     ColorDb.getInstance(context).dao()
                             .addColor(Color(ColorDb.getInstance(context).dao().everything().size, it))
                 }.invokeOnCompletion {
@@ -79,7 +74,7 @@ class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
         private val initHold = SingleUseHold()
 
         init {
-            GlobalScope.launch {
+            FeedScope.launch {
                 colors.addAll(async {
                     val colors = ColorDb.getInstance(context).dao().everything()
                     val ordered = IntArray(colors.size)
@@ -99,7 +94,7 @@ class FeedTabColorsFragment : PreferenceDialogFragmentCompat() {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val pos = viewHolder.adapterPosition
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         synchronized(colors) {
                             ColorDb.getInstance(context).dao().clear()
                             val oldColors = colors.toMutableList()

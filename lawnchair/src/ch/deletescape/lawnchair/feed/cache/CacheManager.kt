@@ -2,9 +2,8 @@ package ch.deletescape.lawnchair.feed.cache
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.util.SingletonHolder
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import java.util.concurrent.TimeUnit
 
@@ -24,7 +23,7 @@ class CacheManager(val context: Context) {
     }
 
     suspend fun suspendCachedBytes(namespace: String,
-                                   cacheEntry: String): ByteArray = GlobalScope.async {
+                                   cacheEntry: String): ByteArray = FeedScope.async {
         getCachedBytes(namespace, cacheEntry)
     }.await()
 

@@ -46,13 +46,13 @@ import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.preference.PreferenceViewHolder
 import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.feed.chips.ChipProviderContainer
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
 import com.android.launcher3.R
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ChipProvidersPreference(context: Context, attrs: AttributeSet?) :
@@ -70,7 +70,7 @@ class ChipProvidersPreference(context: Context, attrs: AttributeSet?) :
     }
 
     fun setProviders(providers: List<ChipProviderContainer>) {
-        GlobalScope.launch {
+        FeedScope.launch {
             ChipDatabase.Holder.getInstance(context).dao().removeAll()
             providers.forEach {
                 it.order = providers.indexOf(it)

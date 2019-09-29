@@ -37,6 +37,7 @@ import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.widgets.Widget
 import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -45,7 +46,6 @@ import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.views.FolderNameEditText
 import ch.deletescape.lawnchair.views.VerticalResizeView
 import com.android.launcher3.R
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -58,7 +58,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
 
     override fun getDialogLayoutResource() = R.layout.dialog_preference_recyclerview
     fun updateSummary() {
-        GlobalScope.launch {
+        FeedScope.launch {
             val summary = WidgetDatabase.getInstance(context).dao().all.mapNotNull {
                 it.customCardTitle ?: context.appWidgetManager.getAppWidgetInfo(it.id)?.loadLabel(
                         context.packageManager)
@@ -99,7 +99,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
             val initHold = SingleUseHold()
 
             init {
-                GlobalScope.launch {
+                FeedScope.launch {
                     try {
                         prefList.clear()
                         prefList.addAll(WidgetDatabase.getInstance(c).dao().all.filter {
@@ -176,7 +176,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     customTitle.addTextChangedListener(object : TextWatcher {
                         override fun afterTextChanged(s: Editable?) {
                             widget.customCardTitle = s.toString()
-                            GlobalScope.launch {
+                            FeedScope.launch {
                                 WidgetDatabase.getInstance(c).dao()
                                         .setCardTitle(widget.id, s.toString())
                             }
@@ -194,7 +194,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             widget.sortable
                     sortCards.setOnCheckedChangeListener { buttonView, isChecked ->
                         widget.sortable = isChecked
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             WidgetDatabase.getInstance(c).dao().setSortable(widget.id, isChecked)
                         }
                     }
@@ -202,14 +202,14 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             widget.raiseCard
                     widgetBackgroundCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                         widget.raiseCard = isChecked
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             WidgetDatabase.getInstance(c).dao().setRaised(widget.id, isChecked)
                         }
                     }
                     cardTitleCheckbox.isChecked = widget.showCardTitle
                     cardTitleCheckbox.setOnCheckedChangeListener { buttonView, isChecked ->
                         widget.showCardTitle = isChecked
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             WidgetDatabase.getInstance(c).dao()
                                     .setShowCardTitle(widget.id, isChecked)
                         }
@@ -246,7 +246,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             val toSize = alter(widgetView.height + difference < 0, -1,
                                     (widgetView.height + difference).toInt())
                             widget.height = toSize
-                            GlobalScope.launch {
+                            FeedScope.launch {
                                 WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
                             }
                             widgetView.layoutParams =
@@ -277,7 +277,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         } else {
                             val toSize = -1
                             widget.height = toSize
-                            GlobalScope.launch {
+                            FeedScope.launch {
                                 WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
                             }
                             widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
@@ -330,7 +330,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
 
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             synchronized(this@FeedWidgetsPreferenceAdapter) {
                                 for (i in 0 until prefList.size) {
                                     prefList[i].entryOrder = i
@@ -360,7 +360,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                         (viewHolder.itemView.context.applicationContext as LawnchairApp)
                                 .overlayWidgetHost
                                 .deleteAppWidgetId(prefList[viewHolder.adapterPosition].id)
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             try {
                                 WidgetDatabase.getInstance(c).dao()
                                         .removeWidget(prefList[viewHolder.adapterPosition].id)

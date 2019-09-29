@@ -25,10 +25,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.util.LaunchpadActivity
 import ch.deletescape.lawnchair.util.SingletonHolder
 import ch.deletescape.lawnchair.util.extensions.d
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -82,7 +82,7 @@ class ImageStore private constructor(val context: Context) {
         override fun onResult(resultCode: Int, data: Intent?) {
             d("onResult: $resultCode, $data")
             if (data != null && data.data != null) {
-                GlobalScope.launch {
+                FeedScope.launch {
                     val imageStream = contentResolver.openInputStream(data.data!!)
                     try {
                         setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID,
