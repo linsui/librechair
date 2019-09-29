@@ -135,8 +135,10 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                                                             context)
                                                                             .dao().all.size))
                                                 }.invokeOnCompletion {
-                                                    if (it == null && feed != null) {
-                                                        feed.refresh(0, 0, true)
+                                                    runOnMainThread {
+                                                        if (it == null) {
+                                                            feed?.refresh(0)
+                                                        }
                                                     }
                                                 }
                                             }

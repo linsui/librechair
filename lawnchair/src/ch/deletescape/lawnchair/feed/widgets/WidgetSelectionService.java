@@ -47,7 +47,7 @@ public class WidgetSelectionService extends Service {
                     try {
                         callback.onWidgetSelected(id);
                     } catch (RemoteException e) {
-                        e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                     return Unit.INSTANCE;
                 });

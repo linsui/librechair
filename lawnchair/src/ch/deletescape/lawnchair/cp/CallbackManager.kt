@@ -28,6 +28,7 @@ import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.feed.images.ImageStore
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
@@ -37,7 +38,10 @@ object CallbackManager {
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
         val id = UUID.randomUUID().hashCode();
-        widgetRequests += WidgetRequest(id, callback)
+        widgetRequests.add(WidgetRequest(id) {
+            d("postWidgetRequest: retrieved widget $it")
+            callback(it)
+        })
         context.startActivity(Intent(context, WidgetRequestActivity::class.java).apply {
             putExtra("request_id", id)
             flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -84,9 +88,13 @@ object CallbackManager {
                     request.configured = true
                     startActivityForResult(Intent().setComponent(widgetInfo.configure), requestCode)
                     return
+                } else {
+                    request.callback(requestCode)
+                    finish()
+                    return
                 }
             }
-            if ((!configurable || request.configured) && resultCode == RESULT_OK) {
+            if (request.configured && resultCode == RESULT_OK) {
                 request.callback(requestCode)
                 finish()
             } else {
