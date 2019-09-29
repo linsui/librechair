@@ -170,7 +170,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             object : Card.Companion.InflateHelper {
                                 override fun inflate(parent: ViewGroup): View {
                                     return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
-                                            description, address, parent.context, parent) else View(
+                                            description, address, parent.context, parent, this@CalendarEventProvider) else View(
                                             parent.getContext())
                                 }
                             },

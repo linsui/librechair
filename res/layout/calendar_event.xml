@@ -57,10 +57,24 @@
                 android:id="@+id/calendar_event_directions" />
         </LinearLayout>
     </LinearLayout>
-    <org.osmdroid.views.MapView
-        android:id="@+id/maps_view"
+    <LinearLayout
+        android:id="@+id/maps_view_parent"
         android:layout_width="0dp"
         android:layout_gravity="center_vertical"
-        android:layout_height="85dp"
-        android:layout_weight=".3"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight=".3">
+        <org.osmdroid.views.MapView
+            android:id="@+id/maps_view"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_height="85dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/maps_more_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_more"
+            android:textAllCaps="false"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"/>
+    </LinearLayout>
 </LinearLayout>

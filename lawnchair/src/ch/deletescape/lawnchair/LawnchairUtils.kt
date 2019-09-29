@@ -63,6 +63,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -992,7 +994,7 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
 }
 
 fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context,
-                        parentView: ViewGroup): View {
+                        parentView: ViewGroup, provider: FeedProvider): View {
     val v = LayoutInflater.from(parentView.context).inflate(R.layout.calendar_event, parentView, false)
     val description = v.findViewById(R.id.calendar_event_title) as TextView
     val address = v.findViewById(R.id.calendar_event_address) as TextView
@@ -1001,12 +1003,19 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
-        maps.visibility = View.GONE
+        (maps.parent as View).visibility = View.GONE
     } else {
         address.text = addressNullable
         maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
         maps.onResume()
         maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        var lX = 0f
+        var lY = 0f
+        v.findViewById<View>(R.id.maps_more_btn).setOnTouchListener { v, event ->
+            lX = event.x
+            lY = event.y
+            false
+        }
         runOnUiWorkerThread {
             try {
                 val response = NominatimFactory.getInstance(context)
@@ -1018,6 +1027,10 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                     val locations = response.body()!!
                     val (lat, lon) = locations[0].lat to locations[0].lon
                     maps.post {
+                        v.findViewById<View>(R.id.maps_more_btn).setOnClickListener {
+                            MapScreen(it.context, provider.feed, lat, lon)
+                                    .display(provider, lX.roundToInt(), lY.roundToInt())
+                        }
                         maps.apply {
                             controller.apply {
                                 setZoom(13.0)
