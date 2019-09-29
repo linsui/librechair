@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.widgets
 
+import android.annotation.WorkerThread
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
@@ -43,11 +44,25 @@ import kotlin.math.abs
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
-class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
+class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
 
     override fun onCreateView(context: Context, appWidgetId: Int,
                               appWidget: AppWidgetProviderInfo?): AppWidgetHostView {
         return OverlayWidgetView(context, appWidgetId)
+    }
+
+    @WorkerThread
+    fun prune() {
+        val validWidgets = mutableListOf<Int>()
+        validWidgets.addAll(WidgetDatabase.getInstance(context).dao().all.map { it.id })
+        if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+            validWidgets += context.lawnchairPrefs.feedToolbarWidget
+        }
+        for (i in appWidgetIds) {
+            if (!validWidgets.contains(i)) {
+                deleteAppWidgetId(i)
+            }
+        }
     }
 
     class OverlayWidgetView(context: Context, val specialId: Int) : AppWidgetHostView(context) {
@@ -113,12 +128,14 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         fun forceStyle() {
             allChildren[0].let {
                 if (it.background != null) {
-                    it.background = GradientDrawable(GradientDrawable.Orientation.BL_TR, intArrayOf(if (dark)
-                        R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context),
-                            if (dark)
-                                R.color.qsb_background_dark.fromColorRes(context)
-                            else
-                                R.color.qsb_background.fromColorRes(context))).apply {
+                    it.background = GradientDrawable(GradientDrawable.Orientation.BL_TR,
+                            intArrayOf(if (dark)
+                                R.color.qsb_background_dark.fromColorRes(
+                                        context) else R.color.qsb_background.fromColorRes(context),
+                                    if (dark)
+                                        R.color.qsb_background_dark.fromColorRes(context)
+                                    else
+                                        R.color.qsb_background.fromColorRes(context))).apply {
 
                     }.apply {
                         elevation = 16f.applyAsDip(context)
@@ -249,15 +266,16 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
 
                             d("processDrawable: pixel $x,$y is $pixel")
 
-                            tgt.drawPoint(x.toFloat(), y.toFloat(), colorPaintCache[src.getPixel(x, y)]
-                                    ?: Paint().apply {
-                                        if (abs(r - g) <= 32
-                                                && abs(r - b) <= 32) {
-                                            this.color = color
-                                        } else {
-                                            this.color = pixel
-                                        }
-                                    }.also { colorPaintCache[src.getPixel(x, y)] = it })
+                            tgt.drawPoint(x.toFloat(), y.toFloat(),
+                                    colorPaintCache[src.getPixel(x, y)]
+                                            ?: Paint().apply {
+                                                if (abs(r - g) <= 32
+                                                        && abs(r - b) <= 32) {
+                                                    this.color = color
+                                                } else {
+                                                    this.color = pixel
+                                                }
+                                            }.also { colorPaintCache[src.getPixel(x, y)] = it })
                         }
                     }
                 }
@@ -273,7 +291,8 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         init {
-            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            viewTreeObserver.addOnGlobalLayoutListener(object :
+                    ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     d("onGlobalLayout: specialId: $specialId")
                     if (specialId == SPECIAL_SMARTSPACE) {

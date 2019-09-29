@@ -74,7 +74,9 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.math.*
 import kotlin.reflect.KClass
@@ -92,6 +94,9 @@ class LauncherFeed(val originalContext: Context,
     private val accessingPackages = mutableSetOf<String>()
 
     init {
+        GlobalScope.launch {
+            context.lawnchairApp.overlayWidgetHost.prune()
+        }
         d("init: dark ${dark}")
     }
 
