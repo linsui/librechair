@@ -42,7 +42,7 @@ public class MapScreen extends ProviderScreen {
     private MapView mapView;
     private ViewGroup parent, layout;
 
-    public MapScreen(Context base, LauncherFeed feed, double lat, double lon) {
+    public MapScreen(Context base, LauncherFeed feed, double lat, double lon, double zoom) {
         super(base);
         this.feed = feed;
         this.lat = lat;
