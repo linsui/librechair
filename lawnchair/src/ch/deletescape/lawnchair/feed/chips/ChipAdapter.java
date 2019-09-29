@@ -149,6 +149,8 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                 LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(
                         ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
                         context) ? Color.WHITE : Color.BLACK);
+        chipViewHolder.itemView.setElevation(LawnchairUtilsKt.applyAsDip(
+                (float) ChipPersistence.Companion.getInstance(context).getElevation(), context));
         chipViewHolder.itemView.setOnTouchListener((v, event) -> {
             if (controller != null) {
                 controller.setDisallowInterceptCurrentTouchEvent(true);
