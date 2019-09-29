@@ -21,12 +21,8 @@ package ch.deletescape.lawnchair.feed.widgets
 
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
 import android.os.Bundle
-import android.os.IBinder
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.Card
@@ -115,37 +111,24 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                 if (useWhiteText(backgroundColor, context)) R.color.textColorPrimary.fromColorRes(
                         context) else R.color.textColorPrimaryInverse.fromColorRes(context)),
                 R.string.title_feed_toolbar_add_widget.fromStringRes(context), Runnable {
-            context.bindService(Intent(context, WidgetSelectionService::class.java),
-                    object : ServiceConnection {
-                        override fun onServiceDisconnected(name: ComponentName?) {
+            feed?.pickWidget {
+                if (it != -1) {
+                    GlobalScope.launch {
+                        WidgetDatabase.getInstance(context)
+                                .dao()
+                                .addWidget(Widget(it,
+                                        WidgetDatabase.getInstance(
+                                                context)
+                                                .dao().all.size))
+                    }.invokeOnCompletion {
+                        runOnMainThread {
+                            if (it == null) {
+                                feed?.refresh(0)
+                            }
                         }
-
-                        override fun onServiceConnected(name: ComponentName?,
-                                                        service: IBinder?) {
-                            IWidgetSelector.Stub.asInterface(service)
-                                    .pickWidget(object :
-                                            WidgetSelectionCallback.Stub() {
-                                        override fun onWidgetSelected(i: Int) {
-                                            if (i != -1) {
-                                                GlobalScope.launch {
-                                                    WidgetDatabase.getInstance(context)
-                                                            .dao()
-                                                            .addWidget(Widget(i,
-                                                                    WidgetDatabase.getInstance(
-                                                                            context)
-                                                                            .dao().all.size))
-                                                }.invokeOnCompletion {
-                                                    runOnMainThread {
-                                                        if (it == null) {
-                                                            feed?.refresh(0)
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    })
-                        }
-                    }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+                    }
+                }
+            }
         }))
     }
 }

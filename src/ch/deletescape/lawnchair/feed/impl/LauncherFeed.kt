@@ -1288,6 +1288,27 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
+    fun pickWidget(callback: (id: Int) -> Unit) {
+        handler.post {
+            context.bindService(Intent(context, WidgetSelectionService::class.java),
+                    object : ServiceConnection {
+                        override fun onServiceDisconnected(name: ComponentName?) {
+
+                        }
+
+                        override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+                            IWidgetSelector.Stub.asInterface(service)
+                                    .pickWidget(object : WidgetSelectionCallback.Stub() {
+                                        override fun onWidgetSelected(i: Int) {
+                                            callback(i)
+                                        }
+                                    })
+                        }
+
+                    }, Context.BIND_IMPORTANT or Context.BIND_AUTO_CREATE)
+        }
+    }
+
     fun updateActions() {
         toolbar.menu.clear()
         if (adapter.providers.size == 1) {
