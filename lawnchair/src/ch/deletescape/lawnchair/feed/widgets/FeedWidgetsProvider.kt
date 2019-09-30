@@ -77,20 +77,16 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                         setExecutor(inflateExecutor)
                                         layoutParams = ViewGroup
                                                 .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                        (metadata
-                                                                ?: Widget.DEFAULT).height
-                                                                ?: appWidgetInfo.minHeight)
+                                                        if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
                                         updateAppWidgetOptions(Bundle().apply {
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                    (metadata ?: Widget.DEFAULT).height
-                                                            ?: height)
+                                                    if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                    (metadata ?: Widget.DEFAULT).height
-                                                            ?: height)
+                                                    if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
                                         })
                                         invalidate()
                                     }.also { it2 ->
