@@ -1007,6 +1007,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         address.visibility = View.GONE
         directions.visibility = View.GONE
         (maps.parent as View).visibility = View.GONE
+        v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
     } else {
         address.text = addressNullable
         maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
@@ -1018,7 +1019,10 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                         .query(addressNullable).execute()
                 if (!response.isSuccessful || response.body() == null
                         || response.body()!!.isEmpty()) {
-                    maps.post { maps.visibility = View.GONE }
+                    maps.post {
+                        maps.visibility = View.GONE
+                        v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
+                    }
                 } else {
                     val locations = response.body()!!
                     val (lat, lon) = locations[0].lat to locations[0].lon
