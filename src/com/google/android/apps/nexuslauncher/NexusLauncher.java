@@ -5,14 +5,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.core.graphics.ColorUtils;
 import android.view.View;
+
+import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherCallbacks;
 import com.android.launcher3.LauncherExterns;
 import com.android.launcher3.LauncherModel;
+import com.android.launcher3.LauncherState;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.config.FeatureFlags;
@@ -52,7 +54,7 @@ public class NexusLauncher {
     public NexusLauncher(NexusLauncherActivity activity) {
         mLauncher = activity;
         mExterns = activity;
-        mCallbacks = new ShadeCompatLauncherCallbacks();
+        mCallbacks = new NexusLauncherCallbacks();
         mExterns.setLauncherCallbacks(mCallbacks);
     }
 
@@ -196,6 +198,16 @@ public class NexusLauncher {
                     ((LawnchairLauncher) mLauncher).getOverlay().getClient().closeOverlay(true);
                 }
             }
+
+            if (mLauncher.hasWindowFocus()
+                    && mLauncher.isInState(LauncherState.NORMAL)
+                    && mLauncher.getWorkspace().getNextPage() == 0) {
+                PluginManager.getInstance(getLauncher()).getClient(ButtonPluginClient.class)
+                        .onHomeIntent(intent -> {
+                            getLauncher().startActivity(intent);
+                            return true;
+                        });
+            }
         }
 
         public void onLauncherProviderChange() {
@@ -326,18 +338,4 @@ public class NexusLauncher {
             }
         }
     }
-
-    public class ShadeCompatLauncherCallbacks extends NexusLauncherCallbacks {
-
-        @Override
-        public void onHomeIntent(boolean internalStateHandled) {
-            super.onHomeIntent(internalStateHandled);
-            PluginManager.getInstance(getLauncher()).getClient(ButtonPluginClient.class)
-                    .onHomeIntent(intent -> {
-                        getLauncher().startActivity(intent);
-                        return true;
-                    });
-        }
-    }
-
 }
