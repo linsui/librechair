@@ -33,13 +33,14 @@ import java.util.Map;
 
 public class MapProvider {
     public static final List<Class<? extends MapProvider>> ALL_PROVIDERS = Arrays.asList(
-            MapProvider.class, GoogleMapProvider.class, GoogleMapProvider.China.class);
+            MapProvider.class, GoogleMapProvider.class, GoogleMapProvider.China.class, BingMapsProvider.class);
     public static final Map<Class<? extends MapProvider>, Integer> NAMES = new HashMap<>();
 
     static {
         NAMES.put(MapProvider.class, R.string.title_map_provider_default);
         NAMES.put(GoogleMapProvider.class, R.string.title_map_provider_google);
         NAMES.put(GoogleMapProvider.China.class, R.string.title_map_provider_google_china);
+        NAMES.put(BingMapsProvider.class, R.string.bing);
     }
 
     public ITileSource getTileSource() {
