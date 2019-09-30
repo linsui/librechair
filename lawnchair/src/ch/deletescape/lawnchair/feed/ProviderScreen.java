@@ -48,21 +48,27 @@ import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 
 public abstract class ProviderScreen extends ContextWrapper {
 
+    private FeedProvider provider;
+    private LauncherFeed feed;
+
     public ProviderScreen(Context base) {
         super(base);
     }
 
     protected abstract View getView(ViewGroup parent);
+
     protected abstract void bindView(View view);
 
     public void onPause() {
 
     }
+
     public void onResume() {
 
     }
 
     public final void display(LauncherFeed feed, int tX, int tY) {
+        this.feed = feed;
         feed.displayProviderScreen(this, tX, tY, viewGroup -> {
             View v = getView(viewGroup);
             bindView(v);
@@ -70,13 +76,21 @@ public abstract class ProviderScreen extends ContextWrapper {
         });
     }
 
+    public final void display(ProviderScreen screen, int tX, int tY) {
+        if (feed != null && provider == null) {
+            display(feed, tX, tY);
+        } else if (screen.provider != null) {
+            display(screen.provider, tX, tY);
+        } else {
+            throw new IllegalStateException("The provider you were trying to display" +
+                    " is not bound to a valid container object!");
+        }
+    }
+
     public final void display(FeedProvider provider, int touchX, int touchY) {
+        this.provider = provider;
         if (provider.getFeed() != null) {
-            provider.getFeed().displayProviderScreen(this, touchX, touchY, viewGroup -> {
-                View v = getView(viewGroup);
-                bindView(v);
-                return v;
-            });
+            display(provider.getFeed(), touchX, touchY);
         } else if (Launcher.getLauncherOrNull(provider.getContext()) != null) {
             Launcher.getLauncher(provider.getContext()).getStateManager()
                     .goToState(LauncherState.NEWS_OVERLAY, false);
@@ -95,7 +109,9 @@ public abstract class ProviderScreen extends ContextWrapper {
                     new ThemeOverride.Settings().getTheme(this))));
             bindView(overlayView);
             overlayView.setVisibility(View.INVISIBLE);
-            overlayView.setBackground(new ColorDrawable(LawnchairUtilsKt.setAlpha(provider.getBackgroundColor(), Math.max(175, LawnchairUtilsKt.getAlpha(provider.getBackgroundColor())))));
+            overlayView.setBackground(new ColorDrawable(
+                    LawnchairUtilsKt.setAlpha(provider.getBackgroundColor(), Math.max(175,
+                            LawnchairUtilsKt.getAlpha(provider.getBackgroundColor())))));
             overlayView.setOnApplyWindowInsetsListener((v, insets) -> {
                 overlayView.setPadding(overlayView.getPaddingLeft(),
                         overlayView.getPaddingTop() + insets.getStableInsetTop(),
@@ -113,7 +129,8 @@ public abstract class ProviderScreen extends ContextWrapper {
                             Integer.MAX_VALUE / 32);
                     overlayView.getViewTreeObserver().removeOnPreDrawListener(this);
                     Animator animator = ViewAnimationUtils
-                            .createCircularReveal(overlayView, (int) touchX, (int) touchY, 0, radius);
+                            .createCircularReveal(overlayView, (int) touchX, (int) touchY, 0,
+                                    radius);
                     animator.setDuration(50000);
                     overlayView.setVisibility(View.VISIBLE);
                     animator.start();
@@ -121,7 +138,8 @@ public abstract class ProviderScreen extends ContextWrapper {
                 }
             });
             provider.getWindowService().addView(overlayView, params);
-            ((LawnchairLauncher) Launcher.getLauncher(provider.getContext())).getProviderScreens().add(new Pair<>(this, overlayView));
+            ((LawnchairLauncher) Launcher.getLauncher(
+                    provider.getContext())).getProviderScreens().add(new Pair<>(this, overlayView));
         } else {
             View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
                     new ThemeOverride.AlertDialog().getTheme(this))));

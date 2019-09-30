@@ -26,12 +26,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
-import io.github.cdimascio.essence.Essence;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -40,7 +38,8 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import io.github.cdimascio.essence.Essence;
 
 public class ArticleViewerScreen extends ProviderScreen {
 
@@ -68,8 +67,19 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
-        openInBrowser.setOnClickListener(v3 -> Utilities
-                .openURLinBrowser(this, url));
+        openInBrowser.setOnClickListener(v3 -> {
+            try {
+                WebViewScreen screen = new WebViewScreen(this, url, webView -> {
+                    webView.getSettings().setJavaScriptEnabled(false);
+                });
+                screen.display(this,
+                        LawnchairUtilsKt.getPostionOnScreen(v3).getFirst() + v3.getMeasuredWidth(),
+                        LawnchairUtilsKt.getPostionOnScreen(
+                                v3).getSecond() + v3.getMeasuredHeight());
+            } catch (IllegalStateException e) {
+                Utilities.openURLinBrowser(this, url);
+            }
+        });
         openInBrowser.setTextColor(FeedAdapter.Companion.getOverrideColor(articleView.getContext(),
                 LawnchairUtilsKt.getColorEngineAccent(this)));
         titleView.setText(title);
