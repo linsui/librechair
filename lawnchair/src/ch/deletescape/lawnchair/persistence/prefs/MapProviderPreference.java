@@ -45,4 +45,11 @@ public class MapProviderPreference extends ListPreference {
                 .put(getKey(), value);
         return true;
     }
+
+    @Override
+    protected String getPersistedString(String defaultReturnValue) {
+        return SimplePersistence.InstanceHolder
+                .getInstance(getContext())
+                .get(getKey(), defaultReturnValue);
+    }
 }
