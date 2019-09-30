@@ -114,6 +114,8 @@ class LauncherFeed(val originalContext: Context,
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
     private var horizontalBackground: Drawable? = null
+    val screenActions = mutableMapOf<ProviderScreen, List<FeedProvider.Action>>()
+
     var readMoreUrl: String? = null
     var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
             false) as FeedController)
@@ -855,8 +857,10 @@ class LauncherFeed(val originalContext: Context,
     @Suppress("MemberVisibilityCanBePrivate")
     fun removeLastPreferenceScreen() {
         removeDisplayedView(providerScreens.last().second.view, providerScreens.last().second.x,
-                providerScreens.last().second.y);
+                providerScreens.last().second.y)
+        screenActions.remove(providerScreens.last().first)
         providerScreens.remove(providerScreens.last())
+        updateActions()
     }
 
     private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
@@ -1313,17 +1317,30 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
         }
-        internalActions.values.forEach {
-
-            toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
-                    .apply {
-                        setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                        icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
-                        setOnMenuItemClickListener { _ ->
-                            it.onClick.run()
-                            true
+        if (providerScreens.isNotEmpty() && screenActions.containsKey(providerScreens.last().first)) {
+            (internalActions.values + screenActions[providerScreens.last().first]!!).forEach {
+                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                        .apply {
+                            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                            icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                            setOnMenuItemClickListener { _ ->
+                                it.onClick.run()
+                                true
+                            }
                         }
-                    }
+            }
+        } else {
+            internalActions.values.forEach {
+                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                        .apply {
+                            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                            icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                            setOnMenuItemClickListener { _ ->
+                                it.onClick.run()
+                                true
+                            }
+                        }
+            }
         }
     }
 

@@ -26,6 +26,9 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.LinearLayout;
 
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+
 import java.util.function.Consumer;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -38,6 +41,9 @@ public class WebViewScreen extends ProviderScreen {
         super(base);
         this.uri = uri;
         this.configurer = configurer;
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp),
+                getString(R.string.title_button_open_externally),
+                () -> Utilities.openURLinBrowser(this, uri)));
     }
 
     @Override

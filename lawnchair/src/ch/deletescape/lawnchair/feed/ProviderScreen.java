@@ -37,6 +37,9 @@ import android.widget.LinearLayout;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
@@ -51,13 +54,26 @@ public abstract class ProviderScreen extends ContextWrapper {
     private FeedProvider provider;
     private LauncherFeed feed;
 
+    private List<FeedProvider.Action> actions;
+
     public ProviderScreen(Context base) {
         super(base);
+        actions = new ArrayList<>();
     }
 
     protected abstract View getView(ViewGroup parent);
 
     protected abstract void bindView(View view);
+
+    protected void addAction(FeedProvider.Action action) {
+        if (feed != null) {
+            actions.add(action);
+            feed.getScreenActions().put(this, actions);
+            feed.updateActions();
+        } else {
+            actions.add(action);
+        }
+    }
 
     public void onPause() {
 
@@ -74,6 +90,8 @@ public abstract class ProviderScreen extends ContextWrapper {
             bindView(v);
             return v;
         });
+        feed.getScreenActions().put(this, actions);
+        feed.updateActions();
     }
 
     public final void display(ProviderScreen screen, int tX, int tY) {
@@ -100,9 +118,7 @@ public abstract class ProviderScreen extends ContextWrapper {
                     LayoutParams.FLAG_NOT_FOCUSABLE
                             | LayoutParams.FLAG_NOT_TOUCH_MODAL
                             | LayoutParams.FLAG_LAYOUT_IN_OVERSCAN
-                            | LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                            | LayoutParams.FLAG_TRANSLUCENT_STATUS
-                            | LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
+                            | LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                     PixelFormat.TRANSLUCENT);
             params.type = TYPE_APPLICATION;
             View overlayView = getView(new LinearLayout(new ContextThemeWrapper(this,
