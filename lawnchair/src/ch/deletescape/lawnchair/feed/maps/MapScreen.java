@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 import java.lang.reflect.InvocationTargetException;
@@ -96,6 +97,7 @@ public class MapScreen extends ProviderScreen {
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);
         mapView.getOverlayManager().add(new RotationGestureOverlay(mapView));
+        mapView.getOverlayManager().add(new CopyrightOverlay(this));
     }
 
     @Override
