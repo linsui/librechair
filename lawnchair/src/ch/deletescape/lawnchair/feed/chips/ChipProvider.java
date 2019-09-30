@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import com.android.launcher3.R;
 
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.feed.chips.alarm.AlarmChipProvider;
@@ -46,11 +48,22 @@ import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProviderUtilities;
 import ch.deletescape.lawnchair.feed.chips.weather.ForecastChipProvider;
 import ch.deletescape.lawnchair.feed.chips.weather.WeatherChipProvider;
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 
 public abstract class ChipProvider {
     private ChipAdapter adapter;
+    private LauncherFeed feed;
 
     public abstract List<Item> getItems(Context context);
+
+    public LauncherFeed getLauncherFeed() {
+        return feed;
+    }
+
+    public void setLauncherFeed(LauncherFeed feed) {
+        this.feed = feed;
+    }
+
 
     public void acceptArguments(String args) {
     }
@@ -90,6 +103,7 @@ public abstract class ChipProvider {
     public static class Item {
         public String title;
         public Runnable click;
+        public Consumer<View> viewClickListener;
         public Drawable icon;
     }
 

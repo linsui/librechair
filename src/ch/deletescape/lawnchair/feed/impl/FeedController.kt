@@ -64,7 +64,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mDownTime: Long = 0
     private var mLastScroll = 0f
     private var mProgress: Float = 0.toFloat()
-    private var mLauncherFeed: LauncherFeed? = null
+    var mLauncherFeed: LauncherFeed? = null
     var disallowInterceptCurrentTouchEvent = false
     var animationDelegate: AnimationDelegate =
             AnimationDelegate.inflate(context.lawnchairPrefs.feedAnimationDelegate)

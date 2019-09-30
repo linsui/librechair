@@ -20,10 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.location;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -36,7 +33,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
+import ch.deletescape.lawnchair.feed.maps.MapScreen;
 import ch.deletescape.lawnchair.location.LocationManager;
 import geocode.GeoName;
 import geocode.GeocoderCompat;
@@ -46,6 +45,7 @@ import kotlin.Pair;
 public class CurrentLocationChipProvider extends ChipProvider {
     private ReverseGeoCode degeocoder;
     private GeoName name;
+    private Pair<Double, Double> loc;
 
     @SuppressWarnings("unused")
     public CurrentLocationChipProvider(Context context) {
@@ -53,7 +53,7 @@ public class CurrentLocationChipProvider extends ChipProvider {
         refresh.set(() -> {
             while (true) {
                 try {
-                    Pair<Double, Double> loc = LocationManager.INSTANCE.getLocation();
+                    loc = LocationManager.INSTANCE.getLocation();
                     if (loc != null) {
                         degeocoder = new GeocoderCompat(context, false);
                         name = degeocoder.nearestPlace(loc.getFirst(), loc.getSecond());
@@ -82,15 +82,20 @@ public class CurrentLocationChipProvider extends ChipProvider {
             Item item = new Item();
             item.icon = context.getDrawable(R.drawable.ic_location);
             item.title = name.name;
-            item.click = () -> {
-                try {
+            item.viewClickListener = v -> {
+                /* try {
                     context.startActivity(
                             new Intent(Intent.ACTION_VIEW,
                                     Uri.parse("geo:0,0?q=$address")).addFlags(
                                     Intent.FLAG_ACTIVITY_NEW_TASK));
                 } catch (ActivityNotFoundException e) {
                     e.printStackTrace();
-                }
+                } */
+                MapScreen screen = new MapScreen(context, getLauncherFeed(), loc.getFirst(),
+                        loc.getSecond(), 12.0);
+                screen.display(getLauncherFeed(),
+                        LawnchairUtilsKt.getPostionOnScreen(v).getFirst() + v.getMeasuredWidth() / 2,
+                        LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2);
             };
             return item;
         }).get()) : Collections.EMPTY_LIST;

@@ -47,6 +47,7 @@ import ch.deletescape.lawnchair.feed.SortingAlgorithm;
 import ch.deletescape.lawnchair.feed.chips.sorting.MixerSortHelper;
 import ch.deletescape.lawnchair.feed.chips.sorting.NormalSortHelper;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
 import kotlin.Unit;
@@ -60,14 +61,17 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider.Item> items;
     private ChipDao dao;
     private Context context;
+    private LauncherFeed feed;
 
-    public ChipAdapter(Context context, boolean dark) {
+    public ChipAdapter(Context context, boolean dark, LauncherFeed feed) {
+        this.feed = feed;
         items = new ArrayList<>();
         dao = ChipDatabase.Holder.getInstance(context).dao();
         this.context = context;
         providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
                 it -> it != null).collect(Collectors.toList());
         providers.forEach(it -> it.setAdapter(ChipAdapter.this));
+        providers.forEach(it -> it.setLauncherFeed(feed));
         this.dark = dark;
         ChipDatabase.Holder.getInstance(context).getInvalidationTracker().addObserver(
                 new InvalidationTracker.Observer("chipprovidercontainer") {
@@ -76,7 +80,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                         providers = dao.getAll().stream().map(
                                 val -> ChipProvider.Cache.get(val, context)).filter(
                                 it -> it != null).collect(Collectors.toList());
-                        providers.forEach(it -> it.setAdapter(ChipAdapter.this));
+                        providers.forEach(it -> {
+                            it.setAdapter(ChipAdapter.this);
+                            it.setLauncherFeed(feed);
+                        });
                         rebindData();
                         LawnchairUtilsKt.runOnMainThread(() -> {
                             notifyDataSetChanged();
@@ -162,8 +169,15 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                     chipViewHolder.itemView.setTypeface(typeface);
                     return Unit.INSTANCE;
                 });
-        if (item.click != null) {
-            chipViewHolder.itemView.setOnClickListener(v -> item.click.run());
+        if (item.click != null || item.viewClickListener != null) {
+            chipViewHolder.itemView.setOnClickListener(v -> {
+                if (item.click != null) {
+                    item.click.run();
+                }
+                if (item.viewClickListener != null) {
+                    item.viewClickListener.accept(v);
+                }
+            });
         } else {
             chipViewHolder.itemView.setOnClickListener(null);
         }
