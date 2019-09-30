@@ -217,7 +217,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     val originalSize = resizedAppWidgetInfo?.minHeight ?: -1
                     widgetView.apply {
                         viewTreeObserver.addOnGlobalLayoutListener {
-                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                            layoutParams.height = if (widget.height != Widget.DEFAULT_HEIGHT) widget.height else originalSize
                         }
                         updateAppWidgetOptions(Bundle().apply {
                             if (widget.height != -1) {
@@ -280,7 +280,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             FeedScope.launch {
                                 WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
                             }
-                            widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, -1)
+                            widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, originalSize)
                             widgetView.apply {
                                 widgetView.updateAppWidgetOptions(Bundle().apply {
                                     Bundle().apply {
