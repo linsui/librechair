@@ -28,7 +28,7 @@ public class BingMapsProvider extends MapProvider {
 
     public ITileSource getTileSource() {
         BingMapTileSource bingMapTileSource = new BingMapTileSource(null);
-        BingMapTileSource.setBingKey("Ahk4NhNNnzqWuNHOVS_nnUCK6b2iCT8GBIS-p0JEwewI0LWPVRJIgRuEwiXaMQDp");
+        BingMapTileSource.setBingKey(API_KEY);
         return bingMapTileSource;
     }
 }
