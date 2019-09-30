@@ -716,4 +716,8 @@
     <string name="summary_pref_feed_actions_as_menu">Actions will be displayed in a drop-down menu, instead of as separate icons</string>
     <string name="title_card_chips">Chips</string>
     <string name="title_pref_feed_chip_elevation">Elevation</string>
+    <string name="title_map_provider_default">OpenStreetMap</string>
+    <string name="title_map_provider_google">Google</string>
+    <string name="title_map_provider_google_china">Google (China)</string>
+    <string name="title_pref_feed_map_provider">Map provider</string>
 </resources>

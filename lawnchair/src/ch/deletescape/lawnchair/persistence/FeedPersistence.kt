@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.maps.MapProvider
 import ch.deletescape.lawnchair.util.SingletonHolder
 
 class FeedPersistence private constructor(val context: Context) {
@@ -32,6 +33,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_javascript_in_search_screen", false)
     val displayActionsAsMenu
             by BooleanDelegate(context, "feed_actions_as_menu", false)
+    val mapProvider by DefValueStringDelegate(context, "feed_map_provider",
+            MapProvider::class.qualifiedName!!)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

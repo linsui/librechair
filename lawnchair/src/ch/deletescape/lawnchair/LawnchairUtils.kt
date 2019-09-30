@@ -65,6 +65,7 @@ import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.maps.MapProvider
 import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.nominatim.NominatimFactory
@@ -95,7 +96,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
@@ -1010,7 +1010,9 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
     } else {
         address.text = addressNullable
-        maps.tileProvider.tileSource = TileSourceFactory.MAPNIK
+        @Suppress("UNCHECKED_CAST")
+        maps.tileProvider.tileSource = MapProvider
+                .inflate(Class.forName(context.feedPrefs.mapProvider) as Class<out MapProvider>).tileSource
         maps.onResume()
         maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         FeedScope.launch(Dispatchers.IO) {

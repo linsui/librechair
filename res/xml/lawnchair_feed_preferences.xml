@@ -382,5 +382,9 @@
             android:key="feed_javascript_in_search_screen"
             android:title="@string/title_pref_feed_javascript_in_search_screen"
             android:summary="@string/summary_pref_feed_javascript_in_search_screen"/>
+        <ch.deletescape.lawnchair.persistence.prefs.MapProviderPreference
+            android:key="feed_map_provider"
+            android:title="@string/title_pref_feed_map_provider"
+            android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

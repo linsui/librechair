@@ -28,12 +28,14 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
+import java.lang.reflect.InvocationTargetException;
+
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
@@ -76,7 +78,13 @@ public class MapScreen extends ProviderScreen {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void bindView(View view) {
-        mapView.getTileProvider().setTileSource(TileSourceFactory.MAPNIK);
+        try {
+            //noinspection unchecked
+            mapView.getTileProvider().setTileSource(MapProvider.inflate(
+                    (Class<? extends MapProvider>) Class.forName(FeedPersistence.Companion.getInstance(this).getMapProvider())).getTileSource());
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         mapView.getController().setCenter(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(9.0);
