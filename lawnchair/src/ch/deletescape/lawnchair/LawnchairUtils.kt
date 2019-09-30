@@ -1030,7 +1030,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                     val (lat, lon) = locations[0].lat to locations[0].lon
                     maps.post {
                         v.findViewById<View>(R.id.maps_more_btn).setOnClickListener {
-                            MapScreen(it.context, provider.feed, lat, lon, 13.0)
+                            MapScreen(it.context, provider.feed, lat, lon, 15.0)
                                     .display(provider, (it.getPostionOnScreen().first + it.measuredWidth / 2),
                                             (it.getPostionOnScreen().second + it.measuredHeight / 2))
                         }
