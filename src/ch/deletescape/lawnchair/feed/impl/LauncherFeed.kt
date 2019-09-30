@@ -1193,7 +1193,8 @@ class LauncherFeed(val originalContext: Context,
     fun refresh(sleep: Long, count: Int = 0, quick: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
         runOnMainThread {
-            infobox.visibility = if (infobox.text.length > 1) View.VISIBLE else View.GONE
+            infobox.visibility =
+                    if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
             updateActions()
         }
         recyclerView.apply {
