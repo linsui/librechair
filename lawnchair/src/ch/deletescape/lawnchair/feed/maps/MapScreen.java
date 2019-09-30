@@ -41,6 +41,7 @@ public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
     private final double lat;
     private final double lon;
+    private final double zoom;
     private MapView mapView;
     private ViewGroup parent, layout;
 
@@ -49,6 +50,7 @@ public class MapScreen extends ProviderScreen {
         this.feed = feed;
         this.lat = lat;
         this.lon = lon;
+        this.zoom = zoom;
     }
 
     @Override
@@ -87,7 +89,7 @@ public class MapScreen extends ProviderScreen {
         }
         mapView.getController().animateTo(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
-        mapView.getController().zoomTo(9.0);
+        mapView.getController().zoomTo(zoom);
     }
 
     @Override
