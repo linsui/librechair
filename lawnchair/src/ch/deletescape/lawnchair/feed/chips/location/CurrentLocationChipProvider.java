@@ -83,14 +83,6 @@ public class CurrentLocationChipProvider extends ChipProvider {
             item.icon = context.getDrawable(R.drawable.ic_location);
             item.title = name.name;
             item.viewClickListener = v -> {
-                /* try {
-                    context.startActivity(
-                            new Intent(Intent.ACTION_VIEW,
-                                    Uri.parse("geo:0,0?q=$address")).addFlags(
-                                    Intent.FLAG_ACTIVITY_NEW_TASK));
-                } catch (ActivityNotFoundException e) {
-                    e.printStackTrace();
-                } */
                 MapScreen screen = new MapScreen(context, getLauncherFeed(), loc.getFirst(),
                         loc.getSecond(), 12.0);
                 screen.display(getLauncherFeed(),

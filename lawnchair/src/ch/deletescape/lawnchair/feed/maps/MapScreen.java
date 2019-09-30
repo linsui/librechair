@@ -21,12 +21,17 @@
 package ch.deletescape.lawnchair.feed.maps;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import com.android.launcher3.R;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -35,6 +40,7 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 import java.lang.reflect.InvocationTargetException;
 
+import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
@@ -53,6 +59,17 @@ public class MapScreen extends ProviderScreen {
         this.lat = lat;
         this.lon = lon;
         this.zoom = zoom;
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp), getString(
+                        R.string.title_action_open_externally), () -> {
+            try {
+                startActivity(
+                        new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("geo:" + lat + "," + lon)).addFlags(
+                                Intent.FLAG_ACTIVITY_NEW_TASK));
+            } catch (ActivityNotFoundException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     @Override

@@ -720,4 +720,5 @@
     <string name="title_map_provider_google">Google</string>
     <string name="title_map_provider_google_china">Google (China)</string>
     <string name="title_pref_feed_map_provider">Map provider</string>
+    <string name="title_action_open_externally">Open externally</string>
 </resources>
