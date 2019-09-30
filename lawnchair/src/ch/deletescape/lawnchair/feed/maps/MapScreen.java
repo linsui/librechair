@@ -59,12 +59,14 @@ public class MapScreen extends ProviderScreen {
         this.lat = lat;
         this.lon = lon;
         this.zoom = zoom;
-        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp), getString(
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp),
+                getString(
                         R.string.title_action_open_externally), () -> {
             try {
                 startActivity(
                         new Intent(Intent.ACTION_VIEW,
-                                Uri.parse("geo:" + lat + "," + lon)).addFlags(
+                                Uri.parse(
+                                        "geo:" + mapView.getMapCenter().getLatitude() + "," + mapView.getMapCenter().getLongitude())).addFlags(
                                 Intent.FLAG_ACTIVITY_NEW_TASK));
             } catch (ActivityNotFoundException e) {
                 e.printStackTrace();
