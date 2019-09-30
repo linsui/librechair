@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -65,7 +66,8 @@ public class MapScreen extends ProviderScreen {
                 return super.onInterceptTouchEvent(ev);
             }
         };
-        layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         layout.addView(mapView = getMapView());
         this.layout = layout;
         return layout;
@@ -73,7 +75,8 @@ public class MapScreen extends ProviderScreen {
 
     private MapView getMapView() {
         MapView mapView = new MapView(parent.getContext());
-        mapView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mapView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         return mapView;
     }
 
@@ -83,13 +86,16 @@ public class MapScreen extends ProviderScreen {
         try {
             //noinspection unchecked
             mapView.getTileProvider().setTileSource(MapProvider.inflate(
-                    (Class<? extends MapProvider>) Class.forName(FeedPersistence.Companion.getInstance(this).getMapProvider())).getTileSource());
+                    (Class<? extends MapProvider>) Class.forName(
+                            FeedPersistence.Companion.getInstance(
+                                    this).getMapProvider())).getTileSource());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         mapView.getController().animateTo(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);
+        mapView.getOverlayManager().add(new RotationGestureOverlay(mapView));
     }
 
     @Override
