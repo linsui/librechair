@@ -60,6 +60,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.maps.MapProvider
@@ -85,6 +86,7 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
@@ -1000,6 +1002,8 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     val address = v.findViewById(R.id.calendar_event_address) as TextView
     val directions = v.findViewById(R.id.calendar_event_directions) as TextView
     val maps = v.findViewById<MapView>(R.id.maps_view)
+    v.findViewById<MaterialButton>(R.id.maps_more_btn).setBackgroundColor(FeedAdapter.getOverrideColor(context))
+    v.findViewById<MaterialButton>(R.id.maps_more_btn).setTextColor(FeedAdapter.getOverrideColor(context))
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
