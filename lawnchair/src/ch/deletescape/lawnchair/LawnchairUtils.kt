@@ -20,10 +20,7 @@ package ch.deletescape.lawnchair
 import android.app.Activity
 import android.app.ActivityManager
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
@@ -1048,9 +1045,13 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
             }
         }
         directions.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            parentView.context.startActivity(intent)
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                parentView.context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+            }
         }
     }
     if (descriptionNullable == null || descriptionNullable.trim().isEmpty()) {
