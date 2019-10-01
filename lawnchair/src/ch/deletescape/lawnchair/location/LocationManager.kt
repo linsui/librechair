@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.location
 
 import android.annotation.SuppressLint
 import android.content.Context
+import ch.deletescape.lawnchair.runOnMainThread
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,16 +68,16 @@ object LocationManager {
 
         fun updateLocation(lat: Double?, lon: Double?,
                            notifyCallbacks: Boolean = true) {
-            synchronized(SYNC_LOCK) {
-                slots.first { it.first == this }.second.apply {
-                    left = lat
-                    right = lon
-                }
+            slots.first { it.first == this }.second.apply {
+                left = lat
+                right = lon
             }
-            if (notifyCallbacks) {
-                changeCallbacks.forEach {
-                    if (location != null) {
-                        it(location!!.first, location!!.second)
+            runOnMainThread {
+                if (notifyCallbacks && location != null) {
+                    changeCallbacks.forEach {
+                        if (location != null) {
+                            it(location!!.first, location!!.second)
+                        }
                     }
                 }
             }

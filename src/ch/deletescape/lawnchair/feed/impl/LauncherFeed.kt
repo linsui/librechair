@@ -847,7 +847,7 @@ class LauncherFeed(val originalContext: Context,
                         internalActions.remove(R.id.cancel)
                         updateActions()
                     }
-                    removeLastPreferenceScreen()
+                    popScreens()
                 }))
             }
             updateActions()
@@ -855,7 +855,7 @@ class LauncherFeed(val originalContext: Context,
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    fun removeLastPreferenceScreen() {
+    fun popScreens() {
         removeDisplayedView(providerScreens.last().second.view, providerScreens.last().second.x,
                 providerScreens.last().second.y)
         screenActions.remove(providerScreens.last().first)
@@ -925,6 +925,7 @@ class LauncherFeed(val originalContext: Context,
                 }
                 windowInsets
             }
+            elevation = (4f * (providerScreens.size + 1)) + 1
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     val (height, width) = measuredHeight to measuredWidth
