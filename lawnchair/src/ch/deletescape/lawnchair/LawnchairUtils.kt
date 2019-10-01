@@ -1039,7 +1039,9 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                         maps.apply {
                             controller.apply {
                                 setZoom(13.0)
+                                alpha = 0f
                                 visibility = View.VISIBLE
+                                animate().alpha(1f).duration = 250
                                 if (ch.deletescape.lawnchair.location.LocationManager.location != null) {
                                     overlayManager.add(TextOverlay(context).apply {
                                         val here = ch.deletescape.lawnchair.location.LocationManager.location.let {
