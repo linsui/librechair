@@ -63,8 +63,10 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.i18n.UnitLocale
 import ch.deletescape.lawnchair.feed.maps.MapProvider
 import ch.deletescape.lawnchair.feed.maps.MapScreen
+import ch.deletescape.lawnchair.feed.maps.TextOverlay
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -110,6 +112,7 @@ import java.util.concurrent.Executors
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import kotlin.random.Random
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
@@ -1040,6 +1043,21 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                             controller.apply {
                                 setZoom(13.0)
                                 visibility = View.VISIBLE
+                                if (ch.deletescape.lawnchair.location.LocationManager.location != null) {
+                                    overlayManager.add(TextOverlay(context).apply {
+                                        val here = ch.deletescape.lawnchair.location.LocationManager.location.let {
+                                            Location("").apply {
+                                                latitude = it!!.first
+                                                longitude = it.second
+                                            }
+                                        }
+                                        val there = Location("").apply {
+                                            latitude = lat
+                                            longitude = lon
+                                        }
+                                        setText(UnitLocale.getDefault().formatDistanceKm((there.distanceTo(here) / 1000).roundToLong()))
+                                    })
+                                }
                                 setCenter(GeoPoint(lat, lon))
                             }
                         }
