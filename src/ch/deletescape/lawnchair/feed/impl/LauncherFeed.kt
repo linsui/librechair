@@ -925,7 +925,6 @@ class LauncherFeed(val originalContext: Context,
                 }
                 windowInsets
             }
-            elevation = (4f * (providerScreens.size + 1)) + 1
             viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     val (height, width) = measuredHeight to measuredWidth
@@ -934,12 +933,13 @@ class LauncherFeed(val originalContext: Context,
                     val animator = ViewAnimationUtils
                             .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
                                     radius.toFloat())
+                    animate().setDuration(0)
+                            .translationZ(4f.applyAsDip(context) * (providerScreens.size - 1));
                     visibility = View.VISIBLE
                     animator.apply {
                         duration = 300
                         start()
                     }
-                    animate().setDuration(300).translationZ(4f.applyAsDip(context))
                     recyclerView.isLayoutFrozen = true
                     toolbar.animate().translationY(0f)
                     return true;
