@@ -364,7 +364,7 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             try {
                                 WidgetDatabase.getInstance(c).dao()
                                         .removeWidget(prefList[viewHolder.adapterPosition].id)
-                            } catch (e: ArrayIndexOutOfBoundsException) {
+                            } catch (e: IndexOutOfBoundsException) {
                                 e.printStackTrace()
                             }
                         }
