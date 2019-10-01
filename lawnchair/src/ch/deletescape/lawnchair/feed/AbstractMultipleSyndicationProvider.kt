@@ -23,9 +23,7 @@ import android.content.Context
 import android.content.Intent
 import android.text.Html
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -122,14 +120,22 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                 spanned = spanned.subSequence(0, 256).toString() + "..."
                             }
                             description.text = spanned
-                            readMore.setOnClickListener { v2 ->
-                                ArticleViewerScreen(context, entry.title,
-                                        entry.categories.map { it.name }.joinToString(),
-                                        entry.link, entry.description?.value ?: "")
-                                        .display(this@AbstractMultipleSyndicationProvider,
-                                                v2.getPostionOnScreen().first + v2.width / 2,
-                                                v2.getPostionOnScreen().second + v2.height / 2)
-                            }
+                            val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                                    ArticleViewerScreen(context, entry.title,
+                                            entry.categories.joinToString(", "),
+                                            entry.link,
+                                            if (entry.description != null) entry.description.value else "")
+                                            .display(this@AbstractMultipleSyndicationProvider,
+                                                    readMore.getPostionOnScreen().first + Math.round(
+                                                            e.getX()),
+                                                    (((readMore).getPostionOnScreen().second + Math.round(
+                                                            e.getY()))))
+                                    return true;
+                                }
+                            })
+
+                            v.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
 
                             date.text = entry.publishedDate?.toLocaleString()
                             return v
