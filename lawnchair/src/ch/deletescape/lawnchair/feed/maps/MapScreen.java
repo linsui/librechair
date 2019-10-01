@@ -115,6 +115,8 @@ public class MapScreen extends ProviderScreen {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        mapView.getZoomController().setZoomInEnabled(true);
+        mapView.getZoomController().setZoomOutEnabled(true);
         mapView.getController().animateTo(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);
