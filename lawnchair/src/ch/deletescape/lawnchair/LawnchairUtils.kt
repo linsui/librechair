@@ -67,8 +67,8 @@ import ch.deletescape.lawnchair.feed.i18n.UnitLocale
 import ch.deletescape.lawnchair.feed.maps.MapProvider
 import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.feed.maps.TextOverlay
+import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
 import ch.deletescape.lawnchair.font.CustomFontManager
-import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -1022,17 +1022,14 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         FeedScope.launch(Dispatchers.IO) {
             try {
-                val response = NominatimFactory.getInstance(context)
-                        .query(addressNullable).execute()
-                if (!response.isSuccessful || response.body() == null
-                        || response.body()!!.isEmpty()) {
+                val loc = LocationSearchManager.getInstance(context).get(addressNullable!!)
+                if (loc == null) {
                     maps.post {
                         maps.visibility = View.GONE
                         v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
                     }
                 } else {
-                    val locations = response.body()!!
-                    val (lat, lon) = locations[0].lat to locations[0].lon
+                    val (lat, lon) = loc.second to loc.first
                     maps.post {
                         v.findViewById<View>(R.id.maps_more_btn).setOnClickListener {
                             MapScreen(it.context, provider.feed, lat, lon, 15.0)
