@@ -44,9 +44,7 @@ import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.util.Property
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Interpolator
 import android.widget.*
 import androidx.annotation.ColorInt
@@ -93,6 +91,7 @@ import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
+import kotlinx.android.synthetic.main.calendar_event.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONArray
@@ -1031,10 +1030,17 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                 } else {
                     val (lat, lon) = loc.first to loc.second
                     maps.post {
-                        v.findViewById<View>(R.id.maps_more_btn).setOnClickListener {
-                            MapScreen(it.context, provider.feed, lat, lon, 15.0)
-                                    .display(provider, (it.getPostionOnScreen().first + it.measuredWidth / 2),
-                                            (it.getPostionOnScreen().second + it.measuredHeight / 2))
+
+                        val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                                MapScreen(context, provider.feed, lat, lon, 15.0)
+                                        .display(provider, v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
+                                                v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                return true;
+                            }
+                        })
+                        v.maps_more_btn.setOnTouchListener { v, event ->
+                            gestureDetector.onTouchEvent(event)
                         }
                         maps.apply {
                             controller.apply {
