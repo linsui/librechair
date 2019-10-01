@@ -241,7 +241,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     GestureDetector detector = new GestureDetector(getContext(),
                             new GestureDetector.SimpleOnGestureListener() {
                                 @Override
-                                public boolean onSingleTapConfirmed(MotionEvent e) {
+                                public boolean onSingleTapUp(MotionEvent e) {
                                     new ArticleViewerScreen(getContext(), entry.getTitle(),
                                             entry.getCategories().stream().map(it -> it.getName())
                                                     .collect(Collectors.joining(", ")),

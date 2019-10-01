@@ -121,7 +121,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             }
                             description.text = spanned
                             val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-                                override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                                override fun onSingleTapUp(e: MotionEvent): Boolean {
                                     ArticleViewerScreen(context, entry.title,
                                             entry.categories.joinToString(", "),
                                             entry.link,
