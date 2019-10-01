@@ -204,7 +204,7 @@ public class NexusLauncher {
                     && mLauncher.getWorkspace().getNextPage() == 0) {
                 PluginManager.getInstance(getLauncher()).getClient(ButtonPluginClient.class)
                         .onHomeIntent(intent -> {
-                            getLauncher().startActivity(intent);
+                            getLauncher().startActivitySafely(null, intent, null);
                             return true;
                         });
             }
