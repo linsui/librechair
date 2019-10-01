@@ -53,17 +53,17 @@ public final class LocationSearchManager {
         Response<MapboxResult> resultResponse;
         Response<NominatimResponse[]> nominatimResponseResponse;
         try {
-            if ((resultResponse = MapboxFactory.getInstance(context).getLocation(
+            if ((nominatimResponseResponse = NominatimFactory.getInstance(context).query(
+                    query).execute()).isSuccessful() && nominatimResponseResponse.body() != null && nominatimResponseResponse.body()
+                    .length > 0) {
+                return new Pair<>(nominatimResponseResponse.body()[0].lat,
+                        nominatimResponseResponse.body()[0].lon);
+            } else if ((resultResponse = MapboxFactory.getInstance(context).getLocation(
                     query).execute()).body() != null && resultResponse.isSuccessful() && resultResponse.body().features.length >= 1) {
                 return new Pair<>(Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
                         Collectors.toList()).get(0).center[1],
                         Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
                                 Collectors.toList()).get(0).center[0]);
-            } else if ((nominatimResponseResponse = NominatimFactory.getInstance(context).query(
-                    query).execute()).isSuccessful() && nominatimResponseResponse.body() != null && nominatimResponseResponse.body()
-                    .length > 0) {
-                return new Pair<>(nominatimResponseResponse.body()[0].lat,
-                        nominatimResponseResponse.body()[0].lon);
             }
         } catch (IOException e) {
             e.printStackTrace();
