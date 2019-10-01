@@ -131,11 +131,11 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                                                             e.getX()),
                                                     (((readMore).getPostionOnScreen().second + Math.round(
                                                             e.getY()))))
-                                    return true;
+                                    return true
                                 }
                             })
 
-                            v.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
+                            readMore.setOnTouchListener { v, event -> gestureDetector.onTouchEvent(event) }
 
                             date.text = entry.publishedDate?.toLocaleString()
                             return v
