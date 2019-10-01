@@ -93,13 +93,6 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
             }
         });
         activityState = new ActivityState();
-        activityState.setOnChangeListener(state -> {
-            if (state.isActivityInForeground() && overlay == null) {
-                reconnect();
-            } else if (overlay != null && !state.isActivityInForeground()) {
-                disconnect();
-            }
-        });
         factory.connect();
         serviceState.setChangeListener(state -> {
             if (!state.isOverlayAttached()) {
