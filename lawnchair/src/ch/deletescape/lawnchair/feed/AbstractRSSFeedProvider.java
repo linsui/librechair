@@ -23,7 +23,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -212,7 +214,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     date = v.findViewById(R.id.rss_item_date);
                     readMore = v.findViewById(R.id.rss_item_read_more);
 
-                    readMore.setTextColor(FeedAdapter.Companion.getOverrideColor(parent.getContext()));
+                    readMore.setTextColor(
+                            FeedAdapter.Companion.getOverrideColor(parent.getContext()));
 
                     Log.d(getClass().getSimpleName(),
                             "inflate: Image URL is " + LawnchairUtilsKt.getThumbnailURL(entry));
@@ -235,17 +238,26 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         spanned = spanned.subSequence(0, 256).toString() + "...";
                     }
                     description.setText(spanned);
-                    readMore.setOnClickListener(v2 -> {
-                        new ArticleViewerScreen(getContext(), entry.getTitle(),
-                                entry.getCategories().stream().map(it -> it.getName())
-                                        .collect(Collectors.joining(", ")),
-                                entry.getLink(),
-                                entry.getDescription() != null ? entry.getDescription().getValue() : "")
-                                .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
-                                                + v2.getWidth() / 2),
-                                        (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
-                                                + v2.getHeight() / 2));
-                    });
+                    GestureDetector detector = new GestureDetector(getContext(),
+                            new GestureDetector.SimpleOnGestureListener() {
+                                @Override
+                                public boolean onSingleTapConfirmed(MotionEvent e) {
+                                    new ArticleViewerScreen(getContext(), entry.getTitle(),
+                                            entry.getCategories().stream().map(it -> it.getName())
+                                                    .collect(Collectors.joining(", ")),
+                                            entry.getLink(),
+                                            entry.getDescription() != null ? entry.getDescription().getValue() : "")
+                                            .display(AbstractRSSFeedProvider.this,
+                                                    (LawnchairUtilsKt.getPostionOnScreen(
+                                                            readMore).getFirst() + Math.round(
+                                                            e.getX())),
+                                                    (LawnchairUtilsKt.getPostionOnScreen(
+                                                            readMore).getSecond() + Math.round(
+                                                            e.getY())));
+                                    return true;
+                                }
+                            });
+                    readMore.setOnTouchListener((_v, e) -> detector.onTouchEvent(e));
 
                     if (entry.getCategories().isEmpty()) {
                         categories.setText("");
