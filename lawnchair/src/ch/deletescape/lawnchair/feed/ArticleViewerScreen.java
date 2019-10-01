@@ -73,9 +73,9 @@ public class ArticleViewerScreen extends ProviderScreen {
                     webView.getSettings().setJavaScriptEnabled(false);
                 });
                 screen.display(this,
-                        LawnchairUtilsKt.getPostionOnScreen(v3).getFirst() + v3.getMeasuredWidth(),
+                        LawnchairUtilsKt.getPostionOnScreen(v3).getFirst() + v3.getMeasuredWidth() / 2,
                         LawnchairUtilsKt.getPostionOnScreen(
-                                v3).getSecond() + v3.getMeasuredHeight());
+                                v3).getSecond() + v3.getMeasuredHeight() / 2);
             } catch (IllegalStateException e) {
                 Utilities.openURLinBrowser(this, url);
             }
