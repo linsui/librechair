@@ -33,6 +33,9 @@ import android.widget.LinearLayout;
 
 import com.android.launcher3.R;
 
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.CopyrightOverlay;
@@ -47,9 +50,9 @@ import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
-    private final double lat;
-    private final double lon;
-    private final double zoom;
+    private double lat;
+    private double lon;
+    private double zoom;
     private MapView mapView;
     private ViewGroup parent, layout;
 
@@ -117,6 +120,20 @@ public class MapScreen extends ProviderScreen {
         mapView.getController().zoomTo(zoom);
         mapView.getOverlayManager().add(new RotationGestureOverlay(mapView));
         mapView.getOverlayManager().add(new CopyrightOverlay(this));
+        mapView.addMapListener(new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                lat = mapView.getMapCenter().getLatitude();
+                lon = mapView.getMapCenter().getLongitude();
+                return true;
+            }
+
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                zoom = mapView.getZoomLevelDouble();
+                return false;
+            }
+        });
     }
 
     @Override
