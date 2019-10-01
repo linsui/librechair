@@ -22,4 +22,5 @@ package ch.deletescape.lawnchair.feed.maps.locationsearch.mapbox;
 
 public class MapboxFeature {
     public double[] center;
+    public double relevance;
 }

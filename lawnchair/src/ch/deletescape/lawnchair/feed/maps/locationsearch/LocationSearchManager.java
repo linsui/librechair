@@ -26,6 +26,9 @@ import android.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.maps.locationsearch.mapbox.MapboxFactory;
 import ch.deletescape.lawnchair.feed.maps.locationsearch.mapbox.MapboxResult;
@@ -52,8 +55,10 @@ public final class LocationSearchManager {
         try {
             if ((resultResponse = MapboxFactory.getInstance(context).getLocation(
                     query).execute()).body() != null && resultResponse.isSuccessful() && resultResponse.body().features.length >= 1) {
-                return new Pair<>(resultResponse.body().features[0].center[0],
-                        resultResponse.body().features[0].center[1]);
+                return new Pair<>(Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
+                        Collectors.toList()).get(0).center[1],
+                        Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
+                                Collectors.toList()).get(0).center[0]);
             } else if ((nominatimResponseResponse = NominatimFactory.getInstance(context).query(
                     query).execute()).isSuccessful() && nominatimResponseResponse.body() != null && nominatimResponseResponse.body()
                     .length > 0) {
