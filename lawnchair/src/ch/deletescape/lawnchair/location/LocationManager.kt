@@ -29,12 +29,13 @@ import java.util.concurrent.TimeUnit
 
 @SuppressLint("StaticFieldLeak")
 object LocationManager {
+    val SYNC_LOCK = Any()
     val slots: MutableList<Pair<LocationProvider, MutablePair<Double?, Double?>>> = mutableListOf()
     var context: Context? = null
         set(value) = {
             providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value),
-                                    LastKnownLocationProvider(value),
-                                    WeatherCityLocationProvider(value)))
+                    LastKnownLocationProvider(value),
+                    WeatherCityLocationProvider(value)))
             slots.clear()
             providers.forEach {
                 slots.add(it to MutablePair.of<Double?, Double?>(null, null))
@@ -64,10 +65,13 @@ object LocationManager {
 
         abstract fun refresh()
 
-        fun updateLocation(lat: Double?, lon: Double?, notifyCallbacks: Boolean = true) {
-            slots.first { it.first == this }.second.apply {
-                left = lat
-                right = lon
+        fun updateLocation(lat: Double?, lon: Double?,
+                           notifyCallbacks: Boolean = true) {
+            synchronized(SYNC_LOCK) {
+                slots.first { it.first == this }.second.apply {
+                    left = lat
+                    right = lon
+                }
             }
             if (notifyCallbacks) {
                 changeCallbacks.forEach {
