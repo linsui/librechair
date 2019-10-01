@@ -1015,6 +1015,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
         maps.tileProvider.tileSource = MapProvider
                 .inflate(Class.forName(context.feedPrefs.mapProvider) as Class<out MapProvider>).tileSource
         maps.onResume()
+        maps.visibility = View.INVISIBLE
         maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         FeedScope.launch(Dispatchers.IO) {
             try {
@@ -1038,6 +1039,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                         maps.apply {
                             controller.apply {
                                 setZoom(13.0)
+                                visibility = View.VISIBLE
                                 setCenter(GeoPoint(lat, lon))
                             }
                         }
