@@ -32,8 +32,11 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+
 import com.android.launcher3.R;
 
+import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
@@ -44,8 +47,11 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.Iterator;
 
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
@@ -61,6 +67,8 @@ public class MapScreen extends ProviderScreen {
     private double lat;
     private double lon;
     private double zoom;
+    private Double displayLat;
+    private Double displayLon;
     private MapView mapView;
     private ViewGroup parent, layout;
     private IMyLocationProvider provider;
@@ -80,6 +88,7 @@ public class MapScreen extends ProviderScreen {
                 myLocationConsumer.onLocationChanged(location, this);
                 return Unit.INSTANCE;
             };
+
             @Override
             public boolean startLocationProvider(IMyLocationConsumer myLocationConsumer) {
                 this.myLocationConsumer = myLocationConsumer;
@@ -125,6 +134,13 @@ public class MapScreen extends ProviderScreen {
         }));
     }
 
+    public MapScreen(Context base, LauncherFeed feed, double lat, double lon, double zoom,
+                     double displayLat, double displayLon) {
+        this(base, feed, lat, lon, zoom);
+        this.displayLat = displayLat;
+        this.displayLon = displayLon;
+    }
+
     @Override
     protected View getView(ViewGroup parent) {
         this.parent = parent;
@@ -166,6 +182,38 @@ public class MapScreen extends ProviderScreen {
         MyLocationNewOverlay overlay = new MyLocationNewOverlay(provider, mapView);
         overlay.enableMyLocation();
         mapView.getOverlayManager().add(overlay);
+        if (displayLat != null && displayLon != null) {
+            SimpleFastPointOverlay pointOverlay = new SimpleFastPointOverlay(
+                    new SimpleFastPointOverlay.PointAdapter() {
+                        @Override
+                        public int size() {
+                            return 1;
+                        }
+
+                        @Override
+                        public IGeoPoint get(int i) {
+                            return new GeoPoint(displayLat, displayLon);
+                        }
+
+                        @Override
+                        public boolean isLabelled() {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean isStyled() {
+                            return false;
+                        }
+
+                        @NonNull
+                        @Override
+                        public Iterator<IGeoPoint> iterator() {
+                            return Collections.singletonList(
+                                    (IGeoPoint) new GeoPoint(displayLat, displayLon)).iterator();
+                        }
+                    });
+            mapView.getOverlayManager().add(pointOverlay);
+        }
         mapView.getController().animateTo(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);

@@ -1033,7 +1033,7 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
 
                         val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
                             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                                MapScreen(context, provider.feed, lat, lon, 15.0)
+                                MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon)
                                         .display(provider, v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
                                                 v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
                                 return true;
