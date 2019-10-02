@@ -529,7 +529,8 @@ class LauncherFeed(val originalContext: Context,
                 setPadding(paddingLeft, 0, paddingRight, paddingTop)
             }
         }
-        if (!useWhiteText(backgroundColor, context)) {
+        if (!useWhiteText(backgroundColor, context) &&
+                backgroundColor.alpha > 35) {
             tabView.tabIconTint =
                     ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
             tabView.tabSelectedIndicator!!
@@ -538,7 +539,15 @@ class LauncherFeed(val originalContext: Context,
                     arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
                     arrayOf(googleColours[0],
                             R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
-        } else if (backgroundColor.alpha < 35) {
+        } else if (!useWhiteText(backgroundColor, context)) {
+            tabView.tabIconTint =
+                    ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
+            tabView.tabSelectedIndicator!!
+                    .setTint(R.color.textColorPrimaryInverse.fromColorRes(context))
+            tabView.tabTextColors =
+                    ColorStateList.valueOf(R.color.textColorPrimaryInverse.fromColorRes(context))
+        } else if (backgroundColor.alpha < 35 &&
+                useWhiteText(backgroundColor, context)) {
             tabView.tabIconTint =
                     ColorStateList.valueOf(R.color.textColorPrimary.fromColorRes(context))
             tabView.tabSelectedIndicator!!
