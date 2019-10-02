@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import com.android.launcher3.R;
 
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
+import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
@@ -52,6 +54,7 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +66,10 @@ import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.location.LocationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
@@ -99,26 +105,6 @@ public class MapScreen extends ProviderScreen {
                 location.setLatitude(lati);
                 location.setLongitude(longi);
                 myLocationConsumer.onLocationChanged(location, this);
-
-                if (toLocation != null && fromLocation != null) {
-                    Single.fromCallable(() -> {
-                        OSRMRoadManager roadManager = new OSRMRoadManager(MapScreen.this);
-                        return roadManager.getRoad((ArrayList<GeoPoint>) Arrays.asList(toLocation,
-                                fromLocation));
-                    }).subscribe(
-                            (road, throwable) -> {
-                                if (throwable != null) {
-                                    if (route != null) {
-                                        synchronized (ROUTE_LOCK) {
-                                            mapView.getOverlayManager().remove(route);
-                                            route = RoadManager.buildRoadOverlay(road);
-                                            mapView.getOverlayManager().add(route);
-                                        }
-                                    }
-                                }
-                            });
-                }
-
                 return Unit.INSTANCE;
             };
 
@@ -222,10 +208,42 @@ public class MapScreen extends ProviderScreen {
         }
         MyLocationNewOverlay overlay = new MyLocationNewOverlay(provider, mapView);
         overlay.enableMyLocation();
-        synchronized (ROUTE_LOCK) {
-            if (route != null &&
-                    !mapView.getOverlayManager().contains(route)) {
-                mapView.getOverlayManager().add(route);
+
+        if (toLocation != null && fromLocation != null && view != null) {
+            Flowable.fromCallable(() -> {
+                try {
+                    Log.d(MapScreen.this.getClass().getSimpleName(), "bindView: loading route");
+                    OSRMRoadManager roadManager = new OSRMRoadManager(MapScreen.this);
+                    Road road = roadManager.getRoad(new ArrayList<>(Arrays.asList(fromLocation,
+                            toLocation)));
+                    Log.d(MapScreen.this.getClass().getSimpleName(),
+                            "bindView: loading route: " + road);
+                    return road;
+                } catch (Exception e) {
+                    Log.d(getClass().getName(), "bindView: failed to load route", e);
+                    return null;
+                }
+            }).doOnError(error -> {
+                error.printStackTrace();
+            }).subscribeOn(Schedulers.newThread()).subscribe((road) -> {
+                        Log.d(getClass().getName(), "bindView: route loaded: " + road);
+                        if (road != null) {
+                            synchronized (ROUTE_LOCK) {
+                                mapView.getOverlayManager().remove(route);
+                                route = RoadManager.buildRoadOverlay(road);
+                                mapView.getOverlayManager().add(route);
+                                mapView.postInvalidate();
+                            }
+                        }
+                    });
+        }
+        if (view == null) {
+            synchronized (ROUTE_LOCK) {
+                if (route != null &&
+                        !mapView.getOverlayManager().contains(route)) {
+                    mapView.getOverlayManager().add(route);
+                    mapView.postInvalidate();
+                }
             }
         }
         mapView.getOverlayManager().add(overlay);
