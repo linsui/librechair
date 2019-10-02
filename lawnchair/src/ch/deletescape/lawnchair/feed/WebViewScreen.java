@@ -23,13 +23,25 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.DownloadListener;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.function.Consumer;
+
+import ch.deletescape.lawnchair.feed.adblock.AdblockHelper;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -65,6 +77,22 @@ public class WebViewScreen extends ProviderScreen {
                 view.getLayoutParams().height = MATCH_PARENT;
                 view.getLayoutParams().width = MATCH_PARENT;
             });
+        });
+        view.setWebViewClient(new WebViewClient() {
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view,
+                                                              WebResourceRequest request) {
+                try {
+                    if (AdblockHelper.INSTANCE.shouldBlock(request.getUrl().getAuthority())) {
+                        return new WebResourceResponse("text/html", "utf8",
+                                new ByteArrayInputStream(new byte[0]));
+                    }
+                } catch (RuntimeException e) {
+                    e.printStackTrace();
+                }
+                return super.shouldInterceptRequest(view, request);
+            }
         });
         view.loadUrl(uri);
         configurer.accept(view);

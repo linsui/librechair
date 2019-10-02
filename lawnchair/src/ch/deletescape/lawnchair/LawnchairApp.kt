@@ -34,6 +34,8 @@ import ch.deletescape.lawnchair.bugreport.BugReportService
 import ch.deletescape.lawnchair.clipart.ClipartCache
 import ch.deletescape.lawnchair.clipart.FancyClipartResolver
 import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
+import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.adblock.AdblockHelper
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
@@ -44,7 +46,9 @@ import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
+import kotlinx.coroutines.launch
 import java.io.File
+import java.io.IOException
 
 class LawnchairApp : Application(), () -> Unit {
     override fun invoke() {
@@ -91,6 +95,16 @@ class LawnchairApp : Application(), () -> Unit {
 
         org.osmdroid.config.Configuration.getInstance().osmdroidBasePath = File(filesDir, "osmdroid")
         org.osmdroid.config.Configuration.getInstance().userAgentValue = "Librechair-" + BuildConfig.VERSION_CODE
+        if (getCurrentProcessName(this).contains("overlay")) {
+            AdblockHelper.context = this
+            FeedScope.launch {
+                try {
+                    AdblockHelper.initialize()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     fun onLauncherAppStateCreated() {
