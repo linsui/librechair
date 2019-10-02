@@ -22,6 +22,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.AttributeSet
 import android.view.View
+import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.preferences.StyledIconPreference
 import com.android.launcher3.R
 
@@ -83,5 +84,10 @@ open class SubPreference(context: Context, attrs: AttributeSet) : StyledIconPref
         intent.putExtra(SettingsActivity.SubSettingsFragment.HAS_PREVIEW, hasPreview())
         intent.putExtra(SettingsBaseActivity.EXTRA_FROM_SETTINGS, true)
         context.startActivity(intent)
+    }
+
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        holder.itemView.findViewById<View>(android.R.id.title)?.setTag("cat")
+        super.onBindViewHolder(holder)
     }
 }

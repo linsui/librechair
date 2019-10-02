@@ -49,6 +49,7 @@ import ch.deletescape.lawnchair.preferences.AdvancedPreferencesGroup;
 import com.android.launcher3.R;
 
 import java.util.List;
+import java.util.Objects;
 
 public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter {
 
@@ -242,14 +243,16 @@ public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter 
                 holder.findViewById(androidx.preference.R.id.title) instanceof TextView) {
             CustomFontManager.Companion.getInstance(context).setCustomFont(
                     (TextView) holder.findViewById(androidx.preference.R.id.title),
-                    CustomFontManager.FONT_PREFERENCE_TITLE);
+                    Objects.equals(holder.findViewById(androidx.preference.R.id.title).getTag(),
+                            "cat") ? CustomFontManager.FONT_CATEGORY_TITLE : CustomFontManager.FONT_PREFERENCE_TITLE);
         }
 
         if (holder.findViewById(android.R.id.title) != null &&
                 holder.findViewById(android.R.id.title) instanceof TextView) {
             CustomFontManager.Companion.getInstance(context).setCustomFont(
                     (TextView) holder.findViewById(android.R.id.title),
-                    CustomFontManager.FONT_PREFERENCE_TITLE);
+                    Objects.equals(holder.findViewById(android.R.id.title).getTag(),
+                            "cat") ? CustomFontManager.FONT_CATEGORY_TITLE : CustomFontManager.FONT_PREFERENCE_TITLE);
         }
     }
 }

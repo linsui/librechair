@@ -20,6 +20,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@android:id/title"
     android:layout_width="match_parent"
+    android:tag="cat"
     android:layout_height="wrap_content"
     android:layout_marginBottom="16dip"
     android:paddingStart="?android:attr/listPreferredItemPaddingStart"
