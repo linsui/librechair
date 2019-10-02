@@ -52,6 +52,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback;
@@ -61,7 +62,6 @@ import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
-import androidx.preference.internal.AbstractMultiSelectListPreference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -888,7 +888,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
             } else if (preference instanceof EditTextPreference) {
                 f = ThemedEditTextPreferenceDialogFragmentCompat.Companion
                         .newInstance(preference.getKey());
-            } else if (preference instanceof AbstractMultiSelectListPreference) {
+            } else if (preference instanceof MultiSelectListPreference) {
                 f = ThemedMultiSelectListPreferenceDialogFragmentCompat.Companion
                         .newInstance(preference.getKey());
             } else if (preference instanceof SmartspaceEventProvidersPreference) {

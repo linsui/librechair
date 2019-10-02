@@ -1033,9 +1033,18 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
 
                         val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
                             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                                MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon)
-                                        .display(provider, v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
-                                                v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                if (ch.deletescape.lawnchair.location.LocationManager.location != null) {
+                                    MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon, GeoPoint(ch.deletescape.lawnchair.location.LocationManager.location!!.first,
+                                            ch.deletescape.lawnchair.location.LocationManager.location!!.second), GeoPoint(lat, lon))
+                                            .display(provider,
+                                                    v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                } else {
+                                    MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon)
+                                            .display(provider,
+                                                    v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                }
                                 return true;
                             }
                         })

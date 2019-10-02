@@ -18,13 +18,12 @@
 package ch.deletescape.lawnchair.preferences
 
 import android.content.Context
-import androidx.annotation.Keep
-import androidx.preference.SwitchPreference
-import androidx.preference.AndroidResources
-import androidx.preference.PreferenceViewHolder
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Switch
+import androidx.annotation.Keep
+import androidx.preference.PreferenceViewHolder
+import androidx.preference.SwitchPreference
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.applyColor
 import ch.deletescape.lawnchair.colors.ColorEngine
@@ -42,7 +41,7 @@ open class StyledSwitchPreferenceCompat(context: Context, attrs: AttributeSet? =
 
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
-        checkableView = holder?.findViewById(AndroidResources.ANDROID_R_SWITCH_WIDGET)
+        checkableView = holder?.findViewById(android.R.id.switch_widget)
         ColorEngine.getInstance(context).addColorChangeListeners(this, ColorEngine.Resolvers.ACCENT)
     }
 

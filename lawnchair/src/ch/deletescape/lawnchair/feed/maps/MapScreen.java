@@ -37,12 +37,15 @@ import androidx.annotation.NonNull;
 import com.android.launcher3.R;
 
 import org.osmdroid.api.IGeoPoint;
+import org.osmdroid.bonuspack.routing.OSRMRoadManager;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.events.MapListener;
 import org.osmdroid.events.ScrollEvent;
 import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.CopyrightOverlay;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
 import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
@@ -50,6 +53,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
@@ -58,12 +63,16 @@ import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.location.LocationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import io.reactivex.rxjava3.core.Single;
 import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
+
+    private GeoPoint toLocation;
+    private GeoPoint fromLocation;
     private double lat;
     private double lon;
     private double zoom;
@@ -72,9 +81,13 @@ public class MapScreen extends ProviderScreen {
     private MapView mapView;
     private ViewGroup parent, layout;
     private IMyLocationProvider provider;
+    private Polyline route;
+
+    private final Object ROUTE_LOCK;
 
     public MapScreen(Context base, LauncherFeed feed, double lat, double lon, double zoom) {
         super(base);
+        this.ROUTE_LOCK = new Object();
         this.feed = feed;
         this.lat = lat;
         this.lon = lon;
@@ -86,6 +99,26 @@ public class MapScreen extends ProviderScreen {
                 location.setLatitude(lati);
                 location.setLongitude(longi);
                 myLocationConsumer.onLocationChanged(location, this);
+
+                if (toLocation != null && fromLocation != null) {
+                    Single.fromCallable(() -> {
+                        OSRMRoadManager roadManager = new OSRMRoadManager(MapScreen.this);
+                        return roadManager.getRoad((ArrayList<GeoPoint>) Arrays.asList(toLocation,
+                                fromLocation));
+                    }).subscribe(
+                            (road, throwable) -> {
+                                if (throwable != null) {
+                                    if (route != null) {
+                                        synchronized (ROUTE_LOCK) {
+                                            mapView.getOverlayManager().remove(route);
+                                            route = RoadManager.buildRoadOverlay(road);
+                                            mapView.getOverlayManager().add(route);
+                                        }
+                                    }
+                                }
+                            });
+                }
+
                 return Unit.INSTANCE;
             };
 
@@ -141,6 +174,14 @@ public class MapScreen extends ProviderScreen {
         this.displayLon = displayLon;
     }
 
+    public MapScreen(Context base, LauncherFeed feed, double lat, double lon, double zoom,
+                     double displayLat, double displayLon, GeoPoint toLocation,
+                     GeoPoint fromLocation) {
+        this(base, feed, lat, lon, zoom, displayLat, displayLon);
+        this.toLocation = toLocation;
+        this.fromLocation = fromLocation;
+    }
+
     @Override
     protected View getView(ViewGroup parent) {
         this.parent = parent;
@@ -181,6 +222,12 @@ public class MapScreen extends ProviderScreen {
         }
         MyLocationNewOverlay overlay = new MyLocationNewOverlay(provider, mapView);
         overlay.enableMyLocation();
+        synchronized (ROUTE_LOCK) {
+            if (route != null &&
+                    !mapView.getOverlayManager().contains(route)) {
+                mapView.getOverlayManager().add(route);
+            }
+        }
         mapView.getOverlayManager().add(overlay);
         if (displayLat != null && displayLon != null) {
             SimpleFastPointOverlay pointOverlay = new SimpleFastPointOverlay(
