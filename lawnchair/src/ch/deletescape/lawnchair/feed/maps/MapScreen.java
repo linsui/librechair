@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,13 +41,20 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.CopyrightOverlay;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
+import org.osmdroid.views.overlay.mylocation.IMyLocationConsumer;
+import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.lang.reflect.InvocationTargetException;
 
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import ch.deletescape.lawnchair.location.LocationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import kotlin.Pair;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function2;
 
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
@@ -55,6 +63,7 @@ public class MapScreen extends ProviderScreen {
     private double zoom;
     private MapView mapView;
     private ViewGroup parent, layout;
+    private IMyLocationProvider provider;
 
     public MapScreen(Context base, LauncherFeed feed, double lat, double lon, double zoom) {
         super(base);
@@ -62,6 +71,45 @@ public class MapScreen extends ProviderScreen {
         this.lat = lat;
         this.lon = lon;
         this.zoom = zoom;
+        this.provider = new IMyLocationProvider() {
+            private IMyLocationConsumer myLocationConsumer;
+            private Function2<Double, Double, Unit> changeListener = (lati, longi) -> {
+                Location location = new Location("");
+                location.setLatitude(lati);
+                location.setLongitude(longi);
+                myLocationConsumer.onLocationChanged(location, this);
+                return Unit.INSTANCE;
+            };
+            @Override
+            public boolean startLocationProvider(IMyLocationConsumer myLocationConsumer) {
+                this.myLocationConsumer = myLocationConsumer;
+                LocationManager.INSTANCE.addCallback(changeListener);
+                return true;
+            }
+
+            @Override
+            public void stopLocationProvider() {
+                LocationManager.INSTANCE.getChangeCallbacks().remove(myLocationConsumer);
+            }
+
+            @Override
+            public Location getLastKnownLocation() {
+                if (LocationManager.INSTANCE.getLocation() == null) {
+                    return null;
+                } else {
+                    Pair<Double, Double> loc = LocationManager.INSTANCE.getLocation();
+                    Location location = new Location("");
+                    location.setLatitude(loc.getFirst());
+                    location.setLongitude(loc.getSecond());
+                    return location;
+                }
+            }
+
+            @Override
+            public void destroy() {
+
+            }
+        };
         addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp),
                 getString(
                         R.string.title_action_open_externally), () -> {
@@ -115,6 +163,9 @@ public class MapScreen extends ProviderScreen {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        MyLocationNewOverlay overlay = new MyLocationNewOverlay(provider, mapView);
+        overlay.enableMyLocation();
+        mapView.getOverlayManager().add(overlay);
         mapView.getController().animateTo(new GeoPoint(lat, lon));
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);
