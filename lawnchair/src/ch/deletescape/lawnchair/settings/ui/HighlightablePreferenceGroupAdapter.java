@@ -24,6 +24,8 @@ import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
@@ -33,13 +35,20 @@ import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.PreferenceViewHolder;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
+import android.widget.TextView;
+
 import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.preferences.AdvancedPreferencesGroup;
+
 import com.android.launcher3.R;
+
+import java.util.List;
 
 public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter {
 
@@ -55,6 +64,8 @@ public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter 
     final int mHighlightColor;
     @VisibleForTesting
     boolean mFadeInAnimated;
+
+    private final Context context;
 
     private final int mNormalBackgroundRes;
     private final String mHighlightKey;
@@ -94,11 +105,11 @@ public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter 
     }
 
     public HighlightablePreferenceGroupAdapter(PreferenceGroup preferenceGroup, String key,
-            boolean highlightRequested) {
+                                               boolean highlightRequested) {
         super(preferenceGroup);
         mHighlightKey = key;
         mHighlightRequested = highlightRequested;
-        final Context context = preferenceGroup.getContext();
+        context = preferenceGroup.getContext();
         final TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                 outValue, true /* resolveRefs */);
@@ -221,5 +232,24 @@ public class HighlightablePreferenceGroupAdapter extends PreferenceGroupAdapter 
         });
         colorAnimation.start();
         Log.d(TAG, "Starting fade out animation");
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull PreferenceViewHolder holder, int position,
+                                 @NonNull List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
+        if (holder.findViewById(androidx.preference.R.id.title) != null &&
+                holder.findViewById(androidx.preference.R.id.title) instanceof TextView) {
+            CustomFontManager.Companion.getInstance(context).setCustomFont(
+                    (TextView) holder.findViewById(androidx.preference.R.id.title),
+                    CustomFontManager.FONT_PREFERENCE_TITLE);
+        }
+
+        if (holder.findViewById(android.R.id.title) != null &&
+                holder.findViewById(android.R.id.title) instanceof TextView) {
+            CustomFontManager.Companion.getInstance(context).setCustomFont(
+                    (TextView) holder.findViewById(android.R.id.title),
+                    CustomFontManager.FONT_PREFERENCE_TITLE);
+        }
     }
 }

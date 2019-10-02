@@ -40,6 +40,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.XmlRes;
@@ -58,8 +59,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback;
 import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
@@ -90,6 +93,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -673,7 +677,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
 
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
 
-            disableReservedIconSpace(getPreferenceScreen());
+            transformPreferenceScreen(getPreferenceScreen());
 
             if (getContent() == R.xml.lawnchair_desktop_preferences) {
                 if (getResources().getBoolean(R.bool.notification_badging_enabled)) {
@@ -853,12 +857,12 @@ public class SettingsActivity extends SettingsBaseActivity implements
             super.onDestroy();
         }
 
-        private void disableReservedIconSpace(PreferenceGroup group) {
+        private void transformPreferenceScreen(PreferenceGroup group) {
             group.setIconSpaceReserved(false);
             for (int i = 0; i < group.getPreferenceCount(); ++i) {
                 group.getPreference(i).setIconSpaceReserved(false);
                 if (group.getPreference(i) instanceof PreferenceGroup) {
-                    disableReservedIconSpace((PreferenceGroup) group.getPreference(i));
+                    transformPreferenceScreen((PreferenceGroup) group.getPreference(i));
                 }
             }
         }
