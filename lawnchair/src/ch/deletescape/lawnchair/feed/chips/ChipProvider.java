@@ -42,6 +42,7 @@ import ch.deletescape.lawnchair.feed.chips.battery.BatteryStatusProvider;
 import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 import ch.deletescape.lawnchair.feed.chips.contacts.ContactsChipProvider;
 import ch.deletescape.lawnchair.feed.chips.location.CurrentLocationChipProvider;
+import ch.deletescape.lawnchair.feed.chips.memory.MemoryUsageChipProvider;
 import ch.deletescape.lawnchair.feed.chips.news.BBCArticleProvider;
 import ch.deletescape.lawnchair.feed.chips.news.TheGuardianArticleProvider;
 import ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider;
@@ -136,6 +137,9 @@ public abstract class ChipProvider {
             names.put(buildEmptyContainer(CurrentLocationChipProvider.class),
                     LawnchairApp.localizationContext.getString(
                             R.string.title_chip_provider_current_location));
+            names.put(buildEmptyContainer(MemoryUsageChipProvider.class),
+                    LawnchairApp.localizationContext.getString(
+                            R.string.title_chip_provider_memory_usage));
             for (ComponentName name : RemoteChipProviderUtilities.getRemoteChipProviders(
                     LawnchairApp.localizationContext)) {
                 ChipProviderContainer container = new ChipProviderContainer();
