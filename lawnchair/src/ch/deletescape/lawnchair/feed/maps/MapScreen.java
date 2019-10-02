@@ -209,7 +209,7 @@ public class MapScreen extends ProviderScreen {
         MyLocationNewOverlay overlay = new MyLocationNewOverlay(provider, mapView);
         overlay.enableMyLocation();
 
-        if (toLocation != null && fromLocation != null && view != null) {
+        if (toLocation != null && fromLocation != null) {
             Flowable.fromCallable(() -> {
                 try {
                     Log.d(MapScreen.this.getClass().getSimpleName(), "bindView: loading route");
@@ -223,9 +223,9 @@ public class MapScreen extends ProviderScreen {
                     Log.d(getClass().getName(), "bindView: failed to load route", e);
                     return null;
                 }
-            }).doOnError(error -> {
-                error.printStackTrace();
-            }).subscribeOn(Schedulers.newThread()).subscribe((road) -> {
+            }).doOnError(
+                    Throwable::printStackTrace).subscribeOn(Schedulers.newThread()).subscribe(
+                    (road) -> {
                         Log.d(getClass().getName(), "bindView: route loaded: " + road);
                         if (road != null) {
                             synchronized (ROUTE_LOCK) {
@@ -236,15 +236,6 @@ public class MapScreen extends ProviderScreen {
                             }
                         }
                     });
-        }
-        if (view == null) {
-            synchronized (ROUTE_LOCK) {
-                if (route != null &&
-                        !mapView.getOverlayManager().contains(route)) {
-                    mapView.getOverlayManager().add(route);
-                    mapView.postInvalidate();
-                }
-            }
         }
         mapView.getOverlayManager().add(overlay);
         if (displayLat != null && displayLon != null) {
@@ -302,6 +293,7 @@ public class MapScreen extends ProviderScreen {
 
     @Override
     public void onPause() {
+        mapView.getOverlayManager().removeIf(any -> true);
         layout.removeAllViews();
     }
 
