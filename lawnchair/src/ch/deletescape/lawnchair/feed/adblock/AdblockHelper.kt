@@ -63,7 +63,7 @@ object AdblockHelper {
             }
             var block = false
             InputStreamReader(FileInputStream(blocklist)).forEachLine {
-                if (it.split(" ")[1] == dom) {
+                if (it.isNotEmpty() && it.split(" ")[1] == dom) {
                     block = true
                     return@forEachLine
                 }
