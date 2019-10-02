@@ -179,6 +179,8 @@ abstract class AnimationType {
                     }
 
                     override fun onAnimationEnd(animation: Animator) {
+                        rootView.removeView(splashView)
+                        launcherContentAnimator.second.run()
                         launcher.clearForceInvisibleFlag(INVISIBLE_BY_APP_TRANSITIONS)
                     }
                 })
