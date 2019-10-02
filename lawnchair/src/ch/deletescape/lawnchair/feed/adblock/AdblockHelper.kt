@@ -55,7 +55,7 @@ object AdblockHelper {
     }
 
     fun shouldBlock(dom: String): Boolean {
-        if (blocklist == null) {
+        if (blocklist.exists().not()) {
             return false
         } else {
             if (blockCache.containsKey(dom)) {
