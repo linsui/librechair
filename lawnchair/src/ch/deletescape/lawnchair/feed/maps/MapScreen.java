@@ -234,6 +234,8 @@ public class MapScreen extends ProviderScreen {
                                 route = RoadManager.buildRoadOverlay(road);
                                 mapView.getOverlayManager().add(route);
                                 mapView.postInvalidate();
+                                TextOverlay distance = new TextOverlay(MapScreen.this);
+                                distance.setText(road.getLengthDurationText(MapScreen.this, 0));
                             }
                         }
                     });
