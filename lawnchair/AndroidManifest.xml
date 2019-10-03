@@ -296,21 +296,7 @@
         </service>
         <service
             android:enabled="true"
-            android:exported="true"
             android:name="ch.deletescape.lawnchair.predictions.PredictionsProviderService" />
-        <service
-            android:enabled="true"
-            android:exported="false"
-            android:name="ch.deletescape.lawnchair.feed.widgets.WidgetSelectionService" /> <!-- widget picker for the feed -->
-        <service
-            android:enabled="true"
-            android:exported="true"
-            android:name="ch.deletescape.lawnchair.clockhide.ClockhideService" />
-        <service
-            android:enabled="true"
-            android:exported="true"
-            android:name="ch.deletescape.lawnchair.overlay.ProcessControllerService"
-            android:process=":overlay" />
         <service
             android:exported="true"
             android:name="ch.deletescape.lawnchair.feed.impl.OverlayService"
