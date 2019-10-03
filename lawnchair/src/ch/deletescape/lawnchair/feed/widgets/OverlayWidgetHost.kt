@@ -51,20 +51,6 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
         return OverlayWidgetView(context, appWidgetId)
     }
 
-    @WorkerThread
-    fun prune() {
-        val validWidgets = mutableListOf<Int>()
-        validWidgets.addAll(WidgetDatabase.getInstance(context).dao().all.map { it.id })
-        if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-            validWidgets += context.lawnchairPrefs.feedToolbarWidget
-        }
-        for (i in appWidgetIds) {
-            if (!validWidgets.contains(i)) {
-                deleteAppWidgetId(i)
-            }
-        }
-    }
-
     class OverlayWidgetView(context: Context, val specialId: Int) : AppWidgetHostView(context) {
 
         private val mLongPressHelper = CheckLongPressHelper(this)

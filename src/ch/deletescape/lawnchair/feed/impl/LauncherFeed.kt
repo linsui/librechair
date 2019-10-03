@@ -89,13 +89,6 @@ class LauncherFeed(val originalContext: Context,
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
 
-    init {
-        FeedScope.launch {
-            originalContext.lawnchairApp.overlayWidgetHost.prune()
-        }
-        d("init: dark ${dark}")
-    }
-
     private var lastScroll = 0f
 
     private var internalActions = mutableMapOf<Int, FeedProvider.Action>()
