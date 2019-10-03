@@ -20,6 +20,7 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Html;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import io.github.cdimascio.essence.Essence;
+import kotlin.Unit;
 
 public class ArticleViewerScreen extends ProviderScreen {
 
@@ -55,6 +57,16 @@ public class ArticleViewerScreen extends ProviderScreen {
         this.categories = categories;
         this.url = url;
         this.desc = desc;
+
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_share),
+                getString(getResources()
+                        .getIdentifier("whichSendApplicationLabel", "string", "android")), () -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_TEXT, url);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        }));
     }
 
     @Override
