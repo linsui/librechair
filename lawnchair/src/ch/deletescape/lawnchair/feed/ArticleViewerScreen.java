@@ -58,7 +58,7 @@ public class ArticleViewerScreen extends ProviderScreen {
         this.url = url;
         this.desc = desc;
 
-        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_share),
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_share_black_24dp),
                 getString(getResources()
                         .getIdentifier("whichSendApplicationLabel", "string", "android")), () -> {
             Intent i = new Intent(Intent.ACTION_SEND);
