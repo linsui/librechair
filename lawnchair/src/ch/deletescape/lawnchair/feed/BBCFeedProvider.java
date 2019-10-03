@@ -54,6 +54,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
         feeds.put("KOR", AS);
         feeds.put("KEN", AF);
         feeds.put("ZAF", AF);
+        feeds.put("CAF", AF);
         feeds.put("DZA", AF);
         feeds.put("WORLD", WD);
     }
