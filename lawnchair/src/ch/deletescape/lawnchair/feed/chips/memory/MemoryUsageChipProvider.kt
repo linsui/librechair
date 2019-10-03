@@ -30,7 +30,6 @@ import android.content.Context.ACTIVITY_SERVICE
 import androidx.core.content.ContextCompat.getSystemService
 
 
-
 class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
     override fun getItems(context: Context): List<Item> = listOf(Item().apply {
         icon = R.drawable.ic_bug_notification.fromDrawableRes(context)
@@ -39,6 +38,7 @@ class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
         activityManager.getMemoryInfo(mi)
         val availableMegs = mi.availMem / 0x100000L
         val totalMegs = mi.totalMem / 0x100000L
-        title = "$availableMegs MB / $totalMegs MB"
+        title =
+                "$availableMegs MB / ${if (totalMegs < 0x400) totalMegs else totalMegs / 0x400f} ${if (totalMegs < 0x400) "MB" else "GB"}"
     })
 }
