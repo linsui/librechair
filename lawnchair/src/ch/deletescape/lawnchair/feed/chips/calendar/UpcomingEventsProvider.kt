@@ -28,6 +28,7 @@ import android.net.Uri
 import android.provider.CalendarContract
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.fromDrawableRes
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
@@ -39,7 +40,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
         val chips = mutableListOf<ChipProvider.Item>()
         val currentTime = GregorianCalendar()
         val endTime = GregorianCalendar().apply {
-            add(Calendar.DAY_OF_MONTH, 5);
+            add(Calendar.DAY_OF_MONTH, context.lawnchairPrefs.feedCalendarEventThreshold)
         }
         val query =
                 "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
