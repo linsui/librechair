@@ -40,6 +40,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.ListPreference
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.persistence.SimplePersistence
 import ch.deletescape.lawnchair.smartspace.BlankDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
@@ -88,13 +89,14 @@ class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
     }
 
     override fun getPersistedString(defaultReturnValue: String?): String {
-        return getPersistedValue()
+        return SimplePersistence.InstanceHolder.getInstance(context).get(key, defaultReturnValue)
     }
 
-    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, OWMForecastProvider::class.java.name)
+    private fun getPersistedValue() = prefs.sharedPrefs.getString(key,
+            OWMForecastProvider::class.java.name)!!
 
-    override fun persistString(value: String?): Boolean {
-        prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
+    override fun persistString(value: String): Boolean {
+        SimplePersistence.InstanceHolder.getInstance(context).put(key, value)
         return true
     }
 }

@@ -68,6 +68,7 @@ import ch.deletescape.lawnchair.feed.maps.TextOverlay
 import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.feedPrefs
+import ch.deletescape.lawnchair.persistence.generalPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
@@ -113,6 +114,7 @@ import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import kotlin.random.Random
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
@@ -132,6 +134,8 @@ import kotlin.reflect.KProperty
  * limitations under the License.
  */
 
+private val forecastProviders = mutableMapOf<KClass<out ForecastProvider>, ForecastProvider>()
+
 val Context.launcherAppState get() = LauncherAppState.getInstance(this)
 val Context.lawnchairPrefs get() = Utilities.getLawnchairPrefs(this)
 
@@ -139,17 +143,13 @@ val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this,
                                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
 val Context.forecastProvider: ForecastProvider
-    get() = run {
-        if (forecastProviderNoCreate != null && forecastProviderNoCreate?.javaClass?.name == lawnchairPrefs.weatherForecastProvider) {
-            return@run forecastProviderNoCreate!!
-        } else {
-            forecastProviderNoCreate = ForecastProvider.Controller
-                    .inflateForecastProvider(this, this.lawnchairPrefs.weatherForecastProvider)
-            return@run forecastProviderNoCreate!!
-        }
-    }
-
-var forecastProviderNoCreate: ForecastProvider? = null
+    get() = forecastProviders[Class.forName(
+            generalPrefs.weatherProvider).kotlin as KClass<out ForecastProvider>]
+            ?: ForecastProvider.Controller
+                    .inflateForecastProvider(this, this.generalPrefs.weatherProvider).also {
+                        forecastProviders += Class.forName(
+                                generalPrefs.weatherProvider).kotlin as KClass<out ForecastProvider> to it
+                    }
 
 fun nothing() {
 
@@ -877,8 +877,7 @@ inline fun avg(vararg of: Long) = of.average()
 inline fun avg(vararg of: Double) = of.average()
 
 fun Context.checkLocationAccess(): Boolean {
-    return Utilities.hasPermission(this,
-                                   android.Manifest.permission.ACCESS_COARSE_LOCATION) || Utilities.hasPermission(
+    return Utilities.hasPermission(
         this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 }
 
