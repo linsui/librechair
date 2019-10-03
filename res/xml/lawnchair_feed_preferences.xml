@@ -387,4 +387,13 @@
             android:title="@string/title_pref_feed_map_provider"
             android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:title="@string/pref_category_misc">
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_hosts_filtering"
+            android:title="@string/title_pref_feed_hosts_filtering"
+            android:summary="@string/summary_pref_feed_hosts_filtering"/>
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

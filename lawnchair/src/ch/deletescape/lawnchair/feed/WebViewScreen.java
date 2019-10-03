@@ -42,6 +42,7 @@ import java.net.URL;
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.feed.adblock.AdblockHelper;
+import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -84,7 +85,9 @@ public class WebViewScreen extends ProviderScreen {
             public WebResourceResponse shouldInterceptRequest(WebView view,
                                                               WebResourceRequest request) {
                 try {
-                    if (AdblockHelper.INSTANCE.shouldBlock(request.getUrl().getAuthority())) {
+                    if (FeedPersistenceKt.getFeedPrefs(
+                            WebViewScreen.this).getEnableHostsFilteringInWebView() && AdblockHelper.INSTANCE.shouldBlock(
+                            request.getUrl().getAuthority())) {
                         return new WebResourceResponse("text/html", "utf8",
                                 new ByteArrayInputStream(new byte[0]));
                     }

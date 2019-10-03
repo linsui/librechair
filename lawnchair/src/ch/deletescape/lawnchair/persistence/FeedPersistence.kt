@@ -35,6 +35,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_actions_as_menu", false)
     val mapProvider by DefValueStringDelegate(context, "feed_map_provider",
             MapProvider::class.qualifiedName!!)
+    val enableHostsFilteringInWebView
+            by BooleanDelegate(context, "feed_hosts_filtering", true);
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
