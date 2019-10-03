@@ -1327,7 +1327,7 @@ class LauncherFeed(val originalContext: Context,
             }
         }
         if (providerScreens.isNotEmpty() && screenActions.containsKey(providerScreens.last().first)) {
-            (internalActions.values + screenActions[providerScreens.last().first]!!).forEach {
+            (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
                 toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
                         .apply {
                             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
