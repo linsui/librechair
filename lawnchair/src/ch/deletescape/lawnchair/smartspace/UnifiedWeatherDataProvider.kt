@@ -21,11 +21,13 @@ package ch.deletescape.lawnchair.smartspace
 
 import android.location.Location
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.PeriodicDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.extensions.w
 import com.google.gson.Gson
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class UnifiedWeatherDataProvider(
@@ -56,16 +58,18 @@ class UnifiedWeatherDataProvider(
                     }
                 } else {
                     context.lawnchairLocationManager.addCallback { lat, lon ->
-                        val currentWeather = context.forecastProvider
-                                .getCurrentWeather(lat, lon);
-                        runOnMainThread {
-                            updateData(
-                                    LawnchairSmartspaceController.WeatherData(currentWeather.icon,
-                                            currentWeather.temperature,
-                                            null,
-                                            null, null, lat, lon,
-                                            "-1d"),
-                                    null)
+                        FeedScope.launch {
+                            val currentWeather = context.forecastProvider
+                                    .getCurrentWeather(lat, lon)
+                            runOnMainThread {
+                                updateData(
+                                        LawnchairSmartspaceController.WeatherData(currentWeather.icon,
+                                                currentWeather.temperature,
+                                                null,
+                                                null, null, lat, lon,
+                                                "-1d"),
+                                        null)
+                            }
                         }
                     }
                 }
