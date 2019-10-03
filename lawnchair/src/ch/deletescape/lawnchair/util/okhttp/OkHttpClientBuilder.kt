@@ -18,10 +18,13 @@
 package ch.deletescape.lawnchair.util.okhttp
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.adblock.AdblockHelper
 import ch.deletescape.lawnchair.lawnchairPrefs
 import okhttp3.Cache
 import okhttp3.OkHttpClient
+import okhttp3.internal.canParseAsIpAddress
 import okhttp3.logging.HttpLoggingInterceptor
+import java.net.URL
 import java.util.concurrent.TimeUnit
 
 class OkHttpClientBuilder {
@@ -51,6 +54,9 @@ class OkHttpClientBuilder {
             }
         })
         builder.addInterceptor {
+            if (it.request().isHttps.not()) {
+                error("Plain-text traffic via OKHTTP is disabled for security reasons")
+            }
             it.proceed(it.request()
                     .newBuilder()
                     .header("Cache-Control", "public, max-age=${TimeUnit.MINUTES.toSeconds(30)}").build())
