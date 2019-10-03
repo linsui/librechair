@@ -67,6 +67,7 @@ import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.location.LocationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -210,7 +211,7 @@ public class MapScreen extends ProviderScreen {
         overlay.enableMyLocation();
 
         if (toLocation != null && fromLocation != null) {
-            Flowable.fromCallable(() -> {
+            Observable.fromCallable(() -> {
                 try {
                     Log.d(MapScreen.this.getClass().getSimpleName(), "bindView: loading route");
                     OSRMRoadManager roadManager = new OSRMRoadManager(MapScreen.this);
