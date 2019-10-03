@@ -31,10 +31,12 @@ import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker
 import ch.deletescape.lawnchair.getPostionOnScreen
 import ch.deletescape.lawnchair.newList
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
 import java.util.concurrent.TimeUnit
@@ -122,15 +124,19 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
                             description.text = spanned
                             val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
                                 override fun onSingleTapUp(e: MotionEvent): Boolean {
-                                    ArticleViewerScreen(context, entry.title,
-                                            entry.categories.joinToString(", "),
-                                            entry.link,
-                                            if (entry.description != null) entry.description.value else "")
-                                            .display(this@AbstractMultipleSyndicationProvider,
-                                                    readMore.getPostionOnScreen().first + Math.round(
-                                                            e.getX()),
-                                                    (((readMore).getPostionOnScreen().second + Math.round(
-                                                            e.getY()))))
+                                    if (context.feedPrefs.directlyOpenLinksInBrowser.not()) {
+                                        ArticleViewerScreen(context, entry.title,
+                                                entry.categories.joinToString(", "),
+                                                entry.link,
+                                                if (entry.description != null) entry.description.value else "")
+                                                .display(this@AbstractMultipleSyndicationProvider,
+                                                        readMore.getPostionOnScreen().first + Math.round(
+                                                                e.getX()),
+                                                        (((readMore).getPostionOnScreen().second + Math.round(
+                                                                e.getY()))))
+                                    } else {
+                                        Utilities.openURLinBrowser(context, entry.link)
+                                    }
                                     return true
                                 }
                             })

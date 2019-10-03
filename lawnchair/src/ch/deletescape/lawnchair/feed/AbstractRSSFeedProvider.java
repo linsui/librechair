@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.CopyFrom;
 import com.rometools.rome.feed.synd.SyndContent;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
 import ch.deletescape.lawnchair.feed.cache.CacheManager;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
@@ -242,18 +244,23 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             new GestureDetector.SimpleOnGestureListener() {
                                 @Override
                                 public boolean onSingleTapUp(MotionEvent e) {
-                                    new ArticleViewerScreen(getContext(), entry.getTitle(),
-                                            entry.getCategories().stream().map(it -> it.getName())
-                                                    .collect(Collectors.joining(", ")),
-                                            entry.getLink(),
-                                            entry.getDescription() != null ? entry.getDescription().getValue() : "")
-                                            .display(AbstractRSSFeedProvider.this,
-                                                    (LawnchairUtilsKt.getPostionOnScreen(
-                                                            readMore).getFirst() + Math.round(
-                                                            e.getX())),
-                                                    (LawnchairUtilsKt.getPostionOnScreen(
-                                                            readMore).getSecond() + Math.round(
-                                                            e.getY())));
+                                    if (!FeedPersistence.Companion.getInstance(getContext()).getDirectlyOpenLinksInBrowser()) {
+                                        new ArticleViewerScreen(getContext(), entry.getTitle(),
+                                                entry.getCategories().stream().map(
+                                                        it -> it.getName())
+                                                        .collect(Collectors.joining(", ")),
+                                                entry.getLink(),
+                                                entry.getDescription() != null ? entry.getDescription().getValue() : "")
+                                                .display(AbstractRSSFeedProvider.this,
+                                                        (LawnchairUtilsKt.getPostionOnScreen(
+                                                                readMore).getFirst() + Math.round(
+                                                                e.getX())),
+                                                        (LawnchairUtilsKt.getPostionOnScreen(
+                                                                readMore).getSecond() + Math.round(
+                                                                e.getY())));
+                                    } else {
+                                        Utilities.openURLinBrowser(getContext(), entry.getLink());
+                                    }
                                     return true;
                                 }
                             });
