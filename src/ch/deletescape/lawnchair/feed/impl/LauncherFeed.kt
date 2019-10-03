@@ -512,7 +512,7 @@ class LauncherFeed(val originalContext: Context,
         tabView.tabMode = TabLayout.MODE_SCROLLABLE
         tabView.tabGravity = TabLayout.GRAVITY_FILL
         tabView.setOnTouchListener { view, _ ->
-            view.parent.requestDisallowInterceptTouchEvent(true)
+            feedController.disallowInterceptCurrentTouchEvent = true
             true
         }
         if (tabsOnBottom) {
@@ -584,6 +584,7 @@ class LauncherFeed(val originalContext: Context,
                 tabView.tabMode = TabLayout.MODE_SCROLLABLE
             } else {
                 tabView.tabMode = TabLayout.MODE_FIXED
+                tabView.setOnTouchListener(null)
             }
             tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab) {
