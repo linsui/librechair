@@ -64,6 +64,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
+import com.android.overlayclient.ActivityState
 import com.android.overlayclient.ServiceState
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
@@ -88,6 +89,7 @@ class LauncherFeed(val originalContext: Context,
                     originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
+    private val activityState = ActivityState()
 
     private var lastScroll = 0f
 
@@ -1134,9 +1136,11 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun onPause() {
+        activityState.onPause()
     }
 
     override fun onResume() {
+        activityState.onResume()
     }
 
     override fun openOverlay(flags: Int) {
@@ -1165,6 +1169,7 @@ class LauncherFeed(val originalContext: Context,
     }
 
     override fun setActivityState(flags: Int) {
+        activityState.importMask(flags)
     }
 
     override fun startSearch(data: ByteArray?, bundle: Bundle?): Boolean {

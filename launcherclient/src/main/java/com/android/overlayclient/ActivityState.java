@@ -31,6 +31,27 @@ public class ActivityState {
 
     private Consumer<ActivityState> onChangeListener;
 
+    public int importMask(int mask) {
+        if ((mask & FLAG_INITIALIZED) != 0) {
+            if (!connected) {
+                onStart();
+            }
+        } else {
+            if (connected) {
+                onStop();
+            }
+        }
+        if ((mask & FLAG_ACTIVITY_IN_FOREGROUND) != 0) {
+            if (!activityInForeground) {
+                onResume();
+            }
+        } else {
+            if (activityInForeground) {
+                onPause();
+            }
+        }
+        return toMask();
+    }
 
     public int toMask() {
         return connected && !activityInForeground ? FLAG_INITIALIZED :
