@@ -26,9 +26,7 @@ import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.allapps.ContextFreeComponentKeyMapper
 import ch.deletescape.lawnchair.allapps.PredictionsProvider
 import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.Launcher
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
-import com.google.android.apps.nexuslauncher.NexusLauncherActivity
 
 class PredictionsProviderService : Service() {
     private val service = object : PredictionsProvider.Stub() {
@@ -37,7 +35,6 @@ class PredictionsProviderService : Service() {
             return (LawnchairLauncher.getLauncher(
                     applicationContext).userEventDispatcher as CustomAppPredictor).predictions
                     .map { ContextFreeComponentKeyMapper(it) }
-                    .also { d("getPredictions: returning $it ") }
         }
     }
 
