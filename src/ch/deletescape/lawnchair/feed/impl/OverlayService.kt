@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
@@ -90,6 +91,7 @@ class OverlayService : Service(), () -> Unit {
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
             override fun attachInterface(interfaze: ILauncherInterface) {
+                d("attacheInterface: interface is $interfaze")
                 InterfaceHolder.interfaze = interfaze
             }
 

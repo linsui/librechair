@@ -21,10 +21,9 @@
 package ch.deletescape.lawnchair.feed.chips.predict;
 
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
-
-import com.android.launcher3.ItemInfoWithIcon;
-import com.android.launcher3.allapps.AllAppsStore;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.util.Log;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,27 +35,34 @@ import static java.util.Collections.EMPTY_LIST;
 
 public class PredictedAppsProvider extends ChipProvider {
     private final Context context;
-    private AllAppsStore appsStore;
 
     public PredictedAppsProvider(Context context) {
         this.context = context;
-        this.appsStore = new AllAppsStore();
     }
 
     @Override
     public List<Item> getItems(Context context) {
         try {
-            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions().stream().map(it -> {
-                ItemInfoWithIcon info = it.getApp(appsStore);
-                Item item = new Item();
-                item.icon = new BitmapDrawable(context.getResources(), info.iconBitmap);
-                item.title = info.title.toString();
-                item.click = () -> {
-                    context.startActivity(info.getIntent());
-                };
-                return item;
-            }).collect(Collectors.toList());
+            Log.d(getClass().getSimpleName(),
+                    "getItems: items are " + OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions());
+            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions().stream().map(
+                    it -> {
+                        try {
+                            Item item = new Item();
+                            item.icon = context.getPackageManager().getActivityIcon(
+                                    it.getComponentKey().componentName);
+                            item.title = context.getPackageManager().getActivityInfo(
+                                    it.getComponentKey().componentName, 0).loadLabel(
+                                    context.getPackageManager()).toString();
+                            item.click = () -> context.startActivity(new Intent().setComponent(
+                                    it.getComponentKey().componentName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                            return item;
+                        } catch (PackageManager.NameNotFoundException e) {
+                            return null;
+                        }
+                    }).filter(it -> it != null).collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
+            Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);
             return EMPTY_LIST;
         }
     }
