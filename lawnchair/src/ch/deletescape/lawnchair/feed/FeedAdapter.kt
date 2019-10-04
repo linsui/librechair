@@ -50,6 +50,8 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
+import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
@@ -74,9 +76,16 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             }
         }
     }
-    val cards = ArrayList<Card>()
+
+    val cardCache = mutableMapOf<FeedProvider, List<Card>>()
+    open val cards
+        get() = run {
+            val algorithm = ReflectionUtils.inflateSortingAlgorithm(
+                    context.lawnchairPrefs.feedPresenterAlgorithm)
+            algorithm.sort(* providers.map { cardCache[it] ?: emptyList() }.toTypedArray())
+        }
     val immutableCards
-        get() = cards.clone() as List<Card>
+        get() = ArrayList(cards)
 
     init {
         providers.forEach {
@@ -104,22 +113,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards[position].type
     }
 
-    open fun refresh(): Int {
-        cards.clear()
-        val toSort: MutableList<List<Card>> = ArrayList()
-        providers.iterator().forEach {
-            if (it.feed == null && feed != null) {
-                it.feed = feed
-            }
-            d("refresh: loading cards for provider ${it::class.qualifiedName}")
-            toSort += mutableListOf(it.cards)
+    open suspend fun refresh(): Int {
+        providers.forEach {
+            cardCache[it] = it.cards.toImmutableList()
         }
-        val algorithm = ReflectionUtils.inflateSortingAlgorithm(
-                LawnchairPreferences.getInstanceNoCreate().feedPresenterAlgorithm)
-        d("refresh: sorting algorithm is $algorithm")
-        cards += algorithm.sort(* toSort.toTypedArray())
-                .filter { !context.lawnchairPrefs.feedDisabledCards.contains(it.identifier) }
-        d("refresh: cards are: $cards")
         return cards.size
     }
 
@@ -241,14 +238,20 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                         .setInterpolator(Interpolators.ACCEL).duration = 500
                                 (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator)
                                         .vibrate(20)
-                                val backupCards = cards.clone() as List<Card>
+                                val card = cards[holder.adapterPosition]
+                                val backupCards = ArrayList(cards)
                                 holder.itemView.context.lawnchairPrefs.feedDisabledCards
                                         .add(cards[holder.adapterPosition].identifier)
                                 if (backupCards[holder.adapterPosition].onRemoveListener != null) {
                                     backupCards[holder.adapterPosition].onRemoveListener!!()
                                 }
-                                runOnNewThread {
-                                    cards.removeAt(holder.adapterPosition)
+                                FeedScope.launch {
+                                    cardCache.keys.forEach {
+                                        if (cardCache.contains(it) && cardCache[it]!!.contains(
+                                                        card)) {
+                                            cardCache[it] = cardCache[it]!!.filterNot { it == card }
+                                        }
+                                    }
                                     holder.itemView.post {
                                         holder.itemView.removeView(
                                                 holder.itemView.findViewById<View>(
@@ -291,14 +294,20 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     holder.itemView.animate().scaleX(0f).scaleY(0f)
                             .setInterpolator(Interpolators.ACCEL).duration = 500
                     (context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(20)
-                    val backupCards = cards.clone() as List<Card>
+                    val card = cards[holder.adapterPosition]
+                    val backupCards = ArrayList(cards)
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
                             .add(cards[holder.adapterPosition].identifier)
                     if (backupCards[holder.adapterPosition].onRemoveListener != null) {
                         backupCards[holder.adapterPosition].onRemoveListener!!()
                     }
-                    runOnNewThread {
-                        cards.removeAt(holder.adapterPosition)
+                    FeedScope.launch {
+                        cardCache.keys.forEach {
+                            if (cardCache.contains(it) && cardCache[it]!!.contains(
+                                            card)) {
+                                cardCache[it] = cardCache[it]!!.filterNot { it == card }
+                            }
+                        }
                         holder.itemView.post {
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));

@@ -54,9 +54,10 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
                     },
                     Card.RAISE, "nosort,top"))
 
-    override fun refresh(): Int {
-        cards.clear()
-        cards.addAll(previewCards)
+    override val cards
+        get() = previewCards
+
+    override suspend fun refresh(): Int {
         return previewCards.size
     }
 }

@@ -72,6 +72,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -1235,17 +1236,21 @@ class LauncherFeed(val originalContext: Context,
             }
             chipAdapter.notifyDataSetChanged()
         }
-        previewAdapter.refresh()
-        if (previewAdapter.itemCount > 0) {
-            runOnMainThread {
-                recyclerView.visibility = View.INVISIBLE
-                previewRecyclerView.visibility = View.VISIBLE
-                previewAdapter.notifyDataSetChanged()
-                previewRecyclerView.scrollToPosition(0)
+        GlobalScope.launch {
+            previewAdapter.refresh()
+            if (previewAdapter.itemCount > 0) {
+                runOnMainThread {
+                    recyclerView.visibility = View.INVISIBLE
+                    previewRecyclerView.visibility = View.VISIBLE
+                    previewAdapter.notifyDataSetChanged()
+                    previewRecyclerView.scrollToPosition(0)
+                }
             }
         }
         val oldCards = adapter.immutableCards
-        adapter.refresh()
+        FeedScope.launch {
+            adapter.refresh()
+        }
         val cards = adapter.immutableCards
         Thread.sleep(10)
         if (quick) {

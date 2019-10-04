@@ -24,13 +24,15 @@ import android.content.Context
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import okhttp3.internal.toImmutableList
 
 class FeedPlaceholderAdapter(providers: List<FeedProvider>, backgroundColor: Int, context: Context,
                              feed: LauncherFeed?) :
         FeedAdapter(providers, backgroundColor, context, feed) {
-    override fun refresh(): Int {
-        cards.clear()
-        cards.addAll(providers.map { it.previewItems }.flatten())
+    override suspend fun refresh(): Int {
+        providers.forEach {
+            cardCache[it] = it.previewItems.toImmutableList()
+        }
         return cards.size
     }
 }
