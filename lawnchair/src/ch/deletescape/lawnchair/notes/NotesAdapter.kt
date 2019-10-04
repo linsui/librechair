@@ -33,12 +33,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.SingleUseColorDialog
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import ch.deletescape.lawnchair.views.SelectableRoundedView
 import com.android.launcher3.R
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.priyesh.chroma.ColorMode
 import kotlin.reflect.full.declaredMembers
@@ -73,7 +73,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
 
     init {
         if (this !is SimpleNoteAdapter) {
-            GlobalScope.launch {
+            FeedScope.launch {
                 allNotes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
                 tabNameMap = DatabaseStore.getTabNameDbInstance(context).access().all
                         .map { it.color to it.name }.toMap().toMutableMap().also {
@@ -97,7 +97,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
 
     open fun bindToTabLayout(tabLayout: TabLayout) {
         this.tabLayout = tabLayout
-        GlobalScope.launch {
+        FeedScope.launch {
             hold.waitFor()
             tabLayout.post {
                 onTabChangeListeners.forEach { it(getColorList()[0] ) }
@@ -146,7 +146,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 })
                 dialog.setButton(Dialog.BUTTON_POSITIVE,
                                  android.R.string.ok.fromStringRes(context)) { dialog, which ->
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         if (DatabaseStore.getTabNameDbInstance(context).access().findEntryForColor(
                                         getColorList()[i]) != null) {
                             DatabaseStore.getTabNameDbInstance(context).access()
@@ -188,7 +188,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
 
     open fun add(note: Note) {
         val oldColors = getColorList()
-        GlobalScope.launch {
+        FeedScope.launch {
             hold.waitFor()
             DatabaseStore.getAccessObject(context).insert(note);
         }.invokeOnCompletion {
@@ -197,7 +197,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 runOnMainThread { notifyItemInserted(notes.size) }
             } else {
                 if (oldColors != getColorList()) {
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         DatabaseStore.getTabNameDbInstance(context).access()
                                 .insert(TabDatabaseEntry().apply {
                                     color = note.colour
@@ -228,7 +228,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
 
     open fun remove(note: Note) {
         val oldColors = getColorList()
-        GlobalScope.launch {
+        FeedScope.launch {
             hold.waitFor()
             DatabaseStore.getAccessObject(context).remove(note);
         }.invokeOnCompletion {
@@ -239,7 +239,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 if (oldColors != getColorList()) {
                     tabLayout.removeTabAt(oldColors.indexOf(currentColor))
                     updateTabLayout(tabLayout)
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         DatabaseStore.getTabNameDbInstance(context).access().remove(note.colour)
                         synchronized(tabNameMap) {
                             tabNameMap.remove(note.colour)
@@ -273,7 +273,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
         holder.item.setup(notes[position].title, notes[position].content);
         holder.item.isSelected = notes[position].selected
         holder.item.setOnClickListener {
-            GlobalScope.launch {
+            FeedScope.launch {
                 hold.waitFor()
                 DatabaseStore.getAccessObject(context).setSelected(notes[holder.adapterPosition].id,
                                                                    notes[holder.adapterPosition].selected.not())
@@ -305,7 +305,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
             })
             editDialog.setButton(Dialog.BUTTON_POSITIVE,
                                  android.R.string.ok.fromStringRes(context)) { dialog, which ->
-                GlobalScope.launch {
+                FeedScope.launch {
                     hold.waitFor()
                     DatabaseStore.getAccessObject(context)
                             .setContent(notes[holder.adapterPosition].id, editText.text.toString())
@@ -330,7 +330,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
                         context)) { dialogInterface, which ->
                     val oldColors = getColorList()
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         DatabaseStore.getAccessObject(context)
                                 .setColor(notes[holder.adapterPosition].id,
                                           dialog.findViewById<ChromaView>(
@@ -354,7 +354,7 @@ open class NotesAdapter(open val context: Context, savedInstanceColor: Int = con
                 dialog.show() */
                 val dialog = SingleUseColorDialog(context, notes[holder.adapterPosition].colour, context.resources.getStringArray(R.array.resolvers_accent).toList(), ColorMode.RGB) {
                     val oldColors = getColorList()
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         DatabaseStore.getAccessObject(context)
                                 .setColor(notes[holder.adapterPosition].id, it)
                         notes[holder.adapterPosition].colour = it
