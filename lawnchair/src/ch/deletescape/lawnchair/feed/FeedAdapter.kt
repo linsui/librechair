@@ -115,6 +115,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
 
     open suspend fun refresh(): Int {
         providers.forEach {
+            it.feed = feed
             cardCache[it] = it.cards.toImmutableList()
         }
         return cards.size
