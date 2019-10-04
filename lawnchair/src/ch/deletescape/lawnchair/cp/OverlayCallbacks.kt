@@ -29,6 +29,7 @@ import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.feed.images.ImageStore
+import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
@@ -101,6 +102,7 @@ object OverlayCallbacks {
             } else {
                 try {
                     request.callback(-1)
+                    lawnchairApp.overlayWidgetHost.deleteAppWidgetId(requestCode)
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
                 }
