@@ -33,7 +33,6 @@ import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class OverlayService : Service(), () -> Unit {
@@ -63,7 +62,7 @@ class OverlayService : Service(), () -> Unit {
             feed = LauncherFeed(this@OverlayService) {
                 FeedScope.launch(Dispatchers.IO) {
                     val refreshBitmap = {
-                        GlobalScope.launch {
+                        FeedScope.launch {
                             val bitmap = imageProvider?.getBitmap(this@OverlayService)
                             val desc = imageProvider?.getDescription(this@OverlayService)
                             val rmUrl = imageProvider?.getUrl(this@OverlayService)
