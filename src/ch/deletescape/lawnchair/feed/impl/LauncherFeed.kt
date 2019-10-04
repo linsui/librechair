@@ -51,7 +51,6 @@ import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.images.screen.ImageDataScreen
-import ch.deletescape.lawnchair.feed.preview.FeedPlaceholderAdapter
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
@@ -72,7 +71,6 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -103,9 +101,6 @@ class LauncherFeed(val originalContext: Context,
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
-    private var previewAdapter =
-            FeedPlaceholderAdapter(getFeedController(context).getProviders(), backgroundColor,
-                    context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
     private var verticalBackground: Drawable? = null
@@ -202,13 +197,6 @@ class LauncherFeed(val originalContext: Context,
     var navigationBarHeight: Int? = null
 
     var chips: RecyclerView = feedController.findViewById(R.id.chip_container)
-
-    private var previewRecyclerView =
-            feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
-        set(value) = {
-            field = value
-            value.visibility = View.GONE
-        }()
 
     init {
         reinitState()
@@ -309,11 +297,6 @@ class LauncherFeed(val originalContext: Context,
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
 
-            previewRecyclerView =
-                    feedController.findViewById(R.id.feed_recycler_preview) as RecyclerView
-            previewAdapter = FeedPlaceholderAdapter(getFeedController(context).getProviders(),
-                    backgroundColor,
-                    context.applicationContext, this)
             val oldInfobox = infobox.text
             infobox = feedController.findViewById(R.id.info_box_text) as TextView
             infobox.text = oldInfobox
@@ -490,13 +473,6 @@ class LauncherFeed(val originalContext: Context,
                             oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
                             if (!tabsOnBottom) 8f.applyAsDip(
                                     context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
-                    previewRecyclerView.setPadding(
-                            oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                            if (tabsOnBottom) 8f.applyAsDip(
-                                    context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
-                            oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                            if (!tabsOnBottom) 8f.applyAsDip(
-                                    context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
                 }
             }
             insets
@@ -616,7 +592,6 @@ class LauncherFeed(val originalContext: Context,
                                         tabView.tabRippleColor!!.defaultColor.setAlpha(
                                                 50)).toIntArray())
                     }
-                    previewAdapter.providers = tabbedProviders[tabs[tab.position]]!!
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
                     if (context.lawnchairPrefs.feedHideTabText) {
                         for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
@@ -646,7 +621,6 @@ class LauncherFeed(val originalContext: Context,
             })
             d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
             adapter.providers = tabbedProviders[tabs.first()]!!
-            previewAdapter.providers = tabbedProviders[tabs.first()]!!
             if (backgroundColor.alpha > 35) {
                 tabView.tabTextColors = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
@@ -1038,9 +1012,6 @@ class LauncherFeed(val originalContext: Context,
                     }
                     callback?.overlayStatusChanged(
                             ServiceState.FLAG_ATTACHED or ServiceState.FLAG_SEARCH_ATTACHED)
-                    if (previewRecyclerView.layoutManager == null) {
-                        previewRecyclerView.layoutManager = LinearLayoutManager(context)
-                    }
                     d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
                     if (lastOrientation != context.resources.configuration.orientation) {
                         if (horizontalBackground != null && verticalBackground != null) {
@@ -1236,56 +1207,43 @@ class LauncherFeed(val originalContext: Context,
             }
             chipAdapter.notifyDataSetChanged()
         }
-        GlobalScope.launch {
-            previewAdapter.refresh()
-            if (previewAdapter.itemCount > 0) {
-                runOnMainThread {
-                    recyclerView.visibility = View.INVISIBLE
-                    previewRecyclerView.visibility = View.VISIBLE
-                    previewAdapter.notifyDataSetChanged()
-                    previewRecyclerView.scrollToPosition(0)
-                }
-            }
-        }
         val oldCards = adapter.immutableCards
         FeedScope.launch {
             adapter.refresh()
-        }
-        val cards = adapter.immutableCards
-        Thread.sleep(10)
-        if (quick) {
-            runOnMainThread {
-                adapter.notifyDataSetChanged()
-                recyclerView.isLayoutFrozen = false
-                recyclerView.visibility = View.VISIBLE
-                previewRecyclerView.visibility = View.INVISIBLE
-                feedController.findViewById<View>(R.id.empty_view).visibility =
-                        if (cards.isNotEmpty()) View.GONE else View.VISIBLE
-            }
-        } else if (oldCards.isEmpty() && count == 0) {
-            this.refresh(150, 1)
-        } else {
-            val patch = DiffUtils.diff(oldCards, cards)
-
-            runOnMainThread {
-                if (!quick) {
-                    patch.deltas.forEach {
-                        when (it.type!!) {
-                            DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
-                                    it.source.lines.size)
-                            DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
-                                    it.source.lines.size)
-                            DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
-                                    it.source.lines.size)
-                            DeltaType.EQUAL -> {
-                            }
-                        }
-                    }
+            val cards = adapter.immutableCards
+            Thread.sleep(10)
+            if (quick) {
+                runOnMainThread {
+                    adapter.notifyDataSetChanged()
                     recyclerView.isLayoutFrozen = false
                     recyclerView.visibility = View.VISIBLE
-                    previewRecyclerView.visibility = View.INVISIBLE
                     feedController.findViewById<View>(R.id.empty_view).visibility =
                             if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                }
+            } else if (oldCards.isEmpty() && count == 0) {
+                this@LauncherFeed.refresh(150, 1)
+            } else {
+                val patch = DiffUtils.diff(oldCards, cards)
+
+                runOnMainThread {
+                    if (!quick) {
+                        patch.deltas.forEach {
+                            when (it.type!!) {
+                                DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
+                                        it.source.lines.size)
+                                DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
+                                        it.source.lines.size)
+                                DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
+                                        it.source.lines.size)
+                                DeltaType.EQUAL -> {
+                                }
+                            }
+                        }
+                        recyclerView.isLayoutFrozen = false
+                        recyclerView.visibility = View.VISIBLE
+                        feedController.findViewById<View>(R.id.empty_view).visibility =
+                                if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                    }
                 }
             }
         }
