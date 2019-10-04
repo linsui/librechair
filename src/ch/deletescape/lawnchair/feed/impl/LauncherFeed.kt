@@ -1229,7 +1229,7 @@ class LauncherFeed(val originalContext: Context,
                 val patch = DiffUtils.diff(oldCards, cards)
 
                 runOnMainThread {
-                    if (!quick) {
+                    if (adapter.cards.isNotEmpty()) {
                         patch.deltas.forEach {
                             when (it.type!!) {
                                 DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
@@ -1245,11 +1245,13 @@ class LauncherFeed(val originalContext: Context,
                                 }
                             }
                         }
-                        recyclerView.isLayoutFrozen = false
-                        recyclerView.visibility = View.VISIBLE
-                        feedController.findViewById<View>(R.id.empty_view).visibility =
-                                if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                    } else {
+                        adapter.notifyItemRangeRemoved(0, oldCards.size - 1)
                     }
+                    recyclerView.isLayoutFrozen = false
+                    recyclerView.visibility = View.VISIBLE
+                    feedController.findViewById<View>(R.id.empty_view).visibility =
+                            if (cards.isNotEmpty()) View.GONE else View.VISIBLE
                 }
             }
         }
