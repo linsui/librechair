@@ -1,3 +1,3 @@
 package ch.deletescape.lawnchair.allapps;
 
-parcelable ContextFreeComponentKeyMapper;
+parcelable ParcelableComponentKeyMapper;

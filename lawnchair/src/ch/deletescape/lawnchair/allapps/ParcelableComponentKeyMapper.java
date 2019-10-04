@@ -26,39 +26,40 @@ package ch.deletescape.lawnchair.allapps;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import com.android.launcher3.AppInfo;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.allapps.AllAppsStore;
-import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.ComponentKey;
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper;
+
 import org.jetbrains.annotations.NotNull;
 
-public class ContextFreeComponentKeyMapper implements Parcelable {
+public class ParcelableComponentKeyMapper implements Parcelable {
 
     private final ComponentKey componentKey;
 
-    public ContextFreeComponentKeyMapper(ComponentKey componentKey) {
+    public ParcelableComponentKeyMapper(ComponentKey componentKey) {
         this.componentKey = componentKey;
     }
 
-    public ContextFreeComponentKeyMapper(ComponentKeyMapper mapper) {
+    public ParcelableComponentKeyMapper(ComponentKeyMapper mapper) {
         componentKey = mapper.getComponentKey();
     }
 
-    protected ContextFreeComponentKeyMapper(Parcel in) {
+    protected ParcelableComponentKeyMapper(Parcel in) {
         componentKey = in.readParcelable(ComponentKey.class.getClassLoader());
     }
 
-    public static final Creator<ContextFreeComponentKeyMapper> CREATOR = new Creator<ContextFreeComponentKeyMapper>() {
+    public static final Creator<ParcelableComponentKeyMapper> CREATOR = new Creator<ParcelableComponentKeyMapper>() {
         @Override
-        public ContextFreeComponentKeyMapper createFromParcel(Parcel in) {
-            return new ContextFreeComponentKeyMapper(in);
+        public ParcelableComponentKeyMapper createFromParcel(Parcel in) {
+            return new ParcelableComponentKeyMapper(in);
         }
 
         @Override
-        public ContextFreeComponentKeyMapper[] newArray(int size) {
-            return new ContextFreeComponentKeyMapper[size];
+        public ParcelableComponentKeyMapper[] newArray(int size) {
+            return new ParcelableComponentKeyMapper[size];
         }
     };
 

@@ -20,8 +20,13 @@
 
 package com.android.overlayclient;
 
+import com.google.android.libraries.launcherclient.ILauncherInterface;
+
 public interface CustomOverscrollClient extends WorkspaceOverscrollClient {
+    public static final String PREDICTIONS_CALL = "std:l3predictions";
+
     boolean shouldScrollLauncher();
     boolean shouldFadeWorkspaceDuringScroll();
     void restartProcess();
+    void attachInterface(ILauncherInterface interfaze);
 }

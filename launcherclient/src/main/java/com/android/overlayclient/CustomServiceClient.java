@@ -21,11 +21,21 @@
 package com.android.overlayclient;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
+
+import com.google.android.libraries.launcherclient.ILauncherInterface;
+import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class CustomServiceClient extends ServiceClient implements CustomOverscrollClient {
     private int companionApiVersion;
     private CompanionServiceFactory factory;
+    private List<Consumer<ILauncherOverlayCompanion>> connectConsumers;
 
     public CustomServiceClient(Activity boundActivity,
                                CompanionServiceFactory factory, OverlayCallback callback,
@@ -34,6 +44,15 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
         super(boundActivity, factory, callback, disconnectCallback, connectCallback, mode);
         this.factory = factory;
         this.companionApiVersion = factory.getCompanionApiVersion();
+        this.connectConsumers = new ArrayList<>();
+        factory.setCompanionChangeListener(companion -> {
+            if (companion != null) {
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    connectConsumers.forEach(consumer -> consumer.accept(companion));
+                    connectConsumers.clear();
+                });
+            }
+        });
     }
 
     @Override
@@ -68,6 +87,27 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void attachInterface(ILauncherInterface interfaze) {
+        if (factory.getCompanion() != null && companionApiVersion >= 3) {
+            try {
+                factory.getCompanion().attachInterface(interfaze);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        } else if (companionApiVersion >= 3) {
+            connectConsumers.add(companion -> {
+                if (companionApiVersion >= 3) {
+                    try {
+                        companion.attachInterface(interfaze);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
     }
 }

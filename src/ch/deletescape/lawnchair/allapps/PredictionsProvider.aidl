@@ -1,7 +1,7 @@
 package ch.deletescape.lawnchair.allapps;
 
-import ch.deletescape.lawnchair.allapps.ContextFreeComponentKeyMapper;
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
 
 interface PredictionsProvider {
-    List<ContextFreeComponentKeyMapper> getPredictions();
+    List<ParcelableComponentKeyMapper> getPredictions();
 }

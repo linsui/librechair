@@ -23,18 +23,18 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import ch.deletescape.lawnchair.LawnchairLauncher
-import ch.deletescape.lawnchair.allapps.ContextFreeComponentKeyMapper
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.allapps.PredictionsProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 
 class PredictionsProviderService : Service() {
     private val service = object : PredictionsProvider.Stub() {
-        override fun getPredictions(): List<ContextFreeComponentKeyMapper> {
+        override fun getPredictions(): List<ParcelableComponentKeyMapper> {
             d("getPredictions: retrieving predictions")
             return (LawnchairLauncher.getLauncher(
                     applicationContext).userEventDispatcher as CustomAppPredictor).predictions
-                    .map { ContextFreeComponentKeyMapper(it) }
+                    .map { ParcelableComponentKeyMapper(it) }
         }
     }
 

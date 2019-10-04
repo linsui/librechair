@@ -23,10 +23,13 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
+import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
+import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -86,6 +89,10 @@ class OverlayService : Service(), () -> Unit {
 
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun attachInterface(interfaze: ILauncherInterface) {
+                InterfaceHolder.interfaze = interfaze
+            }
+
             override fun restartProcess() {
                 Process.killProcess(Process.myPid())
             }
@@ -101,7 +108,15 @@ class OverlayService : Service(), () -> Unit {
                     return true
                 }
             }
+        }
 
+        object InterfaceHolder {
+            internal var interfaze: ILauncherInterface? = null
+
+            fun getPredictions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+                            PREDICTIONS_CALL) == true) interfaze?.call(
+                    PREDICTIONS_CALL, null)?.apply { classLoader = ParcelableComponentKeyMapper::class.java.classLoader }?.getParcelableArrayList(
+                    "retval") ?: emptyList() else emptyList()
         }
     }
 }

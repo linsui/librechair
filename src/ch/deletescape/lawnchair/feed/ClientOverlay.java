@@ -22,16 +22,28 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.os.RemoteException;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.logging.UserEventDispatcher;
 import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
 import com.android.overlayclient.ServiceMode;
+import com.google.android.apps.nexuslauncher.CustomAppPredictor;
+import com.google.android.libraries.launcherclient.ILauncherInterface;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
@@ -70,6 +82,31 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             callbacks.onScrollChanged(0);
         }, () -> {
             launcher.setLauncherOverlay(this);
+            client.attachInterface(new ILauncherInterface.Stub() {
+                @Override
+                public List<String> getSupportedCalls() throws RemoteException {
+                    return Collections.singletonList(CustomServiceClient.PREDICTIONS_CALL);
+                }
+
+                @Override
+                public Bundle call(String callName, Bundle opt) throws RemoteException {
+                    if (callName.equals(CustomServiceClient.PREDICTIONS_CALL)) {
+                        UserEventDispatcher dispatcher = launcher.getUserEventDispatcher();
+                        if (dispatcher instanceof CustomAppPredictor) {
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelableArrayList("retval", new ArrayList<>(
+                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().map(
+                                            it -> new ParcelableComponentKeyMapper(
+                                                    it.getComponentKey())).collect(
+                                            Collectors.toList())));
+                            return bundle;
+                        }
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putString("err", "e_unsupported");
+                    return bundle;
+                }
+            });
         }, ServiceMode.OVERLAY);
     }
 
