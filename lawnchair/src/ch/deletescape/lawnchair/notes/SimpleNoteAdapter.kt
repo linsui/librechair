@@ -27,6 +27,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.runOnMainThread
@@ -34,7 +35,6 @@ import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.priyesh.chroma.ChromaView
 import me.priyesh.chroma.ColorMode
@@ -45,7 +45,7 @@ class SimpleNoteAdapter(override val context: Context) :
     private val hold = SingleUseHold()
 
     init {
-        GlobalScope.launch {
+        FeedScope.launch {
             notes = DatabaseStore.getAccessObject(context).allNotes.toMutableList()
         }.invokeOnCompletion {
             runOnMainThread {
@@ -58,7 +58,7 @@ class SimpleNoteAdapter(override val context: Context) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = NotesViewHolder(parent)
     override fun getItemCount() = if (::notes.isInitialized) notes.size else 0
     override fun add(note: Note) {
-        GlobalScope.launch {
+        FeedScope.launch {
             hold.waitFor()
             DatabaseStore.getAccessObject(context).insert(note);
         }.invokeOnCompletion {
@@ -68,7 +68,7 @@ class SimpleNoteAdapter(override val context: Context) :
     }
 
     override fun remove(note: Note) {
-        GlobalScope.launch {
+        FeedScope.launch {
             hold.waitFor()
             DatabaseStore.getAccessObject(context).remove(note);
         }.invokeOnCompletion {
@@ -105,7 +105,7 @@ class SimpleNoteAdapter(override val context: Context) :
         holder.item.setup(notes[position].title, notes[position].content);
         holder.item.isSelected = notes[position].selected
         holder.item.setOnClickListener {
-            GlobalScope.launch {
+            FeedScope.launch {
                 hold.waitFor()
                 DatabaseStore.getAccessObject(context).setSelected(notes[holder.adapterPosition].id,
                                                                    notes[holder.adapterPosition].selected.not())
@@ -137,7 +137,7 @@ class SimpleNoteAdapter(override val context: Context) :
             })
             editDialog.setButton(Dialog.BUTTON_POSITIVE,
                                  android.R.string.ok.fromStringRes(context)) { dialog, which ->
-                GlobalScope.launch {
+                FeedScope.launch {
                     hold.waitFor()
                     DatabaseStore.getAccessObject(context)
                             .setContent(notes[holder.adapterPosition].id, editText.text.toString())
@@ -159,7 +159,7 @@ class SimpleNoteAdapter(override val context: Context) :
                 dialog.setTitle(R.string.title_dialog_select_color);
                 dialog.setButton(Dialog.BUTTON_POSITIVE, android.R.string.ok.fromStringRes(
                         context)) { dialogInterface, which ->
-                    GlobalScope.launch {
+                    FeedScope.launch {
                         DatabaseStore.getAccessObject(context)
                                 .setColor(notes[holder.adapterPosition].id,
                                           dialog.findViewById<ChromaView>(
