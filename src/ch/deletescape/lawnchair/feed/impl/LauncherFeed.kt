@@ -676,7 +676,8 @@ class LauncherFeed(val originalContext: Context,
                 runOnMainThread {
                     if (adapter.itemCount == 0) {
                         toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
-                                        context)) Color.WHITE else Color.DKGRAY)
+                                        context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                context))
                     } else {
                         toolbar.title = ""
                     }
@@ -685,7 +686,9 @@ class LauncherFeed(val originalContext: Context,
         })
         if (adapter.itemCount == 0) {
             toolbar.setTitleTextColor(
-                    if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
+                    if (useWhiteText(backgroundColor,
+                                    context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                            context))
         } else {
             toolbar.title = ""
         }
@@ -1229,11 +1232,14 @@ class LauncherFeed(val originalContext: Context,
                     if (!quick) {
                         patch.deltas.forEach {
                             when (it.type!!) {
-                                DeltaType.CHANGE -> adapter.notifyItemRangeChanged(it.source.position,
+                                DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
+                                        it.source.position,
                                         it.source.lines.size)
-                                DeltaType.INSERT -> adapter.notifyItemRangeInserted(it.source.position,
+                                DeltaType.INSERT -> adapter.notifyItemRangeInserted(
+                                        it.source.position,
                                         it.source.lines.size)
-                                DeltaType.DELETE -> adapter.notifyItemRangeRemoved(it.source.position,
+                                DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
+                                        it.source.position,
                                         it.source.lines.size)
                                 DeltaType.EQUAL -> {
                                 }
@@ -1265,7 +1271,9 @@ class LauncherFeed(val originalContext: Context,
                                     if (!context.feedPrefs.displayActionsAsMenu) {
                                         setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                                     }
-                                    icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                                    icon = it.icon.tint(
+                                            if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                                    context))
                                     setOnMenuItemClickListener { _ ->
                                         it.onClick.run()
                                         true
@@ -1280,7 +1288,9 @@ class LauncherFeed(val originalContext: Context,
                         if (!context.feedPrefs.displayActionsAsMenu) {
                             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                         }
-                        icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                        icon = it.icon.tint(
+                                if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                        context))
                         setOnMenuItemClickListener { _ ->
                             it.onClick.run()
                             true
@@ -1289,14 +1299,17 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
         }
-        if (providerScreens.isNotEmpty() && screenActions.containsKey(providerScreens.last().first)) {
+        if (providerScreens.isNotEmpty() && screenActions.containsKey(
+                        providerScreens.last().first)) {
             (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
                 toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
                         .apply {
                             if (!context.feedPrefs.displayActionsAsMenu) {
                                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                             }
-                            icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                            icon = it.icon.tint(
+                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                            context))
                             setOnMenuItemClickListener { _ ->
                                 it.onClick.run()
                                 true
@@ -1310,7 +1323,9 @@ class LauncherFeed(val originalContext: Context,
                             if (!context.feedPrefs.displayActionsAsMenu) {
                                 setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                             }
-                            icon = it.icon.tint(if (dark) Color.WHITE else Color.DKGRAY)
+                            icon = it.icon.tint(
+                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                            context))
                             setOnMenuItemClickListener { _ ->
                                 it.onClick.run()
                                 true
