@@ -22,6 +22,8 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -41,7 +43,6 @@ import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import io.github.cdimascio.essence.Essence;
-import kotlin.Unit;
 
 public class ArticleViewerScreen extends ProviderScreen {
 
@@ -79,19 +80,23 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
-        openInBrowser.setOnClickListener(v3 -> {
-            try {
-                WebViewScreen screen = new WebViewScreen(this, url, webView -> {
-                    webView.getSettings().setJavaScriptEnabled(false);
-                });
-                screen.display(this,
-                        LawnchairUtilsKt.getPostionOnScreen(v3).getFirst() + v3.getMeasuredWidth() / 2,
-                        LawnchairUtilsKt.getPostionOnScreen(
-                                v3).getSecond() + v3.getMeasuredHeight() / 2);
-            } catch (IllegalStateException e) {
-                Utilities.openURLinBrowser(this, url);
+        GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                try {
+                    WebViewScreen screen = new WebViewScreen(ArticleViewerScreen.this, url, webView -> {
+                        webView.getSettings().setJavaScriptEnabled(false);
+                    });
+                    screen.display(ArticleViewerScreen.this,
+                            StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getFirst() + e.getX()),
+                            StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getSecond() + e.getY()));
+                } catch (IllegalStateException e2) {
+                    Utilities.openURLinBrowser(ArticleViewerScreen.this, url);
+                }
+                return super.onSingleTapUp(e);
             }
         });
+        openInBrowser.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
         openInBrowser.setTextColor(FeedAdapter.Companion.getOverrideColor(articleView.getContext(),
                 LawnchairUtilsKt.getColorEngineAccent(this)));
         titleView.setText(title);
