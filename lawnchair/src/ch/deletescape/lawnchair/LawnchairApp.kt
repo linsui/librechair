@@ -86,7 +86,7 @@ class LawnchairApp : Application(), () -> Unit {
             }
             LeakCanary.install(this)
         }
-        overlayWidgetHost = OverlayWidgetHost(this, "OVERLAY".hashCode())
+        overlayWidgetHost = OverlayWidgetHost(this, 1027)
                 .also { it.startListening() }
         ClipartCache.providers += ResourceClipartResolver(this)
         ClipartCache.providers += FancyClipartResolver(this)
