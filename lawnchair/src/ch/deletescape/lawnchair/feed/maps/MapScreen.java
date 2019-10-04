@@ -54,7 +54,6 @@ import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 import org.osmdroid.views.overlay.simplefastpoint.SimpleFastPointOverlay;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,10 +65,7 @@ import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.location.LocationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
-import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import kotlin.Pair;
 import kotlin.Unit;
@@ -228,7 +224,7 @@ public class MapScreen extends ProviderScreen {
                     Throwable::printStackTrace).subscribeOn(Schedulers.newThread()).subscribe(
                     (road) -> {
                         Log.d(getClass().getName(), "bindView: route loaded: " + road);
-                        if (road != null) {
+                        if (road != null && road.mLength != 0) {
                             synchronized (ROUTE_LOCK) {
                                 mapView.getOverlayManager().remove(route);
                                 route = RoadManager.buildRoadOverlay(road);
