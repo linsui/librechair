@@ -23,6 +23,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
@@ -56,7 +57,7 @@ class OverlayService : Service(), () -> Unit {
             feed = LauncherFeed(this)
         } else {
             feed = LauncherFeed(this@OverlayService) {
-                GlobalScope.launch(Dispatchers.IO) {
+                FeedScope.launch(Dispatchers.IO) {
                     val refreshBitmap = {
                         GlobalScope.launch {
                             val bitmap = imageProvider?.getBitmap(this@OverlayService)
