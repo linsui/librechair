@@ -143,6 +143,7 @@
                 <action android:name="android.content.pm.action.CONFIRM_PIN_APPWIDGET" />
             </intent-filter>
         </activity>
+
         <!--
         Should point to the content provider which can be used to dump Launcher3 compatible
         worspace configuration to the dump's file descriptor by using launcher_dump.proto

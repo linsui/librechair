@@ -13,13 +13,17 @@
             android:value="28"/>
         <meta-data
             android:name="com.oldosfan.libreswitch.debugMagisk.SDK_RANGE"
-            android:value="28-28"/>
+            android:value="28|autodetect"/>
         <meta-data
             android:name="com.oldosfan.libreswitch.debugAddonD.SDK_RANGE"
-            android:value="28-28"/>
+            android:value="28|autodetect"/>
         <meta-data
             android:name="com.oldosfan.libreswitch.quickstepBridge.SDK_RANGE"
-            android:value="28-28"/>
+            android:value="28|autodetect"/>
+        <meta-data
+            android:name="com.oldosfan.libreswitch.systemOverlayManager.SDK_RANGE"
+            android:value="autodetect"/>
+        <activity android:name="ch.deletescape.lawnchair.cp.OverlayCallbacks$WidgetRequestActivity$CustomWidgetPicker" />
         <activity android:name="ch.deletescape.lawnchair.notes.NewNoteActivity" />
         <activity
             android:exported="true"

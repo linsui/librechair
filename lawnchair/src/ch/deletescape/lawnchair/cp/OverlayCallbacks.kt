@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.cp
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
@@ -75,7 +76,7 @@ object OverlayCallbacks {
             overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
             overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
-            startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
+            startActivityForResult(Intent(this, CustomWidgetPicker::class.java).also {
                 it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
             }, id)
         }
@@ -103,6 +104,41 @@ object OverlayCallbacks {
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
                 }
+                finish()
+            }
+        }
+
+        class CustomWidgetPicker : Activity() {
+            val id by lazy { intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1) }
+
+            override fun onCreate(savedInstanceState: Bundle?) {
+                super.onCreate(savedInstanceState)
+                val widgetManager = appWidgetManager
+                val providers = widgetManager.installedProviders
+
+                val dialog = AlertDialog.Builder(this)
+                dialog.setItems(providers.map {
+                    it.loadLabel(packageManager)
+                }.toTypedArray()) { _, which: Int ->
+                    if (widgetManager.bindAppWidgetIdIfAllowed(id, providers[which].provider)) {
+                        setResult(RESULT_OK)
+                        finish()
+                    } else {
+                        val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
+                        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
+                        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER,
+                                providers[which].provider)
+                        startActivityForResult(intent, 11) // Launcher.REQUEST_BIND_APPWIDGET...
+                    }
+                }.setOnDismissListener {
+                    setResult(RESULT_CANCELED)
+                    finish()
+                }.show()
+            }
+
+            override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                super.onActivityResult(requestCode, resultCode, data)
+                setResult(resultCode, data)
                 finish()
             }
         }
