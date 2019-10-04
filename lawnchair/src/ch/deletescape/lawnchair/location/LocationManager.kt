@@ -21,8 +21,8 @@ package ch.deletescape.lawnchair.location
 
 import android.annotation.SuppressLint
 import android.content.Context
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.runOnMainThread
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.apache.commons.lang3.tuple.MutablePair
@@ -40,7 +40,7 @@ object LocationManager {
             slots.clear()
             providers.forEach {
                 slots.add(it to MutablePair.of<Double?, Double?>(null, null))
-                GlobalScope.launch {
+                FeedScope.launch {
                     while (true) {
                         it.refresh()
                         delay(TimeUnit.MINUTES.toMillis(10))

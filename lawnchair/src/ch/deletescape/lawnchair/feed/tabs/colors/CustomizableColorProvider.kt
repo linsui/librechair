@@ -21,10 +21,10 @@
 package ch.deletescape.lawnchair.feed.tabs.colors
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.Color
 import ch.deletescape.lawnchair.feed.tabs.colors.custom.ColorDb
 import ch.deletescape.lawnchair.util.SingleUseHold
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -33,7 +33,7 @@ class CustomizableColorProvider : ColorProvider() {
     override fun getColors(context: Context): List<Int> {
         var colors: List<Color> = emptyList()
         val hold = SingleUseHold()
-        GlobalScope.launch {
+        FeedScope.launch {
             colors = ColorDb.getInstance(context).dao().everything()
             hold.trigger()
         }
