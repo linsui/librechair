@@ -50,6 +50,7 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
 import kotlin.math.roundToInt
@@ -114,10 +115,14 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 
     open suspend fun refresh(): Int {
+        val coroutines = mutableListOf<Job>()
         providers.forEach {
-            it.feed = feed
-            cardCache[it] = it.cards.toImmutableList()
+            coroutines += FeedScope.launch {
+                it.feed = feed
+                cardCache[it] = it.cards.toImmutableList()
+            }
         }
+        coroutines.forEach { it.join() }
         return cards.size
     }
 
