@@ -19,63 +19,26 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
-import ch.deletescape.lawnchair.allapps.PredictionsProvider
+import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
-import ch.deletescape.lawnchair.predictions.PredictionsProviderService
-import ch.deletescape.lawnchair.runOnNewThread
-import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
-import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
+import com.google.android.flexbox.FlexboxLayoutManager
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     private val recyclerView = androidx.recyclerview.widget.RecyclerView(context)
-    private val adapter = PredictedApplicationsAdapter()
-    private var predictions: List<ComponentKeyMapper> = emptyList()
+    private val adapter = PredictedApplicationsAdapter(c)
 
     init {
         recyclerView.adapter = adapter
-        adapter.predictions = predictions
-        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, adapter.gridSize)
+        recyclerView.layoutManager = FlexboxLayoutManager(context)
         adapter.notifyDataSetChanged()
-        d("init: refreshing predictions")
-        refreshPredictions()
     }
 
-    fun refreshPredictions() {
-        d("refreshPredictions: refreshing predictions")
-        runOnNewThread {
-            context.startService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
-                                                                     PredictionsProviderService::class.java.name)))
-            context.bindService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
-                                                                    PredictionsProviderService::class.java.name)),
-                                object : ServiceConnection {
-                                    override fun onServiceDisconnected(name: ComponentName) {
-                                        d("onServiceDisconnected: predictions service disconnected")
-                                    }
-
-                                    override fun onServiceConnected(name: ComponentName,
-                                                                    service: IBinder) {
-                                        d("onServiceConnected: connected to prediction service")
-                                        predictions = PredictionsProvider.Stub.asInterface(service)
-                                                .predictions.map {
-                                            ComponentKeyMapper(context, it.componentKey)
-                                        }.also {
-                                            it.forEach {
-                                                d("refreshPredictions: got prediction $it")
-                                            }
-                                        }
-                                        adapter.predictions = predictions
-                                        adapter.notifyDataSetChanged()
-                                    }
-                                }, Context.BIND_AUTO_CREATE)
-        }
+    private fun refreshPredictions() {
+        adapter.predictions = OverlayService.CompanionService.InterfaceHolder.getPredictions()
+        adapter.notifyDataSetChanged()
     }
 
     override fun onFeedShown() {
