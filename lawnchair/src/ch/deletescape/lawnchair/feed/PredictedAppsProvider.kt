@@ -20,11 +20,11 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import androidx.recyclerview.widget.GridLayoutManager
 import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
 import com.android.launcher3.R
-import com.google.android.flexbox.FlexboxLayoutManager
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     private val recyclerView = androidx.recyclerview.widget.RecyclerView(context)
@@ -32,7 +32,7 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
 
     init {
         recyclerView.adapter = adapter
-        recyclerView.layoutManager = FlexboxLayoutManager(context)
+        recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
         adapter.notifyDataSetChanged()
     }
 
