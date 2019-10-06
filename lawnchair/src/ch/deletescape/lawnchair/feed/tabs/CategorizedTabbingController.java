@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.FeedSearchboxProvider;
 import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider;
 import ch.deletescape.lawnchair.feed.NoteListProvider;
+import ch.deletescape.lawnchair.feed.PredictedAppsProvider;
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider;
 import ch.deletescape.lawnchair.feed.WeatherBarFeedProvider;
 import ch.deletescape.lawnchair.feed.WebApplicationsProvider;
@@ -113,6 +114,7 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof AbstractImageProvider
                 || it instanceof FeedSearchboxProvider
                 || it instanceof ChipCardProvider
+                || it instanceof PredictedAppsProvider
                 || Objects
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "tools")).collect(Collectors.toList());
