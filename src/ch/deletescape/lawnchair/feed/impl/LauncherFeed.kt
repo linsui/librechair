@@ -1247,7 +1247,7 @@ class LauncherFeed(val originalContext: Context,
                         }
                     } else {
                         recyclerView.isLayoutFrozen = false
-                        adapter.notifyItemRangeRemoved(0, oldCards.size - 1)
+                        adapter.notifyDataSetChanged()
                     }
                     recyclerView.isLayoutFrozen = false
                     recyclerView.visibility = View.VISIBLE
