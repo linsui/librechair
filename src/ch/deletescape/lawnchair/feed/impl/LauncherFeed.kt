@@ -59,7 +59,6 @@ import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
@@ -239,8 +238,6 @@ class LauncherFeed(val originalContext: Context,
                             originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else androidx.palette.graphics.Palette.from(
                     backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
 
-            d("reinitState: background color: r: ${backgroundColor.red} g: ${backgroundColor.green} b: ${backgroundColor.blue}")
-
             dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
             context = ContextThemeWrapper(originalContext,
                     if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
@@ -252,7 +249,6 @@ class LauncherFeed(val originalContext: Context,
                     false) as FeedController).also {
                 it.setLauncherFeed(this)
                 it.viewTreeObserver.addOnGlobalLayoutListener {
-                    d("onGlobalLayout: global layout called")
                     if (horizontalBackground == null || verticalBackground == null) {
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                             verticalBackground = if (background == null) ColorDrawable(
@@ -619,7 +615,7 @@ class LauncherFeed(val originalContext: Context,
                     runOnNewThread { refresh(0) }
                 }
             })
-            d("init: tabbed providers are $tabbedProviders and tabs are $tabs")
+
             adapter.providers = tabbedProviders[tabs.first()]!!
             if (backgroundColor.alpha > 35) {
                 tabView.tabTextColors = ColorStateList(
@@ -1015,7 +1011,7 @@ class LauncherFeed(val originalContext: Context,
                     }
                     callback?.overlayStatusChanged(
                             ServiceState.FLAG_ATTACHED or ServiceState.FLAG_SEARCH_ATTACHED)
-                    d("feedAttached: lastOrientation: $lastOrientation orientation: ${context.resources.configuration.orientation}")
+
                     if (lastOrientation != context.resources.configuration.orientation) {
                         if (horizontalBackground != null && verticalBackground != null) {
                             feedController.background =
