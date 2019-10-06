@@ -65,6 +65,7 @@ import kotlin.Unit;
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     private SyndFeed articles;
+    private List<Card> cardCache;
     private long lastUpdate;
 
     public AbstractRSSFeedProvider(Context c) {
@@ -142,6 +143,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
+            cardCache = null;
             Executors.newSingleThreadExecutor().submit(() -> {
                 byte[] cache;
                 if ((cache = CacheManager.Companion.getInstance(getContext()).getCachedBytes(
@@ -195,6 +197,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         if (articles == null) {
             Log.d(getClass().getName(), "getCards: feed is null; returning empty list");
             return Collections.emptyList();
+        } else if (cardCache != null && !cardCache.isEmpty()) {
+            return cardCache;
         } else {
             List<Card> cards = LawnchairUtilsKt.newList();
             Log.d(getClass().getName(),
@@ -297,6 +301,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     return Unit.INSTANCE;
                 });
             }
+            cardCache = cards;
             return cards;
         }
     }
