@@ -144,6 +144,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
+        holder.description?.setTag("font_ignore")
+
         if (holder.description != null) {
             CustomFontManager.getInstance(context)
                     .setCustomFont(holder.description!!, CustomFontManager.FONT_CATEGORY_TITLE,
@@ -365,7 +367,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     holder.viewHolder).apply {
                 if (this is ViewGroup) {
                     this.allChildren.forEach { view ->
-                        if (view is TextView) {
+                        if (view is TextView && view.tag != "font_ignore") {
                             CustomFontManager.getInstance(context)
                                     .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
                                             into = {
@@ -457,7 +459,7 @@ class CardViewHolder : RecyclerView.ViewHolder {
 
         itemView.viewTreeObserver.addOnGlobalLayoutListener {
             (itemView as ViewGroup).allChildren.forEach { view ->
-                if (view is TextView) {
+                if (view is TextView && view.tag != "font_ignore") {
                     CustomFontManager.getInstance(itemView.context)
                             .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
                                     into = {
