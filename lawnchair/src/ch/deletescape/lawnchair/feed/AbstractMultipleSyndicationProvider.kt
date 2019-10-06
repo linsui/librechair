@@ -170,6 +170,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
         }
     }
 
+    override fun isVolatile(): Boolean = feeds?.isEmpty() != false
+
     protected abstract fun bindFeeds(handler: OnBindHandler)
     protected interface OnBindHandler {
         fun bindFeed(feeds: List<SyndFeed>)
