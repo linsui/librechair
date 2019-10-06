@@ -1248,25 +1248,33 @@ class LauncherFeed(val originalContext: Context,
             val cards = adapter.immutableCards
             if (quick) {
                 runOnMainThread {
-                    recyclerView.animate().setDuration(255).alpha(0f).setListener(object : AnimatorListenerAdapter() {
+                    var flag = false
+                    recyclerView.animate().setDuration(150).alpha(0f).setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
-                            FeedScope.launch {
-                                if (!context.feedPrefs.conservativeRefreshes ||
-                                        ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(5)) ||
-                                                (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(5)))) {
-                                    adapter.refresh()
-                                    if (!adapter.cards.isEmpty()) {
-                                        lastRefresh = System.currentTimeMillis()
-                                        conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
+                            if (!flag) {
+                                flag = true
+                                FeedScope.launch {
+                                    if (!context.feedPrefs.conservativeRefreshes ||
+                                            ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
+                                                    5)) ||
+                                                    (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
+                                                            5)))) {
+                                        adapter.refresh()
+                                        if (!adapter.cards.isEmpty()) {
+                                            lastRefresh = System.currentTimeMillis()
+                                            conservativeRefreshTimes[currentTab] =
+                                                    System.currentTimeMillis()
+                                        }
                                     }
-                                }
-                                recyclerView.post {
-                                    adapter.notifyDataSetChanged()
-                                    recyclerView.isLayoutFrozen = false
-                                    recyclerView.visibility = View.VISIBLE
-                                    feedController.findViewById<View>(R.id.empty_view).visibility =
-                                            if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
-                                    recyclerView.animate().alpha(1f).duration = 255
+                                    recyclerView.post {
+                                        adapter.notifyDataSetChanged()
+                                        recyclerView.isLayoutFrozen = false
+                                        recyclerView.visibility = View.VISIBLE
+                                        feedController.findViewById<View>(R.id.empty_view)
+                                                .visibility =
+                                                if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
+                                        recyclerView.animate().alpha(1f).duration = 150
+                                    }
                                 }
                             }
                         }
