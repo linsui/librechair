@@ -277,7 +277,9 @@ public class MapScreen extends ProviderScreen {
                     });
             mapView.getOverlayManager().add(pointOverlay);
         }
+        mapView.setAlpha(0);
         mapView.getController().animateTo(new GeoPoint(lat, lon));
+        mapView.animate().alpha(255).setDuration(200);
         mapView.setClipToPadding(false);
         mapView.getController().zoomTo(zoom);
         mapView.getOverlayManager().add(new RotationGestureOverlay(mapView));
