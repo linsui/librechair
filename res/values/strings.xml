@@ -726,4 +726,5 @@
     <string name="summary_pref_feed_hosts_filtering">Librechair will attempt to block trackers and advertisements in web page windows opened in the feed, using a blocklist</string>
     <string name="title_pref_feed_directly_open_links">Directly open links in browser</string>
     <string name="summary_pref_feed_directly_open_links">Links will directly be opened in the browser if applicable</string>
+    <string name="title_overlay_failure_loading_route">Failure loading route</string>
 </resources>

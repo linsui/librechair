@@ -220,8 +220,11 @@ public class MapScreen extends ProviderScreen {
                     Log.d(getClass().getName(), "bindView: failed to load route", e);
                     return null;
                 }
-            }).doOnError(
-                    Throwable::printStackTrace).subscribeOn(Schedulers.newThread()).subscribe(
+            }).doOnError(th -> {
+                TextOverlay distance = new TextOverlay(MapScreen.this);
+                distance.setText(getString(R.string.title_overlay_failure_loading_route));
+                mapView.getOverlayManager().add(distance);
+            }).subscribeOn(Schedulers.newThread()).subscribe(
                     (road) -> {
                         Log.d(getClass().getName(), "bindView: route loaded: " + road);
                         if (road != null && road.mLength != 0) {
@@ -234,6 +237,10 @@ public class MapScreen extends ProviderScreen {
                                 distance.setText(road.getLengthDurationText(MapScreen.this, 0));
                                 mapView.getOverlayManager().add(distance);
                             }
+                        } else {
+                            TextOverlay distance = new TextOverlay(MapScreen.this);
+                            distance.setText(getString(R.string.title_overlay_failure_loading_route));
+                            mapView.getOverlayManager().add(distance);
                         }
                     });
         }
