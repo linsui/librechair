@@ -44,8 +44,12 @@ public final class News {
                     item.title = links.getAsJsonPrimitive("displaytitle").getAsString();
                     item.contentUrl = links.getAsJsonObject("content_urls").getAsJsonObject(
                             "desktop").getAsJsonPrimitive("page").getAsString();
-                    item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
-                            "source").getAsString();
+                    try {
+                        item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
+                                "source").getAsString();
+                    } catch (NullPointerException e) {
+                        item.thumbnail = null;
+                    }
                     item.lang = links.getAsJsonPrimitive("lang").getAsString();
                     item.story = newsItem.getAsJsonPrimitive("story").getAsString();
                     list.add(item);

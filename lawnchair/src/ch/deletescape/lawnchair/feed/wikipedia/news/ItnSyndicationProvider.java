@@ -56,7 +56,7 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
                 SyndContent content = new SyndContentImpl();
                 content.setValue(item.story);
                 entry.setDescription(content);
-                entry.setForeignMarkup(Arrays.asList(new Element("media", "thumbnail", "https://xml/res-auto").setAttribute("url", item.contentUrl)));
+                entry.setForeignMarkup(Arrays.asList(new Element("media", "thumbnail", "https://xml/res-auto").setAttribute("url", item.thumbnail)));
                 entries.add(entry);
             }
             feed.setEntries(entries);
