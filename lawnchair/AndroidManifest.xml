@@ -290,7 +290,7 @@
 
             <meta-data
                 android:name="api.version"
-                android:value="1"/>
+                android:value="2"/>
         </service>
         <service android:name="ch.deletescape.lawnchair.feed.chips.remote.RemoteChipProvider$Demo"
             android:exported="true">
@@ -305,7 +305,7 @@
             <intent-filter>
                 <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
                 <data android:scheme="app" />
-            </intent-filter>compa
+            </intent-filter>
 
             <meta-data
                 android:name="service.api.version"

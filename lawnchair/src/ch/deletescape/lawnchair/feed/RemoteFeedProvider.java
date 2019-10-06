@@ -160,6 +160,25 @@ public class RemoteFeedProvider extends FeedProvider {
     }
 
     @Override
+    public boolean isVolatile() {
+        ComponentName name = ComponentName.unflattenFromString(getArguments().get(COMPONENT_KEY));
+        if (!providerMap.containsKey(name) || !providerMap.get(
+                name).first.asBinder().pingBinder()) {
+            refreshIPCBindings(name);
+            return false;
+        } else if (providerMap.get(name).second >= 2) {
+            try {
+                return providerMap.get(name).first.isVolatile();
+            } catch (RemoteException | RuntimeException e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public List<Action> getActions(boolean exclusive) {
         ComponentName name = ComponentName.unflattenFromString(getArguments().get(COMPONENT_KEY));
         if (!providerMap.containsKey(name) || !providerMap.get(

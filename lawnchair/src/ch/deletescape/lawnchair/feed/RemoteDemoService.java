@@ -89,6 +89,11 @@ public class RemoteDemoService extends Service {
                             }
                         }));
             }
+
+            @Override
+            public boolean isVolatile() throws RemoteException {
+                return false;
+            }
         });
     }
 }

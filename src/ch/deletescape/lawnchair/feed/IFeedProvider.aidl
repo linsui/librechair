@@ -6,4 +6,5 @@ import ch.deletescape.lawnchair.feed.RemoteAction;
 interface IFeedProvider {
     List<RemoteCard> getCards();
     List<RemoteAction> getActions(boolean exclusive);
+    boolean isVolatile();
 }
