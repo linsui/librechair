@@ -52,7 +52,11 @@ import java.io.IOException
 
 class LawnchairApp : Application(), () -> Unit {
     override fun invoke() {
-        lawnchairPrefs.restartOverlay()
+        try {
+            lawnchairPrefs.restartOverlay()
+        } catch (e: RuntimeException) {
+            e.printStackTrace()
+        }
     }
 
     val activityHandler = ActivityHandler()
