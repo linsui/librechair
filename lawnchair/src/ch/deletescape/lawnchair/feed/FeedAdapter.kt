@@ -144,6 +144,12 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
+        if (holder.description != null) {
+            CustomFontManager.getInstance(context)
+                    .setCustomFont(holder.description!!, CustomFontManager.FONT_CATEGORY_TITLE,
+                            holder.description!!.typeface.style)
+        }
+
         if (cards[position].hasGlobalClickListener()) {
             holder.itemView.foreground =
                     holder.itemView.context.getDrawableAttr(R.attr.selectableItemBackground)
