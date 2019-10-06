@@ -1241,7 +1241,9 @@ class LauncherFeed(val originalContext: Context,
                     adapter.refresh()
                     if (!adapter.cards.isEmpty()) {
                         lastRefresh = System.currentTimeMillis()
-                        conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
+                        if (::currentTab.isInitialized) {
+                            conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
+                        }
                     }
                 }
             }
