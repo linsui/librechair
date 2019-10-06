@@ -1253,7 +1253,7 @@ class LauncherFeed(val originalContext: Context,
             if (quick) {
                 runOnMainThread {
                     var flag = false
-                    recyclerView.animate().setDuration(150).alpha(0f).setListener(object : AnimatorListenerAdapter() {
+                    recyclerView.animate().setDuration(50).alpha(0f).setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
                             if (!flag) {
                                 flag = true
@@ -1281,7 +1281,7 @@ class LauncherFeed(val originalContext: Context,
                                         feedController.findViewById<View>(R.id.empty_view)
                                                 .visibility =
                                                 if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
-                                        recyclerView.animate().alpha(1f).duration = 150
+                                        recyclerView.animate().alpha(1f).duration = 50
                                     }
                                 }
                             }
