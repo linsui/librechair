@@ -68,6 +68,14 @@
                         android:layout_gravity="center"/>
                 </LinearLayout>
             </FrameLayout>
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/feed_refresh_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </FrameLayout>
         <FrameLayout
             android:fitsSystemWindows="false"

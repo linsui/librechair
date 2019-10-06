@@ -44,6 +44,7 @@ import android.widget.Toolbar
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
@@ -196,6 +197,9 @@ class LauncherFeed(val originalContext: Context,
     var navigationBarHeight: Int? = null
 
     var chips: RecyclerView = feedController.findViewById(R.id.chip_container)
+
+    val swipeRefreshLayout
+        get() = feedController.findViewById<SwipeRefreshLayout>(R.id.feed_refresh_indicator)
 
     init {
         reinitState()
@@ -433,6 +437,7 @@ class LauncherFeed(val originalContext: Context,
                     }
                 }
         upButton.visibility = if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
+        swipeRefreshLayout.isEnabled = false
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
@@ -463,6 +468,14 @@ class LauncherFeed(val originalContext: Context,
                     if (oldRecyclerViewPaddingHorizontal == null) {
                         oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
                     }
+                    setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                            if (tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
+                            oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                            if (!tabsOnBottom) 8f.applyAsDip(
+                                    context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
+                }
+                swipeRefreshLayout.apply {
                     setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
                             if (tabsOnBottom) 8f.applyAsDip(
                                     context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
@@ -1176,6 +1189,10 @@ class LauncherFeed(val originalContext: Context,
 
     fun refresh(sleep: Long, count: Int = 0, quick: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
+        swipeRefreshLayout.post {
+            swipeRefreshLayout.setColorSchemeColors(* googleColours.toIntArray())
+            swipeRefreshLayout.isRefreshing = true
+        }
         runOnMainThread {
             infobox.visibility =
                     if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
@@ -1249,6 +1266,9 @@ class LauncherFeed(val originalContext: Context,
                     recyclerView.visibility = View.VISIBLE
                     feedController.findViewById<View>(R.id.empty_view).visibility =
                             if (cards.isNotEmpty()) View.GONE else View.VISIBLE
+                    swipeRefreshLayout.post {
+                        swipeRefreshLayout.isRefreshing = false
+                    }
                 }
             }
         }
