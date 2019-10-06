@@ -60,6 +60,11 @@ public class AlarmEventProvider extends FeedProvider {
     }
 
     @Override
+    public boolean isVolatile() {
+        return true;
+    }
+
+    @Override
     public List<Card> getCards() {
         AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         if (manager == null) {
