@@ -727,4 +727,6 @@
     <string name="title_pref_feed_directly_open_links">Directly open links in browser</string>
     <string name="summary_pref_feed_directly_open_links">Links will directly be opened in the browser if applicable</string>
     <string name="title_overlay_failure_loading_route">Failure loading route</string>
+    <string name="title_pref_feed_conservative_refreshes">Use conservative refreshes</string>
+    <string name="summary_pref_feed_conservative_refreshes">The feed will refresh less frequently</string>
 </resources>

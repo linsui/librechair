@@ -74,6 +74,7 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.TimeUnit
 import kotlin.math.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
@@ -89,6 +90,7 @@ class LauncherFeed(val originalContext: Context,
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
     private val activityState = ActivityState()
+    private lateinit var currentTab: TabController.Item
 
     private var lastScroll = 0f
 
@@ -193,6 +195,9 @@ class LauncherFeed(val originalContext: Context,
         }
     var infobox = feedController.findViewById(R.id.info_box_text) as TextView
     private var reapplyInsetFlag = false
+    private var conservativeRefreshTimes =
+            mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
+    private var lastRefresh = 0L
     var statusBarHeight: Int? = null
     var navigationBarHeight: Int? = null
 
@@ -574,6 +579,7 @@ class LauncherFeed(val originalContext: Context,
                 tabView.tabMode = TabLayout.MODE_FIXED
                 tabView.setOnTouchListener(null)
             }
+            currentTab = tabs[0]
             tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabReselected(tab: TabLayout.Tab) {
                 }
@@ -582,6 +588,7 @@ class LauncherFeed(val originalContext: Context,
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
+                    currentTab = tabs[tab.position]!!
                     if (backgroundColor.alpha > 35) {
                         tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
                         tabView.tabTextColors = ColorStateList(
@@ -1225,7 +1232,15 @@ class LauncherFeed(val originalContext: Context,
         }
         val oldCards = adapter.immutableCards
         FeedScope.launch {
-            adapter.refresh()
+            if (context.feedPrefs.conservativeRefreshes &&
+                    ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(5)) ||
+                    (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(5)))) {
+                adapter.refresh()
+                if (!adapter.cards.isEmpty()) {
+                    lastRefresh = System.currentTimeMillis()
+                    conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
+                }
+            }
             val cards = adapter.immutableCards
             Thread.sleep(10)
             if (quick) {
