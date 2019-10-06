@@ -299,9 +299,6 @@
             </intent-filter>
         </service>
         <service
-            android:enabled="true"
-            android:name="ch.deletescape.lawnchair.predictions.PredictionsProviderService" />
-        <service
             android:exported="true"
             android:name="ch.deletescape.lawnchair.feed.impl.OverlayService"
             android:process=":overlay">
