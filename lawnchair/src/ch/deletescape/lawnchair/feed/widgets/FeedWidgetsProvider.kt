@@ -103,6 +103,10 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                 }
     }
 
+    override fun isVolatile(): Boolean {
+        return true;
+    }
+
     override fun getActions(exclusive: Boolean): List<Action> {
         return listOf(Action((if (exclusive) R.drawable.ic_add.fromDrawableRes(
                 context) else R.drawable.ic_widget.fromDrawableRes(context)).tint(

@@ -126,6 +126,18 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards.size
     }
 
+    open suspend fun refreshVolatile(): Int {
+        val coroutines = mutableListOf<Job>()
+        providers.filter { it.isVolatile }.forEach {
+            coroutines += FeedScope.launch {
+                it.feed = feed
+                cardCache[it] = it.cards.toImmutableList()
+            }
+        }
+        coroutines.forEach { it.join() }
+        return cards.size
+    }
+
     @SuppressLint("MissingPermission")
     override fun getItemCount(): Int {
         return cards.size;

@@ -57,6 +57,9 @@ public abstract class FeedProvider {
         return context;
     }
 
+    public boolean isVolatile() {
+        return false;
+    }
 
     public abstract void onFeedShown();
 

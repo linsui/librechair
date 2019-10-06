@@ -1196,7 +1196,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun refresh(sleep: Long, count: Int = 0, quick: Boolean = true): Unit = synchronized(this) {
+    fun refresh(sleep: Long, count: Int = 0, quick: Boolean = true, clearCache: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
         swipeRefreshLayout.post {
             swipeRefreshLayout.setColorSchemeColors(* googleColours.toIntArray())
@@ -1235,7 +1235,7 @@ class LauncherFeed(val originalContext: Context,
         val oldCards = adapter.immutableCards
         FeedScope.launch {
             if (!quick) {
-                if (!context.feedPrefs.conservativeRefreshes ||
+                if (clearCache || !context.feedPrefs.conservativeRefreshes ||
                         ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(5)) ||
                                 (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(5)))) {
                     adapter.refresh()
@@ -1245,6 +1245,8 @@ class LauncherFeed(val originalContext: Context,
                             conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
                         }
                     }
+                } else {
+                    adapter.refreshVolatile()
                 }
             }
             val cards = adapter.immutableCards
@@ -1256,7 +1258,7 @@ class LauncherFeed(val originalContext: Context,
                             if (!flag) {
                                 flag = true
                                 FeedScope.launch {
-                                    if (!context.feedPrefs.conservativeRefreshes ||
+                                    if (clearCache || !context.feedPrefs.conservativeRefreshes ||
                                             ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                                     5)) ||
                                                     (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
@@ -1267,6 +1269,8 @@ class LauncherFeed(val originalContext: Context,
                                             conservativeRefreshTimes[currentTab] =
                                                     System.currentTimeMillis()
                                         }
+                                    } else {
+                                        adapter.refreshVolatile()
                                     }
                                     recyclerView.post {
                                         adapter.notifyDataSetChanged()

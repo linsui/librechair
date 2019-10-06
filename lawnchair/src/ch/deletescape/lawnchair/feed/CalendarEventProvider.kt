@@ -51,7 +51,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (feed != null) {
-                feed.refresh(0)
+                feed.refresh(0, 0, true)
             }
         }
     }
@@ -61,6 +61,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             addDataScheme("content")
             addDataAuthority("com.android.calendar", null)
         })
+    }
+
+    override fun isVolatile(): Boolean {
+        return true
     }
 
     override fun onFeedShown() {
