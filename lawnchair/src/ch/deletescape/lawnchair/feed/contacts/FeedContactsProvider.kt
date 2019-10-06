@@ -46,6 +46,8 @@ class FeedContactsProvider(c: Context?) : FeedProvider(c) {
 
     }
 
+    override fun isVolatile() = true
+
     override fun getCards(): List<Card> {
         return ContactsUtil.queryContacts(context).map {
             d("getCards: contact: $it")
