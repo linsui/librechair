@@ -71,8 +71,8 @@ public class ContactsUtil {
                 contact.name = cursor.getString(1);
                 try {
                     contact.avatar = getAvatar(cursor.getString(3), context);
-                } catch (RuntimeException e) {
-                    e.printStackTrace();
+                } catch (RuntimeException ignored) {
+
                 }
             } catch (RuntimeException e) {
                 contact = null;
