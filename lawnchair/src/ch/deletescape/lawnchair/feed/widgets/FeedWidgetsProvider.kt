@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.launch
+import java.util.*
 import java.util.concurrent.Executors
 
 class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
@@ -77,16 +78,16 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                         setExecutor(inflateExecutor)
                                         layoutParams = ViewGroup
                                                 .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                        if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
+                                                        if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
                                         updateAppWidgetOptions(Bundle().apply {
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                    if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
+                                                    if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                    if (metadata.height != -1) metadata.height else  appWidgetInfo.minHeight)
+                                                    if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
                                         })
                                         invalidate()
                                     }.also { it2 ->
@@ -99,7 +100,24 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                     else if (!(metadata
                                     ?: Widget.DEFAULT).showCardTitle) Card.NO_HEADER
                     else Card.DEFAULT, if (metadata?.sortable == true) "" else "nosort, top",
-                            it shl 2)
+                            it shl 2 + UUID.randomUUID().hashCode()).apply {
+                        canHide = true
+                        onRemoveListener = {
+                            FeedScope.launch {
+                                synchronized(WidgetDatabase.getInstance(context)) {
+                                    val widgets = WidgetDatabase.getInstance(context).dao()
+                                            .all.filter { it != widget }
+                                    WidgetDatabase.getInstance(context).dao().removeAll()
+                                    widgets.forEach {
+                                        WidgetDatabase.getInstance(context).dao()
+                                                .addWidget(it.apply {
+                                                    entryOrder = widgets.indexOf(this)
+                                                })
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
     }
 
