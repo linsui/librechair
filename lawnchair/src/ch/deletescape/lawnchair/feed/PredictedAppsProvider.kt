@@ -20,19 +20,35 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import android.graphics.Rect
+import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ch.deletescape.lawnchair.applyAsDip
 import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
 import com.android.launcher3.R
+import kotlin.math.roundToInt
+
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
-    private val recyclerView = androidx.recyclerview.widget.RecyclerView(context)
+    private val recyclerView = RecyclerView(context)
     private val adapter = PredictedApplicationsAdapter(c)
 
     init {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
+                                        state: RecyclerView.State) {
+                super.getItemOffsets(outRect, view, parent, state)
+                outRect.top = 8f.applyAsDip(context).roundToInt()
+                outRect.bottom = 8f.applyAsDip(context).roundToInt()
+                outRect.left = 8f.applyAsDip(context).roundToInt()
+                outRect.right = 8f.applyAsDip(context).roundToInt()
+            }
+        })
         adapter.notifyDataSetChanged()
     }
 
