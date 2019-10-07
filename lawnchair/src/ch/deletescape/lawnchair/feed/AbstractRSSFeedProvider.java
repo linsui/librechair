@@ -141,6 +141,11 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     }
 
     @Override
+    public boolean isVolatile() {
+        return cardCache == null || cardCache.isEmpty();
+    }
+
+    @Override
     public List<Card> getCards() {
         if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
             cardCache = null;
