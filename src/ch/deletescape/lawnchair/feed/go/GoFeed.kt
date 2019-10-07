@@ -97,7 +97,7 @@ class GoFeed(val originalContext: Context) : ILauncherOverlay.Stub() {
             insets
         }
 
-        adapter = GoAdapter(emptyList())
+        adapter = GoAdapter(listOf(GoWeatherProvider(context)))
         recycler.adapter = adapter
         recycler.layoutManager = LinearLayoutManager(context)
 

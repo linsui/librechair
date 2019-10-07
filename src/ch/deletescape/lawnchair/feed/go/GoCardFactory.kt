@@ -22,6 +22,6 @@ package ch.deletescape.lawnchair.feed.go
 
 import android.content.Context
 
-abstract class GoCardFactory(context: Context) {
-    abstract val card: GoCard
+abstract class GoCardFactory(protected val context: Context) {
+    abstract val card: GoCard?
 }

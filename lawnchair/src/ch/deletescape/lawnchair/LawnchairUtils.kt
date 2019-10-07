@@ -1326,3 +1326,8 @@ val ViewGroup.allChildren: List<View>
 
 val ViewGroup.rtl
     get() = layoutDirection == ViewGroup.LAYOUT_DIRECTION_RTL
+
+val Context.eightF
+    get() = 8f.applyAsDip(this)
+val Context.eightI
+    get() = eightF.roundToInt()
