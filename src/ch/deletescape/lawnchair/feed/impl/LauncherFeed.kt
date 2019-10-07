@@ -125,6 +125,7 @@ class LauncherFeed(val originalContext: Context,
                             if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                 }
             }
+    private var tabChanged = false
     private val tabController: TabController =
             TabController.inflate(context.lawnchairPrefs.feedTabController, context)
     private val useTabbedMode = tabController.allTabs.isNotEmpty()
@@ -590,6 +591,7 @@ class LauncherFeed(val originalContext: Context,
                 }
 
                 override fun onTabSelected(tab: TabLayout.Tab) {
+                    tabChanged = true
                     currentTab = tabs[tab.position]!!
                     if (backgroundColor.alpha > 35) {
                         tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
@@ -1251,6 +1253,18 @@ class LauncherFeed(val originalContext: Context,
             }
             val cards = adapter.immutableCards
             if (quick) {
+                if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
+                        ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
+                                5)) ||
+                                (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
+                                        5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
+                    recyclerView.post {
+                        recyclerView.isLayoutFrozen = false
+                        recyclerView.visibility = View.VISIBLE
+                    }
+                    return@launch
+                }
+                tabChanged = false
                 runOnMainThread {
                     var flag = false
                     recyclerView.animate().setDuration(50).alpha(0f).setListener(object : AnimatorListenerAdapter() {
