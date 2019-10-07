@@ -218,6 +218,22 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
+    fun initBitmapInfo(url: String, desc: String, bkg: Bitmap) {
+        readMoreUrl = url
+        infobox.text = desc.take(60)
+        if (infobox.text.length == 60) {
+            infobox.text = infobox.text.toString() + "..."
+        }
+        infobox.setOnClickListener {
+            val screen = ImageDataScreen(context, bkg, desc,
+                    if (readMoreUrl != null)
+                        ({
+                            Utilities.openURLinBrowser(context, readMoreUrl)
+                        } as () -> Unit) else null)
+            screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
+        }
+    }
+
     @SuppressLint("RestrictedApi")
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (context.appWidgetManager
@@ -304,9 +320,6 @@ class LauncherFeed(val originalContext: Context,
             frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
 
-            val oldInfobox = infobox.text
-            infobox = feedController.findViewById(R.id.info_box_text) as TextView
-            infobox.text = oldInfobox
             chips = feedController.findViewById(R.id.chip_container) as RecyclerView
             chipAdapter = ChipAdapter(context, dark, this)
         }
@@ -333,32 +346,9 @@ class LauncherFeed(val originalContext: Context,
             feedController.disallowInterceptCurrentTouchEvent = true
             false
         }
-
-        val oldText = infobox.text
-
-        infobox.text = infobox.text.take(60)
-        if (infobox.text.length == 60) {
-            infobox.text = infobox.text.toString() + "..."
-        }
-
-        infobox.visibility = if (infobox.text.length > 1) View.VISIBLE else View.GONE
-
-        infobox.setOnClickListener {
-            val screen = ImageDataScreen(context, backgroundToProcess!!, oldText.toString(),
-                    if (readMoreUrl != null)
-                        ({
-                            Utilities.openURLinBrowser(context, readMoreUrl)
-                        } as () -> Unit) else null)
-            screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
-        }
-
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
             toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
         }
-
-
-        infobox.visibility = if (context.lawnchairPrefs.feedShowInfobox)
-            View.VISIBLE else View.GONE
 
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
         var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null

@@ -27,7 +27,6 @@ import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
 import com.google.android.libraries.launcherclient.ILauncherInterface
@@ -64,18 +63,13 @@ class OverlayService : Service(), () -> Unit {
                     val refreshBitmap = {
                         FeedScope.launch {
                             val bitmap = imageProvider?.getBitmap(this@OverlayService)
-                            val desc = imageProvider?.getDescription(this@OverlayService)
-                            val rmUrl = imageProvider?.getUrl(this@OverlayService)
-                            if (rmUrl != null) {
-                                feed.readMoreUrl = rmUrl
-                            }
-                            if (desc != null) {
-                                runOnMainThread {
-                                    feed.infobox.text = desc
-                                }
-                            }
                             if (bitmap != null) {
                                 it(bitmap)
+                            }
+                            val desc = imageProvider?.getDescription(this@OverlayService)
+                            val rmUrl = imageProvider?.getUrl(this@OverlayService)
+                            if (rmUrl != null && desc != null && bitmap != null) {
+                                feed.initBitmapInfo(rmUrl, desc, bitmap)
                             }
                         }
                         Unit
