@@ -27,13 +27,10 @@ import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker
-import ch.deletescape.lawnchair.getPostionOnScreen
-import ch.deletescape.lawnchair.newList
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
-import ch.deletescape.lawnchair.thumbnailURL
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -170,7 +167,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
         }
     }
 
-    override fun isVolatile(): Boolean = feeds?.isEmpty() != false
+    override fun isVolatile(): Boolean = context.lawnchairPrefs.feedRSSSources.getAll().isNotEmpty() &&
+            feeds?.isEmpty() != false
 
     protected abstract fun bindFeeds(handler: OnBindHandler)
     protected interface OnBindHandler {
