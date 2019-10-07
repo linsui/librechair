@@ -25,9 +25,12 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import ch.deletescape.lawnchair.allChildren
 import ch.deletescape.lawnchair.applyAsDip
+import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.theme.ThemeManager
 import com.google.android.material.card.MaterialCardView
 import kotlin.math.roundToInt
@@ -59,7 +62,15 @@ class GoAdapter(val factories: List<GoCardFactory>) : RecyclerView.Adapter<GoCar
         } else {
             holder.cv.visibility = View.VISIBLE
             holder.cv.removeAllViews()
-            holder.cv.addView(card.viewFactory(holder.cv))
+            holder.cv.addView(card.viewFactory(holder.cv).also {
+                if (it is ViewGroup) {
+                    it.allChildren.filterIsInstance<TextView>().forEach {
+                        CustomFontManager.getInstance(holder.context)
+                                .setCustomFont(it as TextView, CustomFontManager.FONT_TEXT,
+                                        it.typeface.style)
+                    }
+                }
+            })
         }
     }
 
