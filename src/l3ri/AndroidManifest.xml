@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (c) 2019 oldosfan.
+  ~ Copyright (c) 2019 the Lawnchair developers
+  ~
+  ~     This file is part of Librechair.
+  ~
+  ~     Librechair is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Librechair is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <service
+            android:exported="true"
+            android:name="ch.deletescape.lawnchair.feed.impl.OverlayService"
+            android:process=":overlay">
+            <intent-filter>
+                <action android:name="com.android.launcher3.WINDOW_OVERLAY" />
+                <data android:scheme="app" />
+            </intent-filter>
+
+            <meta-data
+                android:name="service.api.version"
+                android:value="7" />
+            <meta-data
+                android:name="service.api.companionVersion"
+                android:value="3"/>
+            <meta-data
+                android:name="service.api.unifiedConnection"
+                android:value="1"/>
+        </service>
+        <service
+            android:exported="true"
+            android:name="ch.deletescape.lawnchair.feed.impl.OverlayService$CompanionService"
+            android:process=":overlay">
+            <intent-filter>
+                <action android:name="com.android.launcher3.WINDOW_OVERLAY_COMPANION" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

@@ -112,7 +112,6 @@ import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
-import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
 
 /**
@@ -754,9 +753,6 @@ public final class Utilities {
     }
 
     public static void killLauncher(Context context) {
-        if (context != null) {
-            context.stopService(new Intent(context, OverlayService.class));
-        }
         System.exit(0);
     }
 
