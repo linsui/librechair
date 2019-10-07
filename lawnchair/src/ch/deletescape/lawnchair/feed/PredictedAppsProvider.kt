@@ -57,6 +57,8 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
         adapter.notifyDataSetChanged()
     }
 
+    override fun isVolatile() = true
+
     override fun onFeedShown() {
     }
 
