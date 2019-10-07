@@ -235,7 +235,6 @@ class LauncherFeed(val originalContext: Context,
         runOnMainThread {
             (infobox.parent as View).visibility =
                     if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
-            updateActions()
         }
     }
 
