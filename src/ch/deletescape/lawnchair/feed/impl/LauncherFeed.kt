@@ -232,6 +232,11 @@ class LauncherFeed(val originalContext: Context,
                         } as () -> Unit) else null)
             screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
         }
+        runOnMainThread {
+            (infobox.parent as View).visibility =
+                    if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
+            updateActions()
+        }
     }
 
     @SuppressLint("RestrictedApi")
@@ -1195,7 +1200,7 @@ class LauncherFeed(val originalContext: Context,
             swipeRefreshLayout.isRefreshing = true
         }
         runOnMainThread {
-            infobox.visibility =
+            (infobox.parent as View).visibility =
                     if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
             updateActions()
         }
