@@ -32,10 +32,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 public class ColorProvider {
     @NotNull
     public List<Integer> getColors(Context context) {
-        return Arrays.asList(Color.parseColor("#4285F4"), Color.parseColor("#DB4437"),
+        return Arrays.asList(LawnchairUtilsKt.getColorEngineAccent(context), Color.parseColor("#DB4437"),
                 Color.parseColor("#F4B400"), Color.parseColor("#0F9D58"));
     }
 
