@@ -48,7 +48,7 @@ class GoFeed(val originalContext: Context) : ILauncherOverlay.Stub() {
         set(value) {
             field = value
             if (value) {
-                if (context.isDark) {
+                if (!context.isDark) {
                     controller.systemUiVisibility =
                             View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
                 }
