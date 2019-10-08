@@ -20,10 +20,15 @@
 
 package ch.deletescape.lawnchair.feed.chips.predict;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.LauncherApps;
 import android.content.pm.PackageManager;
 import android.util.Log;
+
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,19 +52,24 @@ public class PredictedActionsProvider extends ChipProvider {
                     "getItems: items are " + OverlayService.CompanionService.InterfaceHolder.INSTANCE.getActions());
             return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getActions().stream().map(
                     it -> {
-                        try {
-                            Item item = new Item();
-                            item.icon = context.getPackageManager().getActivityIcon(
-                                    it.getComponentKey().componentName);
-                            item.title = context.getPackageManager().getActivityInfo(
-                                    it.getComponentKey().componentName, 0).loadLabel(
-                                    context.getPackageManager()).toString();
-                            item.click = () -> context.startActivity(new Intent().setComponent(
-                                    it.getComponentKey().componentName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-                            return item;
-                        } catch (PackageManager.NameNotFoundException e) {
-                            return null;
+                        Item item = new Item();
+                        item.icon = it.first != null ? RoundedBitmapDrawableFactory.create(
+                                context.getResources(), it.first) : null;
+                        if (item.icon != null) {
+                            ((RoundedBitmapDrawable) item.icon).setCornerRadius(
+                                    Math.max(it.first.getHeight(), it.first.getWidth()));
                         }
+                        item.title = it.second.getLongLabel().toString();
+                        item.click = () -> {
+                            try {
+                                ((LauncherApps) context.getSystemService(
+                                        Context.LAUNCHER_APPS_SERVICE))
+                                        .startShortcut(it.second, null, null);
+                            } catch (ActivityNotFoundException e) {
+                                Log.e(getClass().getSimpleName(), "getItems: failiure starting shortcut", e);
+                            }
+                        };
+                        return item;
                     }).filter(it -> it != null).collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
             Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);

@@ -34,6 +34,7 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.UserEventDispatcher;
 import com.android.launcher3.util.ComponentKey;
 import com.android.launcher3.util.ComponentKeyMapper;
+import com.android.launcher3.util.ParcelablePair;
 import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
@@ -119,9 +120,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         .getActionsRowView()
                                         .getActions()
                                         .stream()
-                                        .map(it -> it.shortcutInfo.getTargetComponent())
-                                        .map(it -> new ComponentKey(it, Process.myUserHandle()))
-                                        .map(ParcelableComponentKeyMapper::new)
+                                        .map(it -> new ParcelablePair(it.shortcutInfo.iconBitmap,
+                                                        it.shortcut.getShortcutInfo()))
                                         .collect(Collectors.toList())));
                         return bundle;
                     }

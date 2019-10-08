@@ -23,11 +23,14 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.os.Process
+import android.content.pm.ShortcutInfo
+import android.graphics.Bitmap
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
+import com.android.launcher3.util.ParcelablePair
 import com.android.overlayclient.CustomOverscrollClient.ACTIONS_CALL
 import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
 import com.google.android.libraries.launcherclient.ILauncherInterface
@@ -116,10 +119,10 @@ class OverlayService : Service(), () -> Unit {
             }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
 
-            fun getActions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+            fun getActions(): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
                             ACTIONS_CALL) == true) interfaze?.call(
                     ACTIONS_CALL, null)?.apply {
-                classLoader = ParcelableComponentKeyMapper::class.java.classLoader
+                classLoader = ParcelablePair::class.java.classLoader
             }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
         }
