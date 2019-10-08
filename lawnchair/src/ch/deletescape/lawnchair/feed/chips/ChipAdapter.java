@@ -116,7 +116,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
                                        @NonNull RecyclerView parent,
                                        @NonNull RecyclerView.State state) {
                 super.getItemOffsets(outRect, view, parent, state);
-                outRect.top = round(LawnchairUtilsKt.applyAsDip(8f, context));
+                outRect.top = round(LawnchairUtilsKt.applyAsDip(4f, context));
                 outRect.bottom = round(LawnchairUtilsKt.applyAsDip(4f, context));
                 outRect.left = round(LawnchairUtilsKt.applyAsDip(8f, context));
                 outRect.right = round(LawnchairUtilsKt.applyAsDip(8f, context));
