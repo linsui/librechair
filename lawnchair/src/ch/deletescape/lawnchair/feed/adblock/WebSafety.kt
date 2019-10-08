@@ -22,6 +22,8 @@ package ch.deletescape.lawnchair.feed.adblock
 
 import android.annotation.SuppressLint
 import android.content.Context
+import ch.deletescape.lawnchair.lawnchairApp
+import kg.net.bazi.gsb4j.api.SafeBrowsingApi
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -29,10 +31,12 @@ import java.io.InputStreamReader
 import java.net.URL
 
 @SuppressLint("StaticFieldLeak")
-object AdblockHelper {
+object WebSafety {
     lateinit var context: Context
     lateinit var filesDir: File
     lateinit var blocklist: File
+
+    const val GSB_API_KEY = "AIzaSyDB-44KGmSqjS6jOqVa50ji2lyu1iXwMt8"
 
     private val blockCache = mutableMapOf<String, Boolean>()
     private val BLOCKLIST = "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts"
@@ -54,7 +58,7 @@ object AdblockHelper {
         }
     }
 
-    fun shouldBlock(dom: String): Boolean {
+    fun shouldBlock(dom: String, url: String): Boolean {
         if (blocklist.exists().not()) {
             return false
         } else {
@@ -67,6 +71,11 @@ object AdblockHelper {
                     block = true
                     return@forEachLine
                 }
+            }
+            val client = context.lawnchairApp.gsb4j
+                    .getApiClient(SafeBrowsingApi.Type.UPDATE_API)
+            if (client.check(url) != null) {
+                block = true
             }
             blockCache += dom to block
             return block

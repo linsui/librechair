@@ -35,7 +35,7 @@ import ch.deletescape.lawnchair.clipart.ClipartCache
 import ch.deletescape.lawnchair.clipart.FancyClipartResolver
 import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
 import ch.deletescape.lawnchair.feed.FeedScope
-import ch.deletescape.lawnchair.feed.adblock.AdblockHelper
+import ch.deletescape.lawnchair.feed.adblock.WebSafety
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
@@ -46,9 +46,12 @@ import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
+import kg.net.bazi.gsb4j.Gsb4j
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.util.*
+import kotlin.collections.HashSet
 
 class LawnchairApp : Application(), () -> Unit {
     override fun invoke() {
@@ -65,6 +68,11 @@ class LawnchairApp : Application(), () -> Unit {
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
     val feedController by lazy { getFeedController(this) }
+    val gsb4j by lazy {
+        Gsb4j.bootstrap(Properties().apply {
+            put("api.key", WebSafety.GSB_API_KEY)
+        })
+    }
 
     lateinit var overlayWidgetHost: OverlayWidgetHost
 
@@ -100,10 +108,10 @@ class LawnchairApp : Application(), () -> Unit {
         org.osmdroid.config.Configuration.getInstance().osmdroidBasePath = File(filesDir, "osmdroid")
         org.osmdroid.config.Configuration.getInstance().userAgentValue = "Librechair-" + BuildConfig.VERSION_CODE
         if (getCurrentProcessName(this).contains("overlay")) {
-            AdblockHelper.context = this
+            WebSafety.context = this
             FeedScope.launch {
                 try {
-                    AdblockHelper.initialize()
+                    WebSafety.initialize()
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

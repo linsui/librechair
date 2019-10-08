@@ -18,13 +18,10 @@
 package ch.deletescape.lawnchair.util.okhttp
 
 import android.content.Context
-import ch.deletescape.lawnchair.feed.adblock.AdblockHelper
 import ch.deletescape.lawnchair.lawnchairPrefs
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.internal.canParseAsIpAddress
 import okhttp3.logging.HttpLoggingInterceptor
-import java.net.URL
 import java.util.concurrent.TimeUnit
 
 class OkHttpClientBuilder {
