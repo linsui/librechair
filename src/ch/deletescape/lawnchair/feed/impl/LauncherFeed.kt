@@ -438,7 +438,11 @@ class LauncherFeed(val originalContext: Context,
                     }
                 }
         upButton.visibility = if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
-        swipeRefreshLayout.isEnabled = false
+        swipeRefreshLayout.setOnRefreshListener {
+            FeedScope.launch {
+                refresh(100, 0, true, true)
+            }
+        }
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
@@ -477,12 +481,10 @@ class LauncherFeed(val originalContext: Context,
                                     context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
                 }
                 swipeRefreshLayout.apply {
-                    setPadding(oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                            if (tabsOnBottom) 8f.applyAsDip(
-                                    context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
-                            oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                            if (!tabsOnBottom) 8f.applyAsDip(
-                                    context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
+                    if (!tabsOnBottom) {
+                        swipeRefreshLayout.setProgressViewOffset(false, 0,
+                                rvPaddingTop + statusBarHeight!!)
+                    }
                 }
             }
             insets
@@ -1192,7 +1194,8 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun refresh(sleep: Long, count: Int = 0, quick: Boolean = true, clearCache: Boolean = false): Unit = synchronized(this) {
+    fun refresh(sleep: Long, count: Int = 0, quick: Boolean = true,
+                clearCache: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
         swipeRefreshLayout.post {
             swipeRefreshLayout.setColorSchemeColors(* googleColours.toIntArray())
@@ -1232,8 +1235,10 @@ class LauncherFeed(val originalContext: Context,
         FeedScope.launch {
             if (!quick) {
                 if (clearCache || !context.feedPrefs.conservativeRefreshes ||
-                        ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(5)) ||
-                                (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(5)))) {
+                        ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
+                                5)) ||
+                                (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
+                                        5)))) {
                     adapter.refresh()
                     if (!adapter.cards.isEmpty()) {
                         lastRefresh = System.currentTimeMillis()
@@ -1248,10 +1253,10 @@ class LauncherFeed(val originalContext: Context,
             val cards = adapter.immutableCards
             if (quick) {
                 if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
-                        ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
-                                5)) ||
-                                (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
-                                        5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
+                                ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
+                                        5)) ||
+                                        (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
+                                                5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
                     recyclerView.post {
                         recyclerView.isLayoutFrozen = false
                         recyclerView.visibility = View.VISIBLE
@@ -1261,40 +1266,45 @@ class LauncherFeed(val originalContext: Context,
                 tabChanged = false
                 runOnMainThread {
                     var flag = false
-                    recyclerView.animate().setDuration(50).alpha(0f).setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            if (!flag) {
-                                flag = true
-                                FeedScope.launch {
-                                    if (clearCache || !context.feedPrefs.conservativeRefreshes ||
-                                            ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
-                                                    5)) ||
-                                                    (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
-                                                            5)))) {
-                                        adapter.refresh()
-                                        if (!adapter.cards.isEmpty()) {
-                                            lastRefresh = System.currentTimeMillis()
-                                            if (::currentTab.isInitialized) {
-                                                conservativeRefreshTimes[currentTab] =
-                                                        System.currentTimeMillis()
+                    recyclerView.animate().setDuration(250).alpha(0f)
+                            .setListener(object : AnimatorListenerAdapter() {
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    if (!flag) {
+                                        flag = true
+                                        FeedScope.launch {
+                                            if (clearCache || !context.feedPrefs.conservativeRefreshes ||
+                                                    ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
+                                                            5)) ||
+                                                            (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
+                                                                    5)))) {
+                                                adapter.refresh()
+                                                if (!adapter.cards.isEmpty()) {
+                                                    lastRefresh = System.currentTimeMillis()
+                                                    if (::currentTab.isInitialized) {
+                                                        conservativeRefreshTimes[currentTab] =
+                                                                System.currentTimeMillis()
+                                                    }
+                                                }
+                                            } else {
+                                                adapter.refreshVolatile()
+                                            }
+                                            recyclerView.post {
+                                                adapter.notifyDataSetChanged()
+                                                recyclerView.isLayoutFrozen = false
+                                                recyclerView.visibility = View.VISIBLE
+                                                feedController.findViewById<View>(R.id.empty_view)
+                                                        .visibility =
+                                                        if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
+                                                recyclerView.animate().setUpdateListener {
+                                                    if (it.animatedFraction == 1f) {
+                                                        swipeRefreshLayout.isRefreshing = false
+                                                    }
+                                                }.alpha(1f).duration = 250
                                             }
                                         }
-                                    } else {
-                                        adapter.refreshVolatile()
-                                    }
-                                    recyclerView.post {
-                                        adapter.notifyDataSetChanged()
-                                        recyclerView.isLayoutFrozen = false
-                                        recyclerView.visibility = View.VISIBLE
-                                        feedController.findViewById<View>(R.id.empty_view)
-                                                .visibility =
-                                                if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
-                                        recyclerView.animate().alpha(1f).duration = 50
                                     }
                                 }
-                            }
-                        }
-                    })
+                            })
                 }
             } else if (oldCards.isEmpty() && count == 0) {
                 adapter.notifyItemRangeInserted(0, adapter.itemCount)

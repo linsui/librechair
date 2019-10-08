@@ -356,7 +356,7 @@
                 android:value="1" />
         </service>
         <provider
-            android:authorities="{applicationId}.FEED_BACKGROUND_IMAGE"
+            android:authorities="${applicationId}.FEED_BACKGROUND_IMAGE"
             android:grantUriPermissions="true"
             android:exported="true"
             android:name="ch.deletescape.lawnchair.feed.images.CurrentImageProvider"/>
