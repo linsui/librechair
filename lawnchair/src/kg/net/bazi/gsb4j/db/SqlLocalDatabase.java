@@ -37,6 +37,7 @@ package kg.net.bazi.gsb4j.db;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.google.inject.Inject;
 
@@ -91,12 +92,17 @@ class SqlLocalDatabase implements LocalDatabase {
     public void persist(ThreatListDescriptor descriptor, List<String> hashes) throws IOException {
         checkTableForDescriptor(descriptor);
 
+        Log.d(getClass().getName(), "persist: " + hashes);
+
         String sql = "INSERT INTO " + descriptor + " VALUES (?)";
         int offset = 0;
         int inserted = 0;
+        database.beginTransaction();
         for (String hash : hashes) {
             database.execSQL(sql, new Object[]{hash});
         }
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
     @Override
@@ -112,7 +118,10 @@ class SqlLocalDatabase implements LocalDatabase {
 
     @Override
     public void clear(ThreatListDescriptor descriptor) throws IOException {
-        database.rawQuery("DROP TABLE IF EXISTS " + descriptor, new String[0]);
+        database.beginTransaction();
+        database.execSQL("DROP TABLE IF EXISTS " + descriptor, new String[0]);
+        database.setTransactionSuccessful();
+        database.endTransaction();
         LOCK.lock();
         try {
             CREATED_TABLES.remove(descriptor);
@@ -139,9 +148,12 @@ class SqlLocalDatabase implements LocalDatabase {
     }
 
     private void createTable(ThreatListDescriptor descriptor) {
+        database.beginTransaction();
         String sql = "CREATE TABLE IF NOT EXISTS " + descriptor
                 + " (prefix TEXT CONSTRAINT pk PRIMARY KEY ASC ON CONFLICT REPLACE)";
         database.execSQL(sql);
+        database.setTransactionSuccessful();
+        database.endTransaction();
     }
 
 }
