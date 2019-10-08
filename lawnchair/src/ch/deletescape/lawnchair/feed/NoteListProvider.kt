@@ -33,7 +33,7 @@ import com.android.launcher3.R
 
 class NoteListProvider(c: Context) : FeedProvider(c) {
     private val providerMap: MutableMap<Intent, INoteProvider> = mutableMapOf()
-    fun updateBindings(intent: Intent? = null) {
+    fun updateBindings(intent: Intent? = null): Unit = synchronized(this) {
         if (intent != null) {
             try {
                 context.bindService(intent, object : ServiceConnection {
@@ -76,24 +76,27 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
         if (providerMap.isEmpty()) {
             updateBindings()
         }
-        return listOf(Card(null, null, { parent, _ ->
-            (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
-                setOnClickListener {
-                    NoteProviderScreen(context).display(this@NoteListProvider, it.getPostionOnScreen().first,
-                                                        it.getPostionOnScreen().second)
+        synchronized(this) {
+            return listOf(Card(null, null, { parent, _ ->
+                (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
+                    setOnClickListener {
+                        NoteProviderScreen(context).display(this@NoteListProvider,
+                                it.getPostionOnScreen().first,
+                                it.getPostionOnScreen().second)
+                    }
                 }
+            }, Card.RAISE or Card.NO_HEADER, "nosort, top",
+                    "manageNotes".hashCode())) + providerMap.map {
+                it.value.notes
+            }.flatten().map {
+                Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).tint(
+                        if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
+                        it.title, { parent, _ ->
+                    TextView(parent.context).apply {
+                        text = it.content
+                    }
+                }, Card.RAISE, "")
             }
-        }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                           "manageNotes".hashCode())) + providerMap.map {
-            it.value.notes
-        }.flatten().map {
-            Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).tint(
-                    if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
-                 it.title, { parent, _ ->
-                     TextView(parent.context).apply {
-                         text = it.content
-                     }
-                 }, Card.RAISE, "")
         }
     }
 }
