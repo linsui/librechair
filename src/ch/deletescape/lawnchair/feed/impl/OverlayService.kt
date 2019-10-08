@@ -87,6 +87,8 @@ class OverlayService : Service(), () -> Unit {
 
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun onBackPressed() = feed.onBackPressed()
+
             override fun attachInterface(interfaze: ILauncherInterface) {
                 d("attacheInterface: interface is $interfaze")
                 InterfaceHolder.interfaze = interfaze

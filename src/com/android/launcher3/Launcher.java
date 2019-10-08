@@ -136,6 +136,7 @@ import java.util.Set;
 import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.feed.ClientOverlay;
 
 import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
 import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
@@ -921,6 +922,10 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         private void hideOverlay(LauncherState launcherState, boolean animate) {
             if (launcherState == LauncherState.OVERVIEW
                     || launcherState == LauncherState.FAST_OVERVIEW) {
+                if (getWorkspace().mLauncherOverlay != null &&
+                        ((ClientOverlay) getWorkspace().mLauncherOverlay).getClient().onBackPressed()){
+                    return;
+                }
                 hideOverlay(animate);
             }
         }

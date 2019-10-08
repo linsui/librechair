@@ -54,7 +54,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private val mFlingBlockCheck = FlingBlockCheck()
     private var mFeedBackground: View? = null
     private var mFeedContent: View? = null
-    private var mCurrentState: FeedState? = FeedState.CLOSED
+    var mCurrentState: FeedState? = FeedState.CLOSED
         set(value) = {
             if (field != value && value == FeedState.OPEN && mOpenedCallback != null) {
                 mOpenedCallback?.invoke()
@@ -96,11 +96,14 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+        if (super.dispatchKeyEvent(event)) {
+            return true
+        } else if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
             closeOverlay(true, 0)
             return true
+        } else {
+            return false
         }
-        return super.dispatchKeyEvent(event)
     }
 
     fun closeOverlay(animated: Boolean, duration: Int) {

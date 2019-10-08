@@ -110,4 +110,16 @@ public class CustomServiceClient extends ServiceClient implements CustomOverscro
             });
         }
     }
+
+    @Override
+    public boolean onBackPressed() {
+        if (factory.getCompanion() != null && companionApiVersion >= 4) {
+            try {
+                return factory.getCompanion().onBackPressed();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 }

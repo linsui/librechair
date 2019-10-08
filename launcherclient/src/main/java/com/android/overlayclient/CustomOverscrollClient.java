@@ -30,4 +30,5 @@ public interface CustomOverscrollClient extends WorkspaceOverscrollClient {
     boolean shouldFadeWorkspaceDuringScroll();
     void restartProcess();
     void attachInterface(ILauncherInterface interfaze);
+    boolean onBackPressed();
 }

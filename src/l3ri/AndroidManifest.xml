@@ -34,7 +34,7 @@
                 android:value="7" />
             <meta-data
                 android:name="service.api.companionVersion"
-                android:value="3"/>
+                android:value="4"/>
             <meta-data
                 android:name="service.api.unifiedConnection"
                 android:value="1"/>

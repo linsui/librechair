@@ -864,7 +864,7 @@ class LauncherFeed(val originalContext: Context,
             if (event.action == KeyEvent.ACTION_UP &&
                     keyCode == KeyEvent.KEYCODE_BACK && !providerScreens.isEmpty()) {
                 popScreens()
-                true
+                return@setOnKeyListener true
             }
             false
         }
@@ -1439,6 +1439,16 @@ class LauncherFeed(val originalContext: Context,
                             }
                         }
             }
+        }
+    }
+
+    fun onBackPressed(): Boolean {
+        if (feedController.mCurrentState == FeedState.OPEN) {
+            return feedController
+                    .onKeyUp(KeyEvent.KEYCODE_BACK,
+                            KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
+        } else {
+            return false
         }
     }
 

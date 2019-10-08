@@ -7,4 +7,5 @@ interface ILauncherOverlayCompanion {
     boolean shouldFadeWorkspaceDuringScroll();
     oneway void restartProcess();
     oneway void attachInterface(ILauncherInterface interfaze);
+    boolean onBackPressed();
 }

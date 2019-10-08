@@ -50,6 +50,7 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -226,6 +227,9 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     }
 
     override fun onBackPressed() {
+        if (overlay?.client?.onBackPressed() == true) {
+            return
+        }
         if (isInState(LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
             // Handled
             return
