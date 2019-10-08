@@ -78,7 +78,10 @@ class GoAdapter(val factories: List<GoCardFactory>) : RecyclerView.Adapter<GoCar
 
 data class GoCard(val viewFactory: (parent: ViewGroup) -> View)
 
-class GoCardViewHolder(val context: Context) : RecyclerView.ViewHolder(MaterialCardView(context)) {
+class GoCardViewHolder(val context: Context) : RecyclerView.ViewHolder(MaterialCardView(context).apply {
+    layoutParams = RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT,
+            RecyclerView.LayoutParams.WRAP_CONTENT)
+}) {
     val cv = itemView as CardView
 
     init {
