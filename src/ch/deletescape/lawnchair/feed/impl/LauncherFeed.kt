@@ -858,6 +858,16 @@ class LauncherFeed(val originalContext: Context,
             }
             updateActions()
         }
+        feedController.isFocusableInTouchMode = true
+        feedController.requestFocus()
+        feedController.setOnKeyListener { v, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_UP &&
+                    keyCode == KeyEvent.KEYCODE_BACK && !providerScreens.isEmpty()) {
+                popScreens()
+                true
+            }
+            false
+        }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
