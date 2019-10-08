@@ -83,7 +83,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     private val appsList = CountRankedArrayPreference(devicePrefs, "recent_app_launches", 250)
     private val phonesList = CountRankedArrayPreference(devicePrefs, "plugged_app_launches", 20)
     private val actionList = CountRankedArrayPreference(devicePrefs, "recent_shortcut_launches", 100)
-    open val isActionsEnabled get() = !(PackageManagerHelper.isAppEnabled(context.packageManager, ACTIONS_PACKAGE, 0) && ActionsController.get(context).actions.size > 0) && prefs.showActions
+    open val isActionsEnabled get() = prefs.showActions
 
     private var actionsCache = listOf<String>()
 
@@ -225,7 +225,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
 
                     val badge = info.shortcutInfo.getBadgePackage(context)
                     actionList.add(actionToString(info.shortcutInfo.id, badge, badge))
-                    val new = actionList.getRanked().take(ActionsController.MAX_ITEMS)
+                    val new = actionList.getRanked().take(MAX_ACTIONS)
                     if (new != actionsCache) {
                         actionsCache = new
                         runOnMainThread {
@@ -326,7 +326,6 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
         }
         runOnUiWorkerThread {
             callback(getFilteredActionList(ArrayList(actionList.getRanked()
-                                                             .take(ActionsController.MAX_ITEMS)
                                                              .mapIndexedNotNull { index, s ->
                                                                  actionFromString(s, index.toLong())
                                                              })))
@@ -446,8 +445,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     }
 
     companion object {
-        const val ACTIONS_PACKAGE = "com.google.android.as"
-
+        const val MAX_ACTIONS = 2
         const val KEY_ID = "id"
         const val KEY_EXPIRATION = "expiration"
         const val KEY_PUBLISHER = "publisher"

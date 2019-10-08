@@ -59,7 +59,11 @@ public class PredictedActionsProvider extends ChipProvider {
                             ((RoundedBitmapDrawable) item.icon).setCornerRadius(
                                     Math.max(it.first.getHeight(), it.first.getWidth()));
                         }
-                        item.title = it.second.getLongLabel().toString();
+                        try {
+                            item.title = it.second.getShortLabel().toString();
+                        } catch (NullPointerException e) {
+                            item.title = "";
+                        }
                         item.click = () -> {
                             try {
                                 ((LauncherApps) context.getSystemService(

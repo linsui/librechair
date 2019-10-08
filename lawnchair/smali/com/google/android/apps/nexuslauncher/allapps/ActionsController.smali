@@ -21,8 +21,6 @@
 # static fields
 .field public static final AIAI_PACKAGE:Ljava/lang/String; = "org.microg.android.apps.dummy"
 
-.field public static final MAX_ITEMS:I = 0x2
-
 .field private static final i:Landroid/net/Uri;
 
 .field private static final j:Landroid/net/Uri;

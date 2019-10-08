@@ -25,6 +25,8 @@ import android.widget.LinearLayout;
 import ch.deletescape.lawnchair.allapps.PredictionsDividerLayout;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.font.FontLoader.FontReceiver;
+import ch.deletescape.lawnchair.predictions.LawnchairEventPredictor;
+
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.Launcher;
@@ -39,6 +41,8 @@ import com.google.android.apps.nexuslauncher.allapps.ActionsController.UpdateLis
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ActionsRowView extends PredictionsDividerLayout implements UpdateListener, LogContainerProvider,
@@ -145,6 +149,8 @@ public class ActionsRowView extends PredictionsDividerLayout implements UpdateLi
     @MainThread
     public void onUpdated(ArrayList<Action> arrayList) {
         this.actions = arrayList;
+        arrayList = new ArrayList<>(arrayList.stream().limit(LawnchairEventPredictor.MAX_ACTIONS).collect(
+                Collectors.toList()));
         int i;
         int min = Math.min(2, arrayList.size());
         if (getChildCount() != min) {
