@@ -251,6 +251,11 @@
             android:key="feed_actions_as_menu"
             android:title="@string/title_pref_feed_actions_as_menu"
             android:summary="@string/summary_pref_feed_actions_as_menu"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_pull_down_to_refresh"
+            android:title="@string/title_pref_feed_pull_down_to_refresh"
+            android:summary="@string/summary_pref_feed_pull_down_to_refresh"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

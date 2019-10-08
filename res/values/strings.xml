@@ -729,4 +729,6 @@
     <string name="title_overlay_failure_loading_route">Failure loading route</string>
     <string name="title_pref_feed_conservative_refreshes">Use conservative refreshes</string>
     <string name="summary_pref_feed_conservative_refreshes">The feed will refresh less frequently</string>
+    <string name="title_pref_feed_pull_down_to_refresh">Pull down to refresh</string>
+    <string name="summary_pref_feed_pull_down_to_refresh">The feed can be refreshed by pulling down</string>
 </resources>

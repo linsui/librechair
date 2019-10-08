@@ -172,7 +172,7 @@ class LauncherFeed(val originalContext: Context,
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
-    private var googleColours = ColorProvider.Companion.inflate(
+    private var tabColours = ColorProvider.Companion.inflate(
             Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
             .getColors(context).toMutableList().also {
                 if (it.isEmpty()) {
@@ -430,6 +430,7 @@ class LauncherFeed(val originalContext: Context,
             }
             widgetContainer.addView(searchWidgetView, 0)
         }
+        swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
         feedController
                 .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                     if (lastOrientation != context.resources.configuration.orientation) {
@@ -527,7 +528,7 @@ class LauncherFeed(val originalContext: Context,
                     .setTint(R.color.textColorPrimaryInverse.fromColorRes(context))
             tabView.tabTextColors = ColorStateList(
                     arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(googleColours[0],
+                    arrayOf(tabColours[0],
                             R.color.textColorPrimaryInverse.fromColorRes(context)).toIntArray())
         } else if (!useWhiteText(backgroundColor, context)) {
             tabView.tabIconTint =
@@ -551,7 +552,7 @@ class LauncherFeed(val originalContext: Context,
                     .setTint(R.color.textColorPrimary.fromColorRes(context))
             tabView.tabTextColors = ColorStateList(
                     arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                    arrayOf(googleColours[0],
+                    arrayOf(tabColours[0],
                             R.color.textColorPrimary.fromColorRes(context)).toIntArray())
         }
         if (!useTabbedMode) {
@@ -646,9 +647,9 @@ class LauncherFeed(val originalContext: Context,
             if (backgroundColor.alpha > 35) {
                 tabView.tabTextColors = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(), intArrayOf()),
-                        arrayOf(googleColours[0],
+                        arrayOf(tabColours[0],
                                 tabView.tabTextColors!!.defaultColor).toIntArray())
-                tabView.setSelectedTabIndicatorColor(googleColours[0])
+                tabView.setSelectedTabIndicatorColor(tabColours[0])
                 tabView.tabIconTint = ColorStateList(
                         arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
                                 arrayOf<Int>().toIntArray()), arrayOf(getColorForIndex(0),
@@ -1186,11 +1187,11 @@ class LauncherFeed(val originalContext: Context,
     }
 
     fun getColorForIndex(index: Int): Int {
-        if (index < googleColours.size) {
-            return googleColours[index]
+        if (index < tabColours.size) {
+            return tabColours[index]
         } else {
-            val first = googleColours[index % googleColours.size]
-            val second = googleColours[googleColours.size - 1 - index % googleColours.size]
+            val first = tabColours[index % tabColours.size]
+            val second = tabColours[tabColours.size - 1 - index % tabColours.size]
             return {
                 val result =
                         if (index % 2 > 0) (first and 0x00F0FF) or (second and 0xFF0F00) else (first and 0xFF00F0) or (second and 0x00FF0F)
@@ -1204,7 +1205,8 @@ class LauncherFeed(val originalContext: Context,
                 clearCache: Boolean = false): Unit = synchronized(this) {
         Thread.sleep(sleep + 150)
         swipeRefreshLayout.post {
-            swipeRefreshLayout.setColorSchemeColors(* googleColours.toIntArray())
+            swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
+            swipeRefreshLayout.setColorSchemeColors(* tabColours.toIntArray())
             swipeRefreshLayout.isRefreshing = true
         }
         runOnMainThread {
