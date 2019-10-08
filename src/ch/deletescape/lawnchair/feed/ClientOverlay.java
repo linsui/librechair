@@ -29,16 +29,22 @@ import android.os.Process;
 import android.os.RemoteException;
 
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.UserEventDispatcher;
+import com.android.launcher3.util.ComponentKey;
+import com.android.launcher3.util.ComponentKeyMapper;
 import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
 import com.android.overlayclient.ServiceMode;
 import com.google.android.apps.nexuslauncher.CustomAppPredictor;
+import com.google.android.apps.nexuslauncher.allapps.ActionsRowView;
+import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.libraries.launcherclient.ILauncherInterface;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,7 +91,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             client.attachInterface(new ILauncherInterface.Stub() {
                 @Override
                 public List<String> getSupportedCalls() throws RemoteException {
-                    return Collections.singletonList(CustomServiceClient.PREDICTIONS_CALL);
+                    return Arrays.asList(CustomServiceClient.PREDICTIONS_CALL,
+                            CustomServiceClient.ACTIONS_CALL);
                 }
 
                 @Override
@@ -101,6 +108,22 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                             Collectors.toList())));
                             return bundle;
                         }
+                    } else if (callName.equals(CustomServiceClient.ACTIONS_CALL)) {
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelableArrayList("retval", new ArrayList<>(
+                                ((PredictionsFloatingHeader) LauncherAppState
+                                        .getInstanceNoCreate()
+                                        .getLauncher()
+                                        .getAppsView()
+                                        .getFloatingHeaderView())
+                                        .getActionsRowView()
+                                        .getActions()
+                                        .stream()
+                                        .map(it -> it.shortcutInfo.getTargetComponent())
+                                        .map(it -> new ComponentKey(it, Process.myUserHandle()))
+                                        .map(ParcelableComponentKeyMapper::new)
+                                        .collect(Collectors.toList())));
+                        return bundle;
                     }
                     Bundle bundle = new Bundle();
                     bundle.putString("err", "e_unsupported");

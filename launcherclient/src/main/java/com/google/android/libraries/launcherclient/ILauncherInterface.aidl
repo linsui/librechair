@@ -4,7 +4,9 @@ interface ILauncherInterface {
     /*
         Calls are expected to adhere to a general standard, and provide several standard faculties:
         std:l3predictions should return a list of predicted apps, or an empty list and err = "e_notsupported"
-        in the returned bundle.
+        in the returned bundle if the action is not supported.
+        std:l3actions should return a list of predicted shortcuts, or an empty list and err = "e_notsupported"
+        if the action is not supported;
 
         The returned value should be named "retval" in the bundle, and shouldn't be null.
         If an error occours, the "err" field should be set in the bundle. A list of standard error codes

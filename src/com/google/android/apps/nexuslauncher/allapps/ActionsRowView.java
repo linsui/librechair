@@ -37,6 +37,7 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.util.Themes;
 import com.google.android.apps.nexuslauncher.allapps.ActionsController.UpdateListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -56,6 +57,7 @@ public class ActionsRowView extends PredictionsDividerLayout implements UpdateLi
     private boolean mShowAllAppsLabel;
     private int mSpacing;
     private Typeface mAllAppsLabelTypeface = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+    private List<Action> actions = Collections.EMPTY_LIST;
 
     public ActionsRowView(@NonNull Context context) {
         this(context, null);
@@ -142,6 +144,7 @@ public class ActionsRowView extends PredictionsDividerLayout implements UpdateLi
 
     @MainThread
     public void onUpdated(ArrayList<Action> arrayList) {
+        this.actions = arrayList;
         int i;
         int min = Math.min(2, arrayList.size());
         if (getChildCount() != min) {
@@ -291,5 +294,9 @@ public class ActionsRowView extends PredictionsDividerLayout implements UpdateLi
     public void onAllAppsLabelColorChanged() {
         setShowAllAppsLabel(mShowAllAppsLabel, true);
         invalidate();
+    }
+
+    public List<Action> getActions() {
+        return actions;
     }
 }

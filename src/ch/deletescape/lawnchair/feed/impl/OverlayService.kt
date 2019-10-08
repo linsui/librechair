@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
+import com.android.overlayclient.CustomOverscrollClient.ACTIONS_CALL
 import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
@@ -110,7 +111,16 @@ class OverlayService : Service(), () -> Unit {
 
             fun getPredictions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
                             PREDICTIONS_CALL) == true) interfaze?.call(
-                    PREDICTIONS_CALL, null)?.apply { classLoader = ParcelableComponentKeyMapper::class.java.classLoader }?.getParcelableArrayList(
+                    PREDICTIONS_CALL, null)?.apply {
+                classLoader = ParcelableComponentKeyMapper::class.java.classLoader
+            }?.getParcelableArrayList(
+                    "retval") ?: emptyList() else emptyList()
+
+            fun getActions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+                            ACTIONS_CALL) == true) interfaze?.call(
+                    ACTIONS_CALL, null)?.apply {
+                classLoader = ParcelableComponentKeyMapper::class.java.classLoader
+            }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
         }
     }
