@@ -68,11 +68,7 @@ class LawnchairApp : Application(), () -> Unit {
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
     val feedController by lazy { getFeedController(this) }
-    val gsb4j by lazy {
-        Gsb4j.bootstrap(Properties().apply {
-            put("api.key", WebSafety.GSB_API_KEY)
-        })
-    }
+    lateinit var gsb4j: Gsb4j
 
     lateinit var overlayWidgetHost: OverlayWidgetHost
 
@@ -82,6 +78,10 @@ class LawnchairApp : Application(), () -> Unit {
 
     override fun onCreate() {
         super.onCreate()
+        gsb4j = Gsb4j.bootstrap(Properties().apply {
+            put("api.key", WebSafety.GSB_API_KEY)
+            put("data.dir", cacheDir.absolutePath)
+        })
         localizationContext = this
         ch.deletescape.lawnchair.location.LocationManager.location
         d("Current process: " + getCurrentProcessName(this))
