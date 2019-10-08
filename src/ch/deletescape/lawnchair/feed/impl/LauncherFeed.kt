@@ -347,6 +347,10 @@ class LauncherFeed(val originalContext: Context,
             cP.addView(chips, 0)
         }
 
+        if (!context.lawnchairPrefs.feedShowInfobox) {
+            (infobox.parent as View).visibility = View.GONE
+        }
+
         chips.isNestedScrollingEnabled = true
         chips.setOnTouchListener { v, event ->
             feedController.disallowInterceptCurrentTouchEvent = true
