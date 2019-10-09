@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.calendar
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -105,7 +106,11 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                     title = "${eventCursor.getString(0)} ($text)"
                     icon = R.drawable.ic_event_black_24dp.fromDrawableRes(context)
                     click = Runnable {
-                        context.startActivity(intent)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            e.printStackTrace()
+                        }
                     }
                 }
                 eventCursor.moveToNext()
