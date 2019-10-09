@@ -403,6 +403,7 @@
         <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
             android:defaultValue="true"
             android:key="feed_gecko"
+            android:enabled="@bool/geckoview_available"
             android:title="@string/title_pref_feed_gecko"
             android:summary="@string/summary_pref_feed_gecko"/>
         <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat

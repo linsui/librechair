@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
+import com.android.launcher3.BuildConfig;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
@@ -55,7 +56,7 @@ public class WebViewScreen extends ProviderScreen {
     }
 
     public static WebViewScreen obtain(Context base, String uri) {
-        return !FeedPersistenceKt.getFeedPrefs(base).getUseGecko() ? new WebViewScreen(base,
+        return !(FeedPersistenceKt.getFeedPrefs(base).getUseGecko() && BuildConfig.GECKO) ? new WebViewScreen(base,
                 uri) : new GeckoScreen(base, uri);
     }
 

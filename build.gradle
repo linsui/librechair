@@ -190,7 +190,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    flavorDimensions "default", "custom", "go", "build"
+    flavorDimensions "default", "custom", "go", "build", "gecko"
 
     productFlavors {
         aosp {
@@ -241,6 +241,18 @@ android {
             applicationIdSuffix ".plah"
 
             buildConfigField "boolean", "SIGNATURE_VERIFICATION", "true"
+        }
+
+        withGecko {
+            dimension "gecko"
+
+            buildConfigField "boolean", "GECKO", "true"
+        }
+
+        withWebView {
+            dimension "gecko"
+
+            buildConfigField "boolean", "GECKO", "false"
         }
     }
 
@@ -304,6 +316,10 @@ android {
             res.srcDirs = ['lawnchair/res']
             java.srcDirs = ['lawnchair/src']
             manifest.srcFile "lawnchair/AndroidManifest.xml"
+        }
+
+        withWebView {
+            res.srcDirs = ['webview/res']
         }
     }
 
@@ -392,7 +408,8 @@ dependencies {
 
     implementation 'me.xdrop:fuzzywuzzy:1.2.0'
 
-    implementation "org.mozilla.geckoview:geckoview-${geckoviewChannel}:${geckoviewVersion}"
+    withGeckoImplementation "org.mozilla.geckoview:geckoview-${geckoviewChannel}:${geckoviewVersion}"
+    withWebViewCompileOnly "org.mozilla.geckoview:geckoview-${geckoviewChannel}:${geckoviewVersion}"
 
     quickstepImplementation project(':systemui-shared')
     l3goImplementation project(':systemui-shared')

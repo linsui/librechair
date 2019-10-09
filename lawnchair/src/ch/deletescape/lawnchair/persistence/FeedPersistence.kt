@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.persistence
 import android.content.Context
 import ch.deletescape.lawnchair.feed.maps.MapProvider
 import ch.deletescape.lawnchair.util.SingletonHolder
+import com.android.launcher3.BuildConfig
 
 class FeedPersistence private constructor(val context: Context) {
     val useBackgroundImageAsScreenBackground
@@ -44,7 +45,7 @@ class FeedPersistence private constructor(val context: Context) {
     val pullDownToRefresh
             by BooleanDelegate(context, "feed_pull_down_to_refresh", true)
     val useGecko
-            by BooleanDelegate(context, "feed_gecko", true)
+            by BooleanDelegate(context, "feed_gecko", BuildConfig.GECKO)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
