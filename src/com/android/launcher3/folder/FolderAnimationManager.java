@@ -35,7 +35,7 @@ import androidx.core.graphics.ColorUtils;
 import android.util.Property;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import ch.deletescape.lawnchair.folder.FolderShape;
+import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.Launcher;
@@ -193,7 +193,7 @@ public class FolderAnimationManager {
         play(a, getAnimator(mFolder, SCALE_PROPERTY, initialScale, finalScale));
         play(a, getAnimator(mFolderBackground, "color", initialColor, finalColor));
         play(a, mFolderIcon.mFolderName.createTextAlphaAnimator(!mIsOpening));
-        play(a, FolderShape.sInstance.createRevealAnimator(mFolder, startRect, endRect, finalRadius, !mIsOpening));
+        play(a, IconShape.getShape().createRevealAnimator(mFolder, startRect, endRect, finalRadius, !mIsOpening));
 
         // Animate the elevation midway so that the shadow is not noticeable in the background.
         int midDuration = mDuration / 2;

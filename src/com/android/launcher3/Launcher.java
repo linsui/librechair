@@ -16,6 +16,16 @@
 
 package com.android.launcher3;
 
+import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
+import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
+import static com.android.launcher3.AbstractFloatingView.TYPE_SNACKBAR;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_LAUNCHER_LOAD;
+import static com.android.launcher3.logging.LoggerUtils.newContainerTarget;
+import static com.android.launcher3.logging.LoggerUtils.newTarget;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -29,6 +39,7 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
@@ -37,6 +48,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +74,11 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import ch.deletescape.lawnchair.*;
+import ch.deletescape.lawnchair.blur.BlurWallpaperProvider;
+import ch.deletescape.lawnchair.bugreport.BugReport;
+import ch.deletescape.lawnchair.bugreport.BugReportClient;
+import ch.deletescape.lawnchair.theme.ThemeOverride;
 import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.LauncherStateManager.StateListener;
 import com.android.launcher3.Workspace.ItemOperator;
@@ -138,15 +155,6 @@ import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.feed.ClientOverlay;
 
-import static android.content.pm.ActivityInfo.CONFIG_ORIENTATION;
-import static android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE;
-import static com.android.launcher3.AbstractFloatingView.TYPE_SNACKBAR;
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_LAUNCHER_LOAD;
-import static com.android.launcher3.logging.LoggerUtils.newContainerTarget;
-import static com.android.launcher3.logging.LoggerUtils.newTarget;
 
 /**
  * Default launcher application.
@@ -196,17 +204,14 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     // How long to wait before the new-shortcut animation automatically pans the workspace
     private static final int NEW_APPS_PAGE_MOVE_DELAY = 500;
     private static final int NEW_APPS_ANIMATION_INACTIVE_TIMEOUT_SECONDS = 5;
-    @Thunk
-    static final int NEW_APPS_ANIMATION_DELAY = 500;
+    @Thunk static final int NEW_APPS_ANIMATION_DELAY = 500;
 
     private LauncherAppTransitionManager mAppTransitionManager;
     private Configuration mOldConfig;
 
-    @Thunk
-    Workspace mWorkspace;
+    @Thunk Workspace mWorkspace;
     private View mLauncherView;
-    @Thunk
-    DragLayer mDragLayer;
+    @Thunk DragLayer mDragLayer;
     private DragController mDragController;
     private View mQsbContainer;
 
@@ -215,23 +220,19 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     private final int[] mTmpAddItemCellCoordinates = new int[2];
 
-    @Thunk
-    Hotseat mHotseat;
-    @Nullable
-    private View mHotseatSearchBox;
+    @Thunk Hotseat mHotseat;
+    @Nullable private View mHotseatSearchBox;
 
     private DropTargetBar mDropTargetBar;
 
     // Main container view for the all apps screen.
-    @Thunk
-    AllAppsContainerView mAppsView;
+    @Thunk AllAppsContainerView mAppsView;
     public AllAppsTransitionController mAllAppsController;
 
     // UI and state for the overview panel
     private View mOverviewPanel;
 
-    @Thunk
-    boolean mWorkspaceLoading = true;
+    @Thunk boolean mWorkspaceLoading = true;
 
     private OnResumeCallback mOnResumeCallback;
 
@@ -253,8 +254,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     // Activity result which needs to be processed after workspace has loaded.
     private ActivityResultInfo mPendingActivityResult;
     /**
-     * Holds extra information required to handle a result from an external call, like {@link
-     * #startActivityForResult(Intent, int)} or {@link #requestPermissions(String[], int)}
+     * Holds extra information required to handle a result from an external call, like
+     * {@link #startActivityForResult(Intent, int)} or {@link #requestPermissions(String[], int)}
      */
     private PendingRequestArgs mPendingRequestArgs;
 
@@ -515,8 +516,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     /**
-     * Returns whether we should delay spring loaded mode -- for shortcuts and widgets that have a
-     * configuration step, this allows the proper animations to run after other transitions.
+     * Returns whether we should delay spring loaded mode -- for shortcuts and widgets that have
+     * a configuration step, this allows the proper animations to run after other transitions.
      */
     private long completeAdd(
             int requestCode, Intent intent, int appWidgetId, PendingRequestArgs info) {
@@ -737,8 +738,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
     }
 
-    @Thunk
-    void completeTwoStageWidgetDrop(
+    @Thunk void completeTwoStageWidgetDrop(
             final int resultCode, final int appWidgetId, final PendingRequestArgs requestArgs) {
         CellLayout cellLayout = mWorkspace.getScreenWithId(requestArgs.screenId);
         Runnable onCompleteRunnable = null;
@@ -876,8 +876,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         void onScrollInteractionEnd();
 
         /**
-         * Scroll progress, between 0 and 100, when the user scrolls beyond the leftmost screen (or
-         * in the case of RTL, the rightmost screen).
+         * Scroll progress, between 0 and 100, when the user scrolls beyond the leftmost
+         * screen (or in the case of RTL, the rightmost screen).
          */
         void onScrollChange(float progress, boolean rtl);
 
@@ -2272,7 +2272,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      *
      * Implementation of the method from LauncherModel.Callbacks.
      */
-    public void finishBindingItems(int currentScreen) {
+    public void finishBindingItems(int pageBoundFirst) {
         TraceHelper.beginSection("finishBindingItems");
         mWorkspace.restoreInstanceStateForRemainingPages();
 
@@ -2287,7 +2287,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         InstallShortcutReceiver.disableAndFlushInstallQueue(
                 InstallShortcutReceiver.FLAG_LOADER_RUNNING, this);
 
-        mWorkspace.setCurrentPage(currentScreen);
+        // When undoing the removal of the last item on a page, return to that page.
+        mWorkspace.setCurrentPage(pageBoundFirst);
 
         TraceHelper.endSection("finishBindingItems");
     }

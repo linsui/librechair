@@ -82,6 +82,7 @@ public class UiFactory {
         } else {
             return new TouchController[] {
                     launcher.getDragController(),
+                    new NavBarToHomeTouchController(launcher),
                     new PinchStateChangeTouchController(launcher),
                     new VerticalSwipeGestureController(launcher),
                     new PortraitStatesTouchController(launcher),

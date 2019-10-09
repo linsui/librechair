@@ -28,12 +28,14 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RadialGradient;
+import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.Shader;
 import androidx.core.graphics.ColorUtils;
 import android.util.Property;
 import android.view.View;
-import ch.deletescape.lawnchair.folder.FolderShape;
+
+import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.Launcher;
@@ -83,8 +85,8 @@ public class PreviewBackground {
     public int delegateCellX;
     public int delegateCellY;
 
-    // When the PreviewBackground is drawn under an iconView (for creating a folder) the border
-    // should not occlude the iconView
+    // When the PreviewBackground is drawn under an icon (for creating a folder) the border
+    // should not occlude the icon
     public boolean isClipping = true;
 
     // Drawing / animation configurations
@@ -164,6 +166,14 @@ public class PreviewBackground {
         invalidate();
     }
 
+    void getBounds(Rect outBounds) {
+        int top = basePreviewOffsetY;
+        int left = basePreviewOffsetX;
+        int right = left + previewSize;
+        int bottom = top + previewSize;
+        outBounds.set(left, top, right, bottom);
+    }
+
     int getRadius() {
         return previewSize / 2;
     }
@@ -220,7 +230,7 @@ public class PreviewBackground {
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(getBgColor());
 
-        FolderShape.sInstance.drawShape(canvas, getOffsetX(), getOffsetY(), getScaledRadius(), mPaint);
+        IconShape.getShape().drawShape(canvas, getOffsetX(), getOffsetY(), getScaledRadius(), mPaint);
 
         drawShadow(canvas);
     }
@@ -256,7 +266,7 @@ public class PreviewBackground {
         mPaint.setShader(null);
         if (canvas.isHardwareAccelerated()) {
             mPaint.setXfermode(mShadowPorterDuffXfermode);
-            FolderShape.sInstance.drawShape(canvas, offsetX, offsetY, getScaledRadius(), mPaint);
+            IconShape.getShape().drawShape(canvas, offsetX, offsetY, getScaledRadius(), mPaint);
             mPaint.setXfermode(null);
         }
 
@@ -299,7 +309,7 @@ public class PreviewBackground {
         mPaint.setColor(ColorUtils.setAlphaComponent(mBgColor, mStrokeAlpha));
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mStrokeWidth);
-        FolderShape.sInstance.drawShape(canvas, getOffsetX() + 1, getOffsetY() + 1, getScaledRadius() - 1, mPaint);
+        IconShape.getShape().drawShape(canvas, getOffsetX() + 1, getOffsetY() + 1, getScaledRadius() - 1, mPaint);
     }
 
     public void drawLeaveBehind(Canvas canvas) {
@@ -308,7 +318,7 @@ public class PreviewBackground {
 
         mPaint.setStyle(Paint.Style.FILL);
         mPaint.setColor(Color.argb(160, 245, 245, 245));
-        FolderShape.sInstance.drawShape(canvas, getOffsetX(), getOffsetY(), getScaledRadius(), mPaint);
+        IconShape.getShape().drawShape(canvas, getOffsetX(), getOffsetY(), getScaledRadius(), mPaint);
 
         mScale = originalScale;
     }
@@ -321,7 +331,7 @@ public class PreviewBackground {
 
     public Path getClipPath() {
         mPath.reset();
-        FolderShape.sInstance.addShape(mPath, getOffsetX(), getOffsetY(), getScaledRadius());
+        IconShape.getShape().addToPath(mPath, getOffsetX(), getOffsetY(), getScaledRadius());
         return mPath;
     }
 

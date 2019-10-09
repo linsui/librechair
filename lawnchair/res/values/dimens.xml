@@ -66,6 +66,12 @@
     <dimen name="qsb_radius_squircle">16dp</dimen>
     <dimen name="hotseat_navbar_padding">24dp</dimen>
 
+    <!-- Smartspace dimens -->
+    <dimen name="smartspaceAmbientShadowBlur">1.5dp</dimen>
+    <dimen name="smartspaceKeyShadowBlur">2dp</dimen>
+    <dimen name="smartspaceKeyShadowOffset">0.5dp</dimen>
+    <dimen name="smartspaceLetterSpacing">0.02</dimen>
+
     <!-- Margin on the right side of the system icon group on Keyguard. -->
     <fraction name="battery_button_height_fraction">10.5%</fraction>
     <!-- Ratio between height of button part and height of total -->

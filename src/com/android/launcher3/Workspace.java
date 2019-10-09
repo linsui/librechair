@@ -16,12 +16,18 @@
 
 package com.android.launcher3;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.LayoutTransition;
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.animation.ValueAnimator;
+import static com.android.launcher3.LauncherAnimUtils.OVERVIEW_TRANSITION_MS;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
+import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
+import static com.android.launcher3.LauncherSettings.BaseLauncherColumns.ITEM_TYPE_APPLICATION;
+import static com.android.launcher3.LauncherSettings.BaseLauncherColumns.ITEM_TYPE_SHORTCUT;
+import static com.android.launcher3.LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT;
+import static com.android.launcher3.LauncherState.ALL_APPS;
+import static com.android.launcher3.LauncherState.NORMAL;
+import static com.android.launcher3.LauncherState.SPRING_LOADED;
+import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_OVERLAY;
+
+import android.animation.*;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 import android.app.WallpaperManager;
@@ -38,6 +44,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Parcelable;
 import android.os.UserHandle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
@@ -49,6 +56,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
+import ch.deletescape.lawnchair.ClockVisibilityManager;
+import ch.deletescape.lawnchair.LawnchairLauncher;
+import ch.deletescape.lawnchair.views.LawnchairBackgroundView;
 import com.android.launcher3.Launcher.LauncherOverlay;
 import com.android.launcher3.LauncherAppWidgetHost.ProviderChangedListener;
 import com.android.launcher3.LauncherStateManager.AnimationConfig;
@@ -56,11 +66,13 @@ import com.android.launcher3.accessibility.AccessibleDragListenerAdapter;
 import com.android.launcher3.accessibility.WorkspaceAccessibilityHelper;
 import com.android.launcher3.anim.AnimatorSetBuilder;
 import com.android.launcher3.anim.Interpolators;
+import com.android.launcher3.badge.FolderBadgeInfo;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.dragndrop.DragController;
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
+import com.android.launcher3.dragndrop.DragOptions.PreDragCondition;
 import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.dragndrop.SpringLoadedDragController;
 import com.android.launcher3.folder.Folder;
@@ -71,6 +83,7 @@ import com.android.launcher3.graphics.PreloadIconDrawable;
 import com.android.launcher3.pageindicators.WorkspacePageIndicator;
 import com.android.launcher3.popup.PopupContainerWithArrow;
 import com.android.launcher3.shortcuts.ShortcutDragPreviewProvider;
+import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.touch.ItemLongClickListener;
 import com.android.launcher3.touch.WorkspaceTouchListener;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Action;
@@ -78,6 +91,7 @@ import com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
 import com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LongArrayMap;
+import com.android.launcher3.util.MultiStateAlphaController;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.util.WallpaperOffsetInterpolator;
@@ -87,19 +101,9 @@ import com.android.launcher3.widget.PendingAddWidgetInfo;
 import com.android.launcher3.widget.PendingAppWidgetHostView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import ch.deletescape.lawnchair.ClockVisibilityManager;
-import ch.deletescape.lawnchair.LawnchairLauncher;
-
-import static com.android.launcher3.LauncherAnimUtils.OVERVIEW_TRANSITION_MS;
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
-import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_TRANSITION_MS;
-import static com.android.launcher3.LauncherState.ALL_APPS;
-import static com.android.launcher3.LauncherState.NORMAL;
-import static com.android.launcher3.LauncherState.SPRING_LOADED;
-import static com.android.launcher3.dragndrop.DragLayer.ALPHA_INDEX_OVERLAY;
 
 /**
  * The workspace is a wide area with a wallpaper and a finite number of pages.
@@ -1207,7 +1211,6 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
     @Override
     protected void overScroll(int amount) {
-        Log.d(getClass().getCanonicalName(), "overScroll: " + amount);
         boolean inOptionsState = mLauncher.isInState(LauncherState.OPTIONS);
         boolean shouldScrollOverlay = mLauncherOverlay != null &&
                 ((amount <= 0 && !mIsRtl) || (amount >= 0 && mIsRtl)) && !inOptionsState;
@@ -1865,9 +1868,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
 
         boolean aboveShortcut = (dropOverView.getTag() instanceof ShortcutInfo);
         boolean willBecomeShortcut =
-                (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION ||
-                        info.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT ||
-                        info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT);
+                (info.itemType == ITEM_TYPE_APPLICATION ||
+                        info.itemType == ITEM_TYPE_SHORTCUT ||
+                        info.itemType == ITEM_TYPE_DEEP_SHORTCUT);
 
         return (aboveShortcut && willBecomeShortcut);
     }
@@ -1938,7 +1941,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             boolean animate = dragView != null;
             if (animate) {
                 // In order to keep everything continuous, we hand off the currently rendered
-                // folder background to the newly created iconView. This preserves animation state.
+                // folder background to the newly created icon. This preserves animation state.
                 fi.setFolderBackground(mFolderCreateBg);
                 mFolderCreateBg = new PreviewBackground();
                 fi.performCreateAnimation(destInfo, v, sourceInfo, dragView, folderLocation, scale
@@ -2049,7 +2052,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
                 droppedOnOriginalCellDuringTransition = droppedOnOriginalCell && mIsSwitchingState;
 
                 // When quickly moving an item, a user may accidentally rearrange their
-                // workspace. So instead we move the iconView back safely to its original position.
+                // workspace. So instead we move the icon back safely to its original position.
                 boolean returnToOriginalCellToPreventShuffling = !isFinishedSwitchingState()
                         && !droppedOnOriginalCellDuringTransition && !dropTargetLayout
                         .isRegionVacant(mTargetCell[0], mTargetCell[1], spanX, spanY);
@@ -2140,7 +2143,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             if (d.dragView.hasDrawn()) {
                 if (droppedOnOriginalCellDuringTransition) {
                     // Animate the item to its original position, while simultaneously exiting
-                    // spring-loaded mode so the page meets the iconView where it was picked up.
+                    // spring-loaded mode so the page meets the icon where it was picked up.
                     mLauncher.getDragController().animateDragViewToOriginalPosition(
                             onCompleteRunnable, cell, SPRING_LOADED_TRANSITION_MS);
                     mLauncher.getStateManager().goToState(NORMAL);
@@ -2599,7 +2602,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             BubbleTextView cell = (BubbleTextView) layout.getChildAt(cellX, cellY);
             bg.setup(mLauncher, null, cell.getMeasuredWidth(), cell.getPaddingTop());
 
-            // The full preview background should appear behind the iconView
+            // The full preview background should appear behind the icon
             bg.isClipping = false;
         }
 
@@ -2698,7 +2701,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             final PendingAddItemInfo pendingInfo = (PendingAddItemInfo) info;
 
             boolean findNearestVacantCell = true;
-            if (pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT) {
+            if (pendingInfo.itemType == ITEM_TYPE_SHORTCUT) {
                 mTargetCell = findNearestArea(touchXY[0], touchXY[1], spanX, spanY,
                         cellLayout, mTargetCell);
                 float distance = cellLayout.getDistanceFromCell(mDragViewVisualCenter[0],
@@ -2770,9 +2773,9 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             View view;
 
             switch (info.itemType) {
-            case LauncherSettings.Favorites.ITEM_TYPE_APPLICATION:
-            case LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT:
-            case LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT:
+            case ITEM_TYPE_APPLICATION:
+            case ITEM_TYPE_SHORTCUT:
+            case ITEM_TYPE_DEEP_SHORTCUT:
                 if (info.container == NO_ID) {
                     // Came from all apps -- make a copy
                     if (info instanceof AppInfo) {
@@ -3037,7 +3040,7 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             parentCell.removeView(v);
         } else if (FeatureFlags.IS_DOGFOOD_BUILD) {
             // When an app is uninstalled using the drop target, we wait until resume to remove
-            // the iconView. We also remove all the corresponding items from the workspace at
+            // the icon. We also remove all the corresponding items from the workspace at
             // {@link Launcher#bindComponentsRemoved}. That call can come before or after
             // {@link Launcher#mOnResumeCallbacks} depending on how busy the worker thread is.
             Log.e(TAG, "mDragInfo.cell has null parent");
@@ -3164,6 +3167,42 @@ public class Workspace extends PagedView<WorkspacePageIndicator>
             childrenLayouts.add(mLauncher.getHotseat().getLayout().getShortcutsAndWidgets());
         }
         return childrenLayouts;
+    }
+
+    /**
+     * Similar to {@link #getFirstMatch} but optimized to finding a suitable view for the app close
+     * animation.
+     *
+     * @param packageName The package name of the app to match.
+     * @param user The user of the app to match.
+     */
+    public View getFirstMatchForAppClose(String packageName, UserHandle user) {
+        final int curPage = getCurrentPage();
+        final CellLayout currentPage = (CellLayout) getPageAt(curPage);
+        final Workspace.ItemOperator packageAndUser = (ItemInfo info, View view) -> info != null
+                && info.getTargetComponent() != null
+                && TextUtils.equals(info.getTargetComponent().getPackageName(), packageName)
+                && info.user.equals(user);
+        final Workspace.ItemOperator packageAndUserAndApp = (ItemInfo info, View view) ->
+                packageAndUser.evaluate(info, view) && info.itemType == ITEM_TYPE_APPLICATION;
+        final Workspace.ItemOperator packageAndUserAndShortcut = (ItemInfo info, View view) ->
+                packageAndUser.evaluate(info, view) && (info.itemType == ITEM_TYPE_SHORTCUT
+                        || info.itemType == ITEM_TYPE_DEEP_SHORTCUT);
+        final Workspace.ItemOperator packageAndUserInFolder = (info, view) -> {
+            if (info instanceof FolderInfo) {
+                FolderInfo folderInfo = (FolderInfo) info;
+                for (ShortcutInfo shortcutInfo : folderInfo.contents) {
+                    if (packageAndUser.evaluate(shortcutInfo, view)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        };
+
+        // Order: App icons, shortcuts, app/shortcut in folder. Items in hotseat get returned first.
+        return getFirstMatch((info, item) -> Arrays.asList(mLauncher.getHotseat().getLayout(), currentPage).contains(item) &&
+                packageAndUserAndApp.evaluate(info, item) && packageAndUserAndShortcut.evaluate(info, item));
     }
 
     public View getHomescreenIconByItemId(final long id) {

@@ -28,8 +28,8 @@ import android.graphics.RegionIterator
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.os.Handler
 import android.text.TextUtils
+import com.android.launcher3.graphics.IconShape as L3IconShape
 import androidx.core.graphics.PathParser
-import ch.deletescape.lawnchair.folder.FolderShape
 import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnMainThread
@@ -38,6 +38,7 @@ import com.android.launcher3.LauncherAppState
 import com.android.launcher3.LauncherModel
 import com.android.launcher3.Utilities
 import com.android.launcher3.graphics.IconShapeOverride
+import java.lang.RuntimeException
 
 class IconShapeManager(private val context: Context) {
 
@@ -117,7 +118,7 @@ class IconShapeManager(private val context: Context) {
 
             runOnMainThread {
                 AdaptiveIconCompat.resetMask()
-                FolderShape.init(context)
+                L3IconShape.init(context)
                 context.lawnchairPrefs.recreate()
             }
         }

@@ -258,10 +258,10 @@
     <!-- Accessibility confirmation for item added to workspace. -->
     <string name="item_added_to_workspace">Item added to home screen</string>
 
-    <!-- Accessibility confirmation for item removed. [CHAR_LIMIT=50]-->
+    <!-- Accessibility confirmation for item removed. -->
     <string name="item_removed">Item removed</string>
 
-    <!-- Action shown in snackbar to undo item removal. [CHAR_LIMIT=15] -->
+    <!-- Action shown in snackbar to undo item removal. [CHAR_LIMIT=20] -->
     <string name="undo">Undo</string>
 
     <!-- Accessibility action to move an item on the workspace. [CHAR_LIMIT=30] -->
@@ -623,7 +623,7 @@
 
     <string name="title_pref_feed_search_url_template">Search URL</string>
     <string name="title_image_provider_apod">NASA APOD</string>
-    
+
     <string name="title_pref_feed_display_back_to_top_button">Display back to top button</string>
     <string name="summary_pref_feed_display_back_to_top_button">A back to top button will be displayed when scrolling down</string>
     <string name="title_pref_feed_custom_background">Custom background</string>

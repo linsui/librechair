@@ -15,28 +15,31 @@
  */
 package com.android.launcher3.graphics;
 
-import static com.android.launcher3.Utilities.getDevicePrefs;
-import static com.android.launcher3.Utilities.getPrefs;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import android.text.TextUtils;
-import android.util.Log;
-import ch.deletescape.lawnchair.folder.FolderShape;
-import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
+
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.util.LooperExecutor;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
+
+import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
+
+import static com.android.launcher3.Utilities.getDevicePrefs;
+import static com.android.launcher3.Utilities.getPrefs;
 
 /**
  * Utility class to override shape of {@link android.graphics.drawable.AdaptiveIconDrawable}.
@@ -224,7 +227,7 @@ public class IconShapeOverride {
 
             mHandler.post(() -> {
                 AdaptiveIconCompat.resetMask();
-                FolderShape.init(mContext);
+                IconShape.init(mContext);
                 Utilities.getLawnchairPrefs(mContext).getRecreate().invoke();
             });
 

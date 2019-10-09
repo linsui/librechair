@@ -173,8 +173,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    override fun finishBindingItems(page: Int) {
-        super.finishBindingItems(page)
+    override fun finishBindingItems(currentScreen: Int) {
+        super.finishBindingItems(currentScreen)
         Utilities.onLauncherStart()
     }
 
@@ -424,8 +424,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
             findViewById<LauncherRootView>(R.id.launcher).setHideContent(true)
         }
 
-        override fun finishBindingItems(page: Int) {
-            super.finishBindingItems(page)
+        override fun finishBindingItems(currentScreen: Int) {
+            super.finishBindingItems(currentScreen)
 
             findViewById<LauncherRootView>(R.id.launcher).post(::takeScreenshot)
         }

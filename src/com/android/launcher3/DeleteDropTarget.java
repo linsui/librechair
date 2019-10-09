@@ -113,6 +113,7 @@ public class DeleteDropTarget extends ButtonDropTarget {
     public void completeDrop(DragObject d) {
         ItemInfo item = d.dragInfo;
         if (canRemove(item)) {
+            int itemPage = mLauncher.getWorkspace().getCurrentPage();
             onAccessibilityDrop(null, item);
             ModelWriter modelWriter = mLauncher.getModelWriter();
             Snackbar.show(mLauncher, R.string.item_removed, R.string.undo,

@@ -442,6 +442,7 @@ class LawnchairPreferences(val context: Context) :
     val overrideLocale by StringPref("pref_override_locale", "", ::restartOverlay)
     val forceFakePieAnims by BooleanPref("pref_forceFakePieAnims", false)
     val displayDebugOverlay by BooleanPref("pref_debugDisplayState", false)
+    val swipeHome by BooleanPref("pref_swipeHome", false, recreate)
 
     // Search
     var searchProvider by StringPref("pref_globalSearchProvider",
@@ -1286,7 +1287,7 @@ class LawnchairPreferences(val context: Context) :
         putString("pref_icon_pack", prefs.getString("pref_iconPackPackage", ""))
 
         // Gestures
-        putString("pref_gesture_swipe_down", when (prefs.getInt("pref_pulldownAction", 1)) {
+        putString("pref_gesture_swipe_down", when (Integer.parseInt(prefs.getString("pref_pulldownAction", "1"))) {
             1 -> NotificationsOpenGestureHandler(context, null)
             2 -> StartGlobalSearchGestureHandler(context, null)
             3 -> StartAppSearchGestureHandler(context, null)

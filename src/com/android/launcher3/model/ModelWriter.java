@@ -22,11 +22,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import ch.deletescape.lawnchair.iconpack.IconPackManager;
+
 import com.android.launcher3.FolderInfo;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
@@ -39,15 +38,18 @@ import com.android.launcher3.LauncherSettings;
 import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.ShortcutInfo;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LooperExecutor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import ch.deletescape.lawnchair.iconpack.IconPackManager;
 
 /**
  * Class for handling model updates.
@@ -292,18 +294,16 @@ public class ModelWriter {
      * Removes the specified items from the database
      */
     public void deleteItemsFromDatabase(final Iterable<? extends ItemInfo> items) {
+        ModelVerifier verifier = new ModelVerifier();
+
         enqueueDeleteRunnable(() -> {
-            ModelVerifier verifier = new ModelVerifier();
+            for (ItemInfo item : items) {
+                final Uri uri = Favorites.getContentUri(item.id);
+                mContext.getContentResolver().delete(uri, null, null);
 
-            enqueueDeleteRunnable(() -> {
-                for (ItemInfo item : items) {
-                    final Uri uri = Favorites.getContentUri(item.id);
-                    mContext.getContentResolver().delete(uri, null, null);
-
-                    mBgDataModel.removeItem(mContext, item);
-                    verifier.verifyModel();
-                }
-            });
+                mBgDataModel.removeItem(mContext, item);
+                verifier.verifyModel();
+            }
         });
     }
 

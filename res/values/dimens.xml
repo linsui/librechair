@@ -46,6 +46,8 @@
     <dimen name="dynamic_grid_hotseat_side_padding">0dp</dimen>
 
     <!-- Hotseat/all-apps scrim -->
+    <dimen name="all_apps_scrim_radius">8dp</dimen>
+    <dimen name="all_apps_scrim_margin">8dp</dimen>
     <dimen name="all_apps_scrim_blur">4dp</dimen>
     <dimen name="vertical_drag_handle_size">24dp</dimen>
     <dimen name="vertical_drag_handle_overlap_workspace">0dp</dimen>
@@ -138,7 +140,7 @@
     <dimen name="drop_target_text_size">14sp</dimen>
     <dimen name="drop_target_shadow_elevation">2dp</dimen>
 
-    <!-- the distance an iconView must be dragged before button drop targets accept it -->
+    <!-- the distance an icon must be dragged before button drop targets accept it -->
     <dimen name="drag_distanceThreshold">30dp</dimen>
 
     <!-- Elevation for the drag view. It should be larger than elevation of all other drag sources
@@ -180,7 +182,7 @@
     <dimen name="bg_popup_item_height">56dp</dimen>
     <dimen name="bg_popup_item_condensed_height">48dp</dimen>
     <dimen name="pre_drag_view_scale">6dp</dimen>
-    <!-- an iconView with shortcuts must be dragged this far before the container is removed. -->
+    <!-- an icon with shortcuts must be dragged this far before the container is removed. -->
     <dimen name="deep_shortcuts_start_drag_threshold">16dp</dimen>
     <dimen name="deep_shortcut_icon_size">36dp</dimen>
     <dimen name="deep_shortcut_drawable_padding">8dp</dimen>
@@ -225,7 +227,7 @@
     <dimen name="notification_main_text_size">14sp</dimen>
     <dimen name="notification_icon_size">24dp</dimen>
     <dimen name="notification_footer_icon_size">18dp</dimen>
-    <!-- notification_icon_size + notification_padding_end + 16dp padding between iconView and text -->
+    <!-- notification_icon_size + notification_padding_end + 16dp padding between icon and text -->
     <dimen name="notification_main_text_padding_end">52dp</dimen>
     <dimen name="horizontal_ellipsis_size">18dp</dimen>
     <!-- arrow_horizontal_offset_start - (ellipsis_size - arrow_width) / 2 -->
@@ -289,11 +291,6 @@
     <dimen name="options_menu_icon_size">48dp</dimen>
     <dimen name="options_menu_thumb_size">32dp</dimen>
 
-<!-- Snackbar -->
-    <dimen name="snackbar_height">48dp</dimen>
-    <dimen name="snackbar_content_height">32dp</dimen>
-    <dimen name="snackbar_padding">8dp</dimen>
-    <dimen name="snackbar_margin">16dp</dimen>
 <!-- Goolag -->
     <dimen name="qsb_doodle_tap_target_logo_width">106dp</dimen>
     <dimen name="qsb_mic_width">56dp</dimen>
@@ -322,4 +319,15 @@
     <dimen name="feed_app_bar_bottom_padding">16dp</dimen>
     <dimen name="overlay_view_margin">8dp</dimen>
     <dimen name="height_rss_feed_card_image">360dp</dimen>
+
+<!-- Snackbar -->
+    <dimen name="snackbar_height">48dp</dimen>
+    <dimen name="snackbar_content_height">32dp</dimen>
+    <dimen name="snackbar_padding">8dp</dimen>
+    <dimen name="snackbar_min_margin_left_right">6dp</dimen>
+    <dimen name="snackbar_max_margin_left_right">72dp</dimen>
+    <dimen name="snackbar_margin_bottom">30dp</dimen>
+    <dimen name="snackbar_elevation">3dp</dimen>
+    <dimen name="snackbar_min_text_size">12sp</dimen>
+    <dimen name="snackbar_max_text_size">14sp</dimen>
 </resources>
