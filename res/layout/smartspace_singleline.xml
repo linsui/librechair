@@ -28,7 +28,7 @@
     android:animateLayoutChanges="true">
     <com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
         android:id="@+id/time_above"
-        style="@style/SmartspaceTextHeadline"
+        style="@style/TextTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -42,6 +42,12 @@
         android:textColor="?workspaceTextColor"
         android:textSize="@dimen/smartspace_clock_above_size"
         android:visibility="gone"
+        launcher:ambientShadowBlur="3dp"
+        launcher:ambientShadowColor="?workspaceAmbientShadowColor"
+        launcher:customFontType="smartspaceText"
+        launcher:keyShadowBlur="2dp"
+        launcher:keyShadowColor="?workspaceKeyShadowColor"
+        launcher:keyShadowOffset="0.5dip"
         launcher:layout_constraintBottom_toTopOf="@+id/linearLayout"
         launcher:layout_constraintEnd_toEndOf="parent"
         launcher:layout_constraintHorizontal_bias="0.5"
@@ -69,7 +75,7 @@
             android:orientation="horizontal">
             <com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
                 android:id="@+id/clock"
-                style="@style/SmartspaceTextHeadline"
+                style="@style/TextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -82,7 +88,13 @@
                 android:maxLines="1"
                 android:scrollHorizontally="true"
                 android:textColor="?workspaceTextColor"
-                android:textSize="@dimen/smartspace_title_size"/>
+                android:textSize="@dimen/smartspace_title_size"
+                launcher:ambientShadowBlur="3dp"
+                launcher:ambientShadowColor="?workspaceAmbientShadowColor"
+                launcher:customFontType="smartspaceText"
+                launcher:keyShadowBlur="2dp"
+                launcher:keyShadowColor="?workspaceKeyShadowColor"
+                launcher:keyShadowOffset="0.5dip"/>
 
             <ch.deletescape.lawnchair.smartspace.SmartspaceDividerView
                 android:id="@+id/title_sep"
@@ -118,13 +130,19 @@
 
                 <com.google.android.apps.nexuslauncher.graphics.DoubleShadowTextView
                     android:id="@+id/title_weather_text"
-                    style="@style/SmartspaceTextHeadline"
+                    style="@style/TextTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:drawablePadding="6dp"
                     android:textColor="?workspaceTextColor"
                     android:textSize="@dimen/smartspace_title_size"
+                    launcher:ambientShadowBlur="3dp"
+                    launcher:ambientShadowColor="?workspaceAmbientShadowColor"
+                    launcher:customFontType="smartspaceText"
+                    launcher:keyShadowBlur="2dp"
+                    launcher:keyShadowColor="?workspaceKeyShadowColor"
+                    launcher:keyShadowOffset="0.5dip"
                     tools:text="30°C"/>
             </LinearLayout>
         </LinearLayout>
@@ -152,7 +170,6 @@
 
             <com.google.android.apps.nexuslauncher.graphics.DoubleShadowTextView
                 android:id="@+id/subtitle_text"
-                style="@style/SmartspaceTextTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.0"
@@ -163,7 +180,13 @@
                 android:includeFontPadding="false"
                 android:maxLines="1"
                 android:textColor="?workspaceTextColor"
-                android:textSize="16dp"/>
+                android:textSize="16dp"
+                launcher:ambientShadowBlur="3dp"
+                launcher:ambientShadowColor="?workspaceAmbientShadowColor"
+                launcher:customFontType="smartspaceText"
+                launcher:keyShadowBlur="2dp"
+                launcher:keyShadowColor="?workspaceKeyShadowColor"
+                launcher:keyShadowOffset="0.5dip"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
