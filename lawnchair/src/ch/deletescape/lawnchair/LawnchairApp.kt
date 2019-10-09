@@ -79,10 +79,12 @@ class LawnchairApp : Application(), () -> Unit {
     override fun onCreate() {
         super.onCreate()
         FeedScope.launch {
-            gsb4j = Gsb4j.bootstrap(Properties().apply {
-                put("api.key", WebSafety.GSB_API_KEY)
-                put("data.dir", cacheDir.absolutePath)
-            })
+            if (Utilities.ATLEAST_P) {
+                gsb4j = Gsb4j.bootstrap(Properties().apply {
+                    put("api.key", WebSafety.GSB_API_KEY)
+                    put("data.dir", cacheDir.absolutePath)
+                })
+            }
         }
         localizationContext = this
         ch.deletescape.lawnchair.location.LocationManager.location

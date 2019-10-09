@@ -24,6 +24,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.util.extensions.d
+import com.android.launcher3.Utilities
 import kg.net.bazi.gsb4j.api.SafeBrowsingApi
 import java.io.File
 import java.io.FileInputStream
@@ -77,17 +78,20 @@ object WebSafety {
             }
             if (block) {
                 d("shouldBlock: $url will be blocked: $block")
+                blockCache += dom to block
                 return block;
             }
-            d("shouldBlock: matching $url against google")
-            try {
-                val client = context.lawnchairApp.gsb4j
-                        .getApiClient(SafeBrowsingApi.Type.UPDATE_API)
-                if (client.check(url) != null) {
-                    block = true
+            if (Utilities.ATLEAST_P) {
+                d("shouldBlock: matching $url against google")
+                try {
+                    val client = context.lawnchairApp.gsb4j
+                            .getApiClient(SafeBrowsingApi.Type.UPDATE_API)
+                    if (client.check(url) != null) {
+                        block = true
+                    }
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
                 }
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
             }
             d("shouldBlock: $url will be blocked: $block")
             blockCache += dom to block
