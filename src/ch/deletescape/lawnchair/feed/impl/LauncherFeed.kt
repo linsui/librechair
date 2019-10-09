@@ -1228,8 +1228,6 @@ class LauncherFeed(val originalContext: Context,
             swipeRefreshLayout.isRefreshing = true
         }
         runOnMainThread {
-            (infobox.parent as View).visibility =
-                    if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
             updateActions()
         }
         recyclerView.apply {
@@ -1239,6 +1237,9 @@ class LauncherFeed(val originalContext: Context,
         }
         chipAdapter.rebindData()
         runOnMainThread {
+            if (!context.lawnchairPrefs.feedShowInfobox) {
+                toolbarParent.removeView(infobox.parent as View)
+            }
             if (!context.chipPrefs.chipsOnTop) {
                 val cP = chips.parent as ViewGroup
                 cP.removeView(chips)
@@ -1249,6 +1250,9 @@ class LauncherFeed(val originalContext: Context,
                     cP.removeView(chips)
                     cP.addView(chips, 0)
                 }
+            }
+            if (context.lawnchairPrefs.feedShowInfobox) {
+                toolbarParent.addView(infobox.parent as View)
             }
             if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
                 chips.visibility = View.GONE
