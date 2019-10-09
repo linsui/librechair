@@ -69,7 +69,7 @@ public class GeckoScreen extends WebViewScreen {
     @Override
     public boolean onBackPressed() {
         session.goBack();
-        return true;
+        return canBack.get();
     }
 
     @Override

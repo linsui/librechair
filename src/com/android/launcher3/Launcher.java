@@ -79,6 +79,7 @@ import ch.deletescape.lawnchair.blur.BlurWallpaperProvider;
 import ch.deletescape.lawnchair.bugreport.BugReport;
 import ch.deletescape.lawnchair.bugreport.BugReportClient;
 import ch.deletescape.lawnchair.theme.ThemeOverride;
+
 import com.android.launcher3.DropTarget.DragObject;
 import com.android.launcher3.LauncherStateManager.StateListener;
 import com.android.launcher3.Workspace.ItemOperator;
@@ -204,14 +205,17 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     // How long to wait before the new-shortcut animation automatically pans the workspace
     private static final int NEW_APPS_PAGE_MOVE_DELAY = 500;
     private static final int NEW_APPS_ANIMATION_INACTIVE_TIMEOUT_SECONDS = 5;
-    @Thunk static final int NEW_APPS_ANIMATION_DELAY = 500;
+    @Thunk
+    static final int NEW_APPS_ANIMATION_DELAY = 500;
 
     private LauncherAppTransitionManager mAppTransitionManager;
     private Configuration mOldConfig;
 
-    @Thunk Workspace mWorkspace;
+    @Thunk
+    Workspace mWorkspace;
     private View mLauncherView;
-    @Thunk DragLayer mDragLayer;
+    @Thunk
+    DragLayer mDragLayer;
     private DragController mDragController;
     private View mQsbContainer;
 
@@ -220,19 +224,23 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     private final int[] mTmpAddItemCellCoordinates = new int[2];
 
-    @Thunk Hotseat mHotseat;
-    @Nullable private View mHotseatSearchBox;
+    @Thunk
+    Hotseat mHotseat;
+    @Nullable
+    private View mHotseatSearchBox;
 
     private DropTargetBar mDropTargetBar;
 
     // Main container view for the all apps screen.
-    @Thunk AllAppsContainerView mAppsView;
+    @Thunk
+    AllAppsContainerView mAppsView;
     public AllAppsTransitionController mAllAppsController;
 
     // UI and state for the overview panel
     private View mOverviewPanel;
 
-    @Thunk boolean mWorkspaceLoading = true;
+    @Thunk
+    boolean mWorkspaceLoading = true;
 
     private OnResumeCallback mOnResumeCallback;
 
@@ -692,7 +700,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            int[] grantResults) {
+                                           int[] grantResults) {
         PendingRequestArgs pendingArgs = mPendingRequestArgs;
         if (requestCode == REQUEST_PERMISSION_CALL_PHONE && pendingArgs != null
                 && pendingArgs.getRequestCode() == REQUEST_PERMISSION_CALL_PHONE) {
@@ -738,7 +746,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
     }
 
-    @Thunk void completeTwoStageWidgetDrop(
+    @Thunk
+    void completeTwoStageWidgetDrop(
             final int resultCode, final int appWidgetId, final PendingRequestArgs requestArgs) {
         CellLayout cellLayout = mWorkspace.getScreenWithId(requestArgs.screenId);
         Runnable onCompleteRunnable = null;
@@ -923,7 +932,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
             if (launcherState == LauncherState.OVERVIEW
                     || launcherState == LauncherState.FAST_OVERVIEW) {
                 if (getWorkspace().mLauncherOverlay != null &&
-                        ((ClientOverlay) getWorkspace().mLauncherOverlay).getClient().onBackPressed()){
+                        ((ClientOverlay) getWorkspace().mLauncherOverlay).getClient().onBackPressed()) {
                     return;
                 }
                 hideOverlay(animate);
@@ -1063,7 +1072,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      * Creates a view representing a shortcut inflated from the specified resource.
      *
      * @param parent The group the shortcut belongs to.
-     * @param info The data structure describing the shortcut.
+     * @param info   The data structure describing the shortcut.
      * @return A View inflated from layoutResId.
      */
     public View createShortcut(ViewGroup parent, ShortcutInfo info) {
@@ -1081,7 +1090,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      * @param data The intent describing the shortcut.
      */
     private void completeAddShortcut(Intent data, long container, long screenId, int cellX,
-            int cellY, PendingRequestArgs args) {
+                                     int cellY, PendingRequestArgs args) {
         if (args.getRequestCode() != REQUEST_CREATE_SHORTCUT
                 || args.getPendingIntent().getComponent() == null) {
             return;
@@ -1172,7 +1181,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      */
     @Thunk
     void completeAddAppWidget(int appWidgetId, ItemInfo itemInfo,
-            AppWidgetHostView hostView, LauncherAppWidgetProviderInfo appWidgetInfo) {
+                              AppWidgetHostView hostView,
+                              LauncherAppWidgetProviderInfo appWidgetInfo) {
 
         if (appWidgetInfo == null) {
             appWidgetInfo = mAppWidgetManager.getLauncherAppWidgetInfo(appWidgetId);
@@ -1302,7 +1312,9 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         return mSharedPrefs;
     }
 
-    public int getOrientation() { return mOldConfig.orientation; }
+    public int getOrientation() {
+        return mOldConfig.orientation;
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -1472,7 +1484,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     @Override
     public void startIntentSenderForResult(IntentSender intent, int requestCode,
-            Intent fillInIntent, int flagsMask, int flagsValues, int extraFlags, Bundle options) {
+                                           Intent fillInIntent, int flagsMask, int flagsValues,
+                                           int extraFlags, Bundle options) {
         try {
             super.startIntentSenderForResult(intent, requestCode,
                     fillInIntent, flagsMask, flagsValues, extraFlags, options);
@@ -1487,7 +1500,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
      */
     @Override
     public void startSearch(String initialQuery, boolean selectInitialQuery,
-            Bundle appSearchData, boolean globalSearch) {
+                            Bundle appSearchData, boolean globalSearch) {
         if (appSearchData == null) {
             appSearchData = new Bundle();
             appSearchData.putString("source", "launcher-search");
@@ -1520,7 +1533,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     void addAppWidgetFromDropImpl(int appWidgetId, ItemInfo info, AppWidgetHostView boundWidget,
-            WidgetAddFlowHandler addFlowHandler) {
+                                  WidgetAddFlowHandler addFlowHandler) {
         if (LOGD) {
             Log.d(TAG, "Adding widget from drop");
         }
@@ -1528,7 +1541,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     void addAppWidgetImpl(int appWidgetId, ItemInfo info,
-            AppWidgetHostView boundWidget, WidgetAddFlowHandler addFlowHandler, int delay) {
+                          AppWidgetHostView boundWidget, WidgetAddFlowHandler addFlowHandler,
+                          int delay) {
         if (!addFlowHandler
                 .startConfigActivity(this, appWidgetId, info, REQUEST_CREATE_APPWIDGET)) {
             // If the configuration flow was not started, add the widget
@@ -1547,7 +1561,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     public void addPendingItem(PendingAddItemInfo info, long container, long screenId,
-            int[] cell, int spanX, int spanY) {
+                               int[] cell, int spanX, int spanY) {
         info.container = container;
         info.screenId = screenId;
         if (cell != null) {
@@ -1623,7 +1637,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     }
 
     FolderIcon addFolder(CellLayout layout, long container, final long screenId, int cellX,
-            int cellY) {
+                         int cellY) {
         final FolderInfo folderInfo = new FolderInfo();
         folderInfo.title = getText(R.string.folder_name);
 
@@ -1642,8 +1656,8 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
     /**
      * Unbinds the view for the specified item, and removes the item and all its children.
      *
-     * @param v the view being removed.
-     * @param itemInfo the {@link ItemInfo} for this view.
+     * @param v            the view being removed.
+     * @param itemInfo     the {@link ItemInfo} for this view.
      * @param deleteFromDb whether or not to delete this item from the db.
      */
     public boolean removeItem(View v, final ItemInfo itemInfo, boolean deleteFromDb) {
@@ -1678,7 +1692,6 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
         }
         return true;
     }
-
 
 
     @Override
@@ -1882,7 +1895,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * Refreshes the shortcuts shown on the workspace.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     public void startBinding() {
@@ -1950,7 +1963,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     @Override
     public void bindAppsAdded(ArrayList<Long> newScreens, ArrayList<ItemInfo> addNotAnimated,
-            ArrayList<ItemInfo> addAnimated) {
+                              ArrayList<ItemInfo> addAnimated) {
         // Add the new screens
         if (newScreens != null) {
             bindAddScreens(newScreens);
@@ -1971,7 +1984,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * Bind the items start-end from the list.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -2269,7 +2282,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * Callback saying that there aren't any more items to bind.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     public void finishBindingItems(int pageBoundFirst) {
@@ -2308,7 +2321,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * Add the icons for all apps.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     public void bindAllApplications(ArrayList<AppInfo> apps) {
@@ -2330,7 +2343,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * A package was updated.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -2363,7 +2376,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * Update the state of a package, typically related to install state.
-     *
+     * <p>
      * Implementation of the method from LauncherModel.Callbacks.
      */
     @Override
@@ -2399,7 +2412,7 @@ public class Launcher extends BaseDraggingActivity implements LauncherExterns,
 
     /**
      * @param packageUser if null, refreshes all widgets and shortcuts, otherwise only refreshes the
-     * widgets and shortcuts associated with the given package/user
+     *                    widgets and shortcuts associated with the given package/user
      */
     public void refreshAndBindWidgetsForPackageUser(@Nullable PackageUserKey packageUser) {
         mModel.refreshAndBindWidgetsAndShortcuts(packageUser);
