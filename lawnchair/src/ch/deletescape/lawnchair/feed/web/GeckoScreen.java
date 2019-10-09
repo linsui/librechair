@@ -36,6 +36,7 @@ public class GeckoScreen extends WebViewScreen {
     private final String uri;
     private final GeckoSession session;
     private static GeckoRuntime runtime;
+    private GeckoView view;
 
     protected GeckoScreen(Context base, String uri) {
         super(base, uri);
@@ -61,7 +62,7 @@ public class GeckoScreen extends WebViewScreen {
 
     @Override
     protected void bindView(View viewO) {
-        GeckoView view = viewO.findViewById(android.R.id.content);
+        view = viewO.findViewById(android.R.id.content);
         session.getSettings().setUseTrackingProtection(
                 FeedPersistenceKt.getFeedPrefs(this).getEnableHostsFilteringInWebView());
         session.getSettings().setAllowJavascript(
@@ -74,5 +75,11 @@ public class GeckoScreen extends WebViewScreen {
         runtime.getSettings().getContentBlocking().setSafeBrowsing(FeedPersistenceKt.getFeedPrefs(
                 this).getEnableHostsFilteringInWebView() ? ContentBlocking.SafeBrowsing.DEFAULT : ContentBlocking.SafeBrowsing.NONE);
         session.loadUri(uri);
+    }
+
+    @Override
+    public void onDestroy() {
+        view.releaseSession();
+        session.close();
     }
 }

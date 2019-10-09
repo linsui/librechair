@@ -875,6 +875,7 @@ class LauncherFeed(val originalContext: Context,
         removeDisplayedView(providerScreens.last().second.view, providerScreens.last().second.x,
                 providerScreens.last().second.y)
         screenActions.remove(providerScreens.last().first)
+        providerScreens.last().first.onDestroy()
         providerScreens.remove(providerScreens.last())
         updateActions()
     }
