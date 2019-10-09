@@ -42,6 +42,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import io.github.cdimascio.essence.Essence;
 
 public class ArticleViewerScreen extends ProviderScreen {
@@ -84,9 +85,7 @@ public class ArticleViewerScreen extends ProviderScreen {
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
                 try {
-                    WebViewScreen screen = new WebViewScreen(ArticleViewerScreen.this, url, webView -> {
-                        webView.getSettings().setJavaScriptEnabled(false);
-                    });
+                    WebViewScreen screen = WebViewScreen.obtain(ArticleViewerScreen.this, url);
                     screen.display(ArticleViewerScreen.this,
                             StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getFirst() + e.getX()),
                             StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getSecond() + e.getY()));

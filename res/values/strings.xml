@@ -723,7 +723,7 @@
     <string name="title_action_open_externally">Open externally</string>
     <string name="title_chip_provider_memory_usage">Memory</string>
     <string name="title_pref_feed_hosts_filtering">Attempt to block trackers and advertisments</string>
-    <string name="summary_pref_feed_hosts_filtering">Librechair will attempt to block trackers and advertisements in web page windows opened in the feed, using a blocklist</string>
+    <string name="summary_pref_feed_hosts_filtering">Librechair will attempt to block trackers and advertisements in web pages opened in the feed</string>
     <string name="title_pref_feed_directly_open_links">Directly open links in browser</string>
     <string name="summary_pref_feed_directly_open_links">Links will directly be opened in the browser if applicable</string>
     <string name="title_overlay_failure_loading_route">Failure loading route</string>
@@ -731,4 +731,6 @@
     <string name="summary_pref_feed_conservative_refreshes">The feed will refresh less frequently</string>
     <string name="title_pref_feed_pull_down_to_refresh">Pull down to refresh</string>
     <string name="summary_pref_feed_pull_down_to_refresh">The feed can be refreshed by pulling down</string>
+    <string name="title_pref_feed_gecko">Use Gecko rendering engine for web pages</string>
+    <string name="summary_pref_feed_gecko">The Mozilla Gecko rendering engine will be used to open web pages in the feed</string>
 </resources>

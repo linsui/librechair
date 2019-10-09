@@ -43,6 +43,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_conservative_refreshes", true)
     val pullDownToRefresh
             by BooleanDelegate(context, "feed_pull_down_to_refresh", true)
+    val useGecko
+            by BooleanDelegate(context, "feed_gecko", true)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

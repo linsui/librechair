@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
@@ -129,14 +130,10 @@ public class FeedSearchboxProvider extends FeedProvider {
                                                     view).getFirst();
                                             y = LawnchairUtilsKt.getPostionOnScreen(
                                                     view).getSecond();
-                                            new WebViewScreen(parent.getContext(), String.format(
+                                            WebViewScreen.obtain(parent.getContext(), String.format(
                                                     Utilities.getLawnchairPrefs(
                                                             getContext()).getFeedSearchUrl(),
-                                                    suggestions.get(position)), wv -> {
-                                                wv.getSettings().setJavaScriptEnabled(
-                                                        FeedPersistence.Companion.getInstance(
-                                                                getContext()).getUseJavascriptInSearchScreen());
-                                            }).display(FeedSearchboxProvider.this, x, y);
+                                                    suggestions.get(position))).display(FeedSearchboxProvider.this, x, y);
                                         });
                             });
                         }
@@ -150,12 +147,9 @@ public class FeedSearchboxProvider extends FeedProvider {
                     int x, y;
                     x = LawnchairUtilsKt.getPostionOnScreen(v).getFirst();
                     y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
-                    new WebViewScreen(parent.getContext(), String.format(
+                    WebViewScreen.obtain(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
-                            editText.getText().toString()), wv -> {
-                        wv.getSettings().setJavaScriptEnabled(FeedPersistence.Companion.getInstance(
-                                getContext()).getUseJavascriptInSearchScreen());
-                    }).display(this, x, y);
+                            editText.getText().toString())).display(this, x, y);
                 }
                 return true;
             });

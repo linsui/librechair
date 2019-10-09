@@ -401,6 +401,11 @@
             android:title="@string/title_pref_feed_hosts_filtering"
             android:summary="@string/summary_pref_feed_hosts_filtering"/>
         <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_gecko"
+            android:title="@string/title_pref_feed_gecko"
+            android:summary="@string/summary_pref_feed_gecko"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="feed_directly_open_links"
             android:title="@string/title_pref_feed_directly_open_links"

@@ -18,7 +18,7 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.deletescape.lawnchair.feed;
+package ch.deletescape.lawnchair.feed.web;
 
 import android.content.Context;
 import android.view.View;
@@ -35,8 +35,9 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 import java.io.ByteArrayInputStream;
-import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.feed.FeedProvider;
+import ch.deletescape.lawnchair.feed.ProviderScreen;
 import ch.deletescape.lawnchair.feed.adblock.WebSafety;
 import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 
@@ -44,15 +45,18 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class WebViewScreen extends ProviderScreen {
     private final String uri;
-    private final Consumer<WebView> configurer;
 
-    public WebViewScreen(Context base, String uri, Consumer<WebView> configurer) {
+    protected WebViewScreen(Context base, String uri) {
         super(base);
         this.uri = uri;
-        this.configurer = configurer;
         addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp),
                 getString(R.string.title_button_open_externally),
                 () -> Utilities.openURLinBrowser(this, uri)));
+    }
+
+    public static WebViewScreen obtain(Context base, String uri) {
+        return !FeedPersistenceKt.getFeedPrefs(base).getUseGecko() ? new WebViewScreen(base,
+                uri) : new GeckoScreen(base, uri);
     }
 
     @Override
@@ -75,6 +79,8 @@ public class WebViewScreen extends ProviderScreen {
                 view.getLayoutParams().width = MATCH_PARENT;
             });
         });
+        view.getSettings().setJavaScriptEnabled(
+                FeedPersistenceKt.getFeedPrefs(this).getUseJavascriptInSearchScreen());
         view.setWebViewClient(new WebViewClient() {
             @Nullable
             @Override
@@ -94,6 +100,5 @@ public class WebViewScreen extends ProviderScreen {
             }
         });
         view.loadUrl(uri);
-        configurer.accept(view);
     }
 }
