@@ -26,10 +26,12 @@ import android.content.pm.PackageManager;
 import android.util.Log;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
+import ch.deletescape.lawnchair.persistence.ChipPersistence;
 
 import static java.util.Collections.EMPTY_LIST;
 
@@ -55,12 +57,17 @@ public class PredictedAppsProvider extends ChipProvider {
                                     it.getComponentKey().componentName, 0).loadLabel(
                                     context.getPackageManager()).toString();
                             item.click = () -> context.startActivity(new Intent().setComponent(
-                                    it.getComponentKey().componentName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                    it.getComponentKey().componentName).addFlags(
+                                    Intent.FLAG_ACTIVITY_NEW_TASK));
                             return item;
                         } catch (PackageManager.NameNotFoundException e) {
                             return null;
                         }
-                    }).filter(it -> it != null).collect(Collectors.toList());
+                    })
+                    .filter(Objects::nonNull)
+                    .limit(Math.round(
+                            ChipPersistence.Companion.getInstance(context).getMaxPredictions()))
+                    .collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
             Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);
             return EMPTY_LIST;

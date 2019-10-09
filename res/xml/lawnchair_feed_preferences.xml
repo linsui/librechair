@@ -291,6 +291,15 @@
             app:steps="32"
             app:summaryFormat="%.0fdp"
             app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_max_predictions"
+            android:title="@string/title_pref_chip_max_predictions"
+            app:defaultSeekbarValue="4"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
         <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
             android:key="feed_chips_on_top"
             android:defaultValue="false"

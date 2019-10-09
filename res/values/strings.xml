@@ -733,4 +733,5 @@
     <string name="summary_pref_feed_pull_down_to_refresh">The feed can be refreshed by pulling down</string>
     <string name="title_pref_feed_gecko">Use Gecko rendering engine for web pages</string>
     <string name="summary_pref_feed_gecko">The Mozilla Gecko rendering engine will be used to open web pages in the feed</string>
+    <string name="title_pref_chip_max_predictions">Max prediction count</string>
 </resources>
