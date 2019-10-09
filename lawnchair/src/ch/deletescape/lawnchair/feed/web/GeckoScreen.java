@@ -25,10 +25,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+
 import org.mozilla.geckoview.ContentBlocking;
 import org.mozilla.geckoview.GeckoRuntime;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.GeckoView;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 
@@ -37,11 +41,13 @@ public class GeckoScreen extends WebViewScreen {
     private final GeckoSession session;
     private static GeckoRuntime runtime;
     private GeckoView view;
+    private AtomicBoolean canBack;
 
     protected GeckoScreen(Context base, String uri) {
         super(base, uri);
         this.uri = uri;
-        session = new GeckoSession();
+        this.session = new GeckoSession();
+        this.canBack = new AtomicBoolean(false);
         synchronized (GeckoScreen.class) {
             if (runtime == null) {
                 runtime = GeckoRuntime.create(this);
@@ -61,12 +67,24 @@ public class GeckoScreen extends WebViewScreen {
     }
 
     @Override
+    public boolean onBackPressed() {
+        session.goBack();
+        return true;
+    }
+
+    @Override
     protected void bindView(View viewO) {
         view = viewO.findViewById(android.R.id.content);
         session.getSettings().setUseTrackingProtection(
                 FeedPersistenceKt.getFeedPrefs(this).getEnableHostsFilteringInWebView());
         session.getSettings().setAllowJavascript(
                 FeedPersistenceKt.getFeedPrefs(this).getUseJavascriptInSearchScreen());
+        session.setNavigationDelegate(new GeckoSession.NavigationDelegate() {
+            @Override
+            public void onCanGoBack(@NonNull GeckoSession geckoSession, boolean b) {
+                canBack.set(b);
+            }
+        });
         runtime.getSettings().getContentBlocking().setAntiTracking(FeedPersistenceKt.getFeedPrefs(
                 this).getEnableHostsFilteringInWebView() ? ContentBlocking.AntiTracking.STRICT : ContentBlocking.AntiTracking.NONE);
         runtime.getSettings().getContentBlocking().setEnhancedTrackingProtectionLevel(

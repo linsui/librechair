@@ -863,10 +863,14 @@ class LauncherFeed(val originalContext: Context,
         feedController.setOnKeyListener { v, keyCode, event ->
             if (event.action == KeyEvent.ACTION_UP &&
                     keyCode == KeyEvent.KEYCODE_BACK && !providerScreens.isEmpty()) {
+                if (providerScreens.last().first.onBackPressed()) {
+                    return@setOnKeyListener true
+                }
                 popScreens()
                 return@setOnKeyListener true
             }
-            false
+            feedController.closeOverlay(true, 0)
+            true
         }
     }
 

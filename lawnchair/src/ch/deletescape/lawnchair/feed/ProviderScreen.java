@@ -87,6 +87,10 @@ public abstract class ProviderScreen extends ContextWrapper {
 
     }
 
+    public boolean onBackPressed() {
+        return false;
+    }
+
     public final void display(LauncherFeed feed, int tX, int tY) {
         this.feed = feed;
         feed.displayProviderScreen(this, tX, tY, viewGroup -> {

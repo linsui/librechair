@@ -95,17 +95,6 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         mFeedBackground = findViewById(R.id.overlay_feed)
     }
 
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (super.dispatchKeyEvent(event)) {
-            return true
-        } else if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-            closeOverlay(true, 0)
-            return true
-        } else {
-            return false
-        }
-    }
-
     fun closeOverlay(animated: Boolean, duration: Int) {
         if (!animated) {
             setProgress(0f, true)

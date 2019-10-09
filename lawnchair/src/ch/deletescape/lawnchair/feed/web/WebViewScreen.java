@@ -46,6 +46,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class WebViewScreen extends ProviderScreen {
     private final String uri;
+    private WebView view;
 
     protected WebViewScreen(Context base, String uri) {
         super(base);
@@ -56,7 +57,8 @@ public class WebViewScreen extends ProviderScreen {
     }
 
     public static WebViewScreen obtain(Context base, String uri) {
-        return !(FeedPersistenceKt.getFeedPrefs(base).getUseGecko() && BuildConfig.GECKO) ? new WebViewScreen(base,
+        return !(FeedPersistenceKt.getFeedPrefs(
+                base).getUseGecko() && BuildConfig.GECKO) ? new WebViewScreen(base,
                 uri) : new GeckoScreen(base, uri);
     }
 
@@ -70,8 +72,18 @@ public class WebViewScreen extends ProviderScreen {
     }
 
     @Override
+    public boolean onBackPressed() {
+        if (view.canGoBack()) {
+            view.goBack();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     protected void bindView(View viewO) {
-        WebView view = viewO.findViewById(android.R.id.content);
+        view = viewO.findViewById(android.R.id.content);
         viewO.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             viewO.getLayoutParams().height = MATCH_PARENT;
             viewO.getLayoutParams().width = MATCH_PARENT;
