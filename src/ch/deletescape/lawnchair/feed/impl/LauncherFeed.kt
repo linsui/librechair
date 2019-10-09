@@ -871,9 +871,13 @@ class LauncherFeed(val originalContext: Context,
                 }
                 popScreens()
                 return@setOnKeyListener true
+            } else if (event.action == KeyEvent.ACTION_UP
+                    && keyCode == KeyEvent.KEYCODE_BACK){
+                feedController.closeOverlay(true, 0)
+                true
+            } else {
+                false
             }
-            feedController.closeOverlay(true, 0)
-            true
         }
     }
 
@@ -1454,15 +1458,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    fun onBackPressed(): Boolean {
-        if (feedController.mCurrentState == FeedState.OPEN) {
-            return feedController
-                    .onKeyUp(KeyEvent.KEYCODE_BACK,
-                            KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
-        } else {
-            return false
-        }
-    }
+    fun onBackPressed() = false
 
     private data class ScreenData(val x: Float, val y: Float, val view: View)
 }
