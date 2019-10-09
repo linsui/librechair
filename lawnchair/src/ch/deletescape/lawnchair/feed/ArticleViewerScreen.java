@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.android.launcher3.R;
@@ -51,6 +52,7 @@ public class ArticleViewerScreen extends ProviderScreen {
     private final String categories;
     private final String url;
     private final String desc;
+    private ScrollView sv;
 
     public ArticleViewerScreen(Context base, String title, String categories, String url,
                                String desc) {
@@ -80,6 +82,7 @@ public class ArticleViewerScreen extends ProviderScreen {
     protected void bindView(View articleView) {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
+        sv = (ScrollView) contentView.getParent();
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
         GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
             @Override
@@ -125,5 +128,14 @@ public class ArticleViewerScreen extends ProviderScreen {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (sv.getScrollY() != 0) {
+            sv.smoothScrollTo(0, 0);
+            return true;
+        }
+        return false;
     }
 }
