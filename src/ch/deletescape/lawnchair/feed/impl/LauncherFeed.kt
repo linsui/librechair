@@ -72,6 +72,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
+import kotlinx.android.synthetic.main.overlay_feed.view.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -168,6 +169,8 @@ class LauncherFeed(val originalContext: Context,
     private var recyclerView = (feedController.findViewById(
             R.id.feed_recycler) as RecyclerView)
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
+    private val toolbarParent
+        get() = feedController.feed_title_parent
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
@@ -453,7 +456,7 @@ class LauncherFeed(val originalContext: Context,
         feedController.setOnApplyWindowInsetsListener { v, insets ->
             statusBarHeight = insets.stableInsetTop
             navigationBarHeight = insets.stableInsetBottom
-            toolbar.apply {
+            toolbarParent.apply {
                 if (oldToolbarPaddingVertical == null) {
                     oldToolbarPaddingVertical = paddingTop to paddingBottom
                 }
@@ -473,7 +476,7 @@ class LauncherFeed(val originalContext: Context,
             upButton.animate().translationY(
                     (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
                     .duration = 500
-            toolbar.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            toolbarParent.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
                 val height = abs(bottom - top)
                 val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
                 recyclerView.apply {
@@ -503,7 +506,7 @@ class LauncherFeed(val originalContext: Context,
         }
         upButton.setOnClickListener {
             recyclerView.smoothScrollToPosition(0)
-            toolbar.animate().translationY(0f)
+            toolbarParent.animate().translationY(0f)
             upButton.animate().translationY(
                     (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
         }
@@ -514,7 +517,7 @@ class LauncherFeed(val originalContext: Context,
             true
         }
         if (tabsOnBottom) {
-            (toolbar.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
+            (toolbarParent.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.BOTTOM
             toolbar.parent.requestLayout()
             recyclerView.apply {
                 setPadding(paddingLeft, 0, paddingRight, paddingTop)
@@ -669,10 +672,10 @@ class LauncherFeed(val originalContext: Context,
                                         dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
                     if (dy > 0) {
-                        toolbar.animate().translationY(
-                                if (!tabsOnBottom) -toolbar.measuredHeight.toFloat() else toolbar.measuredHeight.toFloat())
+                        toolbarParent.animate().translationY(
+                                if (!tabsOnBottom) -toolbarParent.measuredHeight.toFloat() else toolbarParent.measuredHeight.toFloat())
                     } else if (dy < 0) {
-                        toolbar.animate().translationY(0f)
+                        toolbarParent.animate().translationY(0f)
                     }
                 }
             })
@@ -931,10 +934,10 @@ class LauncherFeed(val originalContext: Context,
                 if (this is ViewGroup) {
                     setPadding(
                             originalPaddingHorizontal!!.first + if (!rtl) windowInsets.stableInsetLeft else windowInsets.stableInsetRight,
-                            originalPaddingVertical!!.first + if (!tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                            originalPaddingVertical!!.first + if (!tabsOnBottom) toolbarParent.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
                                     context).toInt() + statusBarHeight!! else statusBarHeight!!,
                             originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
-                            originalPaddingVertical!!.second + if (tabsOnBottom) toolbar.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
+                            originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
                                     context).toInt() + statusBarHeight!! else statusBarHeight!!)
                 }
                 if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
@@ -962,7 +965,7 @@ class LauncherFeed(val originalContext: Context,
                         start()
                     }
                     recyclerView.isLayoutFrozen = true
-                    toolbar.animate().translationY(0f)
+                    toolbarParent.animate().translationY(0f)
                     return true;
                 }
             })

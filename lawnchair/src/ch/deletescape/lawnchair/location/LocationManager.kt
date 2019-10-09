@@ -68,11 +68,11 @@ object LocationManager {
 
         fun updateLocation(lat: Double?, lon: Double?,
                            notifyCallbacks: Boolean = true) {
-            slots.first { it.first == this }.second.apply {
-                left = lat
-                right = lon
-            }
             runOnMainThread {
+                slots.first { it.first == this }.second.apply {
+                    left = lat
+                    right = lon
+                }
                 if (notifyCallbacks && location != null) {
                     changeCallbacks.forEach {
                         if (location != null) {
