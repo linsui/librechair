@@ -81,7 +81,7 @@ object WebSafety {
                 blockCache += dom to block
                 return block;
             }
-            if (Utilities.ATLEAST_P) {
+            if (Utilities.ATLEAST_P && context.lawnchairApp.isGsb4jAvailable()) {
                 d("shouldBlock: matching $url against google")
                 try {
                     val client = context.lawnchairApp.gsb4j

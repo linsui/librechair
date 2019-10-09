@@ -76,14 +76,20 @@ class LawnchairApp : Application(), () -> Unit {
         d("Hidden APIs allowed: ${Utilities.HIDDEN_APIS_ALLOWED}")
     }
 
+    fun isGsb4jAvailable() = ::gsb4j.isInitialized
+
     override fun onCreate() {
         super.onCreate()
         FeedScope.launch {
             if (Utilities.ATLEAST_P) {
-                gsb4j = Gsb4j.bootstrap(Properties().apply {
-                    put("api.key", WebSafety.GSB_API_KEY)
-                    put("data.dir", cacheDir.absolutePath)
-                })
+                try {
+                    gsb4j = Gsb4j.bootstrap(Properties().apply {
+                        put("api.key", WebSafety.GSB_API_KEY)
+                        put("data.dir", cacheDir.absolutePath)
+                    })
+                } catch (e: RuntimeException) {
+                    e.printStackTrace()
+                }
             }
         }
         localizationContext = this
