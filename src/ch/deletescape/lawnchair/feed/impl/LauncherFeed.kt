@@ -1258,7 +1258,8 @@ class LauncherFeed(val originalContext: Context,
                     cP.addView(chips, 0)
                 }
             }
-            if (context.lawnchairPrefs.feedShowInfobox) {
+            if (context.lawnchairPrefs.feedShowInfobox
+                    && infobox.parent.parent == null) {
                 toolbarParent.addView(infobox.parent as View)
             }
             if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
