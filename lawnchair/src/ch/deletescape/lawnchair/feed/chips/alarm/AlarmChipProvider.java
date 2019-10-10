@@ -41,13 +41,15 @@ public class AlarmChipProvider extends ChipProvider {
     @Override
     public List<Item> getItems(Context context) {
         AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        AlarmManager.AlarmClockInfo info = manager.getNextAlarmClock();
-        if (info != null) {
-            Item item = new Item();
-            item.icon = context.getDrawable(R.drawable.ic_alarm_on_black_24dp);
-            item.title = LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), context);
-            return Collections.singletonList(item);
+        if (manager != null) {
+            AlarmManager.AlarmClockInfo info = manager.getNextAlarmClock();
+            if (info != null) {
+                Item item = new Item();
+                item.icon = context.getDrawable(R.drawable.ic_alarm_on_black_24dp);
+                item.title = LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), context);
+                return Collections.singletonList(item);
+            }
         }
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 }

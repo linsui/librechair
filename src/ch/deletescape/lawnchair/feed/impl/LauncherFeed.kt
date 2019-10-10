@@ -101,7 +101,7 @@ class LauncherFeed(val originalContext: Context,
     private var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
 
-    var chipAdapter: ChipAdapter = ChipAdapter(context, dark, this)
+    var chipAdapter: ChipAdapter = ChipAdapter(context, this)
     private var lastOrientation = context.resources.configuration.orientation
     private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
@@ -330,7 +330,7 @@ class LauncherFeed(val originalContext: Context,
             upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
 
             chips = feedController.findViewById(R.id.chip_container) as RecyclerView
-            chipAdapter = ChipAdapter(context, dark, this)
+            chipAdapter = ChipAdapter(context, this)
         }
 
         if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {

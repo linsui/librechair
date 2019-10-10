@@ -63,7 +63,7 @@ public abstract class ChipProvider {
         return feed;
     }
 
-    public void setLauncherFeed(LauncherFeed feed) {
+    void setLauncherFeed(LauncherFeed feed) {
         this.feed = feed;
     }
 

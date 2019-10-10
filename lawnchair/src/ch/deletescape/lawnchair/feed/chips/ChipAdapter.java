@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -36,8 +37,11 @@ import androidx.room.InvalidationTracker;
 
 import com.google.android.material.chip.Chip;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,30 +60,26 @@ import static java.lang.StrictMath.round;
 
 public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     private List<ChipProvider> providers;
-    private boolean dark;
     private FeedController controller;
     private List<ChipProvider.Item> items;
     private ChipDao dao;
     private Context context;
-    private LauncherFeed feed;
 
-    public ChipAdapter(Context context, boolean dark, LauncherFeed feed) {
-        this.feed = feed;
+    public ChipAdapter(Context context, LauncherFeed feed) {
         items = new ArrayList<>();
         dao = ChipDatabase.Holder.getInstance(context).dao();
         this.context = context;
         providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
-                it -> it != null).collect(Collectors.toList());
+                Objects::nonNull).collect(Collectors.toList());
         providers.forEach(it -> it.setAdapter(ChipAdapter.this));
         providers.forEach(it -> it.setLauncherFeed(feed));
-        this.dark = dark;
         ChipDatabase.Holder.getInstance(context).getInvalidationTracker().addObserver(
                 new InvalidationTracker.Observer("chipprovidercontainer") {
                     @Override
                     public void onInvalidated(@NonNull Set<String> tables) {
                         providers = dao.getAll().stream().map(
                                 val -> ChipProvider.Cache.get(val, context)).filter(
-                                it -> it != null).collect(Collectors.toList());
+                                Objects::nonNull).collect(Collectors.toList());
                         providers.forEach(it -> {
                             it.setAdapter(ChipAdapter.this);
                             it.setLauncherFeed(feed);
@@ -94,6 +94,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
 
     }
 
+    @SuppressWarnings("unchecked")
     public synchronized void rebindData() {
         SortingAlgorithm<ChipProvider.Item> algo;
         if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
@@ -101,10 +102,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         } else {
             algo = new NormalSortHelper();
         }
-        items = algo.sort(providers.stream().map(it -> {
-            Log.d(getClass().getName(), "rebindData: retrieving data for provider: " + it);
-            return it.getItems(context);
-        }).toArray(List[]::new));
+        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
     }
 
     @Override
@@ -124,16 +122,18 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
         });
     }
 
+    @NotNull
     @Override
     public ChipViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         return new ChipViewHolder(new Chip(viewGroup.getContext()));
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
-    public void onBindViewHolder(ChipViewHolder chipViewHolder, int i) {
+    public void onBindViewHolder(@NotNull ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
         if (item.icon instanceof VectorDrawable) {
-            item.icon = item.icon == null ? null : LawnchairUtilsKt.tint(item.icon,
+            item.icon = LawnchairUtilsKt.tint(item.icon,
                     ColorEngine.getInstance(context).getResolverCache(
                             ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
         }
@@ -193,6 +193,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
     }
 }
 
+@SuppressWarnings("WeakerAccess")
 class ChipViewHolder extends RecyclerView.ViewHolder {
     public Chip itemView;
 
