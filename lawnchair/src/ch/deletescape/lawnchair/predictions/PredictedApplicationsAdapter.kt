@@ -26,6 +26,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.atMost
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 
 open class PredictedApplicationsAdapter(val context: Context) :
         RecyclerView.Adapter<IconViewViewHolder>() {
@@ -44,8 +45,8 @@ open class PredictedApplicationsAdapter(val context: Context) :
                 context.packageManager).toString()
         holder.view.setImageDrawable(icon)
         holder.view.setOnClickListener {
-            context.startActivity(Intent().setComponent(
-                    mapper.componentKey.componentName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            FeedUtil.startActivity(context, Intent().setComponent(
+                    mapper.componentKey.componentName), holder.view)
         }
     }
 }
