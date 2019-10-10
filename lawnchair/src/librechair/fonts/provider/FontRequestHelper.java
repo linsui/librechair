@@ -48,6 +48,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.RegEx;
+
 public class FontRequestHelper {
 
     public static final String GOOGLE_FONT_KEY = "AIzaSyD-tjZZSSDbq0ggoJMydogsGlpzcBTaxTw";
@@ -131,7 +133,11 @@ public class FontRequestHelper {
                 "typeface_google_" + originalRequest.hashCode() + "_cached.ttf");
         if (cachedTypeface.exists()) {
             Log.d(FontRequestHelper.class.getName(), "getGoogleSans: cached font exists! returning that");
-            return Typeface.createFromFile(cachedTypeface);
+            try {
+                return Typeface.createFromFile(cachedTypeface);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
         }
         String requestURL = String.format("https://fonts.googleapis.com/css?family=Google+Sans:" + request.get("weight") + (request.get("italic").equals("1") ? "i" : ""));
         Log.v(FontRequestHelper.class.getName(), "getGoogleSans: requesting Google Sans from " + requestURL);
