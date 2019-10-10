@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.predict;
 
+import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -64,13 +65,17 @@ public class PredictedActionsProvider extends ChipProvider {
                         } catch (NullPointerException e) {
                             item.title = "";
                         }
-                        item.click = () -> {
+                        item.viewClickListener = v -> {
                             try {
                                 ((LauncherApps) context.getSystemService(
                                         Context.LAUNCHER_APPS_SERVICE))
-                                        .startShortcut(it.second, null, null);
+                                        .startShortcut(it.second, null,
+                                                ActivityOptions.makeClipRevealAnimation(v, 0, 0,
+                                                        v.getMeasuredWidth(),
+                                                        v.getMeasuredHeight()).toBundle());
                             } catch (ActivityNotFoundException e) {
-                                Log.e(getClass().getSimpleName(), "getItems: failiure starting shortcut", e);
+                                Log.e(getClass().getSimpleName(),
+                                        "getItems: failiure starting shortcut", e);
                             }
                         };
                         return item;
