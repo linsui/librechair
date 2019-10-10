@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -58,8 +59,8 @@ import kotlin.Unit;
 
 import static java.lang.StrictMath.round;
 
-public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
-    private List<ChipProvider> providers;
+public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
+        Consumer<List<ChipProvider.Item>> {
     private FeedController controller;
     private List<ChipProvider.Item> items;
     private ChipDao dao;
@@ -67,42 +68,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
 
     public ChipAdapter(Context context, LauncherFeed feed) {
         items = new ArrayList<>();
-        dao = ChipDatabase.Holder.getInstance(context).dao();
         this.context = context;
-        providers = dao.getAll().stream().map(val -> ChipProvider.Cache.get(val, context)).filter(
-                Objects::nonNull).collect(Collectors.toList());
-        providers.forEach(it -> it.setAdapter(ChipAdapter.this));
-        providers.forEach(it -> it.setLauncherFeed(feed));
-        ChipDatabase.Holder.getInstance(context).getInvalidationTracker().addObserver(
-                new InvalidationTracker.Observer("chipprovidercontainer") {
-                    @Override
-                    public void onInvalidated(@NonNull Set<String> tables) {
-                        providers = dao.getAll().stream().map(
-                                val -> ChipProvider.Cache.get(val, context)).filter(
-                                Objects::nonNull).collect(Collectors.toList());
-                        providers.forEach(it -> {
-                            it.setAdapter(ChipAdapter.this);
-                            it.setLauncherFeed(feed);
-                        });
-                        rebindData();
-                        LawnchairUtilsKt.runOnMainThread(() -> {
-                            notifyDataSetChanged();
-                            return Unit.INSTANCE;
-                        });
-                    }
-                });
+        ChipController.getInstance(context, feed).subscribe(this);
 
-    }
-
-    @SuppressWarnings("unchecked")
-    public synchronized void rebindData() {
-        SortingAlgorithm<ChipProvider.Item> algo;
-        if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
-            algo = new MixerSortHelper();
-        } else {
-            algo = new NormalSortHelper();
-        }
-        items = algo.sort(providers.stream().map(it -> it.getItems(context)).toArray(List[]::new));
     }
 
     @Override
@@ -190,6 +158,15 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> {
 
     public void setController(FeedController controller) {
         this.controller = controller;
+    }
+
+    @Override
+    public void accept(List<ChipProvider.Item> item) {
+        this.items.clear();
+        if (item != null) {
+            this.items.addAll(item);
+        }
+        notifyDataSetChanged();
     }
 }
 

@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.LawnchairApp;
@@ -54,7 +55,7 @@ import ch.deletescape.lawnchair.feed.chips.weather.WeatherChipProvider;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 
 public abstract class ChipProvider {
-    private ChipAdapter adapter;
+    private ChipController controller;
     private LauncherFeed feed;
 
     public abstract List<Item> getItems(Context context);
@@ -71,14 +72,15 @@ public abstract class ChipProvider {
     public void acceptArguments(String args) {
     }
 
-    public final void setAdapter(ChipAdapter adapter) {
-        this.adapter = adapter;
+    public final void setController(ChipController adapter) {
+        this.controller = adapter;
     }
 
     protected final void refresh() {
-        if (this.adapter != null) {
-            this.adapter.rebindData();
-            this.adapter.notifyDataSetChanged();
+        if (this.controller != null) {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                this.controller.refresh();
+            });
         }
     }
 

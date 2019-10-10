@@ -51,6 +51,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
+import ch.deletescape.lawnchair.feed.chips.ChipController
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.images.screen.ImageDataScreen
 import ch.deletescape.lawnchair.feed.tabs.TabController
@@ -1239,7 +1240,9 @@ class LauncherFeed(val originalContext: Context,
                 recyclerView.isLayoutFrozen = true
             }
         }
-        chipAdapter.rebindData()
+        FeedScope.launch {
+            ChipController.getInstance(context, this@LauncherFeed).refresh()
+        }
         runOnMainThread {
             if (!context.lawnchairPrefs.feedShowInfobox) {
                 toolbarParent.removeView(infobox.parent as View)
