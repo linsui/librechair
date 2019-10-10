@@ -21,11 +21,12 @@
 package ch.deletescape.lawnchair.feed.chips;
 
 import android.annotation.SuppressLint;
-import android.annotation.WorkerThread;
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 import androidx.room.InvalidationTracker;
 
 import com.android.launcher3.util.Preconditions;
@@ -82,6 +83,8 @@ public final class ChipController {
         });
     }
 
+    @NonNull
+    @MainThread
     public static synchronized ChipController getInstance(@NonNull Context context, @NonNull
             LauncherFeed feed) {
         Preconditions.assertNotNull(context);
@@ -90,7 +93,8 @@ public final class ChipController {
                 (sInstance = new ChipController(context, feed));
     }
 
-    public void subscribe(@NonNull @MainThread Consumer<List<ChipProvider.Item>> listener) {
+    @AnyThread
+    public synchronized void subscribe(@NonNull @MainThread Consumer<List<ChipProvider.Item>> listener) {
         Preconditions.assertNotNull(listener);
         subscribers.add(new WeakReference<>(listener));
         listener.accept(items);
