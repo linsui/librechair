@@ -170,6 +170,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             holder.itemView.setOnClickListener(cards[position].globalClickListener)
         } else {
             holder.itemView.foreground = null
+            holder.itemView.setOnClickListener(null)
         }
 
         if (holder.itemViewType and Card.TEXT_ONLY == 0
