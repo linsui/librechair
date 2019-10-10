@@ -23,12 +23,14 @@ package ch.deletescape.lawnchair.feed.chips.predict;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import ch.deletescape.lawnchair.adaptive.IconShape;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
@@ -51,7 +53,8 @@ public class PredictedAppsProvider extends ChipProvider {
                     it -> {
                         try {
                             Item item = new Item();
-                            item.icon = context.getPackageManager().getActivityIcon(
+                            item.icon = it.getIcon() != null ? new BitmapDrawable(context.getResources(), it.getIcon()) :
+                                    context.getPackageManager().getActivityIcon(
                                     it.getComponentKey().componentName);
                             item.title = context.getPackageManager().getActivityInfo(
                                     it.getComponentKey().componentName, 0).loadLabel(

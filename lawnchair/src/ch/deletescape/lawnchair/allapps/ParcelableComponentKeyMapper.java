@@ -24,6 +24,7 @@
 
 package ch.deletescape.lawnchair.allapps;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -38,17 +39,21 @@ import org.jetbrains.annotations.NotNull;
 public class ParcelableComponentKeyMapper implements Parcelable {
 
     private final ComponentKey componentKey;
+    private final Bitmap icon;
 
-    public ParcelableComponentKeyMapper(ComponentKey componentKey) {
+    public ParcelableComponentKeyMapper(ComponentKey componentKey, Bitmap icon) {
         this.componentKey = componentKey;
+        this.icon = icon;
     }
 
     public ParcelableComponentKeyMapper(ComponentKeyMapper mapper) {
         componentKey = mapper.getComponentKey();
+        icon = null;
     }
 
     protected ParcelableComponentKeyMapper(Parcel in) {
         componentKey = in.readParcelable(ComponentKey.class.getClassLoader());
+        icon = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
     public static final Creator<ParcelableComponentKeyMapper> CREATOR = new Creator<ParcelableComponentKeyMapper>() {
@@ -76,6 +81,10 @@ public class ParcelableComponentKeyMapper implements Parcelable {
         return this.componentKey.componentName.getClassName();
     }
 
+    public Bitmap getIcon() {
+        return this.icon;
+    }
+
     public ComponentKey getComponentKey() {
         return this.componentKey;
     }
@@ -97,5 +106,6 @@ public class ParcelableComponentKeyMapper implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(componentKey, flags);
+        dest.writeParcelable(icon, flags);
     }
 }
