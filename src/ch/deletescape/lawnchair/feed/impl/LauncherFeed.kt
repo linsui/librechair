@@ -850,7 +850,7 @@ class LauncherFeed(val originalContext: Context,
         synchronized(internalActions) {
             if (!internalActions.containsKey(R.id.cancel)) {
                 internalActions.put(R.id.cancel, FeedProvider.Action(
-                        R.drawable.ic_arrow_back.fromDrawableRes(context), context.getString(
+                        R.drawable.ic_close.fromDrawableRes(context), context.getString(
                         R.string.title_action_back), Runnable {
                     if (providerScreens.isEmpty() || providerScreens.size == 1) {
                         internalActions.remove(R.id.cancel)
