@@ -58,7 +58,6 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
     }
 
     override fun getHourlyForecast(lat: Double, lon: Double): ForecastProvider.Forecast {
-        d("getHourlyForecast: ", Throwable())
         synchronized(this) {
             try {
                 val responseResult: Response<List<AccuHourlyForecastGSon>>?
