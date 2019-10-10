@@ -73,6 +73,8 @@ import kotlin.jvm.functions.Function2;
 
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
+    private final double originalLat;
+    private final double originalLon;
 
     private GeoPoint toLocation;
     private GeoPoint fromLocation;
@@ -95,6 +97,8 @@ public class MapScreen extends ProviderScreen {
         this.lat = lat;
         this.lon = lon;
         this.zoom = zoom;
+        this.originalLat = lat;
+        this.originalLon = lon;
         this.provider = new IMyLocationProvider() {
             private IMyLocationConsumer myLocationConsumer;
             private Function2<Double, Double, Unit> changeListener = (lati, longi) -> {
@@ -163,6 +167,17 @@ public class MapScreen extends ProviderScreen {
         this(base, feed, lat, lon, zoom, displayLat, displayLon);
         this.toLocation = toLocation;
         this.fromLocation = fromLocation;
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        Log.d(getClass().getSimpleName(), "onBackPressed: " + lon + " " + originalLon + " " + lat + " " + originalLat);
+        if ((lon < originalLon - 0.02 || lon > originalLon + 0.02) ||
+                (lat < originalLat - 0.02 || lat > originalLon - 0.02)) {
+            mapView.getController().animateTo(new GeoPoint(originalLat, originalLon));
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -239,7 +254,8 @@ public class MapScreen extends ProviderScreen {
                             }
                         } else {
                             TextOverlay distance = new TextOverlay(MapScreen.this);
-                            distance.setText(getString(R.string.title_overlay_failure_loading_route));
+                            distance.setText(
+                                    getString(R.string.title_overlay_failure_loading_route));
                             mapView.getOverlayManager().add(distance);
                         }
                     });
