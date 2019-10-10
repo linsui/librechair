@@ -27,13 +27,22 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.provider.CalendarContract
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
+import ch.deletescape.lawnchair.feed.maps.MapScreen
+import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
 import ch.deletescape.lawnchair.fromDrawableRes
+import ch.deletescape.lawnchair.getPostionOnScreen
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
+import java.util.function.Consumer
 
 class UpcomingEventsProvider(val context: Context) : ChipProvider() {
     override fun getItems(context: Context):
@@ -105,11 +114,27 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                 chips += Item().apply {
                     title = "${eventCursor.getString(0)} ($text)"
                     icon = R.drawable.ic_event_black_24dp.fromDrawableRes(context)
-                    click = Runnable {
-                        try {
-                            context.startActivity(intent)
-                        } catch (e: ActivityNotFoundException) {
-                            e.printStackTrace()
+                    viewClickListener = Consumer {
+                        if (address?.trim()?.isEmpty() == false) {
+                            FeedScope.launch {
+                                val loc = LocationSearchManager.getInstance(context).get(address)
+                                if (loc != null) {
+                                    FeedScope.launch(Dispatchers.Main) {
+                                        MapScreen(context, launcherFeed, loc.first, loc.second,
+                                                13.0).display(launcherFeed,
+                                                it.getPostionOnScreen().first + it.measuredWidth / 2,
+                                                it.getPostionOnScreen().second + it.measuredHeight / 2)
+                                    }
+                                } else {
+                                    FeedScope.launch(Dispatchers.Main) {
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: ActivityNotFoundException) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
