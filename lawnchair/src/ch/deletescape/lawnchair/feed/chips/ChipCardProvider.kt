@@ -78,7 +78,18 @@ class ChipCardProvider(c: Context) : FeedProvider(c), Consumer<List<ChipProvider
                             ColorEngine.Resolvers.FEED_CHIP).value.computeForegroundColor()) else it
             }, it.title,
                     { _, _ -> View(context) }, Card.TEXT_ONLY or Card.RAISE, "",
-                    it.title.hashCode() shl 10 or (it.icon?.hashCode() ?: 0 and 0b1111111111))
+                    it.title.hashCode() shl 10 or (it.icon?.hashCode() ?: 0 and 0b1111111111)).apply {
+                if (it.click != null || it.viewClickListener != null) {
+                    globalClickListener = { v ->
+                        if (it.viewClickListener != null) {
+                            it.viewClickListener.accept(v)
+                        }
+                        if (it.click != null) {
+                            it.click.run()
+                        }
+                    }
+                }
+            }
         }
     }
 
