@@ -77,9 +77,7 @@ public final class ChipController {
             public void onInvalidated(@NonNull Set<String> tables) {
                 providers = dao.getAll().stream().map(
                         val -> ChipProvider.Cache.get(val, context)).collect(Collectors.toList());
-                Executors.newSingleThreadExecutor().submit(() -> {
-                    refresh();
-                });
+                Executors.newSingleThreadExecutor().submit(() -> refresh());
             }
         });
     }
@@ -99,23 +97,20 @@ public final class ChipController {
     }
 
     @WorkerThread
-    @SuppressWarnings({"unchecked", "SuspiciousToArrayCall"})
+    @SuppressWarnings({"unchecked"})
     public void refresh() {
-        List<List<ChipProvider.Item>> ts = providers.stream().filter(
-                Objects::nonNull).peek(it -> {
-            it.setController(ChipController.this);
-            it.setLauncherFeed(feed);
-        }).map(it -> it.getItems(context)).collect(Collectors.toList());
         SortingAlgorithm<ChipProvider.Item> algo;
         if (ChipPersistence.Companion.getInstance(context).getMixChips()) {
             algo = new MixerSortHelper();
         } else {
             algo = new NormalSortHelper();
         }
-        items = algo.sort(ts.toArray(new List[0]));
-        new Handler(context.getMainLooper()).post(() -> {
-            subscribers.stream().filter(it -> it.get() != null).forEach(
-                    subscriber -> subscriber.get().accept(items));
-        });
+        items = algo.sort(providers.stream().filter(
+                Objects::nonNull).peek(it -> {
+            it.setController(ChipController.this);
+            it.setLauncherFeed(feed);
+        }).map(it -> it.getItems(context)).toArray(List[]::new));
+        new Handler(context.getMainLooper()).post(() -> subscribers.stream().filter(it -> it.get() != null).forEach(
+                subscriber -> subscriber.get().accept(items)));
     }
 }
