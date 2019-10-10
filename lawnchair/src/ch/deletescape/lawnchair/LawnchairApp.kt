@@ -48,6 +48,7 @@ import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
 import kg.net.bazi.gsb4j.Gsb4j
 import kotlinx.coroutines.launch
+import me.weishu.reflection.Reflection
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -77,6 +78,13 @@ class LawnchairApp : Application(), () -> Unit {
     }
 
     fun isGsb4jAvailable() = ::gsb4j.isInitialized
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        Reflection.unseal(base)
+        Utilities.HIDDEN_APIS_ALLOWED = !Utilities.ATLEAST_P || HiddenApiCompat.checkIfAllowed()
+        d("Hidden APIs allowed after unseal: ${Utilities.HIDDEN_APIS_ALLOWED}")
+    }
 
     override fun onCreate() {
         super.onCreate()
