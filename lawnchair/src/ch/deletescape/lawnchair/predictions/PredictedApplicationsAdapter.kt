@@ -29,7 +29,7 @@ import ch.deletescape.lawnchair.atMost
 
 open class PredictedApplicationsAdapter(val context: Context) :
         RecyclerView.Adapter<IconViewViewHolder>() {
-    open val gridSize = 7
+    open val gridSize = 6
     var predictions: List<ParcelableComponentKeyMapper> = mutableListOf()
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): IconViewViewHolder = IconViewViewHolder(parent)
