@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.adaptive.IconShape;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
 
 import static java.util.Collections.EMPTY_LIST;
@@ -53,15 +54,16 @@ public class PredictedAppsProvider extends ChipProvider {
                     it -> {
                         try {
                             Item item = new Item();
-                            item.icon = it.getIcon() != null ? new BitmapDrawable(context.getResources(), it.getIcon()) :
+                            item.icon = it.getIcon() != null ? new BitmapDrawable(
+                                    context.getResources(), it.getIcon()) :
                                     context.getPackageManager().getActivityIcon(
-                                    it.getComponentKey().componentName);
+                                            it.getComponentKey().componentName);
                             item.title = context.getPackageManager().getActivityInfo(
                                     it.getComponentKey().componentName, 0).loadLabel(
                                     context.getPackageManager()).toString();
-                            item.click = () -> context.startActivity(new Intent().setComponent(
-                                    it.getComponentKey().componentName).addFlags(
-                                    Intent.FLAG_ACTIVITY_NEW_TASK));
+                            item.viewClickListener = v -> FeedUtil.startActivity(context,
+                                    new Intent().setComponent(
+                                            it.getComponentKey().componentName), v);
                             return item;
                         } catch (PackageManager.NameNotFoundException e) {
                             return null;
