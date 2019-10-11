@@ -29,3 +29,9 @@ object FeedScope : CoroutineScope {
             newFixedThreadPoolContext(64, "feed");
 
 }
+
+object JobScope : CoroutineScope {
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(64, "feed");
+
+}

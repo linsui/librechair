@@ -20,13 +20,16 @@
 package ch.deletescape.lawnchair.reflection;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
-import ch.deletescape.lawnchair.feed.AbstractFeedSortingAlgorithm;
-import ch.deletescape.lawnchair.feed.FeedProvider;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+
+import ch.deletescape.lawnchair.feed.AbstractFeedSortingAlgorithm;
+import ch.deletescape.lawnchair.feed.FeedProvider;
 
 @SuppressWarnings("unchecked")
 public class ReflectionUtils {
@@ -62,5 +65,14 @@ public class ReflectionUtils {
             field1.setAccessible(true);
         }
         return (R) field1.get(object);
+    }
+
+    public static Class<?> getCallingClass() {
+        Throwable stack = new Throwable();
+        try {
+            return Class.forName(stack.getStackTrace()[stack.getStackTrace().length - 3].getClassName());
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
