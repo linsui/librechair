@@ -21,7 +21,6 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
@@ -33,11 +32,17 @@ import java.io.IOException
 import java.util.*
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
+    init {
+        ch.deletescape.lawnchair.location.LocationManager.addCallback { _, _ ->
+            refresh(context, {  }, true)
+        }
+    }
+
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback) {
         try {
-            if (context.checkLocationAccess() && context.lawnchairPrefs.overrideLocale.isEmpty()) {
-                context.lawnchairLocationManager.addCallback { lat, lon ->
+            if (context.lawnchairLocationManager.location != null && context.lawnchairPrefs.overrideLocale.isEmpty()) {
+                context.lawnchairLocationManager.location!!.let { (lat, lon) ->
                     FeedScope.launch {
                         val country =
                                 GeocoderCompat(context, true).nearestPlace(lat, lon).country

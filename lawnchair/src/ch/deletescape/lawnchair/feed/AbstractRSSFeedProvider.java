@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.AnyThread;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.app.job.JobInfo;
@@ -48,6 +49,7 @@ import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.SyndFeedOutput;
 import com.squareup.picasso.Picasso.Builder;
 
+import org.jetbrains.annotations.Contract;
 import org.xml.sax.InputSource;
 
 import java.io.ByteArrayInputStream;
@@ -108,7 +110,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         .build());
     }
 
-    private void refresh(Context c, Runnable finished, boolean diff) {
+    @AnyThread
+    @Contract("null, null, _ -> fail")
+    protected void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> {
             byte[] cache;
             if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getId(),
