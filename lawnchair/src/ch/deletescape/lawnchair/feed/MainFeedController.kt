@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
 import ch.deletescape.lawnchair.feed.chips.ChipCardProvider
 import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
+import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
@@ -34,7 +35,6 @@ import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 @SuppressLint("StaticFieldLeak")
@@ -195,7 +195,7 @@ class MainFeedController(val context: Context) {
                                 }),
                         context.packageManager.getServiceInfo(it, 0).loadLabel(
                                 context.packageManager).toString())
-            }.also { d("getFeedProvidersLegacy: feed providers are $it ") }
+            } + DynamicProviderController.getProviders()
         }
     }
 }
