@@ -94,7 +94,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 new JobInfo.Builder(hashCode(), new ComponentName(c, JobSchedulerService.class))
                         .setPersisted(false)
                         .setRequiresBatteryNotLow(true)
-                        .setPeriodic(TimeUnit.HOURS.toMinutes(1), TimeUnit.MINUTES.toMillis(10))
+                        .setPeriodic(TimeUnit.HOURS.toMillis(1), TimeUnit.MINUTES.toMillis(10))
                         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                         .build());
         scheduler.schedule(
