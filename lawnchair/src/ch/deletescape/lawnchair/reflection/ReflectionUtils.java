@@ -35,7 +35,7 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 public class ReflectionUtils {
 
     public static FeedProvider inflateFeedProvider(String clazz, Context context,
-            @Nullable Map<String, String> arguments)
+                                                   @Nullable Map<String, String> arguments)
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException, NoSuchMethodException {
         Class clazs = Class.forName(clazz);
         Constructor<FeedProvider> method;
@@ -68,11 +68,19 @@ public class ReflectionUtils {
     }
 
     public static Class<?> getCallingClass() {
-        Throwable stack = new Throwable();
-        try {
-            return Class.forName(stack.getStackTrace()[stack.getStackTrace().length - 3].getClassName());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+        for (int i = 1; i < stElements.length; i++) {
+            StackTraceElement ste = stElements[i];
+            if (!ste.getClassName().equals(
+                    ReflectionUtils.class.getName()) && ste.getClassName().indexOf(
+                    "java.lang.Thread") != 0) {
+                try {
+                    return Class.forName(ste.getClassName());
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+        return null;
     }
 }

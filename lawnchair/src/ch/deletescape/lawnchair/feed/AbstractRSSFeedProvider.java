@@ -20,11 +20,13 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -40,6 +42,7 @@ import com.android.launcher3.Utilities;
 import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.SyndFeedOutput;
@@ -62,6 +65,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
 import ch.deletescape.lawnchair.feed.cache.CacheManager;
 import ch.deletescape.lawnchair.feed.jobs.JobSchedulerService;
+import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import kotlin.Unit;
 
@@ -76,12 +80,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         super(c);
         scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobSchedulerService.Companion.getIdCallbacks().put(hashCode() << 1, unitFunction1 -> {
-            refresh(c, () -> unitFunction1.invoke(false));
+            refresh(c, () -> unitFunction1.invoke(false), true);
             JobSchedulerService.Companion.getIdCallbacks().remove(hashCode() << 1);
             return Unit.INSTANCE;
         });
         JobSchedulerService.Companion.getIdCallbacks().put(hashCode(), unitFunction1 -> {
-            refresh(c, () -> unitFunction1.invoke(false));
+            refresh(c, () -> unitFunction1.invoke(false), true);
             return Unit.INSTANCE;
         });
         scheduler.schedule(
@@ -92,7 +96,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                         .build());
         scheduler.schedule(
-                new JobInfo.Builder(hashCode() << 1, new ComponentName(c, JobSchedulerService.class))
+                new JobInfo.Builder(hashCode() << 1,
+                        new ComponentName(c, JobSchedulerService.class))
                         .setPersisted(false)
                         .setRequiresBatteryNotLow(false)
                         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -101,20 +106,25 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         .build());
     }
 
-    private void refresh(Context c, Runnable finished) {
+    private void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> {
             byte[] cache;
             if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getClass().getName(),
                     "cached_feed")).length >= 1) {
                 try {
+                    SyndFeed old = articles;
                     articles = new SyndFeedInput().build(
                             new InputSource(new ByteArrayInputStream(cache)));
                     finished.run();
+                    if (diff) {
+                        showNotifications(old != null ? old : new SyndFeedImpl());
+                    }
                 } catch (FeedException e) {
                     bindFeed(feed1 -> {
                         Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
                                 "constructor: bound to feed");
                         lastUpdate = System.currentTimeMillis();
+                        SyndFeed old = articles;
                         articles = feed1;
                         ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
                         SyndFeedOutput output = new SyndFeedOutput();
@@ -127,7 +137,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                     "cache_feed", TimeUnit.HOURS.toMillis(1));
                         } catch (IOException | FeedException e2) {
                             e.printStackTrace();
-                            finished.run();
+                        }
+                        if (diff) {
+                            showNotifications(old != null ? old : new SyndFeedImpl());
                         }
                         finished.run();
                     });
@@ -138,6 +150,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
                             "constructor: bound to feed");
                     lastUpdate = System.currentTimeMillis();
+                    SyndFeed old = articles;
                     articles = feed;
                     ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
                     SyndFeedOutput output = new SyndFeedOutput();
@@ -150,12 +163,38 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 TimeUnit.HOURS.toMillis(1));
                     } catch (IOException | FeedException e) {
                         e.printStackTrace();
-                        finished.run();
+                    }
+                    if (diff) {
+                        showNotifications(old != null ? old : new SyndFeedImpl());
                     }
                     finished.run();
                 });
             }
         });
+    }
+
+    private void showNotifications(SyndFeed original) {
+        if (!articles.getEntries().isEmpty()) {
+            for (SyndEntry notif : articles.getEntries().subList(
+                    articles.getEntries().size() < 5 ? articles.getEntries().size() : articles.getEntries().size() - 5
+                    , articles.getEntries().size() - 1)) {
+                if (!original.getEntries().contains(
+                        notif) && notif.getTitle() != null && notif.getDescription() != null) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(notif.getLink()));
+                    PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
+                    if (notif.getDescription().getValue().length() > 30) {
+                        NotificationManager.getInstance(getContext())
+                                .postNotification(this, R.drawable.ic_newspaper_24dp, notif.getTitle(),
+                                        notif.getDescription().getValue().substring(0, 30) + "...", intent2);
+                    } else {
+                        NotificationManager.getInstance(getContext())
+                                .postNotification(this, R.drawable.ic_newspaper_24dp, notif.getTitle(),
+                                        notif.getDescription().getValue() + "...", intent2);
+                    }
+                }
+            }
+        }
     }
 
     @Override

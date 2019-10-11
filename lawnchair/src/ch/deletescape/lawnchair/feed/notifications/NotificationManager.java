@@ -55,7 +55,7 @@ public final class NotificationManager {
     private NotificationManager(@NonNull Context context) {
         if (ReflectionUtils.getCallingClass() != NotificationManager.class) {
             throw new SecurityException(
-                    "This class shouldn't be instantiated outside of getInstance");
+                    "This class shouldn't be instantiated outside of getInstance (was instantiated in " + ReflectionUtils.getCallingClass() + ")");
         }
         this.context = new WeakReference<>((Application) context.getApplicationContext());
         this.channels = new LinkedHashMap<>();
