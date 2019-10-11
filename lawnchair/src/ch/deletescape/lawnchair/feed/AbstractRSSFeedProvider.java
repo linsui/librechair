@@ -178,24 +178,31 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     private void showNotifications(SyndFeed original) {
         if (!articles.getEntries().isEmpty()) {
             for (SyndEntry notif : articles.getEntries().subList(
-                    articles.getEntries().size() < 5 ? articles.getEntries().size() : articles.getEntries().size() - 5
+                    articles.getEntries().size() < (int) Math.round(
+                            FeedPersistence.Companion.getInstance(
+                                    getContext()).getNotificationCount()) ? articles.getEntries().size() : articles.getEntries().size() - (int) Math.round(
+                            FeedPersistence.Companion.getInstance(
+                                    getContext()).getNotificationCount())
                     , articles.getEntries().size() - 1)) {
                 if (!original.getEntries().contains(
                         notif) && notif.getTitle() != null && notif.getDescription() != null) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(notif.getLink()));
                     PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
-                    if (Html.fromHtml(notif.getDescription().getValue(), 0).toString().length() > 250) {
+                    if (Html.fromHtml(notif.getDescription().getValue(),
+                            0).toString().length() > 250) {
                         NotificationManager.getInstance(getContext())
                                 .postNotification(this, R.drawable.ic_newspaper_24dp,
                                         notif.getTitle(),
-                                        Html.fromHtml(notif.getDescription().getValue(), 0).toString().substring(0, 250) + "...",
+                                        Html.fromHtml(notif.getDescription().getValue(),
+                                                0).toString().substring(0, 250) + "...",
                                         intent2);
                     } else {
                         NotificationManager.getInstance(getContext())
                                 .postNotification(this, R.drawable.ic_newspaper_24dp,
                                         notif.getTitle(),
-                                        Html.fromHtml(notif.getDescription().getValue(), 0).toString(), intent2);
+                                        Html.fromHtml(notif.getDescription().getValue(),
+                                                0).toString(), intent2);
                     }
                 }
             }

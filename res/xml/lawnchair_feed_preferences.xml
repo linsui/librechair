@@ -430,5 +430,14 @@
             android:key="feed_notify_articles_on_first_run"
             android:title="@string/title_pref_feed_notify_articles_on_first_run"
             android:summary="@string/summary_pref_feed_notify_articles_on_first_run"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_synd_notification_count"
+            android:title="@string/title_pref_feed_synd_notification_count"
+            app:defaultSeekbarValue="5"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

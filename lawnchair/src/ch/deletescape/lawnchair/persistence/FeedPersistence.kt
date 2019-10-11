@@ -48,6 +48,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_gecko", BuildConfig.GECKO)
     val notifyUsersAboutNewArticlesOnFirstRun
             by BooleanDelegate(context, "feed_notify_articles_on_first_run", false)
+    val notificationCount
+            by NumberDelegate(context, "feed_synd_notification_count", 5.0)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
