@@ -56,10 +56,12 @@ object LocationManager {
         get() = slots.firstOrNull { it.second.left != null && it.second.right != null }?.second?.let { it.left!! to it.right!! }
 
     fun addCallback(callback: (lat: Double, lon: Double) -> Unit) {
-        if (location != null) {
-            callback(location!!.first, location!!.second)
+        runOnMainThread {
+            if (location != null) {
+                callback(location!!.first, location!!.second)
+            }
+            changeCallbacks += callback
         }
-        changeCallbacks += callback
     }
 
     abstract class LocationProvider(val context: Context) {
