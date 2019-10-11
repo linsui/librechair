@@ -184,8 +184,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             FeedPersistence.Companion.getInstance(
                                     getContext()).getNotificationCount())
                     , articles.getEntries().size() - 1)) {
-                if (!original.getEntries().contains(
-                        notif) && notif.getTitle() != null && notif.getDescription() != null) {
+                if (original.getEntries().stream().noneMatch(entry -> entry.getTitle().equals(
+                        notif.getTitle())) && notif.getTitle() != null && notif.getDescription() != null) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(notif.getLink()));
                     PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
