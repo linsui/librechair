@@ -20,19 +20,23 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+
 import androidx.annotation.Nullable;
-import ch.deletescape.lawnchair.reflection.ReflectionUtils;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import org.jetbrains.annotations.NotNull;
+
+import ch.deletescape.lawnchair.reflection.ReflectionUtils;
 
 public class FeedProviderContainer {
 
     public final String clazz;
     @NotNull
-    public Map<String, String> arguments = Collections.emptyMap();
+    public Map<String, String> arguments;
     @Nullable
     public String name;
 
@@ -57,7 +61,7 @@ public class FeedProviderContainer {
         return instantiate(context, arguments);
     }
 
-    public FeedProvider instantiate(Context context, Map<String, String> arguments)
+    private FeedProvider instantiate(Context context, Map<String, String> arguments)
             throws ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
         FeedProvider feedProvider = ReflectionUtils.inflateFeedProvider(clazz, context, arguments);
         feedProvider.setContainer(this);

@@ -44,6 +44,6 @@ class GSyndicationFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c)
     }
 
     override fun getFallbackFeed(): SyndFeed {
-        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "US");
+        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "US")
     }
 }
