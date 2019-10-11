@@ -16,14 +16,10 @@
 
 package com.android.launcher3;
 
-import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
-import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
-
 import android.Manifest;
 import android.Manifest.permission;
 import android.annotation.ColorInt;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
@@ -32,7 +28,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.LauncherActivityInfo;
 import android.content.pm.PackageInfo;
@@ -78,9 +73,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.HiddenApiCompat;
-import ch.deletescape.lawnchair.LawnchairApp;
-import ch.deletescape.lawnchair.LawnchairAppKt;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -89,10 +82,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.drawable.IconCompat;
+
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
 import com.android.launcher3.config.FeatureFlags;
-
 import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
 import com.android.launcher3.folder.FolderIcon;
@@ -106,7 +99,7 @@ import com.android.launcher3.uioverrides.OverviewState;
 import com.android.launcher3.util.PackageManagerHelper;
 import com.android.launcher3.views.Transposable;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
-import com.android.systemui.shared.recents.model.Task;
+
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
@@ -131,6 +124,9 @@ import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -860,12 +856,23 @@ public final class Utilities {
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
+        return drawableToBitmap(drawable, forceCreate, 0);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
         if (!forceCreate && drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
 
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            return null;
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+
+        if (width <= 0 || height <= 0) {
+            if (fallbackSize > 0) {
+                width = height = fallbackSize;
+            } else {
+                return null;
+            }
         }
 
         Bitmap bitmap = Bitmap.createBitmap(
