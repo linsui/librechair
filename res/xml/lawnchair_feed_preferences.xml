@@ -425,5 +425,10 @@
             android:key="feed_conservative_refreshes"
             android:title="@string/title_pref_feed_conservative_refreshes"
             android:summary="@string/summary_pref_feed_conservative_refreshes"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_notify_articles_on_first_run"
+            android:title="@string/title_pref_feed_notify_articles_on_first_run"
+            android:summary="@string/summary_pref_feed_notify_articles_on_first_run"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

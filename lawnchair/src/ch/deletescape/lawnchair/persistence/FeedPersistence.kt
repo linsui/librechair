@@ -46,6 +46,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_pull_down_to_refresh", true)
     val useGecko
             by BooleanDelegate(context, "feed_gecko", BuildConfig.GECKO)
+    val notifyUsersAboutNewArticlesOnFirstRun
+            by BooleanDelegate(context, "feed_notify_articles_on_first_run", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

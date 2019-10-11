@@ -734,4 +734,6 @@
     <string name="title_pref_feed_gecko">Use Gecko rendering engine for web pages</string>
     <string name="summary_pref_feed_gecko">The Mozilla Gecko rendering engine will be used to open web pages in the feed</string>
     <string name="title_pref_chip_max_predictions">Max prediction count</string>
+    <string name="title_pref_feed_notify_articles_on_first_run">Send article notification on initial load</string>
+    <string name="summary_pref_feed_notify_articles_on_first_run">Article notifications will be sent even when they are first loaded</string>
 </resources>

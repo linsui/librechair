@@ -67,6 +67,7 @@ import ch.deletescape.lawnchair.feed.cache.CacheManager;
 import ch.deletescape.lawnchair.feed.jobs.JobSchedulerService;
 import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
@@ -80,7 +81,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         super(c);
         scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobSchedulerService.Companion.getIdCallbacks().put(hashCode() << 1, unitFunction1 -> {
-            refresh(c, () -> unitFunction1.invoke(false), true);
+            refresh(c, () -> unitFunction1.invoke(false),
+                    FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
             JobSchedulerService.Companion.getIdCallbacks().remove(hashCode() << 1);
             return Unit.INSTANCE;
         });
@@ -185,11 +187,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
                     if (notif.getDescription().getValue().length() > 30) {
                         NotificationManager.getInstance(getContext())
-                                .postNotification(this, R.drawable.ic_newspaper_24dp, notif.getTitle(),
-                                        notif.getDescription().getValue().substring(0, 30) + "...", intent2);
+                                .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                        notif.getTitle(),
+                                        notif.getDescription().getValue().substring(0, 30) + "...",
+                                        intent2);
                     } else {
                         NotificationManager.getInstance(getContext())
-                                .postNotification(this, R.drawable.ic_newspaper_24dp, notif.getTitle(),
+                                .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                        notif.getTitle(),
                                         notif.getDescription().getValue() + "...", intent2);
                     }
                 }
