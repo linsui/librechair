@@ -21,9 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import ch.deletescape.lawnchair.LawnchairApp
-import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
 import ch.deletescape.lawnchair.feed.chips.ChipCardProvider
 import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
 import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
@@ -174,27 +172,6 @@ class MainFeedController(val context: Context) {
                     WebApplicationsProvider::class.qualifiedName,
                     AlarmEventProvider::class.qualifiedName).map {
                 FeedProviderContainer(it, null)
-            } + RemoteFeedProvider.allProviders(context).map {
-                FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
-                        mapOf(RemoteFeedProvider.COMPONENT_KEY to it.flattenToString(),
-                                METADATA_CONTROLLER_PACKAGE to it.packageName,
-                                RemoteFeedProvider.COMPONENT_CATEGORY to run {
-                                    try {
-                                        return@run context.packageManager.getServiceInfo(
-                                                it, 0)?.metaData?.getString(
-                                                METADATA_CATEGORY) ?: "other"
-                                    } catch (e: Resources.NotFoundException) {
-                                        return@run "other"
-                                    } catch (e: ClassCastException) {
-                                        e.printStackTrace()
-                                        return@run "other"
-                                    } catch (e: NullPointerException) {
-                                        e.printStackTrace()
-                                        return@run "other"
-                                    }
-                                }),
-                        context.packageManager.getServiceInfo(it, 0).loadLabel(
-                                context.packageManager).toString())
             } + DynamicProviderController.getProviders()
         }
     }
