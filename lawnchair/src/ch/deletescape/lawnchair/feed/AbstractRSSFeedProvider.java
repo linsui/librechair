@@ -185,17 +185,17 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(notif.getLink()));
                     PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
-                    if (notif.getDescription().getValue().length() > 30) {
+                    if (notif.getDescription().getValue().length() > 250) {
                         NotificationManager.getInstance(getContext())
                                 .postNotification(this, R.drawable.ic_newspaper_24dp,
                                         notif.getTitle(),
-                                        notif.getDescription().getValue().substring(0, 30) + "...",
+                                        Html.fromHtml(notif.getDescription().getValue(), 0).toString().substring(0, 250) + "...",
                                         intent2);
                     } else {
                         NotificationManager.getInstance(getContext())
                                 .postNotification(this, R.drawable.ic_newspaper_24dp,
                                         notif.getTitle(),
-                                        notif.getDescription().getValue() + "...", intent2);
+                                        Html.fromHtml(notif.getDescription().getValue(), 0).toString(), intent2);
                     }
                 }
             }
