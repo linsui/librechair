@@ -21,17 +21,20 @@
 package ch.deletescape.lawnchair.feed
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlin.coroutines.CoroutineContext
 
 object FeedScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =
-            newFixedThreadPoolContext(64, "feed");
+            newFixedThreadPoolContext(64, "feed")
 
 }
 
 object JobScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =
-            newFixedThreadPoolContext(64, "feed");
+            newFixedThreadPoolContext(64, "overlay_jobs")
 
 }
