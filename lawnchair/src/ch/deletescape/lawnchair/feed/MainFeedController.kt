@@ -142,37 +142,7 @@ class MainFeedController(val context: Context) {
             if (!calledFromPrefs) {
                 migrateToContainerSystem(context)
             }
-            return listOf(CalendarEventProvider::class.qualifiedName,
-                    FeedWeatherStatsProvider::class.qualifiedName,
-                    FeedJoinedWeatherProvider::class.qualifiedName,
-                    FeedDailyForecastProvider::class.qualifiedName,
-                    FeedForecastProvider::class.qualifiedName,
-                    FeedSearchboxProvider::class.qualifiedName,
-                    FeedContactsProvider::class.qualifiedName,
-                    ImageProvider::class.qualifiedName,
-                    ChipCardProvider::class.qualifiedName,
-                    BingDailyImageProvider::class.qualifiedName,
-                    ApodDailyImageProvider::class.qualifiedName,
-                    NgDailyImageProvider::class.qualifiedName,
-                    NoteListProvider::class.qualifiedName,
-                    WeatherBarFeedProvider::class.qualifiedName,
-                    WikipediaNewsProvider::class.qualifiedName,
-                    ItnSyndicationProvider::class.qualifiedName,
-                    WikipediaFunFactsProvider::class.qualifiedName,
-                    WikinewsFeedProvider::class.qualifiedName,
-                    TheGuardianFeedProvider::class.qualifiedName,
-                    BBCFeedProvider::class.qualifiedName,
-                    TheVergeFeedProvider::class.qualifiedName,
-                    CustomizableRSSProvider::class.qualifiedName,
-                    GSyndicationFeedProvider::class.qualifiedName,
-                    DeviceStateProvider::class.qualifiedName,
-                    FeedWidgetsProvider::class.qualifiedName,
-                    DailySummaryFeedProvider::class.qualifiedName,
-                    PredictedAppsProvider::class.qualifiedName,
-                    WebApplicationsProvider::class.qualifiedName,
-                    AlarmEventProvider::class.qualifiedName).map {
-                FeedProviderContainer(it, null)
-            } + DynamicProviderController.getProviders()
+            return DynamicProviderController.getProviders()
         }
     }
 }

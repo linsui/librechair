@@ -27,7 +27,8 @@ object DynamicProviderController {
     internal lateinit var providers: List<DynamicProviderDelegate>
 
     fun attachContext(c: Context) {
-        providers = listOf(RemoteFeedsDelegate(c), CustomFeedsDelegate(c))
+        providers = listOf(ProviderProviderDelegate(c),
+                RemoteFeedsDelegate(c), CustomFeedsDelegate(c))
     }
 
     fun getProviders(): List<FeedProviderContainer> = if (::providers.isInitialized)
