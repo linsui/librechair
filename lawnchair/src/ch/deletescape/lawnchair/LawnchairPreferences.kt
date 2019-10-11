@@ -41,8 +41,6 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
-import ch.deletescape.lawnchair.feed.widgets.Widget
-import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
 import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
@@ -56,7 +54,6 @@ import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
-import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
@@ -66,7 +63,6 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
-import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -287,36 +283,6 @@ class LawnchairPreferences(val context: Context) :
 
         override fun customAdder(value: Pair<Int, WidgetMetadata>) {
             setAll(getAll().filter { it.first != value.first } + value)
-        }
-    }
-
-    init {
-        if (feedWidgetList.getAll().isNotEmpty()) {
-            FeedScope.launch {
-                if (getCurrentProcessName(context).contains("overlay").not()) {
-                    feedWidgetList.getAll().iterator().apply {
-                        forEach {
-                            val metadata = feedWidgetMetadata.getAll()
-                                    .firstOrNull { data -> data.first == it }?.second
-                            try {
-                                WidgetDatabase.getInstance(context).dao()
-                                        .addWidget(
-                                                Widget(it, WidgetDatabase.getInstance(context).dao()
-                                                        .all.size, metadata?.showCardTitle ?: false,
-                                                        metadata?.sortable ?: false,
-                                                        metadata?.customCardTitle,
-                                                        metadata?.raiseCard ?: false,
-                                                        metadata?.height ?: Widget.DEFAULT_HEIGHT))
-                            } catch (e: RuntimeException) {
-                                e.printStackTrace()
-                            }
-                        }
-                    }
-                    for (i in 0 until feedWidgetList.getAll().size) {
-                        feedWidgetList.remove(i)
-                    }
-                }
-            }
         }
     }
 

@@ -101,7 +101,6 @@ class LawnchairApp : Application(), () -> Unit {
                 }
             }
         }
-        DynamicProviderController.attachContext(this)
         localizationContext = this
         ch.deletescape.lawnchair.location.LocationManager.location
         d("Current process: " + getCurrentProcessName(this))
@@ -137,6 +136,7 @@ class LawnchairApp : Application(), () -> Unit {
                 }
             }
         }
+        DynamicProviderController.attachContext(this)
     }
 
     fun onLauncherAppStateCreated() {
