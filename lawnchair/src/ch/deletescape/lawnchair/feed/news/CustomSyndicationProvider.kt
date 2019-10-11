@@ -54,6 +54,11 @@ class CustomSyndicationProvider(c: Context, internal val arguments: Map<String, 
         }
     }
 
+    @Suppress("MapGetWithNotNullAssertionOperator")
+    override fun getId(): String {
+        return arguments[URL]!!.hashCode().toString()
+    }
+
     companion object  {
         const val URL = "synd::custom_url"
     }

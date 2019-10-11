@@ -111,7 +111,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     private void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> {
             byte[] cache;
-            if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getClass().getName(),
+            if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getId(),
                     "cached_feed")).length >= 1) {
                 try {
                     SyndFeed old = articles;
@@ -135,7 +135,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             CacheManager.Companion.getInstance(
                                     AbstractRSSFeedProvider.this.getContext()).writeCache(
                                     cachedFeed.toByteArray(),
-                                    AbstractRSSFeedProvider.this.getClass().getName(),
+                                    getId(),
                                     "cache_feed", TimeUnit.HOURS.toMillis(1));
                         } catch (IOException | FeedException e2) {
                             e.printStackTrace();
@@ -161,7 +161,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         CacheManager.Companion.getInstance(
                                 AbstractRSSFeedProvider.this.getContext()).writeCache(
                                 cachedFeed.toByteArray(),
-                                AbstractRSSFeedProvider.this.getClass().getName(), "cache_feed",
+                                getId(), "cache_feed",
                                 TimeUnit.HOURS.toMillis(1));
                     } catch (IOException | FeedException e) {
                         e.printStackTrace();
@@ -225,6 +225,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Override
     public boolean isVolatile() {
         return cardCache == null || cardCache.isEmpty();
+    }
+
+    protected String getId() {
+        return getClass().getName();
     }
 
     @Override
