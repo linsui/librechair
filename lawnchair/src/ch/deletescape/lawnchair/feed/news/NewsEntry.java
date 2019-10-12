@@ -54,7 +54,7 @@ public class NewsEntry {
     }
 
     @TypeConverter
-    public static List<String> toStringList(String value) {
+    public static List<String> stringToStringList(String value) {
         if (value == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public class NewsEntry {
     }
 
     @TypeConverter
-    public static String stringListToStringArray(List<String> value) {
+    public static String stringListToString(List<String> value) {
         if (value == null) {
             return null;
         }

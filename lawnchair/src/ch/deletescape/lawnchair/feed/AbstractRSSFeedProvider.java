@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
+import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.squareup.picasso.Picasso.Builder;
 
@@ -122,6 +123,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         newsEntry.content = entry.getDescription().getValue();
                         newsEntry.url = entry.getLink();
                         newsEntry.title = entry.getTitle();
+                        newsEntry.categories = entry.getCategories()
+                                .stream()
+                                .map(SyndCategory::getName)
+                                .collect(Collectors.toList());
                         newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                         return newsEntry;
                     }).collect(Collectors.toList());
