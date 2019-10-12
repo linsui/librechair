@@ -355,7 +355,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             return cards;
         }
     }
-
     protected abstract void bindFeed(BindCallback callback);
 
     protected interface BindCallback {

@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed
 import android.content.Context
 import android.graphics.Rect
 import android.view.View
+import android.widget.LinearLayout
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.applyAsDip
@@ -38,6 +39,8 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
 
     init {
         recyclerView.adapter = adapter
+        recyclerView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                              LinearLayout.LayoutParams.WRAP_CONTENT)
         recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
         recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
