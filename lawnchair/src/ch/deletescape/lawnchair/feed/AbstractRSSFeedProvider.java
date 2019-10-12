@@ -220,12 +220,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             List<Card> cards = LawnchairUtilsKt.newList();
             Log.d(getClass().getName(),
                     "getCards: iterating through entries: " + articles.toString());
+            boolean minicard = FeedPersistenceKt.getFeedPrefs(
+                    getContext()).getUseRSSMinicard();
             for (NewsEntry entry : articles) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
                 @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, null,
                         parent -> {
-                            boolean minicard = FeedPersistenceKt.getFeedPrefs(
-                                    getContext()).getUseRSSMinicard();
                             Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                             View v = LayoutInflater.from(parent.getContext())
                                     .inflate(minicard ? R.layout.rss_miniitem : R.layout.rss_item,
