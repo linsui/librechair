@@ -20,7 +20,6 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
-import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import org.apache.commons.io.IOUtils
@@ -194,7 +193,6 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
     }
 
     override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
-        d("getLocationAwareFeed: country is $country")
         val feed = IOUtils.toString(URL(feeds[country] + "/rss").openConnection().getInputStream(),
                                     Charset.defaultCharset())
         return SyndFeedInput()
@@ -202,7 +200,6 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
     }
 
     override fun getFallbackFeed(): SyndFeed {
-        d("", Throwable())
         return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "WORLD")
     }
 }

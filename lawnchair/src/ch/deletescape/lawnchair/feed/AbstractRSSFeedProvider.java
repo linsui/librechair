@@ -111,6 +111,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     entries.stream().allMatch(
                             it -> it.date != null && it.date.getTime() - System.currentTimeMillis() > TimeUnit.HOURS.toMillis(
                                     2))) {
+                String id = getId();
                 bindFeed(feed -> {
                     Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
                             "constructor: bound to feed");
@@ -129,10 +130,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                         return newsEntry;
                     }).collect(Collectors.toList());
-                    NewsDb.getDatabase(c, getId()).open().purge();
+                    NewsDb.getDatabase(c, id).open().purge();
                     articles.stream()
                             .peek(it -> it.order = articles.indexOf(it))
-                            .forEach(it -> NewsDb.getDatabase(c, getId()).open().insert(it));
+                            .forEach(it -> NewsDb.getDatabase(c, id).open().insert(it));
                     if (diff) {
                         showNotifications(old != null ? old : Collections.emptyList());
                     }
