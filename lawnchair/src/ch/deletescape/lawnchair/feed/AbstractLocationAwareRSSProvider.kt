@@ -34,9 +34,16 @@ import java.util.*
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
     init {
         ch.deletescape.lawnchair.location.LocationManager.addCallback { _, _ ->
-            refresh(context, {  }, true)
+            refresh(context, { }, true)
         }
     }
+
+    private val locale
+        get() = if (context.lawnchairPrefs.overrideLocale.isEmpty() && context.lawnchairLocationManager.location != null) Locale(
+                "", GeocoderCompat(context, true).nearestPlace(
+                context.lawnchairLocationManager.location!!.first,
+                context.lawnchairLocationManager.location!!.second).country).isO3Country else if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) Locale(
+                "", context.lawnchairPrefs.overrideLocale).isO3Country else "??"
 
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback) {
@@ -85,6 +92,8 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
             e.printStackTrace()
         }
     }
+
+    override fun getId(): String = super.getId() + "@l-" + locale
 
     abstract fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed
     abstract fun getFallbackFeed(): SyndFeed
