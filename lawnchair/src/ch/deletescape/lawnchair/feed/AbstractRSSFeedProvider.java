@@ -68,6 +68,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     private List<NewsEntry> articles;
     private JobScheduler scheduler;
     private long lastUpdate;
+    private boolean minicard;
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
@@ -205,7 +206,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     @Override
     public boolean isVolatile() {
-        return articles == null || articles.isEmpty();
+        return articles == null || articles.isEmpty() || minicard != FeedPersistenceKt.getFeedPrefs(
+                getContext()).getUseRSSMinicard();
     }
 
     protected String getId() {
@@ -221,7 +223,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             List<Card> cards = LawnchairUtilsKt.newList();
             Log.d(getClass().getName(),
                     "getCards: iterating through entries: " + articles.toString());
-            boolean minicard = FeedPersistenceKt.getFeedPrefs(
+            minicard = FeedPersistenceKt.getFeedPrefs(
                     getContext()).getUseRSSMinicard();
             for (NewsEntry entry : articles) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
@@ -344,7 +346,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                     .display(AbstractRSSFeedProvider.this,
                                             (LawnchairUtilsKt.getPostionOnScreen(
                                                     v).getFirst() + v.getMeasuredWidth() / 2),
-                                            (LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2));
+                                            (LawnchairUtilsKt.getPostionOnScreen(
+                                                    v).getSecond() + v.getMeasuredHeight() / 2));
                         } else {
                             Utilities.openURLinBrowser(getContext(),
                                     entry.url);
@@ -356,6 +359,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             return cards;
         }
     }
+
     protected abstract void bindFeed(BindCallback callback);
 
     protected interface BindCallback {
