@@ -66,7 +66,6 @@ import kotlin.Unit;
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     private List<NewsEntry> articles;
-    private List<Card> cardCache;
     private JobScheduler scheduler;
     private long lastUpdate;
 
@@ -205,7 +204,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     @Override
     public boolean isVolatile() {
-        return cardCache == null || cardCache.isEmpty();
+        return articles == null || articles.isEmpty();
     }
 
     protected String getId() {
@@ -217,8 +216,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         if (articles == null) {
             Log.d(getClass().getName(), "getCards: feed is null; returning empty list");
             return Collections.emptyList();
-        } else if (cardCache != null && !cardCache.isEmpty()) {
-            return cardCache;
         } else {
             List<Card> cards = LawnchairUtilsKt.newList();
             Log.d(getClass().getName(),
