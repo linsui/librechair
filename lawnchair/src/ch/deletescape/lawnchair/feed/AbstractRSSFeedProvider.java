@@ -312,9 +312,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 } else {
                                     date.setText(null);
                                 }
-                            } else {
-                                v.setForeground(LawnchairUtilsKt.getDrawableAttr(getContext(),
-                                        R.attr.selectableItemBackground));
                             }
                             return v;
                         }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
@@ -331,6 +328,29 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     context.startActivity(i);
                     return Unit.INSTANCE;
                 });
+                if (minicard) {
+                    card.globalClickListener = v -> {
+                        if (!FeedPersistence.Companion.getInstance(
+                                getContext()).getDirectlyOpenLinksInBrowser()) {
+                            new ArticleViewerScreen(getContext(),
+                                    entry.title,
+                                    entry.categories != null ?
+                                            String.join(", ",
+                                                    entry.categories) :
+                                            "",
+                                    entry.url,
+                                    entry.content != null ? entry.content : "")
+                                    .display(AbstractRSSFeedProvider.this,
+                                            (LawnchairUtilsKt.getPostionOnScreen(
+                                                    v).getFirst() + v.getMeasuredWidth() / 2),
+                                            (LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2));
+                        } else {
+                            Utilities.openURLinBrowser(getContext(),
+                                    entry.url);
+                        }
+                        return Unit.INSTANCE;
+                    };
+                }
             }
             return cards;
         }
