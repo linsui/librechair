@@ -737,4 +737,6 @@
     <string name="title_pref_feed_notify_articles_on_first_run">Send article notification on initial load</string>
     <string name="summary_pref_feed_notify_articles_on_first_run">Article notifications will be sent even when they are first loaded</string>
     <string name="title_pref_feed_synd_notification_count">Syndication notification count</string>
+    <string name="title_pref_feed_rss_minicard">Use minicard for news items</string>
+    <string name="summary_pref_feed_rss_minicard">A more minimal card will be used for news items</string>
 </resources>

@@ -224,9 +224,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
                 @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, null,
                         parent -> {
+                            boolean minicard = FeedPersistenceKt.getFeedPrefs(
+                                    getContext()).getUseRSSMinicard();
                             Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                             View v = LayoutInflater.from(parent.getContext())
-                                    .inflate(R.layout.rss_item, parent, false);
+                                    .inflate(minicard ? R.layout.rss_miniitem : R.layout.rss_item,
+                                            parent, false);
                             TextView title, description, date, categories;
                             ImageView icon;
                             Button readMore;
@@ -238,18 +241,23 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             date = v.findViewById(R.id.rss_item_date);
                             readMore = v.findViewById(R.id.rss_item_read_more);
 
-                            readMore.setTextColor(
-                                    FeedAdapter.Companion.getOverrideColor(parent.getContext()));
+                            if (!minicard) {
+                                readMore.setTextColor(
+                                        FeedAdapter.Companion.getOverrideColor(
+                                                parent.getContext()));
+                            }
 
                             if (entry.thumbnail != null && Objects.requireNonNull(
                                     entry.thumbnail).startsWith("http")) {
                                 new Builder(parent.getContext()).build()
                                         .load(entry.thumbnail)
-                                        .placeholder(R.drawable.work_tab_user_education).into(icon);
+                                        .placeholder(R.drawable.work_tab_user_education).into(
+                                        icon);
                             } else {
                                 new Builder(parent.getContext()).build()
                                         .load("https:" + entry.thumbnail)
-                                        .placeholder(R.drawable.work_tab_user_education).into(icon);
+                                        .placeholder(R.drawable.work_tab_user_education).into(
+                                        icon);
                             }
 
                             title.setText(ClickbaitRanker.completePipeline(entry.title));
@@ -287,20 +295,26 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                             return true;
                                         }
                                     });
-                            readMore.setOnTouchListener((_v, e) -> detector.onTouchEvent(e));
+                            (minicard ? v : readMore).setOnTouchListener(
+                                    (_v, e) -> detector.onTouchEvent(e));
 
-                            if (entry.categories == null ||
-                                    entry.categories.isEmpty()) {
-                                categories.setText("");
-                            } else {
-                                categories.setText(
-                                        String.join(", ", entry.categories));
-                            }
+                            if (!minicard) {
+                                if (entry.categories == null ||
+                                        entry.categories.isEmpty()) {
+                                    categories.setText("");
+                                } else {
+                                    categories.setText(
+                                            String.join(", ", entry.categories));
+                                }
 
-                            if (entry.date != null) {
-                                date.setText(entry.date.toString());
+                                if (entry.date != null) {
+                                    date.setText(entry.date.toString());
+                                } else {
+                                    date.setText(null);
+                                }
                             } else {
-                                date.setText(null);
+                                v.setForeground(LawnchairUtilsKt.getDrawableAttr(getContext(),
+                                        R.attr.selectableItemBackground));
                             }
                             return v;
                         }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
@@ -318,7 +332,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     return Unit.INSTANCE;
                 });
             }
-            cardCache = cards;
             return cards;
         }
     }
