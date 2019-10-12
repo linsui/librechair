@@ -110,7 +110,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             List<NewsEntry> entries;
             if ((entries = NewsDb.getDatabase(c, getId()).open().all()).isEmpty() ||
                     entries.stream().allMatch(
-                            it -> it.date != null && it.date.getTime() - System.currentTimeMillis() > TimeUnit.HOURS.toMillis(
+                            it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
                                     2))) {
                 String id = getId();
                 bindFeed(feed -> {
