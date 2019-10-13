@@ -86,7 +86,7 @@ import kotlin.reflect.jvm.isAccessible
 class LauncherFeed(val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
         ILauncherOverlay.Stub() {
-    private var backgroundColor: Int = ColorUtils.setAlphaComponent(
+    var backgroundColor: Int = ColorUtils.setAlphaComponent(
             ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
                     originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())

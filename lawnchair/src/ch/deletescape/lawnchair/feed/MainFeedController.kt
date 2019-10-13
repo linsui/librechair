@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
+import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
 import ch.deletescape.lawnchair.fromStringRes
@@ -95,6 +96,8 @@ class MainFeedController(val context: Context) {
                     DailySummaryFeedProvider::class.qualifiedName -> R.string.title_feed_provider_daily_summary.fromStringRes(
                             context)
                     PredictedAppsProvider::class.qualifiedName -> R.string.title_card_suggested_apps.fromStringRes(
+                            context)
+                    NotificationFeedProvider::class.qualifiedName -> R.string.event_provider_unread_notifications.fromStringRes(
                             context)
                     WebApplicationsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_web_applications)

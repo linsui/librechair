@@ -30,6 +30,7 @@ import com.android.launcher3.notification.NotificationInfo;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.colors.ColorEngine;
@@ -41,35 +42,41 @@ public class UnreadNotificationsProvider extends ChipProvider {
 
     public UnreadNotificationsProvider(Context c) {
         OverlayNotificationManager.addListener(notifs -> {
-            notifications.clear();
-            notifications.addAll(notifs);
+            synchronized (this) {
+                notifications.clear();
+                notifications.addAll(notifs);
+            }
         });
     }
 
     @Override
     public List<Item> getItems(Context context) {
-        return notifications.stream().map(it -> {
-            NotificationInfo info = new NotificationInfo(context, it);
-            Item item = new Item();
-            item.icon = info.getIconForBackground(context,
-                    ColorUtils.setAlphaComponent(ColorEngine.getInstance(context).getResolverCache(
-                            ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(), 255));
-            item.viewClickListener = v -> {
-                if (info.intent != null) {
-                    try {
-                        info.intent.send();
-                        if (info.autoCancel) {
-                            info.intent.cancel();
-                            notifications.remove(it);
-                            refresh();
+        synchronized (this) {
+            return notifications.stream().filter(Objects::nonNull).map(it -> {
+                NotificationInfo info = new NotificationInfo(context, it);
+                Item item = new Item();
+                item.icon = info.getIconForBackground(context,
+                        ColorUtils.setAlphaComponent(
+                                ColorEngine.getInstance(context).getResolverCache(
+                                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
+                                255));
+                item.viewClickListener = v -> {
+                    if (info.intent != null) {
+                        try {
+                            info.intent.send();
+                            if (info.autoCancel) {
+                                info.intent.cancel();
+                                notifications.remove(it);
+                                refresh();
+                            }
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
                         }
-                    } catch (PendingIntent.CanceledException e) {
-                        e.printStackTrace();
                     }
-                }
-            };
-            item.title = info.title != null ? info.title.toString() : info.text != null ? info.text.toString() : "";
-            return item;
-        }).collect(Collectors.toList());
+                };
+                item.title = info.title != null ? info.title.toString() : info.text != null ? info.text.toString() : "";
+                return item;
+            }).collect(Collectors.toList());
+        }
     }
 }
