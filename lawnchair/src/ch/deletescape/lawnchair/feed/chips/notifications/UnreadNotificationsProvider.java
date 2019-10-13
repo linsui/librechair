@@ -34,17 +34,15 @@ import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
-import ch.deletescape.lawnchair.feed.impl.OverlayService;
-import kotlin.Unit;
+import ch.deletescape.lawnchair.feed.notifications.OverlayNotificationManager;
 
 public class UnreadNotificationsProvider extends ChipProvider {
     private List<StatusBarNotification> notifications = new LinkedList<>();
 
     public UnreadNotificationsProvider(Context c) {
-        OverlayService.CompanionService.InterfaceHolder.INSTANCE.setNotifChangedListener(notifs -> {
+        OverlayNotificationManager.addListener(notifs -> {
             notifications.clear();
             notifications.addAll(notifs);
-            return Unit.INSTANCE;
         });
     }
 
