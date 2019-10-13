@@ -61,46 +61,37 @@ import ch.deletescape.lawnchair.feed.news.NewsEntry;
 import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
+import kotlin.Pair;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
     private List<NewsEntry> articles;
     private JobScheduler scheduler;
+    private static final int REFRESH_TASK = 1000;
     private long lastUpdate;
     private boolean minicard;
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
         scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        JobSchedulerService.Companion.getIdCallbacks().put(hashCode() << 1, unitFunction1 -> {
-            refresh(c, () -> unitFunction1.invoke(false),
-                    FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
-            JobSchedulerService.Companion.getIdCallbacks().remove(hashCode() << 1);
-            return Unit.INSTANCE;
-        });
-        JobSchedulerService.Companion.getIdCallbacks().put(hashCode(), unitFunction1 -> {
+        refresh(c, () -> {},
+                FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
+        JobSchedulerService.Companion.getIdCallbacks().add(new Pair<>(REFRESH_TASK, unitFunction1 -> {
             refresh(c, () -> unitFunction1.invoke(false), true);
             return Unit.INSTANCE;
-        });
-        scheduler.cancel(hashCode());
-        scheduler.cancel(hashCode() << 1);
-        scheduler.schedule(
-                new JobInfo.Builder(hashCode(), new ComponentName(c, JobSchedulerService.class))
-                        .setPersisted(false)
-                        .setRequiresBatteryNotLow(true)
-                        .setPeriodic(TimeUnit.HOURS.toMillis(1), TimeUnit.MINUTES.toMillis(10))
-                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        .build());
-        scheduler.schedule(
-                new JobInfo.Builder(hashCode() << 1,
-                        new ComponentName(c, JobSchedulerService.class))
-                        .setPersisted(false)
-                        .setRequiresBatteryNotLow(false)
-                        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                        .setMinimumLatency(1)
-                        .setOverrideDeadline(1)
-                        .build());
+        }));
+        if (scheduler.getPendingJob(REFRESH_TASK) == null) {
+            scheduler.schedule(
+                    new JobInfo.Builder(hashCode() << 1,
+                            new ComponentName(c, JobSchedulerService.class))
+                            .setPersisted(false)
+                            .setRequiresBatteryNotLow(false)
+                            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                            .setMinimumLatency(1)
+                            .setOverrideDeadline(1)
+                            .build());
+        }
     }
 
     @AnyThread

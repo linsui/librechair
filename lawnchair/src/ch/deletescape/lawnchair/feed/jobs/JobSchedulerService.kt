@@ -28,14 +28,15 @@ import kotlinx.coroutines.launch
 @Suppress("MapGetWithNotNullAssertionOperator")
 class JobSchedulerService : JobService() {
     override fun onStartJob(params: JobParameters) = synchronized(JobSchedulerService) {
-        if (idCallbacks[params.jobId] != null) {
+
             JobScope.launch {
-                idCallbacks[params.jobId]!! {
-                    jobFinished(params, it)
+                idCallbacks.filter {it.first == params.jobId}.forEach {
+                    it.second {
+                        jobFinished(params, it)
+                    }
                 }
             }
             return@synchronized true
-        }
         return@synchronized false
     }
 
@@ -44,6 +45,6 @@ class JobSchedulerService : JobService() {
     }
 
     companion object {
-        val idCallbacks: Map<Int, (finished: (reschedule: Boolean) -> Unit) -> Unit> = mutableMapOf()
+        val idCallbacks: List<Pair<Int, (finished: (reschedule: Boolean) -> Unit) -> Unit>> = mutableListOf()
     }
 }

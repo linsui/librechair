@@ -54,8 +54,8 @@ public final class News {
                     }
                     try {
                         item.dt = DateFormat.getDateInstance().parse(
-                                links.getAsJsonPrimitive("date").getAsString());
-                    } catch (ParseException e) {
+                                links.getAsJsonPrimitive("timestamp").getAsString());
+                    } catch (ParseException | NullPointerException e) {
                         e.printStackTrace();
                     }
                     item.lang = links.getAsJsonPrimitive("lang").getAsString();
