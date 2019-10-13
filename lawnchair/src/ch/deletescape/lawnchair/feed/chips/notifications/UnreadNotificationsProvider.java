@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
-import ch.deletescape.lawnchair.persistence.ChipPersistence;
 import kotlin.Unit;
 
 public class UnreadNotificationsProvider extends ChipProvider {
@@ -56,9 +55,7 @@ public class UnreadNotificationsProvider extends ChipProvider {
             Item item = new Item();
             item.icon = info.getIconForBackground(context,
                     ColorUtils.setAlphaComponent(ColorEngine.getInstance(context).getResolverCache(
-                            ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
-                            (int) Math.round(ChipPersistence.Companion.getInstance(
-                                    context).getChipOpacity() * (255f))));
+                            ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(), 255));
             item.viewClickListener = v -> {
                 if (info.intent != null) {
                     try {
@@ -73,7 +70,7 @@ public class UnreadNotificationsProvider extends ChipProvider {
                     }
                 }
             };
-            item.title = info.title.toString();
+            item.title = info.title != null ? info.title.toString() : info.text != null ? info.text.toString() : "";
             return item;
         }).collect(Collectors.toList());
     }

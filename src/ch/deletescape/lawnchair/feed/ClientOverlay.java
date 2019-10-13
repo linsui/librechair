@@ -49,7 +49,6 @@ import com.google.android.libraries.launcherclient.ILauncherInterface;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,10 +136,10 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                         if (listener != null) {
                             LauncherNotifications.getInstance().addListener(
                                     new NotificationListener.NotificationsChangedListener() {
-                                        private ArrayList<StatusBarNotification> notifications = new ArrayList<>();
+                                        private List<StatusBarNotification> notifications = new ArrayList<>();
 
                                         @Override
-                                        public void onNotificationPosted(
+                                        public synchronized void onNotificationPosted(
                                                 PackageUserKey postedPackageUserKey,
                                                 NotificationKeyData notificationKey,
                                                 boolean shouldBeFilteredOut) {
@@ -161,16 +160,13 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         }
 
                                         @Override
-                                        public void onNotificationRemoved(
+                                        public synchronized void onNotificationRemoved(
                                                 PackageUserKey removedPackageUserKey,
                                                 NotificationKeyData notificationKey) {
-                                            Iterator<StatusBarNotification> iter = notifications.iterator();
-                                            iter.forEachRemaining(sbn -> {
-                                                if (sbn.getKey().equals(
-                                                        notificationKey.notificationKey)) {
-                                                    iter.remove();
-                                                }
-                                            });
+                                            notifications = notifications.stream().filter(
+                                                    it -> !it.getKey().equals(
+                                                            notificationKey.notificationKey)).collect(
+                                                    Collectors.toList());
                                             try {
                                                 listener.notificationsChanged(notifications);
                                             } catch (RemoteException e) {
@@ -179,7 +175,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         }
 
                                         @Override
-                                        public void onNotificationFullRefresh(
+                                        public synchronized void onNotificationFullRefresh(
                                                 List<StatusBarNotification> activeNotifications) {
                                             notifications.clear();
                                             notifications.addAll(activeNotifications);
