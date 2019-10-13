@@ -12,6 +12,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -21,7 +23,7 @@ import java.util.function.Consumer;
 public final class News {
     private static final Executor fetchExecutor = Executors.newSingleThreadExecutor();
     private static final List<Consumer<List<NewsItem>>> onChangeListeners = new ArrayList<>();
-    private static List<NewsItem> currentItem;
+    private static volatile List<NewsItem> currentItem;
     private static final String API_URL = "https://en.wikipedia.org/api/rest_v1/feed/featured/2496/04/01";
 
     static {
@@ -50,6 +52,12 @@ public final class News {
                     } catch (NullPointerException e) {
                         item.thumbnail = null;
                     }
+                    try {
+                        item.dt = DateFormat.getDateInstance().parse(
+                                links.getAsJsonPrimitive("date").getAsString());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                     item.lang = links.getAsJsonPrimitive("lang").getAsString();
                     item.story = newsItem.getAsJsonPrimitive("story").getAsString();
                     list.add(item);
@@ -64,12 +72,14 @@ public final class News {
         });
     }
 
+    @SuppressWarnings("WeakerAccess")
     @NotNull
     public static synchronized List<NewsItem> requireEntries() {
         if (currentItem != null) {
             return currentItem;
         } else {
             requestRefresh();
+            //noinspection StatementWithEmptyBody
             while (currentItem == null);
             return currentItem;
         }

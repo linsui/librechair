@@ -31,7 +31,7 @@ import com.rometools.rome.feed.synd.SyndFeedImpl;
 import org.jdom2.Element;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
@@ -56,7 +56,10 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
                 SyndContent content = new SyndContentImpl();
                 content.setValue(item.story);
                 entry.setDescription(content);
-                entry.setForeignMarkup(Arrays.asList(new Element("media", "thumbnail", "https://xml/res-auto").setAttribute("url", item.thumbnail)));
+                entry.setPublishedDate(item.dt);
+                entry.setForeignMarkup(Collections.singletonList(
+                        new Element("media", "thumbnail", "https://xml/res-auto").setAttribute(
+                                "url", item.thumbnail)));
                 entries.add(entry);
             }
             feed.setEntries(entries);
