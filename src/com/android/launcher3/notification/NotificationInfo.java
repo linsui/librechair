@@ -47,7 +47,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
  */
 public class NotificationInfo implements View.OnClickListener {
 
-    public final PackageUserKey packageUserKey;
+    public PackageUserKey packageUserKey;
     public final String notificationKey;
     public final CharSequence title;
     public final CharSequence text;
@@ -65,7 +65,12 @@ public class NotificationInfo implements View.OnClickListener {
      */
     @SuppressWarnings("deprecation")
     public NotificationInfo(Context context, StatusBarNotification statusBarNotification) {
-        packageUserKey = PackageUserKey.fromNotification(statusBarNotification);
+        try {
+            packageUserKey = PackageUserKey.fromNotification(statusBarNotification);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            packageUserKey = null;
+        }
         notificationKey = statusBarNotification.getKey();
         Notification notification = statusBarNotification.getNotification();
         title = notification.extras.getCharSequence(Notification.EXTRA_TITLE);
