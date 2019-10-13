@@ -107,7 +107,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                         if (dispatcher instanceof CustomAppPredictor) {
                             Bundle bundle = new Bundle();
                             bundle.putParcelableArrayList("retval", new ArrayList<>(
-                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(7).map(
+                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(10).map(
                                             it -> new ParcelableComponentKeyMapper(
                                                     it.getComponentKey(), it.getApp(
                                                     launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
@@ -125,7 +125,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         .getActionsRowView()
                                         .getActions()
                                         .stream()
-                                        .limit(7)
+                                        .limit(10)
                                         .map(it -> new ParcelablePair(it.shortcutInfo.iconBitmap,
                                                 it.shortcut.getShortcutInfo()))
                                         .collect(Collectors.toList())));
