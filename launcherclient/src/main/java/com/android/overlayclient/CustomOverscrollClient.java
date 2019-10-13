@@ -25,6 +25,7 @@ import com.google.android.libraries.launcherclient.ILauncherInterface;
 public interface CustomOverscrollClient extends WorkspaceOverscrollClient {
     public static final String PREDICTIONS_CALL = "std:l3predictions";
     public static final String ACTIONS_CALL = "std:l3actions";
+    public static final String NOTIFICATIONS_CALL = "std:sbn";
 
     boolean shouldScrollLauncher();
     boolean shouldFadeWorkspaceDuringScroll();

@@ -7,6 +7,8 @@ interface ILauncherInterface {
         in the returned bundle if the action is not supported.
         std:l3actions should return a list of predicted shortcuts, or an empty list and err = "e_notsupported"
         if the action is not supported;
+        std:sbn should subscribe a [ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener]
+            arguments: "listener": listener
 
         The returned value should be named "retval" in the bundle, and shouldn't be null.
         If an error occours, the "err" field should be set in the bundle. A list of standard error codes

@@ -27,30 +27,34 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
+import android.service.notification.StatusBarNotification;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherNotifications;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.UserEventDispatcher;
-import com.android.launcher3.util.ComponentKey;
-import com.android.launcher3.util.ComponentKeyMapper;
+import com.android.launcher3.notification.NotificationKeyData;
+import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.ParcelablePair;
 import com.android.overlayclient.CompanionServiceFactory;
 import com.android.overlayclient.CustomServiceClient;
 import com.android.overlayclient.OverlayCallback;
 import com.android.overlayclient.ServiceMode;
 import com.google.android.apps.nexuslauncher.CustomAppPredictor;
-import com.google.android.apps.nexuslauncher.allapps.ActionsRowView;
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.libraries.launcherclient.ILauncherInterface;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
+import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
@@ -93,7 +97,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 @Override
                 public List<String> getSupportedCalls() throws RemoteException {
                     return Arrays.asList(CustomServiceClient.PREDICTIONS_CALL,
-                            CustomServiceClient.ACTIONS_CALL);
+                            CustomServiceClient.ACTIONS_CALL,
+                            CustomServiceClient.NOTIFICATIONS_CALL);
                 }
 
                 @Override
@@ -124,6 +129,69 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         .map(it -> new ParcelablePair(it.shortcutInfo.iconBitmap,
                                                 it.shortcut.getShortcutInfo()))
                                         .collect(Collectors.toList())));
+                        return bundle;
+                    } else if (callName.equals(CustomServiceClient.NOTIFICATIONS_CALL)) {
+                        INotificationsChangedListener listener =
+                                INotificationsChangedListener.Stub.asInterface(
+                                        opt.getBinder("listener"));
+                        if (listener != null) {
+                            LauncherNotifications.getInstance().addListener(
+                                    new NotificationListener.NotificationsChangedListener() {
+                                        private ArrayList<StatusBarNotification> notifications = new ArrayList<>();
+
+                                        @Override
+                                        public void onNotificationPosted(
+                                                PackageUserKey postedPackageUserKey,
+                                                NotificationKeyData notificationKey,
+                                                boolean shouldBeFilteredOut) {
+                                            NotificationListener ll = NotificationListener.getInstanceIfConnected();
+                                            if (ll != null) {
+                                                List<StatusBarNotification> sbn;
+                                                if ((sbn = ll.getNotificationsForKeys(
+                                                        Collections.singletonList(
+                                                                notificationKey))) != null && sbn.size() > 0) {
+                                                    notifications.addAll(sbn);
+                                                }
+                                            }
+                                            try {
+                                                listener.notificationsChanged(notifications);
+                                            } catch (RemoteException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onNotificationRemoved(
+                                                PackageUserKey removedPackageUserKey,
+                                                NotificationKeyData notificationKey) {
+                                            Iterator<StatusBarNotification> iter = notifications.iterator();
+                                            iter.forEachRemaining(sbn -> {
+                                                if (sbn.getKey().equals(
+                                                        notificationKey.notificationKey)) {
+                                                    iter.remove();
+                                                }
+                                            });
+                                            try {
+                                                listener.notificationsChanged(notifications);
+                                            } catch (RemoteException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onNotificationFullRefresh(
+                                                List<StatusBarNotification> activeNotifications) {
+                                            notifications.clear();
+                                            notifications.addAll(activeNotifications);
+                                            try {
+                                                listener.notificationsChanged(notifications);
+                                            } catch (RemoteException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                        }
+                        Bundle bundle = new Bundle();
                         return bundle;
                     }
                     Bundle bundle = new Bundle();

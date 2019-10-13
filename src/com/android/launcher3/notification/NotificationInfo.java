@@ -21,19 +21,22 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.view.View;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.graphics.IconPalette;
 import com.android.launcher3.util.PackageUserKey;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
 /**
  * An object that contains relevant information from a {@link StatusBarNotification}. This should
@@ -60,6 +63,7 @@ public class NotificationInfo implements View.OnClickListener {
     /**
      * Extracts the data that we need from the StatusBarNotification.
      */
+    @SuppressWarnings("deprecation")
     public NotificationInfo(Context context, StatusBarNotification statusBarNotification) {
         packageUserKey = PackageUserKey.fromNotification(statusBarNotification);
         notificationKey = statusBarNotification.getKey();
@@ -93,9 +97,13 @@ public class NotificationInfo implements View.OnClickListener {
             mIsIconLarge = true;
         }
         if (mIconDrawable == null) {
-            mIconDrawable = new BitmapDrawable(context.getResources(), LauncherAppState
-                    .getInstance(context).getIconCache()
-                    .getDefaultIcon(statusBarNotification.getUser()).icon);
+            try {
+                mIconDrawable = new BitmapDrawable(context.getResources(), LauncherAppState
+                        .getInstance(context).getIconCache()
+                        .getDefaultIcon(statusBarNotification.getUser()).icon);
+            } catch (IllegalStateException e) {
+                mIconDrawable = new BitmapDrawable(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8));
+            }
             mBadgeIcon = Notification.BADGE_ICON_NONE;
         }
         intent = notification.contentIntent;

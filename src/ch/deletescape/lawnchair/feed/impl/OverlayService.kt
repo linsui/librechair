@@ -21,18 +21,22 @@ package ch.deletescape.lawnchair.feed.impl
 
 import android.app.Service
 import android.content.Intent
-import android.os.IBinder
-import android.os.Process
 import android.content.pm.ShortcutInfo
 import android.graphics.Bitmap
+import android.os.Bundle
+import android.os.IBinder
+import android.os.Process
+import android.service.notification.StatusBarNotification
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
+import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.util.ParcelablePair
 import com.android.overlayclient.CustomOverscrollClient.ACTIONS_CALL
 import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
+import com.android.overlayclient.CustomServiceClient
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
@@ -113,6 +117,31 @@ class OverlayService : Service(), () -> Unit {
 
         object InterfaceHolder {
             internal var interfaze: ILauncherInterface? = null
+                set(value) = {
+                    value?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
+                        putBinder("listener", object : INotificationsChangedListener.Stub() {
+                            override fun notificationsChanged(
+                                    notifs: MutableList<StatusBarNotification>) {
+                                notifChangedListener?.invoke(notifs)
+                            }
+                        })
+                    })
+                    Unit
+                }()
+            var notifChangedListener: ((list: List<StatusBarNotification>) -> Unit)? = null
+                set(value) {
+                    field = value
+                    if (value != null) {
+                        interfaze?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
+                            putBinder("listener", object : INotificationsChangedListener.Stub() {
+                                override fun notificationsChanged(
+                                        notifs: MutableList<StatusBarNotification>) {
+                                    value(notifs)
+                                }
+                            })
+                        })
+                    }
+                }
 
             fun getPredictions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
                             PREDICTIONS_CALL) == true) interfaze?.call(
