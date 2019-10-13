@@ -27,8 +27,10 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.fromStringRes
 import com.android.launcher3.R
+import java.util.function.Consumer
 
 class BatteryStatusProvider(val context: Context) : ChipProvider() {
 
@@ -94,11 +96,8 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                 this.batteryLevel = this@BatteryStatusProvider.level
                 this.charging = this@BatteryStatusProvider.charging
             }
-            click = Runnable {
-                Intent(Intent.ACTION_POWER_USAGE_SUMMARY)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK).also {
-                            context.startActivity(it)
-                        }
+            viewClickListener = Consumer { v ->
+                FeedUtil.startActivity(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), v)
             }
         })
     }
