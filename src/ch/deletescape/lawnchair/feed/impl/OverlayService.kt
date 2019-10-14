@@ -34,9 +34,9 @@ import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.util.ParcelablePair
-import com.android.overlayclient.CustomOverscrollClient.ACTIONS_CALL
-import com.android.overlayclient.CustomOverscrollClient.PREDICTIONS_CALL
-import com.android.overlayclient.CustomServiceClient
+import com.android.overlayclient.client.CustomOverscrollClient.ACTIONS_CALL
+import com.android.overlayclient.client.CustomOverscrollClient.PREDICTIONS_CALL
+import com.android.overlayclient.client.CustomServiceClient
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers

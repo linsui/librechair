@@ -65,8 +65,8 @@ import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
-import com.android.overlayclient.ActivityState
-import com.android.overlayclient.ServiceState
+import com.android.overlayclient.state.ActivityState
+import com.android.overlayclient.state.ServiceState
 import com.github.difflib.DiffUtils
 import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay

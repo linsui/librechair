@@ -18,9 +18,15 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.compat;
 
-public interface DurationOpenableOverscrollClient extends OpenableOverscrollClient {
-    void openOverlay(int duration);
-    void closeOverlay(int duration);
+import android.os.Bundle;
+
+import com.android.overlayclient.client.ServiceClient;
+
+public interface ConfigurationDelegate {
+    void bind(Bundle opt);
+
+    default void attachToClient(ServiceClient client) {
+    }
 }

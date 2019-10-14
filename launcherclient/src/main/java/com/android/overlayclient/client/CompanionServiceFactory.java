@@ -18,7 +18,7 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.client;
 
 import android.content.ComponentName;
 import android.content.Context;

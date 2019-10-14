@@ -18,8 +18,23 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.compat;
 
-public enum ServiceMode {
-    OVERLAY, SEARCH
+import android.os.Bundle;
+
+public class BackgroundHintDelegate extends MutableDelegate<Integer> {
+
+    public BackgroundHintDelegate(Integer value) {
+        super(value);
+    }
+
+    @Override
+    public void bind(Bundle opt) {
+        opt.putInt("background_color_hint", value);
+    }
+
+    @Override
+    public void set(Integer value) {
+        super.set(value);
+    }
 }

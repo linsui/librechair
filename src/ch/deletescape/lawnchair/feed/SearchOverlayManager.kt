@@ -26,7 +26,7 @@ import android.os.Process
 import ch.deletescape.lawnchair.LawnchairLauncher
 import ch.deletescape.lawnchair.util.SingletonHolder
 import com.android.launcher3.Utilities
-import com.android.overlayclient.*
+import com.android.overlayclient.client.*
 
 class SearchOverlayManager private constructor(val launcher: LawnchairLauncher) {
     private val factory: CompanionServiceFactory
@@ -52,16 +52,18 @@ class SearchOverlayManager private constructor(val launcher: LawnchairLauncher) 
         }
 
         if (!factory.supportsUnifiedConnection()) {
-            searchClient = ServiceClient(launcher, factory, object : OverlayCallback {
-                override fun overlayScrollChanged(progress: Float) {
+            searchClient = ServiceClient(launcher, factory,
+                    object : OverlayCallback {
+                        override fun overlayScrollChanged(progress: Float) {
 
-                }
+                        }
 
-                override fun overlayStatusChanged(status: Int) {
+                        override fun overlayStatusChanged(status: Int) {
 
-                }
+                        }
 
-            }, Runnable {  }, Runnable {  }, ServiceMode.SEARCH)
+                    }, Runnable { }, Runnable { },
+                    ServiceMode.SEARCH)
         }
     }
 

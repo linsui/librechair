@@ -18,7 +18,7 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.client;
 
 import android.app.Activity;
 import android.graphics.Point;
@@ -29,10 +29,15 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.view.WindowManager;
 
+import com.android.overlayclient.compat.ConfigurationDelegate;
+import com.android.overlayclient.state.ActivityState;
+import com.android.overlayclient.state.ServiceState;
 import com.google.android.libraries.launcherclient.ILauncherOverlay;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -61,6 +66,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     private int windowShift;
     private ActivityState activityState;
     private Handler mUIHandler;
+
+    private List<ConfigurationDelegate> configurationDelegate;
 
     private final ServiceMode mode;
     private final ServiceState serviceState;
@@ -94,11 +101,6 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         });
         activityState = new ActivityState();
         factory.connect();
-        serviceState.setChangeListener(state -> {
-            if (!state.isOverlayAttached()) {
-                overlay = null;
-            }
-        });
         mUIHandler = new Handler(Looper.getMainLooper(), this);
     }
 
@@ -363,13 +365,17 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     }
 
     public void putAdditionalParams(Bundle params) {
-        additionalParams = params;
+        if (additionalParams == null) {
+            additionalParams = params;
+        } else {
+            additionalParams.putAll(params);
+        }
         if (apiVersion >= 7) {
             configure();
         }
     }
 
-    private void configure() {
+    public void configure() {
         if (overlay != null) {
             try {
                 Point p = new Point();
@@ -389,6 +395,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                             factory.supportsUnifiedConnection() ? 0 : mode == ServiceMode.SEARCH ? 2 : 3);
                     if (additionalParams != null) {
                         bundle.putAll(additionalParams);
+                    }
+                    if (configurationDelegate != null) {
+                        configurationDelegate.forEach(delegate -> delegate.bind(bundle));
                     }
                     overlay.windowAttached2(bundle, this);
                 }
@@ -506,6 +515,17 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public void addConfigurationDelegate(ConfigurationDelegate delegate) {
+        if (configurationDelegate == null) {
+            configurationDelegate = new Vector<>();
+        }
+        delegate.attachToClient(this);
+        configurationDelegate.add(delegate);
+        if (overlay != null) {
+            configure();
         }
     }
 

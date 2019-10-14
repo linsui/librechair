@@ -18,8 +18,19 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.client;
 
-public interface PersistableScrollCallback extends OverlayCallback {
-    void setPersistentFlags(int flags);
+import android.view.WindowManager;
+
+public interface WorkspaceOverscrollClient {
+    void onAttachedToWindow();
+    void onDetachedFromWindow();
+    void onResume();
+    void onPause();
+    void onStart();
+    void onStop();
+    void acceptLayoutParams(WindowManager.LayoutParams params);
+    void startScroll();
+    void onScroll(float percentage);
+    void stopScroll();
 }

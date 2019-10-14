@@ -18,18 +18,30 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.android.overlayclient;
+package com.android.overlayclient.compat;
 
-import com.google.android.libraries.launcherclient.ILauncherInterface;
+import com.android.overlayclient.client.ServiceClient;
 
-public interface CustomOverscrollClient extends WorkspaceOverscrollClient {
-    public static final String PREDICTIONS_CALL = "std:l3predictions";
-    public static final String ACTIONS_CALL = "std:l3actions";
-    public static final String NOTIFICATIONS_CALL = "std:sbn";
+public abstract class MutableDelegate<T> implements ConfigurationDelegate {
+    private ServiceClient client;
+    protected T value;
 
-    boolean shouldScrollLauncher();
-    boolean shouldFadeWorkspaceDuringScroll();
-    void restartProcess();
-    void attachInterface(ILauncherInterface interfaze);
-    boolean onBackPressed();
+    @SuppressWarnings("WeakerAccess")
+    protected MutableDelegate(T value) {
+        this.value = value;
+    }
+
+    public void set(T value) {
+        this.value = value;
+        if (client != null) {
+            this.client.configure();
+        } else {
+            throw new IllegalStateException("client wasn't attached when set called");
+        }
+    }
+
+    @Override
+    public void attachToClient(ServiceClient client) {
+        this.client = client;
+    }
 }

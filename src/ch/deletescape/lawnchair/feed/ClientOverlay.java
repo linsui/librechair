@@ -36,12 +36,14 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.logging.UserEventDispatcher;
 import com.android.launcher3.notification.NotificationKeyData;
 import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.uioverrides.WallpaperColorInfo;
 import com.android.launcher3.util.PackageUserKey;
 import com.android.launcher3.util.ParcelablePair;
-import com.android.overlayclient.CompanionServiceFactory;
-import com.android.overlayclient.CustomServiceClient;
-import com.android.overlayclient.OverlayCallback;
-import com.android.overlayclient.ServiceMode;
+import com.android.overlayclient.client.CompanionServiceFactory;
+import com.android.overlayclient.client.CustomServiceClient;
+import com.android.overlayclient.client.OverlayCallback;
+import com.android.overlayclient.client.ServiceMode;
+import com.android.overlayclient.compat.BackgroundHintDelegate;
 import com.google.android.apps.nexuslauncher.CustomAppPredictor;
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.libraries.launcherclient.ILauncherInterface;
@@ -100,6 +102,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                             CustomServiceClient.NOTIFICATIONS_CALL);
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public Bundle call(String callName, Bundle opt) throws RemoteException {
                     if (callName.equals(CustomServiceClient.PREDICTIONS_CALL)) {
@@ -107,7 +110,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                         if (dispatcher instanceof CustomAppPredictor) {
                             Bundle bundle = new Bundle();
                             bundle.putParcelableArrayList("retval", new ArrayList<>(
-                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(10).map(
+                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(
+                                            10).map(
                                             it -> new ParcelableComponentKeyMapper(
                                                     it.getComponentKey(), it.getApp(
                                                     launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
@@ -188,8 +192,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         }
                                     });
                         }
-                        Bundle bundle = new Bundle();
-                        return bundle;
+                        return new Bundle();
                     }
                     Bundle bundle = new Bundle();
                     bundle.putString("err", "e_unsupported");
@@ -197,6 +200,12 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 }
             });
         }, ServiceMode.OVERLAY);
+        BackgroundHintDelegate delegate = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualMainColor());
+        WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
+            delegate.set(wallpaperColorInfo.getActualMainColor());
+        });
+        client.addConfigurationDelegate(delegate);
     }
 
     @Override
