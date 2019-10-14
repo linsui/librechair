@@ -75,21 +75,23 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     public AbstractRSSFeedProvider(Context c) {
         super(c);
         scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        refresh(c, () -> {},
+        refresh(c, () -> {
+                },
                 FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
-        JobSchedulerService.Companion.getIdCallbacks().add(new Pair<>(REFRESH_TASK, unitFunction1 -> {
-            refresh(c, () -> unitFunction1.invoke(false), true);
-            return Unit.INSTANCE;
-        }));
+        JobSchedulerService.Companion.getIdCallbacks().add(
+                new Pair<>(REFRESH_TASK, unitFunction1 -> {
+                    refresh(c, () -> unitFunction1.invoke(false), true);
+                    return Unit.INSTANCE;
+                }));
         if (scheduler.getPendingJob(REFRESH_TASK) == null) {
             scheduler.schedule(
-                    new JobInfo.Builder(hashCode() << 1,
+                    new JobInfo.Builder(REFRESH_TASK,
                             new ComponentName(c, JobSchedulerService.class))
-                            .setPersisted(false)
+                            .setPersisted(true)
                             .setRequiresBatteryNotLow(false)
                             .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                            .setMinimumLatency(1)
-                            .setOverrideDeadline(1)
+                            .setPeriodic(TimeUnit.HOURS.toMillis(1),
+                                    TimeUnit.MINUTES.toMillis(10))
                             .build());
         }
     }
