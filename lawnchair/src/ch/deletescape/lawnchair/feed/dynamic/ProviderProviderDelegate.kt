@@ -28,6 +28,7 @@ import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
+import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider
 import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
@@ -60,6 +61,7 @@ class ProviderProviderDelegate(context: Context) : DynamicProviderDelegate(conte
             DeviceStateProvider::class.qualifiedName,
             FeedWidgetsProvider::class.qualifiedName,
             DailySummaryFeedProvider::class.qualifiedName,
+            FeedLocationSearchProvider::class.qualifiedName,
             PredictedAppsProvider::class.qualifiedName,
             WebApplicationsProvider::class.qualifiedName,
             AlarmEventProvider::class.qualifiedName).map {
