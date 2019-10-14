@@ -334,6 +334,8 @@ class LauncherFeed(val originalContext: Context,
             chipAdapter = ChipAdapter(context, this)
         }
 
+        toolbarParent.visibility = if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
+
         if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
             chips.visibility = View.GONE
         } else {
@@ -1255,6 +1257,7 @@ class LauncherFeed(val originalContext: Context,
             ChipController.getInstance(context, this@LauncherFeed).refresh()
         }
         runOnMainThread {
+            toolbarParent.visibility = if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
             if (!context.lawnchairPrefs.feedShowInfobox) {
                 toolbarParent.removeView(infobox.parent as View)
             }
