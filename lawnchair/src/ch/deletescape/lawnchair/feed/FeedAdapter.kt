@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.colors.resolvers.FeedBackgroundResolver
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
@@ -468,6 +469,17 @@ class CardViewHolder : RecyclerView.ViewHolder {
             }, parent, false)) {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = GONE
+        }
+
+        if (type and Card.RAISE == 0) {
+            ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
+                    .marginEnd = parent.context.feedPrefs.flatCardHorizontalPadding.roundToInt()
+            ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
+                    .marginStart = parent.context.feedPrefs.flatCardHorizontalPadding.roundToInt()
+            ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
+                    .bottomMargin = parent.context.feedPrefs.flatCardVerticalPadding.roundToInt()
+            ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
+                    .topMargin = parent.context.feedPrefs.flatCardVerticalPadding.roundToInt()
         }
 
         itemView.viewTreeObserver.addOnGlobalLayoutListener {

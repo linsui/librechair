@@ -742,4 +742,6 @@
     <string name="title_pref_feed_toolbar_opacity">Toolbar opacity</string>
     <string name="title_pref_feed_hide_toolbar_actions">Hide actions</string>
     <string name="summary_pref_feed_hide_toolbar_actions">Actions will be hidden (certain functionality will be missing)</string>
+    <string name="title_pref_feed_flat_card_vertical_margin">Flat card vertical margin</string>
+    <string name="title_pref_flat_card_vertical_margin">Flat card vertical margin</string>
 </resources>

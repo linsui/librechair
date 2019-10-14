@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
+import ch.deletescape.lawnchair.applyAsDip
 import kotlin.reflect.KProperty
 
 class StringDelegate<T>(val context: Context, val key: String) {
@@ -40,14 +41,24 @@ class DefValueStringDelegate<T>(val context: Context, val key: String, val defau
             SimplePersistence.InstanceHolder.getInstance(context).get(key, defaultValue)
 }
 
-class NumberDelegate<T>(val context: Context, val key: String, val defValue: Double) {
+open class NumberDelegate<T>(val context: Context, val key: String, val defValue: Double) {
 
-    operator fun setValue(t: T, property: KProperty<*>, value: Double) =
+    open operator fun setValue(t: T, property: KProperty<*>, value: Double) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())
 
-    operator fun getValue(t: T, property: KProperty<*>): Double =
+    open operator fun getValue(t: T, property: KProperty<*>): Double =
             SimplePersistence.InstanceHolder.getInstance(context).get(key,
                     defValue.toString()).toDouble()
+}
+
+class DipDimenDelegate<T>(context: Context, key: String, defValue: Double) :
+        NumberDelegate<T>(context, key, defValue) {
+    override fun setValue(t: T, property: KProperty<*>,
+                          value: Double) = throw UnsupportedOperationException(
+            "setValue unsupported in dimen delegates")
+
+    override fun getValue(t: T, property: KProperty<*>): Double = super.getValue(t,
+            property).toFloat().applyAsDip(context).toDouble()
 }
 
 class BooleanDelegate<T>(val context: Context, val key: String, val defValue: Boolean) {
