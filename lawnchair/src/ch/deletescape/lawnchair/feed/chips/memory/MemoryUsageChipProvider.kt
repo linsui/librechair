@@ -22,12 +22,13 @@ package ch.deletescape.lawnchair.feed.chips.memory
 
 import android.app.ActivityManager
 import android.content.Context
-import android.os.Debug
+import android.content.Context.ACTIVITY_SERVICE
+import android.content.Intent
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.fromDrawableRes
 import com.android.launcher3.R
-import android.content.Context.ACTIVITY_SERVICE
-import androidx.core.content.ContextCompat.getSystemService
+import java.util.function.Consumer
 import kotlin.math.roundToInt
 
 
@@ -39,6 +40,9 @@ class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
         activityManager.getMemoryInfo(mi)
         val availableMegs = mi.availMem / 0x100000L
         val totalMegs = mi.totalMem / 0x100000L
+        viewClickListener = Consumer {
+            FeedUtil.startActivity(context, Intent(Intent.ACTION_ALL_APPS), it)
+        }
         title =
                 "$availableMegs MB / ${if (totalMegs < 0x400) totalMegs else (totalMegs.toDouble() / 0x400).roundToInt()} ${if (totalMegs < 0x400) "MB" else "GB"}"
     })
