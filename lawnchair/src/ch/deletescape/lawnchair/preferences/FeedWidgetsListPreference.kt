@@ -37,6 +37,7 @@ import androidx.preference.PreferenceDialogFragmentCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.cp.NonoverlayCallbacks
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.widgets.Widget
 import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase
@@ -81,8 +82,20 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
         })
     }
 
+    override fun getPositiveButtonText(): CharSequence = R.string.add_new_tab.fromStringRes(
+            context)
+
     class Fragment : PreferenceDialogFragmentCompat() {
         override fun onDialogClosed(positiveResult: Boolean) {
+            if (positiveResult) {
+                val ct = context!!
+                NonoverlayCallbacks.postWidgetRequest(ct) {
+                    FeedScope.launch {
+                        WidgetDatabase.getInstance(ct).dao().addWidget(
+                                Widget(it, WidgetDatabase.getInstance(ct).dao().all.size))
+                    }
+                }
+            }
         }
 
         override fun onBindDialogView(view: View) {
@@ -217,7 +230,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                     val originalSize = resizedAppWidgetInfo?.minHeight ?: -1
                     widgetView.apply {
                         viewTreeObserver.addOnGlobalLayoutListener {
-                            layoutParams.height = if (widget.height != Widget.DEFAULT_HEIGHT) widget.height else originalSize
+                            layoutParams.height =
+                                    if (widget.height != Widget.DEFAULT_HEIGHT) widget.height else originalSize
                         }
                         updateAppWidgetOptions(Bundle().apply {
                             if (widget.height != -1) {
@@ -280,7 +294,8 @@ class FeedWidgetsListPreference(context: Context, attrs: AttributeSet) :
                             FeedScope.launch {
                                 WidgetDatabase.getInstance(c).dao().setHeight(widget.id, toSize)
                             }
-                            widgetView.layoutParams = FrameLayout.LayoutParams(widgetView.width, originalSize)
+                            widgetView.layoutParams =
+                                    FrameLayout.LayoutParams(widgetView.width, originalSize)
                             widgetView.apply {
                                 widgetView.updateAppWidgetOptions(Bundle().apply {
                                     Bundle().apply {

@@ -220,6 +220,8 @@
             android:name="ch.deletescape.lawnchair.gestures.handlers.SleepTimeoutActivity"
             android:screenOrientation="locked"
             android:theme="@style/SleepTimeoutTheme" />
+        <activity android:name="ch.deletescape.lawnchair.cp.NonoverlayCallbacks$WidgetRequestActivity$CustomWidgetPicker" />
+        <activity android:name="ch.deletescape.lawnchair.cp.NonoverlayCallbacks$WidgetRequestActivity" />
         <activity android:name="ch.deletescape.lawnchair.cp.OverlayCallbacks$WidgetRequestActivity"
             android:process=":overlay"/>
         <activity android:name="ch.deletescape.lawnchair.cp.OverlayCallbacks$ImageRequestActivity"
