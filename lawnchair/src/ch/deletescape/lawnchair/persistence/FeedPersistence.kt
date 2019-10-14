@@ -54,6 +54,8 @@ class FeedPersistence private constructor(val context: Context) {
             by NumberDelegate(context, "feed_toolbar_opacity", 0.5)
     val useRSSMinicard
             by BooleanDelegate(context, "feed_rss_minicard", false)
+    val hideActions
+            by BooleanDelegate(context, "feed_hide_toolbar", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

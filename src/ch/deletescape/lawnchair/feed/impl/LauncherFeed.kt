@@ -1401,9 +1401,28 @@ class LauncherFeed(val originalContext: Context,
 
     fun updateActions() {
         toolbar.menu.clear()
-        if (adapter.providers.size == 1) {
-            (adapter.providers[0].getActions(true)).sortedBy { it.name }
-                    .forEach {
+        if (!context.feedPrefs.hideActions) {
+            if (adapter.providers.size == 1) {
+                (adapter.providers[0].getActions(true)).sortedBy { it.name }
+                        .forEach {
+                            toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                                    .apply {
+                                        if (!context.feedPrefs.displayActionsAsMenu) {
+                                            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                        }
+                                        icon = it.icon.tint(
+                                                if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                                        context))
+                                        setOnMenuItemClickListener { _ ->
+                                            it.onClick.run()
+                                            true
+                                        }
+                                    }
+                        }
+            } else {
+                adapter.providers.forEach {
+                    (it.getActions(
+                            false)).sortedBy { it.name }.forEach {
                         toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
                                 .apply {
                                     if (!context.feedPrefs.displayActionsAsMenu) {
@@ -1418,57 +1437,41 @@ class LauncherFeed(val originalContext: Context,
                                     }
                                 }
                     }
-        } else {
-            adapter.providers.forEach {
-                (it.getActions(
-                        false)).sortedBy { it.name }.forEach {
-                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name).apply {
-                        if (!context.feedPrefs.displayActionsAsMenu) {
-                            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                        }
-                        icon = it.icon.tint(
-                                if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                        context))
-                        setOnMenuItemClickListener { _ ->
-                            it.onClick.run()
-                            true
-                        }
-                    }
                 }
             }
-        }
-        if (providerScreens.isNotEmpty() && screenActions.containsKey(
-                        providerScreens.last().first)) {
-            (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
-                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
-                        .apply {
-                            if (!context.feedPrefs.displayActionsAsMenu) {
-                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            if (providerScreens.isNotEmpty() && screenActions.containsKey(
+                            providerScreens.last().first)) {
+                (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
+                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                            .apply {
+                                if (!context.feedPrefs.displayActionsAsMenu) {
+                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                }
+                                icon = it.icon.tint(
+                                        if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                                context))
+                                setOnMenuItemClickListener { _ ->
+                                    it.onClick.run()
+                                    true
+                                }
                             }
-                            icon = it.icon.tint(
-                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                            context))
-                            setOnMenuItemClickListener { _ ->
-                                it.onClick.run()
-                                true
+                }
+            } else {
+                internalActions.values.forEach {
+                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                            .apply {
+                                if (!context.feedPrefs.displayActionsAsMenu) {
+                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                                }
+                                icon = it.icon.tint(
+                                        if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                                context))
+                                setOnMenuItemClickListener { _ ->
+                                    it.onClick.run()
+                                    true
+                                }
                             }
-                        }
-            }
-        } else {
-            internalActions.values.forEach {
-                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
-                        .apply {
-                            if (!context.feedPrefs.displayActionsAsMenu) {
-                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                            }
-                            icon = it.icon.tint(
-                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                            context))
-                            setOnMenuItemClickListener { _ ->
-                                it.onClick.run()
-                                true
-                            }
-                        }
+                }
             }
         }
     }

@@ -265,6 +265,10 @@
             app:steps="100"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="100"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_hide_toolbar_actions"
+            android:title="@string/title_pref_feed_hide_toolbar_actions"
+            android:summary="@string/summary_pref_feed_hide_toolbar_actions"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
