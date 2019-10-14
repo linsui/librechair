@@ -200,12 +200,20 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 }
             });
         }, ServiceMode.OVERLAY);
-        BackgroundHintDelegate delegate = new BackgroundHintDelegate(
-                WallpaperColorInfo.getInstance(launcher).getActualMainColor());
+        BackgroundHintDelegate primary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getMainColor(),
+                BackgroundHintDelegate.PRIMARY);
+        BackgroundHintDelegate secondary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
+                BackgroundHintDelegate.SECONDARY);
+        BackgroundHintDelegate tertiary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
+                BackgroundHintDelegate.TERTIARY);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
-            delegate.set(wallpaperColorInfo.getActualMainColor());
+            primary.set(wallpaperColorInfo.getMainColor());
+            secondary.set(wallpaperColorInfo.getSecondaryColor());
+            tertiary.set(wallpaperColorInfo.getTertiaryColor());
         });
-        client.addConfigurationDelegate(delegate);
+        client.addConfigurationDelegate(primary);
+        client.addConfigurationDelegate(secondary);
+        client.addConfigurationDelegate(tertiary);
     }
 
     @Override

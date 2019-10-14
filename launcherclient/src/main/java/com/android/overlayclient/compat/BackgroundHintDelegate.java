@@ -23,14 +23,20 @@ package com.android.overlayclient.compat;
 import android.os.Bundle;
 
 public class BackgroundHintDelegate extends MutableDelegate<Integer> {
+    public static final String PRIMARY = "background_color_hint";
+    public static final String SECONDARY = "background_secondary_color_hint";
+    public static final String TERTIARY = "background_tertiary_color_hint";
 
-    public BackgroundHintDelegate(Integer value) {
+    private final String key;
+
+    public BackgroundHintDelegate(Integer value, String key) {
         super(value);
+        this.key = key;
     }
 
     @Override
     public void bind(Bundle opt) {
-        opt.putInt("background_color_hint", value);
+        opt.putInt(key, value);
     }
 
     @Override
