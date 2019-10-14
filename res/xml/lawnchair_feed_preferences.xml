@@ -256,6 +256,15 @@
             android:key="feed_pull_down_to_refresh"
             android:title="@string/title_pref_feed_pull_down_to_refresh"
             android:summary="@string/summary_pref_feed_pull_down_to_refresh"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_toolbar_opacity"
+            android:title="@string/title_pref_feed_toolbar_opacity"
+            app:defaultSeekbarValue="0.5"
+            app:maxValue="1"
+            app:minValue="0"
+            app:steps="100"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="100"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

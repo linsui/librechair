@@ -739,4 +739,5 @@
     <string name="title_pref_feed_synd_notification_count">Syndication notification count</string>
     <string name="title_pref_feed_rss_minicard">Use minicard for news items</string>
     <string name="summary_pref_feed_rss_minicard">A more minimal card will be used for news items</string>
+    <string name="title_pref_feed_toolbar_opacity">Toolbar opacity</string>
 </resources>

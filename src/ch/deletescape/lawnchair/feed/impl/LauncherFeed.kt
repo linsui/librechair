@@ -360,8 +360,12 @@ class LauncherFeed(val originalContext: Context,
             feedController.disallowInterceptCurrentTouchEvent = true
             false
         }
+
         if (context.lawnchairPrefs.feedHighContrastToolbar) {
-            toolbar.setBackgroundColor(backgroundColor.setAlpha(175))
+            toolbarParent.setBackgroundColor(backgroundColor.setAlpha(
+                    (context.feedPrefs.toolbarOpacity * 255f).roundToInt()))
+        } else {
+            toolbarParent.setBackgroundColor(0)
         }
 
         var oldToolbarPaddingVertical: Pair<Int, Int>? = null
@@ -1234,6 +1238,12 @@ class LauncherFeed(val originalContext: Context,
         }
         runOnMainThread {
             updateActions()
+            if (context.lawnchairPrefs.feedHighContrastToolbar) {
+                toolbarParent.setBackgroundColor(backgroundColor.setAlpha(
+                        (context.feedPrefs.toolbarOpacity * 255f).roundToInt()))
+            } else {
+                toolbarParent.setBackgroundColor(0)
+            }
         }
         recyclerView.apply {
             post {
