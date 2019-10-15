@@ -41,15 +41,14 @@ import java.util.function.Consumer;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
-import ch.deletescape.lawnchair.smartspace.MediaListener;
 
 public class MediaNotificationProvider extends FeedProvider {
-    private final List<Consumer<MediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
-    private MediaListener mediaListener = null;
+    private final List<Consumer<OMCMediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
+    private OMCMediaListener mediaListener = null;
 
     public MediaNotificationProvider(Context c) {
         super(c);
-        mediaListener = new MediaListener(c,
+        mediaListener = new OMCMediaListener(c,
                 () -> onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking())),
                 new Handler(
                         LauncherModel.getWorkerLooper()));
@@ -78,7 +77,7 @@ public class MediaNotificationProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         Vector<Card> cards = new Vector<>();
-        AtomicReference<MediaListener.MediaNotificationController> mnc = new AtomicReference<>();
+        AtomicReference<OMCMediaListener.MediaNotificationController> mnc = new AtomicReference<>();
         mnc.set(mediaListener.getTracking());
         Log.d(getClass().getName(), "getCards: mnc: " + mnc);
         if (mnc.get() != null) {
