@@ -30,6 +30,7 @@ import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
 import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider
+import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider
 import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
@@ -74,6 +75,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_remote_feeds)
                     WikipediaNewsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news)
+                    MediaNotificationProvider::class.qualifiedName -> context.getString(
+                            R.string.event_provider_now_playing)
                     ItnSyndicationProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news_synd)
                     WikipediaFunFactsProvider::class.qualifiedName -> context.getString(
@@ -88,7 +91,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_google_news)
                     CustomizableRSSProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_customizable_rss)
-                    FeedLocationSearchProvider::class.qualifiedName -> context.getString(R.string.title_feed_provider_location_search)
+                    FeedLocationSearchProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_location_search)
                     DeviceStateProvider::class.qualifiedName -> R.string.title_feed_provider_device_state.fromStringRes(
                             context)
                     FeedSearchboxProvider::class.qualifiedName -> R.string.search.fromStringRes(
