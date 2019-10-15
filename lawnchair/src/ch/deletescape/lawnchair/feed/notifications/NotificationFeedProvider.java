@@ -98,7 +98,7 @@ public class NotificationFeedProvider extends FeedProvider {
             }
             Card card = new Card(
                     info.getIconForBackground(getContext(), getFeed().getBackgroundColor()),
-                    title, parent -> new View(getContext()), Card.Companion.getTEXT_ONLY(), "",
+                    title, parent -> new View(getContext()), Card.Companion.getTEXT_ONLY() | Card.Companion.getRAISE(), "",
                     info.notificationKey.hashCode());
             card.globalClickListener = v -> {
                 if (info.intent != null) {
