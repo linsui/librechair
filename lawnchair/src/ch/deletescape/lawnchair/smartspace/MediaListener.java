@@ -14,12 +14,16 @@ import android.os.Handler;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
-import ch.deletescape.lawnchair.smartspace.NotificationsManager.OnChangeListener;
+
 import com.android.launcher3.Utilities;
 import com.android.launcher3.notification.NotificationListener;
+
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
+
+import ch.deletescape.lawnchair.smartspace.NotificationsManager.OnChangeListener;
 
 /**
  * Paused mode is not supported on Marshmallow because the MediaSession is missing
@@ -38,7 +42,7 @@ public class MediaListener extends MediaController.Callback
     private final Handler mHandler = new Handler();
     private final Handler mWorkHandler;
 
-    MediaListener(Context context, Runnable onChange, Handler handler) {
+    public MediaListener(Context context, Runnable onChange, Handler handler) {
         mComponent = new ComponentName(context, NotificationListener.class);
         mManager = (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
         mOnChange = onChange;
@@ -46,7 +50,7 @@ public class MediaListener extends MediaController.Callback
         mWorkHandler = handler;
     }
 
-    void onResume() {
+    public void onResume() {
         try {
             mManager.addOnActiveSessionsChangedListener(this, mComponent);
         } catch (SecurityException ignored) {
@@ -55,17 +59,17 @@ public class MediaListener extends MediaController.Callback
         mNotificationsManager.addListener(this);
     }
 
-    void onPause() {
+    public void onPause() {
         mManager.removeOnActiveSessionsChangedListener(this);
         onActiveSessionsChanged(Collections.emptyList()); // Unbind all previous controllers.
         mNotificationsManager.removeListener(this);
     }
 
-    MediaNotificationController getTracking() {
+    public MediaNotificationController getTracking() {
         return mTracking;
     }
 
-    String getPackage() {
+    public String getPackage() {
         return mTracking.controller.getPackageName();
     }
 
@@ -124,14 +128,14 @@ public class MediaListener extends MediaController.Callback
         }
     }
 
-    void toggle(boolean finalClick) {
+    public void toggle(boolean finalClick) {
         if (!finalClick) {
             Log.d(TAG, "Toggle");
             pressButton(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
         }
     }
 
-    void next(boolean finalClick) {
+    public void next(boolean finalClick) {
         if (finalClick) {
             Log.d(TAG, "Next");
             pressButton(KeyEvent.KEYCODE_MEDIA_NEXT);
@@ -139,7 +143,7 @@ public class MediaListener extends MediaController.Callback
         }
     }
 
-    void previous(boolean finalClick) {
+    public void previous(boolean finalClick) {
         if (finalClick) {
             Log.d(TAG, "Previous");
             pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
@@ -202,7 +206,7 @@ public class MediaListener extends MediaController.Callback
         }
     }
 
-    class MediaNotificationController {
+    public class MediaNotificationController {
 
         private MediaController controller;
         private StatusBarNotification sbn;
@@ -222,7 +226,7 @@ public class MediaListener extends MediaController.Callback
             return info != null && info.title != null;
         }
 
-        private boolean isPlaying() {
+        public boolean isPlaying() {
             return (!Utilities.ATLEAST_NOUGAT || hasNotification())
                     && hasTitle()
                     && controller.getPlaybackState() != null

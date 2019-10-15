@@ -285,23 +285,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                                 holder.itemView.findViewById<View>(
                                                         R.id.card_removal_hint));
                                         notifyItemRemoved(holder.adapterPosition)
-                                        /* Snackbar.make(holder.itemView, R.string.item_removed,
-                                                      Snackbar.LENGTH_SHORT)
-                                                .setAction(R.string.undo) {
-                                                    runOnNewThread {
-                                                        holder.itemView.context.lawnchairPrefs
-                                                                .feedDisabledCards
-                                                                .remove(cards[holder.adapterPosition].identifier)
-                                                        cards.clear()
-                                                        cards.addAll(backupCards)
-                                                        holder.itemView.post {
-                                                            notifyItemInserted(
-                                                                    holder.adapterPosition)
-                                                            recyclerView.scrollToPosition(
-                                                                    holder.adapterPosition)
-                                                        }
-                                                    }
-                                                }.show() */
                                     }
                                 }
                             }
@@ -340,21 +323,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                             (holder.itemView as ViewGroup).removeView(
                                     holder.itemView.findViewById<View>(R.id.card_removal_hint));
                             notifyItemRemoved(holder.adapterPosition)
-                            /*
-                            Snackbar.make(holder.itemView, R.string.item_removed,
-                                          Snackbar.LENGTH_SHORT).setAction(R.string.undo) {
-                                runOnNewThread {
-                                    holder.itemView.context.lawnchairPrefs.feedDisabledCards
-                                            .remove(cards[holder.adapterPosition].identifier)
-                                    cards.clear()
-                                    cards.addAll(backupCards)
-                                    holder.itemView.post {
-                                        notifyItemInserted(holder.adapterPosition)
-                                        recyclerView.scrollToPosition(holder.adapterPosition)
-                                    }
-                                }
-                            }.show()
-                             */
                         }
                     }
                     return@setOnTouchListener true
@@ -404,10 +372,12 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                             FEED_CARD) !is FeedBackgroundResolver) {
                 holder.itemView.setCardBackgroundColor(
                         context.colorEngine.getResolver(FEED_CARD).resolveColor().setAlpha(
-                                context.lawnchairPrefs.feedCardOpacity.roundToInt()))
+                                cards[position].overrideOpacity?.times(255)?.roundToInt()
+                                        ?: context.lawnchairPrefs.feedCardOpacity.roundToInt()))
             } else {
                 holder.itemView.setCardBackgroundColor(backgroundColor.setAlpha(
-                        context.lawnchairPrefs.feedCardOpacity.roundToInt()))
+                        cards[position].overrideOpacity?.times(255)?.roundToInt()
+                                ?: context.lawnchairPrefs.feedCardOpacity.roundToInt()))
             }
             if (context.lawnchairPrefs.feedCardOpacity.roundToInt() != 255 || context.lawnchairPrefs.feedCardBlur) {
                 holder.itemView.cardElevation = 0f

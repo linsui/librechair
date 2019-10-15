@@ -39,6 +39,9 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     var actionName: String? = null
     var actionListener: ((c: Context) -> Unit)? = null
     var onRemoveListener: (() -> Unit)? = null
+
+    @ValueRange(min = 0.0, max = 1.0)
+    var overrideOpacity: Float? = null
     lateinit var globalClickListener: (v: View) -> Unit
 
     constructor(icon: Drawable?, title: String?,
