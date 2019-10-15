@@ -65,7 +65,11 @@ public class UnreadNotificationsProvider extends ChipProvider {
                         try {
                             info.intent.send();
                             if (info.autoCancel) {
-                                info.intent.cancel();
+                                try {
+                                    info.intent.cancel();
+                                } catch (SecurityException e) {
+                                    e.printStackTrace();
+                                }
                                 notifications.remove(it);
                                 refresh();
                             }
