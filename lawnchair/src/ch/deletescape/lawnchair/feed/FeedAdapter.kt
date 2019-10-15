@@ -54,6 +54,8 @@ import com.github.mmin18.widget.RealtimeBlurView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
@@ -86,6 +88,8 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     context.lawnchairPrefs.feedPresenterAlgorithm)
             algorithm.sort(* providers.map { cardCache[it] ?: emptyList() }.toTypedArray())
         }
+    val fcache
+        get() = cardCache.filter { providers.contains(it.key) }
     val immutableCards
         get() = ArrayList(cards)
 
@@ -115,28 +119,32 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return cards[position].type
     }
 
-    open suspend fun refresh(): Int {
+    open suspend fun refresh(): List<Pair<Int, FeedProvider>> {
         val coroutines = mutableListOf<Job>()
+        val changed = Vector<Pair<Int, FeedProvider>>()
         providers.forEach {
+            changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedScope.launch {
                 it.feed = feed
                 cardCache[it] = it.cards.toImmutableList()
             }
         }
         coroutines.forEach { it.join() }
-        return cards.size
+        return changed
     }
 
-    open suspend fun refreshVolatile(): Int {
+    open suspend fun refreshVolatile():  List<Pair<Int, FeedProvider>> {
         val coroutines = mutableListOf<Job>()
+        val changed = Vector<Pair<Int, FeedProvider>>()
         providers.filter { it.isVolatile }.forEach {
+            changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedScope.launch {
                 it.feed = feed
                 cardCache[it] = it.cards.toImmutableList()
             }
         }
         coroutines.forEach { it.join() }
-        return cards.size
+        return changed
     }
 
     @SuppressLint("MissingPermission")

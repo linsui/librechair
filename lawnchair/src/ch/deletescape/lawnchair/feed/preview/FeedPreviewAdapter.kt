@@ -26,6 +26,7 @@ import android.view.View
 import android.widget.TextView
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.fromColorRes
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.tint
@@ -57,7 +58,7 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
     override val cards
         get() = previewCards
 
-    override suspend fun refresh(): Int {
-        return previewCards.size
+    override suspend fun refresh(): List<Pair<Int, FeedProvider>> {
+        return emptyList()
     }
 }

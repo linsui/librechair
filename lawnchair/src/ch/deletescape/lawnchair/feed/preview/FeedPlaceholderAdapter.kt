@@ -29,10 +29,10 @@ import okhttp3.internal.toImmutableList
 class FeedPlaceholderAdapter(providers: List<FeedProvider>, backgroundColor: Int, context: Context,
                              feed: LauncherFeed?) :
         FeedAdapter(providers, backgroundColor, context, feed) {
-    override suspend fun refresh(): Int {
+    override suspend fun refresh(): List<Pair<Int, FeedProvider>> {
         providers.forEach {
             cardCache[it] = it.previewItems.toImmutableList()
         }
-        return cards.size
+        return emptyList()
     }
 }

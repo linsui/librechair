@@ -67,8 +67,6 @@ import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
 import com.android.overlayclient.state.ActivityState
 import com.android.overlayclient.state.ServiceState
-import com.github.difflib.DiffUtils
-import com.github.difflib.patch.DeltaType
 import com.google.android.libraries.launcherclient.ILauncherOverlay
 import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -508,7 +506,7 @@ class LauncherFeed(val originalContext: Context,
         }
         feedController.mOpenedCallback = {
             runOnNewThread {
-                refresh(100)
+                refresh(100, 0, true)
             }
         }
         upButton.setOnClickListener {
@@ -649,7 +647,7 @@ class LauncherFeed(val originalContext: Context,
                         }
                     }
                     updateActions()
-                    runOnNewThread { refresh(0) }
+                    runOnNewThread { refresh(0, 0, true) }
                 }
             })
 
@@ -875,7 +873,7 @@ class LauncherFeed(val originalContext: Context,
                 popScreens()
                 return@setOnKeyListener true
             } else if (event.action == KeyEvent.ACTION_UP
-                    && keyCode == KeyEvent.KEYCODE_BACK){
+                    && keyCode == KeyEvent.KEYCODE_BACK) {
                 feedController.closeOverlay(true, 0)
                 true
             } else {
@@ -1257,7 +1255,8 @@ class LauncherFeed(val originalContext: Context,
             ChipController.getInstance(context, this@LauncherFeed).refresh()
         }
         runOnMainThread {
-            toolbarParent.visibility = if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
+            toolbarParent.visibility =
+                    if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
             if (!context.lawnchairPrefs.feedShowInfobox) {
                 toolbarParent.removeView(infobox.parent as View)
             }
@@ -1291,15 +1290,53 @@ class LauncherFeed(val originalContext: Context,
                                 5)) ||
                                 (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
                                         5)))) {
-                    adapter.refresh()
                     if (!adapter.cards.isEmpty()) {
                         lastRefresh = System.currentTimeMillis()
                         if (::currentTab.isInitialized) {
                             conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
                         }
                     }
+                    adapter.refresh().forEach {
+                        runOnMainThread {
+                            val lastSize = it.first
+                            val currentSize = adapter.fcache[it.second]!!.size
+                            val objectsBefore = adapter.fcache.values.toList()
+                                    .subList(0, adapter.fcache.keys.indexOf(it.second)).flatten()
+                            val sizeBefore = objectsBefore.size
+                            if (lastSize < currentSize) {
+                                val diffSize = currentSize - lastSize
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                            } else if (lastSize == currentSize) {
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                            } else if (currentSize < lastSize) {
+                                val diffSize = lastSize - currentSize
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
+                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize, diffSize)
+                            }
+                        }
+                    }
                 } else {
-                    adapter.refreshVolatile()
+                    adapter.refreshVolatile().forEach {
+                        runOnMainThread {
+                            val lastSize = it.first
+                            val currentSize = adapter.cardCache[it.second]!!.size
+                            val objectsBefore = adapter.cardCache.values.toList()
+                                    .subList(0, adapter.cardCache.keys.indexOf(it.second))
+                            val sizeBefore = objectsBefore.size
+                            if (lastSize < currentSize) {
+                                val diffSize = currentSize - lastSize
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                            } else if (lastSize == currentSize) {
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                            } else if (currentSize < lastSize) {
+                                val diffSize = lastSize - currentSize
+                                adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
+                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize, diffSize)
+                            }
+                        }
+                    }
                 }
             }
             val cards = adapter.immutableCards
@@ -1360,38 +1397,6 @@ class LauncherFeed(val originalContext: Context,
                 }
             } else if (oldCards.isEmpty() && count == 0) {
                 adapter.notifyItemRangeInserted(0, adapter.itemCount)
-            } else {
-                val patch = DiffUtils.diff(oldCards, cards)
-
-                runOnMainThread {
-                    if (adapter.cards.isNotEmpty()) {
-                        patch.deltas.forEach {
-                            when (it.type!!) {
-                                DeltaType.CHANGE -> adapter.notifyItemRangeChanged(
-                                        it.source.position,
-                                        it.source.lines.size)
-                                DeltaType.INSERT -> adapter.notifyItemRangeInserted(
-                                        it.source.position,
-                                        it.source.lines.size)
-                                DeltaType.DELETE -> adapter.notifyItemRangeRemoved(
-                                        it.source.position,
-                                        it.source.lines.size)
-                                DeltaType.EQUAL -> {
-                                }
-                            }
-                        }
-                    } else {
-                        recyclerView.isLayoutFrozen = false
-                        adapter.notifyItemRangeRemoved(0, oldCards.size)
-                    }
-                    recyclerView.isLayoutFrozen = false
-                    recyclerView.visibility = View.VISIBLE
-                    feedController.findViewById<View>(R.id.empty_view).visibility =
-                            if (cards.isNotEmpty()) View.GONE else View.VISIBLE
-                    swipeRefreshLayout.post {
-                        swipeRefreshLayout.isRefreshing = false
-                    }
-                }
             }
         }
     }
