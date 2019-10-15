@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.notifications;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -79,6 +80,7 @@ public class MediaNotificationProvider extends FeedProvider {
         Vector<Card> cards = new Vector<>();
         AtomicReference<MediaListener.MediaNotificationController> mnc = new AtomicReference<>();
         mnc.set(mediaListener.getTracking());
+        Log.d(getClass().getName(), "getCards: mnc: " + mnc);
         if (mnc.get() != null) {
             NotificationInfo mediaInfo = new NotificationInfo(getContext(), mnc.get().getSbn());
             cards.add(new Card(null, null, parent -> {
@@ -122,5 +124,10 @@ public class MediaNotificationProvider extends FeedProvider {
                     mnc.get().getSbn().getId()));
         }
         return cards;
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return true;
     }
 }
