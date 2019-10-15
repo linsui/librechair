@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed.chips;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.os.Handler;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
@@ -38,9 +39,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-
-import android.os.Handler;
-
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.SortingAlgorithm;
@@ -48,8 +46,9 @@ import ch.deletescape.lawnchair.feed.chips.sorting.MixerSortHelper;
 import ch.deletescape.lawnchair.feed.chips.sorting.NormalSortHelper;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
+import ch.deletescape.lawnchair.reflection.ReflectionUtils;
 
-@SuppressWarnings("WeakerAccess")
+
 public final class ChipController {
     @SuppressLint("StaticFieldLeak")
     private static ChipController sInstance;
@@ -66,6 +65,12 @@ public final class ChipController {
     private ChipController(@NonNull Context context, @NonNull LauncherFeed feed) {
         Preconditions.assertNotNull(context);
         Preconditions.assertNotNull(feed);
+        if (ReflectionUtils.getCallingClass() != ChipController.class) {
+            throw new SecurityException(
+                    "This class can't be instantiated outside of getInstance()");
+        } else if (sInstance != null) {
+            throw new IllegalStateException("An instance of this class already exists");
+        }
         this.feed = feed;
         this.subscribers = new LinkedList<>();
         this.context = context;
@@ -94,7 +99,8 @@ public final class ChipController {
     }
 
     @AnyThread
-    public synchronized void subscribe(@NonNull @MainThread Consumer<List<ChipProvider.Item>> listener) {
+    public synchronized void subscribe(
+            @NonNull @MainThread Consumer<List<ChipProvider.Item>> listener) {
         Preconditions.assertNotNull(listener);
         subscribers.add(new WeakReference<>(listener));
         listener.accept(items);
@@ -114,7 +120,8 @@ public final class ChipController {
             it.setController(ChipController.this);
             it.setLauncherFeed(feed);
         }).map(it -> it.getItems(context)).toArray(List[]::new));
-        new Handler(context.getMainLooper()).post(() -> subscribers.stream().filter(it -> it.get() != null).forEach(
-                subscriber -> subscriber.get().accept(items)));
+        new Handler(context.getMainLooper()).post(
+                () -> subscribers.stream().filter(it -> it.get() != null).forEach(
+                        subscriber -> subscriber.get().accept(items)));
     }
 }

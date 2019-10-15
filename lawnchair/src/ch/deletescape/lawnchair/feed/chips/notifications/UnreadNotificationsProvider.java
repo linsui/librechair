@@ -28,9 +28,9 @@ import androidx.core.graphics.ColorUtils;
 
 import com.android.launcher3.notification.NotificationInfo;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.colors.ColorEngine;
@@ -38,7 +38,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.notifications.OverlayNotificationManager;
 
 public class UnreadNotificationsProvider extends ChipProvider {
-    private List<StatusBarNotification> notifications = new LinkedList<>();
+    private List<StatusBarNotification> notifications = new Vector<>();
 
     public UnreadNotificationsProvider(Context c) {
         OverlayNotificationManager.addListener(notifs -> {
@@ -65,6 +65,8 @@ public class UnreadNotificationsProvider extends ChipProvider {
                         try {
                             info.intent.send();
                             if (info.autoCancel) {
+                                notifications.remove(it);
+                                refresh();
                                 try {
                                     info.intent.cancel();
                                 } catch (SecurityException e) {
