@@ -102,7 +102,7 @@ public class FeedLocationSearchProvider extends FeedProvider {
                     y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
                     Flowable.fromCallable(() -> LocationSearchManager.getInstance(getContext()).get(
                             editText.getText().toString())).doOnError(e -> editText.post(() -> editText.setText(""))).subscribeOn(
-                            Schedulers.io()).subscribe(pair -> editText.post(() -> new MapScreen(getContext(), getFeed(), pair.first, pair.second, 18.0,
+                            Schedulers.newThread()).subscribe(pair -> editText.post(() -> new MapScreen(getContext(), getFeed(), pair.first, pair.second, 18.0,
                                     pair.first, pair.second).display(this, x, y))).dispose();
                 }
                 return true;
