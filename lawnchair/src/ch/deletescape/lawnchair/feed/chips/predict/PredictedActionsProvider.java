@@ -23,9 +23,7 @@ package ch.deletescape.lawnchair.feed.chips.predict;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.LauncherApps;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
@@ -49,9 +47,7 @@ public class PredictedActionsProvider extends ChipProvider {
     @Override
     public List<Item> getItems(Context context) {
         try {
-            Log.d(getClass().getSimpleName(),
-                    "getItems: items are " + OverlayService.CompanionService.InterfaceHolder.INSTANCE.getActions());
-            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getActions().stream().map(
+            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getActions(4).stream().map(
                     it -> {
                         Item item = new Item();
                         item.icon = it.first != null ? RoundedBitmapDrawableFactory.create(

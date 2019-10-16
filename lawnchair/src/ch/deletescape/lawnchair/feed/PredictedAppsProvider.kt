@@ -56,7 +56,7 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     }
 
     private fun refreshPredictions() {
-        adapter.predictions = OverlayService.CompanionService.InterfaceHolder.getPredictions()
+        adapter.predictions = OverlayService.CompanionService.InterfaceHolder.getPredictions(adapter.gridSize)
         adapter.notifyDataSetChanged()
     }
 

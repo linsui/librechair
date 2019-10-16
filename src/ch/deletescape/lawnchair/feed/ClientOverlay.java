@@ -111,7 +111,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                             Bundle bundle = new Bundle();
                             bundle.putParcelableArrayList("retval", new ArrayList<>(
                                     ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(
-                                            10).map(
+                                            opt.getInt("amt", -1) != -1 ? opt.getInt(
+                                                    "amt") : 10).map(
                                             it -> new ParcelableComponentKeyMapper(
                                                     it.getComponentKey(), it.getApp(
                                                     launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
@@ -129,7 +130,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         .getActionsRowView()
                                         .getActions()
                                         .stream()
-                                        .limit(10)
+                                        .limit(opt.getInt("amt", -1) != -1 ? opt.getInt("amt") : 10)
                                         .map(it -> new ParcelablePair(it.shortcutInfo.iconBitmap,
                                                 it.shortcut.getShortcutInfo()))
                                         .collect(Collectors.toList())));
@@ -168,7 +169,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                                 PackageUserKey removedPackageUserKey,
                                                 NotificationKeyData notificationKey) {
                                             try {
-                                                listener.notificationRemoved(notificationKey.notificationKey);
+                                                listener.notificationRemoved(
+                                                        notificationKey.notificationKey);
                                             } catch (RemoteException e) {
                                                 e.printStackTrace();
                                             }
@@ -193,11 +195,14 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 }
             });
         }, ServiceMode.OVERLAY);
-        BackgroundHintDelegate primary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getMainColor(),
+        BackgroundHintDelegate primary = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getMainColor(),
                 BackgroundHintDelegate.PRIMARY);
-        BackgroundHintDelegate secondary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
+        BackgroundHintDelegate secondary = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
                 BackgroundHintDelegate.SECONDARY);
-        BackgroundHintDelegate tertiary = new BackgroundHintDelegate(WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
+        BackgroundHintDelegate tertiary = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
                 BackgroundHintDelegate.TERTIARY);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
             primary.set(wallpaperColorInfo.getMainColor());

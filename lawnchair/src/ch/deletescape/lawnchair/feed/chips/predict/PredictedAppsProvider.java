@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import ch.deletescape.lawnchair.adaptive.IconShape;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
@@ -48,9 +47,8 @@ public class PredictedAppsProvider extends ChipProvider {
     @Override
     public List<Item> getItems(Context context) {
         try {
-            Log.d(getClass().getSimpleName(),
-                    "getItems: items are " + OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions());
-            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions().stream().map(
+            return OverlayService.CompanionService.InterfaceHolder.INSTANCE.getPredictions((int) Math.round(
+                    ChipPersistence.Companion.getInstance(context).getMaxPredictions())).stream().map(
                     it -> {
                         try {
                             Item item = new Item();
@@ -70,8 +68,6 @@ public class PredictedAppsProvider extends ChipProvider {
                         }
                     })
                     .filter(Objects::nonNull)
-                    .limit(Math.round(
-                            ChipPersistence.Companion.getInstance(context).getMaxPredictions()))
                     .collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
             Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);

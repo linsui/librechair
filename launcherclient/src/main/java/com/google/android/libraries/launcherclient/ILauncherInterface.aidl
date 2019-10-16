@@ -5,7 +5,9 @@ interface ILauncherInterface {
         Calls are expected to adhere to a general standard, and provide several standard faculties:
         std:l3predictions should return a list of predicted apps, or an empty list and err = "e_notsupported"
         in the returned bundle if the action is not supported.
+            arguments: "amt": the amount of predictions to retrieve
         std:l3actions should return a list of predicted shortcuts, or an empty list and err = "e_notsupported"
+            arguments: "amt": the amount of predictions to retrieve
         if the action is not supported;
         std:sbn should subscribe a [ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener]
             arguments: "listener": listener

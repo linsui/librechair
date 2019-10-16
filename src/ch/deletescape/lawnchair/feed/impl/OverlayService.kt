@@ -166,16 +166,16 @@ class OverlayService : Service(), () -> Unit {
                     }
                 }
 
-            fun getPredictions(): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+            fun getPredictions(amt: Int): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
                             PREDICTIONS_CALL) == true) interfaze?.call(
-                    PREDICTIONS_CALL, null)?.apply {
+                    PREDICTIONS_CALL,  Bundle().apply { putInt("amt", amt) })?.apply {
                 classLoader = ParcelableComponentKeyMapper::class.java.classLoader
             }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
 
-            fun getActions(): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
+            fun getActions(amt: Int): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
                             ACTIONS_CALL) == true) interfaze?.call(
-                    ACTIONS_CALL, null)?.apply {
+                    ACTIONS_CALL, Bundle().apply { putInt("amt", amt) })?.apply {
                 classLoader = ParcelablePair::class.java.classLoader
             }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
