@@ -80,8 +80,7 @@ public class MediaNotificationProvider extends FeedProvider {
         AtomicReference<OMCMediaListener.MediaNotificationController> mnc = new AtomicReference<>();
         mnc.set(mediaListener.getTracking());
         Log.d(getClass().getName(), "getCards: mnc: " + mnc);
-        if (mnc.get() != null) {
-            NotificationInfo mediaInfo = new NotificationInfo(getContext(), mnc.get().getSbn());
+            NotificationInfo mediaInfo = mnc.get() != null ? new NotificationInfo(getContext(), mnc.get().getSbn()) : null;
             cards.add(new Card(null, null, parent -> {
                 View mnv = LayoutInflater.from(parent.getContext()).inflate(
                         R.layout.media_notification, parent, false);
@@ -90,11 +89,11 @@ public class MediaNotificationProvider extends FeedProvider {
                 ImageButton pause = mnv.findViewById(R.id.play_button);
                 ImageButton next = mnv.findViewById(R.id.next_track);
                 ImageButton last = mnv.findViewById(R.id.last_track);
-                title.setText(mnc.get().getInfo().getTitle());
+                title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
                 author.setText(
-                        mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
+                        mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
                 pause.setImageDrawable(
-                        mnc.get().isPlaying() ? getContext().getDrawable(
+                        mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
                                 R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
                                 R.drawable.ic_play_arrow_black_24dp));
                 pause.setImageTintList(ColorStateList.valueOf(
@@ -108,7 +107,16 @@ public class MediaNotificationProvider extends FeedProvider {
                 last.setOnClickListener(cause -> mediaListener.previous(false));
                 onMediaNotifChange.add(mn -> {
                     if (mn == null) {
-                        this.getFeed().refresh(0, 0, true, true);
+                        mnc.set(null);
+                        mnv.post(() -> {
+                            title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
+                            author.setText(
+                                    mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
+                            pause.setImageDrawable(
+                                    mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
+                                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
+                                            R.drawable.ic_play_arrow_black_24dp));
+                        });
                     } else {
                         mnc.set(mn);
                         mnv.post(() -> {
@@ -128,8 +136,7 @@ public class MediaNotificationProvider extends FeedProvider {
                 });
                 return mnv;
             }, Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
-                    mnc.get().getSbn().getId()));
-        }
+                    mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
         return cards;
     }
 
