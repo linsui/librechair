@@ -57,11 +57,29 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content">
         <ImageButton
+            android:padding="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorAccent"
+            android:src="@drawable/ic_arrow_back"
+            android:id="@+id/last_track"/>
+        <ImageButton
+            android:padding="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:tint="?attr/colorAccent"
             android:src="@drawable/ic_play_arrow_black_24dp"
             android:id="@+id/play_button"/>
+        <ImageButton
+            android:padding="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="?attr/colorAccent"
+            android:src="@drawable/ic_arrow_back"
+            android:rotation="180"
+            android:id="@+id/next_track"/>
     </LinearLayout>
 </LinearLayout>

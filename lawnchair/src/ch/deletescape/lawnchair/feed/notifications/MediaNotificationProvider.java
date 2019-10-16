@@ -88,6 +88,8 @@ public class MediaNotificationProvider extends FeedProvider {
                 TextView title = mnv.findViewById(R.id.notification_title);
                 TextView author = mnv.findViewById(R.id.notification_author);
                 ImageButton pause = mnv.findViewById(R.id.play_button);
+                ImageButton next = mnv.findViewById(R.id.next_track);
+                ImageButton last = mnv.findViewById(R.id.last_track);
                 title.setText(mnc.get().getInfo().getTitle());
                 author.setText(
                         mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
@@ -97,7 +99,13 @@ public class MediaNotificationProvider extends FeedProvider {
                                 R.drawable.ic_play_arrow_black_24dp));
                 pause.setImageTintList(ColorStateList.valueOf(
                         FeedAdapter.Companion.getOverrideColor(getContext())));
+                next.setImageTintList(ColorStateList.valueOf(
+                        FeedAdapter.Companion.getOverrideColor(getContext())));
+                last.setImageTintList(ColorStateList.valueOf(
+                        FeedAdapter.Companion.getOverrideColor(getContext())));
                 pause.setOnClickListener(cause -> mediaListener.toggle(false));
+                next.setOnClickListener(cause -> mediaListener.next(false));
+                last.setOnClickListener(cause -> mediaListener.previous(false));
                 onMediaNotifChange.add(mn -> {
                     if (mn == null) {
                         this.getFeed().refresh(0, 0, true, true);
