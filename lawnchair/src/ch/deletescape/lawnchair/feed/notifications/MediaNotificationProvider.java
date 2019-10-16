@@ -97,7 +97,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                 R.drawable.ic_play_arrow_black_24dp));
                 pause.setImageTintList(ColorStateList.valueOf(
                         FeedAdapter.Companion.getOverrideColor(getContext())));
-                pause.setOnClickListener(cause -> mediaListener.toggle(true));
+                pause.setOnClickListener(cause -> mediaListener.toggle(false));
                 onMediaNotifChange.add(mn -> {
                     if (mn == null) {
                         this.getFeed().refresh(0, 0, true, true);
