@@ -72,7 +72,8 @@ public class OMCMediaListener extends MediaController.Callback
             onActiveSessionsChanged(null);
         });
         mWorkHandler = handler;
-        mManager.addOnActiveSessionsChangedListener(this, null);
+        mManager.addOnActiveSessionsChangedListener(this,
+                new ComponentName(context, NotificationListener.class));
     }
 
     public MediaNotificationController getTracking() {
@@ -114,7 +115,8 @@ public class OMCMediaListener extends MediaController.Callback
 
         // If the current controller is not paused or playing, stop tracking it.
         if (mTracking != null
-                && (!controllers.contains(mTracking.controller) || !mTracking.isPausedOrPlaying())) {
+                && (!controllers.contains(
+                mTracking.controller) || !mTracking.isPausedOrPlaying())) {
             mTracking = null;
         }
 
