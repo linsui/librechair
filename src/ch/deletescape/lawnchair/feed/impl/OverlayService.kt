@@ -41,6 +41,7 @@ import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 class OverlayService : Service(), () -> Unit {
     companion object {
@@ -120,8 +121,19 @@ class OverlayService : Service(), () -> Unit {
                 set(value) = {
                     value?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
                         putBinder("listener", object : INotificationsChangedListener.Stub() {
+                            val notifs = Vector<StatusBarNotification>()
+                            override fun notificationRemoved(key: String) {
+                                notifs.removeIf { it.key == key }
+                            }
+
+                            override fun notificationPosted(notif: StatusBarNotification) {
+                                notifs += notif
+                            }
+
                             override fun notificationsChanged(
-                                    notifs: MutableList<StatusBarNotification>) {
+                                    notifsNew: MutableList<StatusBarNotification>) {
+                                notifs.clear()
+                                notifs.addAll(notifsNew)
                                 notifChangedListener?.invoke(notifs)
                             }
                         })
@@ -134,9 +146,20 @@ class OverlayService : Service(), () -> Unit {
                     if (value != null) {
                         interfaze?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
                             putBinder("listener", object : INotificationsChangedListener.Stub() {
+                                val notifs = Vector<StatusBarNotification>()
+                                override fun notificationRemoved(key: String) {
+                                    notifs.removeIf { it.key == key }
+                                }
+
+                                override fun notificationPosted(notif: StatusBarNotification) {
+                                    notifs += notif
+                                }
+
                                 override fun notificationsChanged(
-                                        notifs: MutableList<StatusBarNotification>) {
-                                    value(notifs)
+                                        notifsNew: MutableList<StatusBarNotification>) {
+                                    notifs.clear()
+                                    notifs.addAll(notifsNew)
+                                    notifChangedListener?.invoke(notifs)
                                 }
                             })
                         })

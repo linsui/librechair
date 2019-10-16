@@ -141,8 +141,6 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                         if (listener != null) {
                             LauncherNotifications.getInstance().addListener(
                                     new NotificationListener.NotificationsChangedListener() {
-                                        private List<StatusBarNotification> notifications = new ArrayList<>();
-
                                         @Override
                                         public synchronized void onNotificationPosted(
                                                 PackageUserKey postedPackageUserKey,
@@ -154,13 +152,14 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                                 if ((sbn = ll.getNotificationsForKeys(
                                                         Collections.singletonList(
                                                                 notificationKey))) != null && sbn.size() > 0) {
-                                                    notifications.addAll(sbn);
+                                                    sbn.forEach(posted -> {
+                                                        try {
+                                                            listener.notificationPosted(posted);
+                                                        } catch (RemoteException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    });
                                                 }
-                                            }
-                                            try {
-                                                listener.notificationsChanged(notifications);
-                                            } catch (RemoteException e) {
-                                                e.printStackTrace();
                                             }
                                         }
 
@@ -168,12 +167,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         public synchronized void onNotificationRemoved(
                                                 PackageUserKey removedPackageUserKey,
                                                 NotificationKeyData notificationKey) {
-                                            notifications = notifications.stream().filter(
-                                                    it -> !it.getKey().equals(
-                                                            notificationKey.notificationKey)).collect(
-                                                    Collectors.toList());
                                             try {
-                                                listener.notificationsChanged(notifications);
+                                                listener.notificationRemoved(notificationKey.notificationKey);
                                             } catch (RemoteException e) {
                                                 e.printStackTrace();
                                             }
@@ -182,10 +177,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                                         @Override
                                         public synchronized void onNotificationFullRefresh(
                                                 List<StatusBarNotification> activeNotifications) {
-                                            notifications.clear();
-                                            notifications.addAll(activeNotifications);
                                             try {
-                                                listener.notificationsChanged(notifications);
+                                                listener.notificationsChanged(activeNotifications);
                                             } catch (RemoteException e) {
                                                 e.printStackTrace();
                                             }

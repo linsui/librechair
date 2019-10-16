@@ -1,17 +1,51 @@
 package com.android.launcher3.util;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.UserHandle;
 import android.service.notification.StatusBarNotification;
+
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
+
 import java.util.Arrays;
 
 /** Creates a hash key based on package name and user. */
-public class PackageUserKey {
+public class PackageUserKey implements Parcelable {
 
     public String mPackageName;
     public UserHandle mUser;
     private int mHashCode;
+
+    protected PackageUserKey(Parcel in) {
+        mPackageName = in.readString();
+        mUser = in.readParcelable(UserHandle.class.getClassLoader());
+        mHashCode = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mPackageName);
+        dest.writeParcelable(mUser, flags);
+        dest.writeInt(mHashCode);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PackageUserKey> CREATOR = new Creator<PackageUserKey>() {
+        @Override
+        public PackageUserKey createFromParcel(Parcel in) {
+            return new PackageUserKey(in);
+        }
+
+        @Override
+        public PackageUserKey[] newArray(int size) {
+            return new PackageUserKey[size];
+        }
+    };
 
     public static PackageUserKey fromItemInfo(ItemInfo info) {
         return new PackageUserKey(info.getTargetComponent().getPackageName(), info.user);
