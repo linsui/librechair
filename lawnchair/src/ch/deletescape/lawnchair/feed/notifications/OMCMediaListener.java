@@ -61,7 +61,7 @@ public class OMCMediaListener extends MediaController.Callback
     private final Handler mHandler = new Handler();
     private final Handler mWorkHandler;
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
     public OMCMediaListener(Context context, Runnable onChange, Handler handler) {
         mComponent = new ComponentName(context, NotificationListener.class);
         mManager = (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
@@ -72,6 +72,7 @@ public class OMCMediaListener extends MediaController.Callback
             onActiveSessionsChanged(null);
         });
         mWorkHandler = handler;
+        mManager.addOnActiveSessionsChangedListener(this, null);
     }
 
     public MediaNotificationController getTracking() {
