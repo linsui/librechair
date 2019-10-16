@@ -44,14 +44,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-import ch.deletescape.lawnchair.smartspace.NotificationsManager.OnChangeListener;
-
 /**
  * Paused mode is not supported on Marshmallow because the MediaSession is missing
  * notifications. Without this information, it is impossible to hide on stop.
  */
 public class OMCMediaListener extends MediaController.Callback
-        implements OnActiveSessionsChangedListener, OnChangeListener {
+        implements OnActiveSessionsChangedListener {
     private static final String TAG = "MediaListener";
 
     private final ComponentName mComponent;
@@ -71,6 +69,7 @@ public class OMCMediaListener extends MediaController.Callback
         OverlayNotificationManager.addListener(list -> {
             notifications.clear();
             notifications.addAll(list);
+            onActiveSessionsChanged(null);
         });
         mWorkHandler = handler;
     }
@@ -190,11 +189,6 @@ public class OMCMediaListener extends MediaController.Callback
 
     public void onMetadataChanged(MediaMetadata metadata) {
         super.onMetadataChanged(metadata);
-        onActiveSessionsChanged(null);
-    }
-
-    @Override
-    public void onNotificationsChanged() {
         onActiveSessionsChanged(null);
     }
 
