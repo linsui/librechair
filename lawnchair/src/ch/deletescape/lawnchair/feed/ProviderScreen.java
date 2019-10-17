@@ -35,6 +35,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LifecycleRegistry;
@@ -99,6 +100,14 @@ public abstract class ProviderScreen extends ContextWrapper
 
     public boolean onBackPressed() {
         return false;
+    }
+
+    public void finish() {
+        if (findFeed() == null) {
+            throw new IllegalStateException("no feed or other closing container attached");
+        } else {
+            findFeed().closeScreen(this);
+        }
     }
 
     public final void display(LauncherFeed feed, int tX, int tY) {
@@ -183,6 +192,17 @@ public abstract class ProviderScreen extends ContextWrapper
             overlayView.setVisibility(View.INVISIBLE);
             new AlertDialog.Builder(this, new ThemeOverride.AlertDialog().getTheme(this))
                     .setView(overlayView).show();
+        }
+    }
+
+    @Nullable
+    private LauncherFeed findFeed() {
+        if (feed != null) {
+            return feed;
+        } else if (provider != null) {
+            return provider.getFeed();
+        } else {
+            return null;
         }
     }
 

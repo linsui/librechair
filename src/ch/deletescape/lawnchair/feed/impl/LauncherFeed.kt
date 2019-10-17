@@ -896,6 +896,21 @@ class LauncherFeed(val originalContext: Context,
         updateActions()
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun closeScreen(screen: ProviderScreen) {
+        if (providerScreens.isEmpty() || providerScreens.size == 1) {
+            internalActions.remove(R.id.cancel)
+            updateActions()
+        }
+        removeDisplayedView(providerScreens.first { it.first == screen }.second.view,
+                providerScreens.first { it.first == screen }.second.x,
+                providerScreens.first { it.first == screen }.second.y)
+        screenActions.remove(providerScreens.first { it.first == screen }.first)
+        providerScreens.first { it.first == screen }.first.onDestroy()
+        providerScreens.remove(providerScreens.first { it.first == screen })
+        updateActions()
+    }
+
     private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
         if (useTabbedMode) {
             tabView.tabsEnabled = false
@@ -1312,7 +1327,8 @@ class LauncherFeed(val originalContext: Context,
                             } else if (currentSize < lastSize) {
                                 val diffSize = lastSize - currentSize
                                 adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
-                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize, diffSize)
+                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
+                                        diffSize)
                             }
                         }
                     }
@@ -1333,7 +1349,8 @@ class LauncherFeed(val originalContext: Context,
                             } else if (currentSize < lastSize) {
                                 val diffSize = lastSize - currentSize
                                 adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
-                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize, diffSize)
+                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
+                                        diffSize)
                             }
                         }
                     }
