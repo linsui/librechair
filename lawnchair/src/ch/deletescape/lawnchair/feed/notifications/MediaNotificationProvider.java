@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.launcher3.LauncherModel;
@@ -89,6 +90,7 @@ public class MediaNotificationProvider extends FeedProvider {
                 ImageButton pause = mnv.findViewById(R.id.play_button);
                 ImageButton next = mnv.findViewById(R.id.next_track);
                 ImageButton last = mnv.findViewById(R.id.last_track);
+                ImageView icon = mnv.findViewById(R.id.media_icon);
                 title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
                 author.setText(
                         mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
@@ -102,6 +104,7 @@ public class MediaNotificationProvider extends FeedProvider {
                         FeedAdapter.Companion.getOverrideColor(getContext())));
                 last.setImageTintList(ColorStateList.valueOf(
                         FeedAdapter.Companion.getOverrideColor(getContext())));
+                icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                 pause.setOnClickListener(cause -> mediaListener.toggle(false));
                 next.setOnClickListener(cause -> mediaListener.next(false));
                 last.setOnClickListener(cause -> mediaListener.previous(false));
@@ -116,6 +119,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                     mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
                                             R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
                                             R.drawable.ic_play_arrow_black_24dp));
+                            icon.setImageBitmap(
+                                    mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                         });
                     } else {
                         mnc.set(mn);
@@ -131,6 +136,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                             R.drawable.ic_play_arrow_black_24dp));
                             pause.setImageTintList(ColorStateList.valueOf(
                                     FeedAdapter.Companion.getOverrideColor(getContext())));
+                            icon.setImageBitmap(
+                                    mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                         });
                     }
                 });

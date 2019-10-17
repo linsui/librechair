@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.notifications;
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.MediaMetadata;
 import android.media.session.MediaController;
 import android.media.session.MediaSession;
@@ -205,6 +206,7 @@ public class OMCMediaListener extends MediaController.Callback
         private CharSequence title;
         private CharSequence artist;
         private CharSequence album;
+        private Bitmap bitmap;
 
         public CharSequence getTitle() {
             return title;
@@ -218,6 +220,10 @@ public class OMCMediaListener extends MediaController.Callback
         @SuppressWarnings("WeakerAccess")
         public CharSequence getAlbum() {
             return album;
+        }
+
+        public Bitmap getBitmap() {
+            return bitmap;
         }
     }
 
@@ -272,6 +278,7 @@ public class OMCMediaListener extends MediaController.Callback
                 info.title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
                 info.artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
                 info.album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
+                info.bitmap = metadata.getDescription().getIconBitmap();
             } else if (sbn != null) {
                 info = new MediaInfo();
                 info.title = sbn.getNotification().extras.getCharSequence(Notification.EXTRA_TITLE);
