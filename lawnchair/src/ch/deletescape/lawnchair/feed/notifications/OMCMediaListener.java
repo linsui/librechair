@@ -72,8 +72,13 @@ public class OMCMediaListener extends MediaController.Callback
             onActiveSessionsChanged(null);
         });
         mWorkHandler = handler;
-        mManager.addOnActiveSessionsChangedListener(this,
-                new ComponentName(context, NotificationListener.class));
+        try {
+            mManager.addOnActiveSessionsChangedListener(this,
+                    new ComponentName(context, NotificationListener.class));
+        } catch (SecurityException e) {
+            Log.e(getClass().getSimpleName(),
+                    "<init>: error subscribing to media manager (probably missing permissions)", e);
+        }
     }
 
     public MediaNotificationController getTracking() {
