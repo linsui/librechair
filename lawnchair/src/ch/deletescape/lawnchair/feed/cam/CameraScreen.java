@@ -101,8 +101,8 @@ public class CameraScreen extends ProviderScreen {
                 public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
                                                       int height) {
                     setUpCamera(this, cam);
+                    clearActions();
                     addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_lawnstep), getString(R.string.title_action_rotate), () -> {
-                        clearActions();
                         if (session != null) {
                             dev.close();
                             session.close();
