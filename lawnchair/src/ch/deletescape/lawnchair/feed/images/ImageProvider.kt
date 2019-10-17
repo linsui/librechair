@@ -62,21 +62,20 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                     "manageNotes".hashCode()).apply {
                 globalClickListener = {
                     CameraScreen(it.context) {
-                        OverlayCallbacks.postImageRequest(context) {
                             if (it != null) {
                                 FeedScope.launch(Dispatchers.IO) {
+                                    val id = ImageStore.getInstance(context)
+                                            .storeBitmap(it)
                                     ImageDatabase.getInstance(
                                             context).access()
-                                            .insert(Image(it,
+                                            .insert(Image(id,
                                                     "normal"))
-                                }.invokeOnCompletion { _ ->
-                                    images += ImageStore.getInstance(context).getBitmap(it) to it
+                                    images += ImageStore.getInstance(context).getBitmap(id) to id
                                     if (feed != null) {
                                         feed.refresh(10, 0, true)
                                     }
                                 }
                             }
-                        }
                     }.display(this@ImageProvider,  it.getPostionOnScreen().first + it.measuredWidth / 2,
                             it.getPostionOnScreen().second + it.measuredHeight / 2)
                 }

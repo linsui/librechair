@@ -90,6 +90,7 @@ public class CameraScreen extends ProviderScreen {
         View takeImage = view.findViewById(R.id.take_foto);
         if (getPackageManager().checkPermission(Manifest.permission.CAMERA,
                 getPackageName()) == PackageManager.PERMISSION_GRANTED) {
+            takeImage.setOnClickListener(v -> listener.accept(cam.getBitmap()));
             cam.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
                 @Override
                 public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
