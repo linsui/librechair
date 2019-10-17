@@ -45,6 +45,8 @@ abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     override fun onDestroy() {
     }
 
+    override fun isVolatile() = true
+
     override fun getCards(): List<Card> {
         return headerCard ?: emptyList<Card>() + images.keys.map {
             Card(null, "", { parent, _ ->
