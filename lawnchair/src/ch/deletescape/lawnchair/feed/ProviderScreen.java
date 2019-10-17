@@ -76,6 +76,14 @@ public abstract class ProviderScreen extends ContextWrapper
 
     protected abstract void bindView(View view);
 
+    protected void clearActions() {
+        actions.clear();
+        if (feed != null) {
+            feed.getScreenActions().put(this, actions);
+            feed.updateActions();
+        }
+    }
+
     protected void addAction(FeedProvider.Action action) {
         if (feed != null) {
             actions.add(action);

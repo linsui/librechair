@@ -54,6 +54,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 
 public class CameraScreen extends ProviderScreen {
@@ -71,6 +72,7 @@ public class CameraScreen extends ProviderScreen {
     private Size previewSize;
     private CameraDevice dev;
     private CameraCaptureSession session;
+    private int facing = CameraCharacteristics.LENS_FACING_BACK;
 
     public CameraScreen(Context base, Consumer<Bitmap> listener) {
         super(base);
@@ -99,6 +101,16 @@ public class CameraScreen extends ProviderScreen {
                 public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
                                                       int height) {
                     setUpCamera(this, cam);
+                    addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_lawnstep), getString(R.string.title_action_rotate), () -> {
+                        clearActions();
+                        if (session != null) {
+                            dev.close();
+                            session.close();
+                        }
+                        facing = facing ==
+                                CameraMetadata.LENS_FACING_BACK ? CameraMetadata.LENS_FACING_FRONT : CameraMetadata.LENS_FACING_BACK;
+                        setUpCamera(this, cam);
+                    }));
                 }
 
                 @Override
@@ -128,7 +140,7 @@ public class CameraScreen extends ProviderScreen {
                         cameraManager.getCameraCharacteristics(cameraId);
                 Objects.requireNonNull(cameraCharacteristics);
                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) ==
-                        CameraMetadata.LENS_FACING_BACK) {
+                        facing) {
                     StreamConfigurationMap streamConfigurationMap = cameraCharacteristics.get(
                             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     this.previewSize = Objects.requireNonNull(
@@ -167,6 +179,7 @@ public class CameraScreen extends ProviderScreen {
     public void onDestroy() {
         super.onDestroy();
         if (session != null) {
+            dev.close();
             session.close();
         }
     }
