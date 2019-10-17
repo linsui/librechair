@@ -21,10 +21,13 @@ package ch.deletescape.lawnchair.feed.images
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.cam.CameraScreen
+import ch.deletescape.lawnchair.getPostionOnScreen
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -33,7 +36,7 @@ import kotlinx.coroutines.launch
 
 class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val images = mutableMapOf<Bitmap, String>()
-    override val headerCard: Card? = Card(null, null, { parent, _ ->
+    override val headerCard: List<Card>? = listOf(Card(null, null, { parent, _ ->
         (parent as ViewGroup).inflate(R.layout.add_image).apply {
             setOnClickListener {
                OverlayCallbacks.postImageRequest(context) {
@@ -54,7 +57,30 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
             }
         }
     }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                                          "manageNotes".hashCode())
+                                          "manageNotes".hashCode()),
+            Card(null, context.getString(R.string.title_card_take_image), { _, _ -> View(context) }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
+                    "manageNotes".hashCode()).apply {
+                globalClickListener = {
+                    CameraScreen(it.context) {
+                        OverlayCallbacks.postImageRequest(context) {
+                            if (it != null) {
+                                FeedScope.launch(Dispatchers.IO) {
+                                    ImageDatabase.getInstance(
+                                            context).access()
+                                            .insert(Image(it,
+                                                    "normal"))
+                                }.invokeOnCompletion { _ ->
+                                    images += ImageStore.getInstance(context).getBitmap(it) to it
+                                    if (feed != null) {
+                                        feed.refresh(10, 0, true)
+                                    }
+                                }
+                            }
+                        }
+                    }.display(this@ImageProvider,  it.getPostionOnScreen().first + it.measuredWidth / 2,
+                            it.getPostionOnScreen().second + it.measuredHeight / 2)
+                }
+            })
 
     override fun isVolatile(): Boolean {
         return true

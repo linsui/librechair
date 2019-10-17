@@ -30,7 +30,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 
 abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     abstract val images: MutableMap<Bitmap, Id>
-    abstract val headerCard: Card?
+    abstract val headerCard: List<Card>?
     abstract val onRemoveListener: (id: Id) -> Unit
 
     override fun onFeedShown() {
@@ -46,7 +46,7 @@ abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     }
 
     override fun getCards(): List<Card> {
-        return listOfNotNull(headerCard) + images.keys.map {
+        return headerCard ?: emptyList<Card>() + images.keys.map {
             Card(null, "", { parent, _ ->
                 ImageView(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

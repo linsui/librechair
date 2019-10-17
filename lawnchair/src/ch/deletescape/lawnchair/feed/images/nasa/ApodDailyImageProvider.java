@@ -23,8 +23,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import ch.deletescape.lawnchair.feed.Card;
-import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -33,10 +35,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.feed.Card;
+import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -102,7 +105,7 @@ public class ApodDailyImageProvider extends AbstractImageProvider<String> {
 
     @Nullable
     @Override
-    public Card getHeaderCard() {
+    public List<Card> getHeaderCard() {
         return null;
     }
 

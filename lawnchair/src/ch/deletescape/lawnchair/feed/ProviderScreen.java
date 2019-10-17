@@ -34,6 +34,11 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleRegistry;
+
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherState;
 
@@ -49,7 +54,10 @@ import kotlin.Pair;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
 
-public abstract class ProviderScreen extends ContextWrapper {
+public abstract class ProviderScreen extends ContextWrapper
+        implements LifecycleOwner {
+
+    private final LifecycleRegistry lifecycleRegistry;
 
     private FeedProvider provider;
     private LauncherFeed feed;
@@ -58,7 +66,9 @@ public abstract class ProviderScreen extends ContextWrapper {
 
     public ProviderScreen(Context base) {
         super(base);
+        lifecycleRegistry = new LifecycleRegistry(this);
         actions = new ArrayList<>();
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
     }
 
     protected abstract View getView(ViewGroup parent);
@@ -76,15 +86,15 @@ public abstract class ProviderScreen extends ContextWrapper {
     }
 
     public void onPause() {
-
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE);
     }
 
     public void onResume() {
-
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME);
     }
 
     public void onDestroy() {
-
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
 
     public boolean onBackPressed() {
@@ -92,6 +102,7 @@ public abstract class ProviderScreen extends ContextWrapper {
     }
 
     public final void display(LauncherFeed feed, int tX, int tY) {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.feed = feed;
         feed.displayProviderScreen(this, tX, tY, viewGroup -> {
             View v = getView(viewGroup);
@@ -103,6 +114,7 @@ public abstract class ProviderScreen extends ContextWrapper {
     }
 
     public final void display(ProviderScreen screen, int tX, int tY) {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         if (feed != null && provider == null) {
             display(feed, tX, tY);
         } else if (screen.provider != null) {
@@ -114,6 +126,7 @@ public abstract class ProviderScreen extends ContextWrapper {
     }
 
     public final void display(FeedProvider provider, int touchX, int touchY) {
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.provider = provider;
         if (provider.getFeed() != null) {
             display(provider.getFeed(), touchX, touchY);
@@ -171,5 +184,11 @@ public abstract class ProviderScreen extends ContextWrapper {
             new AlertDialog.Builder(this, new ThemeOverride.AlertDialog().getTheme(this))
                     .setView(overlayView).show();
         }
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
     }
 }
