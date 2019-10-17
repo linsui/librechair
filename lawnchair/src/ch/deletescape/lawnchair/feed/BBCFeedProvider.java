@@ -20,18 +20,22 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import kotlin.Pair;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceInputStream;
 import org.jetbrains.annotations.NotNull;
 import org.xml.sax.InputSource;
+
+import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+
+import kotlin.Pair;
 
 public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
@@ -75,8 +79,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
             return new SyndFeedInput().build(new InputSource(
                     new CharSequenceInputStream(feed, Charset.defaultCharset())));
         } catch (FeedException | IOException e) {
-            e.printStackTrace();
-            return getFallbackFeed();
+            throw new RuntimeException(e);
         }
     }
 
