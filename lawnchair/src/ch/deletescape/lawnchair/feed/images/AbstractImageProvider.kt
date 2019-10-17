@@ -48,7 +48,8 @@ abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     override fun isVolatile() = true
 
     override fun getCards(): List<Card> {
-        return headerCard ?: emptyList<Card>() + images.keys.map {
+        return (headerCard ?: emptyList()) + images.keys.map {
+            d("getCards: $it")
             Card(null, "", { parent, _ ->
                 ImageView(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,

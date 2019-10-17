@@ -85,6 +85,11 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
         return true
     }
 
+    override fun getCards(): List<Card> {
+        d("getCards: images are $images")
+        return super.getCards()
+    }
+
     override val onRemoveListener: (id: String) -> Unit = {
             d("(id: String) -> Unit: removing image with id $it")
             ImageStore.getInstance(context).remove(it)
