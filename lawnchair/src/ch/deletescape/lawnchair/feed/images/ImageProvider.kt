@@ -22,14 +22,13 @@ package ch.deletescape.lawnchair.feed.images
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
-import android.view.ViewGroup
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.cam.CameraScreen
 import ch.deletescape.lawnchair.fromDrawableRes
+import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.getPostionOnScreen
-import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.Dispatchers
@@ -37,28 +36,29 @@ import kotlinx.coroutines.launch
 
 class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val images = mutableMapOf<Bitmap, String>()
-    override val headerCard: List<Card>? = listOf(Card(null, null, { parent, _ ->
-        (parent as ViewGroup).inflate(R.layout.add_image).apply {
-            setOnClickListener {
-                OverlayCallbacks.postImageRequest(context) {
-                    if (it != null) {
-                        FeedScope.launch(Dispatchers.IO) {
-                            ImageDatabase.getInstance(
-                                    context).access()
-                                    .insert(Image(it,
-                                            "normal"))
-                        }.invokeOnCompletion { _ ->
-                            images += ImageStore.getInstance(context).getBitmap(it) to it
-                            if (feed != null) {
-                                feed.refresh(10, 0, true)
-                            }
+    override val headerCard: List<Card>? = listOf(Card(R.drawable.ic_add.fromDrawableRes(context),
+            R.string.title_card_add_image.fromStringRes(context), { _, _ ->
+        View(context)
+    }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
+            "manageNotes".hashCode()).apply {
+        globalClickListener = {
+            OverlayCallbacks.postImageRequest(context) {
+                if (it != null) {
+                    FeedScope.launch(Dispatchers.IO) {
+                        ImageDatabase.getInstance(
+                                context).access()
+                                .insert(Image(it,
+                                        "normal"))
+                    }.invokeOnCompletion { _ ->
+                        images += ImageStore.getInstance(context).getBitmap(it) to it
+                        if (feed != null) {
+                            feed.refresh(10, 0, true)
                         }
                     }
                 }
             }
         }
-    }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-            "manageNotes".hashCode()),
+    },
             Card(R.drawable.ic_camera_alt_black_24dp.fromDrawableRes(context),
                     context.getString(R.string.title_card_take_image), { _, _ -> View(context) },
                     Card.RAISE or Card.TEXT_ONLY, "nosort, top",
