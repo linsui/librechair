@@ -72,6 +72,8 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
     override fun onDestroy() {
     }
 
+    override fun isVolatile() = true
+
     override fun getCards(): List<Card> {
         if (providerMap.isEmpty()) {
             updateBindings()
