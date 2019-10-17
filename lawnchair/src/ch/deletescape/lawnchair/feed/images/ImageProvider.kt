@@ -27,6 +27,7 @@ import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.cam.CameraScreen
+import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.getPostionOnScreen
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.util.extensions.d
@@ -39,44 +40,47 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val headerCard: List<Card>? = listOf(Card(null, null, { parent, _ ->
         (parent as ViewGroup).inflate(R.layout.add_image).apply {
             setOnClickListener {
-               OverlayCallbacks.postImageRequest(context) {
-                   if (it != null) {
-                       FeedScope.launch(Dispatchers.IO) {
-                           ImageDatabase.getInstance(
-                                   context).access()
-                                   .insert(Image(it,
-                                           "normal"))
-                       }.invokeOnCompletion { _ ->
-                           images += ImageStore.getInstance(context).getBitmap(it) to it
-                           if (feed != null) {
-                               feed.refresh(10, 0, true)
-                           }
-                       }
-                   }
-               }
+                OverlayCallbacks.postImageRequest(context) {
+                    if (it != null) {
+                        FeedScope.launch(Dispatchers.IO) {
+                            ImageDatabase.getInstance(
+                                    context).access()
+                                    .insert(Image(it,
+                                            "normal"))
+                        }.invokeOnCompletion { _ ->
+                            images += ImageStore.getInstance(context).getBitmap(it) to it
+                            if (feed != null) {
+                                feed.refresh(10, 0, true)
+                            }
+                        }
+                    }
+                }
             }
         }
     }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                                          "manageNotes".hashCode()),
-            Card(null, context.getString(R.string.title_card_take_image), { _, _ -> View(context) }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
+            "manageNotes".hashCode()),
+            Card(R.drawable.ic_camera_alt_black_24dp.fromDrawableRes(context),
+                    context.getString(R.string.title_card_take_image), { _, _ -> View(context) },
+                    Card.RAISE or Card.TEXT_ONLY, "nosort, top",
                     "manageNotes".hashCode()).apply {
                 globalClickListener = {
                     CameraScreen(it.context) {
-                            if (it != null) {
-                                FeedScope.launch(Dispatchers.IO) {
-                                    val id = ImageStore.getInstance(context)
-                                            .storeBitmap(it)
-                                    ImageDatabase.getInstance(
-                                            context).access()
-                                            .insert(Image(id,
-                                                    "normal"))
-                                    images += ImageStore.getInstance(context).getBitmap(id) to id
-                                    if (feed != null) {
-                                        feed.refresh(10, 0, true)
-                                    }
+                        if (it != null) {
+                            FeedScope.launch(Dispatchers.IO) {
+                                val id = ImageStore.getInstance(context)
+                                        .storeBitmap(it)
+                                ImageDatabase.getInstance(
+                                        context).access()
+                                        .insert(Image(id,
+                                                "normal"))
+                                images += ImageStore.getInstance(context).getBitmap(id) to id
+                                if (feed != null) {
+                                    feed.refresh(10, 0, true)
                                 }
                             }
-                    }.display(this@ImageProvider,  it.getPostionOnScreen().first + it.measuredWidth / 2,
+                        }
+                    }.display(this@ImageProvider,
+                            it.getPostionOnScreen().first + it.measuredWidth / 2,
                             it.getPostionOnScreen().second + it.measuredHeight / 2)
                 }
             })
@@ -91,12 +95,12 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     }
 
     override val onRemoveListener: (id: String) -> Unit = {
-            d("(id: String) -> Unit: removing image with id $it")
-            ImageStore.getInstance(context).remove(it)
-            FeedScope.launch {
-                ImageDatabase.getInstance(context).access().remove(it)
-            }
+        d("(id: String) -> Unit: removing image with id $it")
+        ImageStore.getInstance(context).remove(it)
+        FeedScope.launch {
+            ImageDatabase.getInstance(context).access().remove(it)
         }
+    }
 
     init {
         FeedScope.launch {
