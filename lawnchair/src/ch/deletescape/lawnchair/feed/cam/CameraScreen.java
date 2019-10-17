@@ -124,7 +124,7 @@ public class CameraScreen extends ProviderScreen {
                         cameraManager.getCameraCharacteristics(cameraId);
                 Objects.requireNonNull(cameraCharacteristics);
                 if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) ==
-                        CameraMetadata.LENS_FACING_FRONT) {
+                        CameraMetadata.LENS_FACING_BACK) {
                     StreamConfigurationMap streamConfigurationMap = cameraCharacteristics.get(
                             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     this.previewSize = Objects.requireNonNull(
