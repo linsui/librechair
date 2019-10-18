@@ -45,7 +45,7 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
             "manageNotes".hashCode()).apply {
         globalClickListener = {
-            OverlayCallbacks.postImageRequest(context) {
+            OverlayCallbacks.postImageRequest(context, it) {
                 if (it != null) {
                     FeedScope.launch(Dispatchers.IO) {
                         ImageDatabase.getInstance(

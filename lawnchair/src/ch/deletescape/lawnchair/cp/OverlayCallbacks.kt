@@ -26,6 +26,8 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import androidx.core.app.ActivityOptionsCompat
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.feed.images.ImageStore
@@ -50,11 +52,16 @@ object OverlayCallbacks {
         })
     }
 
-    fun postImageRequest(context: Context, callback: (storeUUID: String?) -> Unit) {
+    fun postImageRequest(context: Context, view: View? = null, callback: (storeUUID: String?) -> Unit) {
         val id = UUID.randomUUID().hashCode()
         imageRequests += ImageRequest(id, callback)
         context.startActivity(Intent(context, ImageRequestActivity::class.java).apply {
             putExtra("request_id", id)
+            if (view != null) {
+                putExtra("activity_transition_options",
+                        ActivityOptionsCompat.makeClipRevealAnimation(view, 0, 0,
+                                view.measuredWidth, view.measuredHeight).toBundle());
+            }
             flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
         })
     }
@@ -148,14 +155,14 @@ object OverlayCallbacks {
 
     class ImageRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
+        val startOpt by lazy { intent.extras!!["activity_transition_options"] as Bundle? }
         val request by lazy { imageRequests.first { it.id == id } }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
-            startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
-            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
+            startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id,
+                    startOpt)
         }
 
         override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
