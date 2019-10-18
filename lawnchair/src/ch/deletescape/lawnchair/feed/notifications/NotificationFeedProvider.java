@@ -22,41 +22,27 @@ package ch.deletescape.lawnchair.feed.notifications;
 
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.os.Handler;
 import android.service.notification.StatusBarNotification;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
-import com.android.launcher3.LauncherModel;
-import com.android.launcher3.R;
 import com.android.launcher3.notification.NotificationInfo;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.Card;
-import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
-import ch.deletescape.lawnchair.smartspace.MediaListener;
 import kotlin.Unit;
 
 public class NotificationFeedProvider extends FeedProvider {
     private List<StatusBarNotification> notifs = new Vector<>();
-    private List<Runnable> onMediaNotifChange = new Vector<>();
-    private MediaListener mediaListener;
 
     public NotificationFeedProvider(Context c) {
         super(c);
         OverlayNotificationManager.addListener(sbns -> notifs = sbns);
-        mediaListener = new MediaListener(getContext(), () -> onMediaNotifChange.forEach(
-                Runnable::run), new Handler(LauncherModel.getUiWorkerLooper()));
     }
 
     @Override
@@ -112,49 +98,6 @@ public class NotificationFeedProvider extends FeedProvider {
             };
             return card;
         }).collect(Collectors.toCollection(Vector::new));
-        AtomicReference<MediaListener.MediaNotificationController> mnc = new AtomicReference<>();
-        mnc.set(mediaListener.getTracking());
-        if (mnc.get() != null) {
-            NotificationInfo mediaInfo = new NotificationInfo(getContext(), mnc.get().getSbn());
-            cards.add(new Card(null, null, parent -> {
-                View mnv = LayoutInflater.from(parent.getContext()).inflate(
-                        R.layout.media_notification, parent, false);
-                TextView title = mnv.findViewById(R.id.notification_title);
-                TextView author = mnv.findViewById(R.id.notification_author);
-                ImageButton pause = mnv.findViewById(R.id.play_button);
-                title.setText(mnc.get().getInfo().getTitle());
-                author.setText(
-                        mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
-                pause.setImageDrawable(
-                        mnc.get().isPlaying() ? getContext().getDrawable(
-                                R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                R.drawable.ic_play_arrow_black_24dp));
-                pause.setImageTintList(ColorStateList.valueOf(
-                        FeedAdapter.Companion.getOverrideColor(getContext())));
-                pause.setOnClickListener(cause -> mediaListener.toggle(true));
-                onMediaNotifChange.add(() -> {
-                    mnc.set(mediaListener.getTracking());
-                    if (mnc.get() == null) {
-                        this.getFeed().refresh(0, 0, true, true);
-                    } else {
-                        mnv.post(() -> {
-                            pause.setImageTintList(ColorStateList.valueOf(
-                                    FeedAdapter.Companion.getOverrideColor(getContext())));
-                            title.setText(mnc.get().getInfo().getTitle());
-                            author.setText(
-                                    mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
-                            pause.setImageDrawable(
-                                    mnc.get().isPlaying() ? getContext().getDrawable(
-                                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                            R.drawable.ic_play_arrow_black_24dp));
-                            pause.setImageTintList(ColorStateList.valueOf(
-                                    FeedAdapter.Companion.getOverrideColor(getContext())));
-                        });
-                    }
-                });
-                return mnv;
-            }, Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top", mnc.get().getSbn().getId()));
-        }
         return cards;
     }
 
