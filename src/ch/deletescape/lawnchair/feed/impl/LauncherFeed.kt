@@ -958,11 +958,9 @@ class LauncherFeed(val originalContext: Context,
                 if (this is ViewGroup) {
                     setPadding(
                             originalPaddingHorizontal!!.first + if (!rtl) windowInsets.stableInsetLeft else windowInsets.stableInsetRight,
-                            originalPaddingVertical!!.first + if (!tabsOnBottom) toolbarParent.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                                    context).toInt() + statusBarHeight!! else statusBarHeight!!,
+                            originalPaddingVertical!!.first + if (!tabsOnBottom) toolbarParent.measuredHeight + statusBarHeight!! else statusBarHeight!!,
                             originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
-                            originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + R.dimen.overlay_view_margin.fromDimenRes(
-                                    context).toInt() + statusBarHeight!! else statusBarHeight!!)
+                            originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + statusBarHeight!! else statusBarHeight!!)
                 }
                 if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
                     background =
