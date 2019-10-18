@@ -396,8 +396,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                 context.resources.displayMetrics)
             }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                    LawnchairPreferences.getInstance(
-                            holder.itemView.context).feedCornerRounding,
+                    context.feedPrefs.cardCornerRadius.toFloat(),
                     holder.itemView.context.resources.displayMetrics)
         }
     }

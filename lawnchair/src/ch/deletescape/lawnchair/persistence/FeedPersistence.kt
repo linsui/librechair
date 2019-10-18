@@ -62,6 +62,8 @@ class FeedPersistence private constructor(val context: Context) {
             by DipDimenDelegate(context, "feed_flat_card_horizontal_margin", 16.0)
     val hideToolbar
             by BooleanDelegate(context, "feed_hide_title_bar", false)
+    val cardCornerRadius
+            by DipDimenDelegate(context, "feed_card_corner_radius", 0.0)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

@@ -249,7 +249,6 @@ class LawnchairPreferences(val context: Context) :
     val feedCategorizeWidgetsAsSeparateTab by BooleanPref("pref_feed_widgets_tab", true,
                                                           ::restartOverlay)
     val feedOLEDCards by BooleanPref("pref_oled_feed_cards", false, ::restartOverlay)
-    var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restartOverlay);
     var feedRSSSources = StringListPref("pref_rss_sources", ::restartOverlay, emptyList())
     var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restartOverlay)
     var feedCardOpacity by FloatPref("pref_feed_card_opacity", 255f, ::restartOverlay)
