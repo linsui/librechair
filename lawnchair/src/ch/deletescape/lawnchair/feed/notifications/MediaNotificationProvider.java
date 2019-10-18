@@ -113,7 +113,7 @@ public class MediaNotificationProvider extends FeedProvider {
             if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
                 long min = mnc.get().getInfo().getDuration() / 1000 / 60;
                 int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
-                duration.setText(String.format(Locale.CHINA, "%02d%02d", min, sec));
+                duration.setText(String.format(Locale.CHINA, "%02d:%02d", min, sec));
             } else {
                 duration.setText(null);
             }
