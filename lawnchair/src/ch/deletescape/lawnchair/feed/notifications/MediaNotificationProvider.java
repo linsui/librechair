@@ -109,6 +109,8 @@ public class MediaNotificationProvider extends FeedProvider {
                     FeedAdapter.Companion.getOverrideColor(getContext())));
             last.setImageTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(getContext())));
+            icon.setVisibility(
+                    mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
             icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
             if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
                 long min = mnc.get().getInfo().getDuration() / 1000 / 60;
@@ -133,6 +135,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                 mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
                                         R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
                                         R.drawable.ic_play_arrow_black_24dp));
+                        icon.setVisibility(
+                                mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
                                 mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                         if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
@@ -157,6 +161,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                         R.drawable.ic_play_arrow_black_24dp));
                         pause.setImageTintList(ColorStateList.valueOf(
                                 FeedAdapter.Companion.getOverrideColor(getContext())));
+                        icon.setVisibility(
+                                mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
                                 mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                         if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
