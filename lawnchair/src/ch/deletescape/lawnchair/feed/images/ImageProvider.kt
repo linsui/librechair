@@ -24,11 +24,13 @@ import android.graphics.Bitmap
 import android.view.View
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
+import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.cam.CameraScreen
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.getPostionOnScreen
+import ch.deletescape.lawnchair.tint
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +38,8 @@ import kotlinx.coroutines.launch
 
 class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val images = mutableMapOf<Bitmap, String>()
-    override val headerCard: List<Card>? = listOf(Card(R.drawable.ic_add.fromDrawableRes(context),
+    override val headerCard: List<Card>? = listOf(Card(R.drawable.ic_add.fromDrawableRes(context)
+            .tint(FeedAdapter.getOverrideColor(context)),
             R.string.title_card_add_image.fromStringRes(context), { _, _ ->
         View(context)
     }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
@@ -59,7 +62,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
             }
         }
     },
-            Card(R.drawable.ic_camera_alt_black_24dp.fromDrawableRes(context),
+            Card(R.drawable.ic_camera_alt_black_24dp.fromDrawableRes(context).tint(
+                    FeedAdapter.getOverrideColor(context)),
                     context.getString(R.string.title_card_take_image), { _, _ -> View(context) },
                     Card.RAISE or Card.TEXT_ONLY, "nosort, top",
                     "manageNotes".hashCode()).apply {
@@ -94,7 +98,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
         return super.getCards()
     }
 
-    override val onRemoveListener: (id: String) -> Unit = {
+    override
+    val onRemoveListener: (id: String) -> Unit = {
         d("(id: String) -> Unit: removing image with id $it")
         ImageStore.getInstance(context).remove(it)
         FeedScope.launch {
@@ -106,7 +111,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
         FeedScope.launch {
             ImageDatabase.getInstance(context).apply {
                 access().getAll().forEach {
-                    images += ImageStore.getInstance(context).getBitmap(it.id) to it.id
+                    images += ImageStore.getInstance(context).getBitmap(
+                            it.id) to it.id
                 }
             }
         }
