@@ -124,10 +124,12 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                         return newsEntry;
                     }).collect(Collectors.toList());
-                    NewsDb.getDatabase(c, id).open().purge();
-                    articles.stream()
-                            .peek(it -> it.order = articles.indexOf(it))
-                            .forEach(it -> NewsDb.getDatabase(c, id).open().insert(it));
+                    synchronized (AbstractRSSFeedProvider.class) {
+                        NewsDb.getDatabase(c, id).open().purge();
+                        articles.stream()
+                                .peek(it -> it.order = articles.indexOf(it))
+                                .forEach(it -> NewsDb.getDatabase(c, id).open().insert(it));
+                    }
                     if (diff) {
                         showNotifications(old != null ? old : Collections.emptyList());
                     }
