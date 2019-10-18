@@ -106,14 +106,12 @@ public class MediaNotificationProvider extends FeedProvider {
                         FeedAdapter.Companion.getOverrideColor(getContext())));
                 icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
                 pause.setOnClickListener(cause -> mediaListener.toggle(false));
-                next.setOnClickListener(cause -> mediaListener.next(false));
-                last.setOnClickListener(cause -> mediaListener.previous(false));
+                next.setOnClickListener(cause -> mediaListener.next());
+                last.setOnClickListener(cause -> mediaListener.previous());
                 onMediaNotifChange.add(mn -> {
                     if (mn == null) {
                         mnc.set(null);
                         mnv.post(() -> {
-                            next.setOnClickListener(cause -> mediaListener.next(false));
-                            last.setOnClickListener(cause -> mediaListener.previous(false));
                             title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
                             author.setText(
                                     mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
@@ -127,8 +125,6 @@ public class MediaNotificationProvider extends FeedProvider {
                     } else {
                         mnc.set(mn);
                         mnv.post(() -> {
-                            next.setOnClickListener(cause -> mediaListener.next(false));
-                            last.setOnClickListener(cause -> mediaListener.previous(false));
                             pause.setImageTintList(ColorStateList.valueOf(
                                     FeedAdapter.Companion.getOverrideColor(getContext())));
                             title.setText(mnc.get().getInfo().getTitle());

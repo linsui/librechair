@@ -154,20 +154,16 @@ public class OMCMediaListener extends MediaController.Callback
         }
     }
 
-    public void next(boolean finalClick) {
-        if (finalClick) {
-            Log.d(TAG, "Next");
-            pressButton(KeyEvent.KEYCODE_MEDIA_NEXT);
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
-        }
+    public void next() {
+        Log.d(TAG, "Next");
+        pressButton(KeyEvent.KEYCODE_MEDIA_NEXT);
+        pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
     }
 
-    public void previous(boolean finalClick) {
-        if (finalClick) {
-            Log.d(TAG, "Previous");
-            pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
-        }
+    public void previous() {
+        Log.d(TAG, "Previous");
+        pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+        pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
     }
 
     // If there is no notification, consider the state to be stopped.
