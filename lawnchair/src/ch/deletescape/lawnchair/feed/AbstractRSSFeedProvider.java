@@ -100,12 +100,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Contract("null, null, _ -> fail")
     protected void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            List<NewsEntry> entries;
-            if ((entries = NewsDb.getDatabase(c, getId()).open().all()).isEmpty() ||
-                    entries.stream().allMatch(
-                            it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
-                                    2))) {
-                String id = getId();
+            String id = getId();
+            List<NewsEntry> entries = NewsDb.getDatabase(c, id).open().all();
+            articles = entries;
+            if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
+                    || (entries.stream().allMatch(
+                    it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
+                            2)))) {
                 bindFeed(feed -> {
                     Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
                             "constructor: bound to feed");
@@ -135,12 +136,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     }
                     finished.run();
                 });
-            } else {
-                List<NewsEntry> old = articles;
-                articles = entries;
-                if (diff) {
-                    showNotifications(old != null ? old : Collections.emptyList());
-                }
             }
         });
     }
