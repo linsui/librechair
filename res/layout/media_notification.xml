@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019 oldosfan.
   ~ Copyright (c) 2019 the Lawnchair developers
   ~
@@ -21,83 +20,96 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_weight="1"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_width="0dp">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_height="wrap_content"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/notification_title"
+            <LinearLayout
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                tools:text="Free software, Free society" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/notification_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    tools:text="Free software, Free society" />
+
+                <TextView
+                    android:id="@+id/notification_duration"
+                    tools:text="EOF:EOF"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/notification_author"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:layout_marginStart="16dp"
                 android:layout_weight="1"
-                android:layout_gravity="bottom"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                tools:text="rms" />
+                tools:text="Richard M. Stallman" />
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp">
 
             <ImageButton
-                android:padding="8dp"
+                android:id="@+id/last_track"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="?attr/colorAccent"
+                android:padding="8dp"
                 android:src="@drawable/ic_arrow_back"
-                android:id="@+id/last_track" />
+                android:tint="?attr/colorAccent" />
 
             <ImageButton
-                android:padding="8dp"
+                android:id="@+id/play_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="?attr/colorAccent"
+                android:padding="8dp"
                 android:src="@drawable/ic_play_arrow_black_24dp"
-                android:id="@+id/play_button" />
+                android:tint="?attr/colorAccent" />
 
             <ImageButton
-                android:padding="8dp"
+                android:id="@+id/next_track"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="?attr/colorAccent"
-                android:src="@drawable/ic_arrow_back"
+                android:padding="8dp"
                 android:rotation="180"
-                android:id="@+id/next_track" />
+                android:src="@drawable/ic_arrow_back"
+                android:tint="?attr/colorAccent" />
         </LinearLayout>
     </LinearLayout>
 
     <me.jfenn.attribouter.views.CircleImageView
+        android:id="@+id/media_icon"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:id="@+id/media_icon" />
+        android:layout_marginEnd="8dp" />
 </LinearLayout>

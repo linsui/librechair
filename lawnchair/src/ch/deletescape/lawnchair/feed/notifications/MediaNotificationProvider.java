@@ -35,6 +35,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.notification.NotificationInfo;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -81,69 +82,96 @@ public class MediaNotificationProvider extends FeedProvider {
         AtomicReference<OMCMediaListener.MediaNotificationController> mnc = new AtomicReference<>();
         mnc.set(mediaListener.getTracking());
         Log.d(getClass().getName(), "getCards: mnc: " + mnc);
-            NotificationInfo mediaInfo = mnc.get() != null ? new NotificationInfo(getContext(), mnc.get().getSbn()) : null;
-            cards.add(new Card(null, null, parent -> {
-                View mnv = LayoutInflater.from(parent.getContext()).inflate(
-                        R.layout.media_notification, parent, false);
-                TextView title = mnv.findViewById(R.id.notification_title);
-                TextView author = mnv.findViewById(R.id.notification_author);
-                ImageButton pause = mnv.findViewById(R.id.play_button);
-                ImageButton next = mnv.findViewById(R.id.next_track);
-                ImageButton last = mnv.findViewById(R.id.last_track);
-                ImageView icon = mnv.findViewById(R.id.media_icon);
-                title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
-                author.setText(
-                        mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
-                pause.setImageDrawable(
-                        mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
-                                R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                R.drawable.ic_play_arrow_black_24dp));
-                pause.setImageTintList(ColorStateList.valueOf(
-                        FeedAdapter.Companion.getOverrideColor(getContext())));
-                next.setImageTintList(ColorStateList.valueOf(
-                        FeedAdapter.Companion.getOverrideColor(getContext())));
-                last.setImageTintList(ColorStateList.valueOf(
-                        FeedAdapter.Companion.getOverrideColor(getContext())));
-                icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
-                pause.setOnClickListener(cause -> mediaListener.toggle(false));
-                next.setOnClickListener(cause -> mediaListener.next());
-                last.setOnClickListener(cause -> mediaListener.previous());
-                onMediaNotifChange.add(mn -> {
-                    if (mn == null) {
-                        mnc.set(null);
-                        mnv.post(() -> {
-                            title.setText(mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(R.string.title_nothings_playing));
-                            author.setText(
-                                    mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
-                            pause.setImageDrawable(
-                                    mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
-                                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                            R.drawable.ic_play_arrow_black_24dp));
-                            icon.setImageBitmap(
-                                    mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
-                        });
-                    } else {
-                        mnc.set(mn);
-                        mnv.post(() -> {
-                            pause.setImageTintList(ColorStateList.valueOf(
-                                    FeedAdapter.Companion.getOverrideColor(getContext())));
-                            title.setText(mnc.get().getInfo().getTitle());
-                            author.setText(
-                                    mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
-                            pause.setImageDrawable(
-                                    mnc.get().isPlaying() ? getContext().getDrawable(
-                                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                            R.drawable.ic_play_arrow_black_24dp));
-                            pause.setImageTintList(ColorStateList.valueOf(
-                                    FeedAdapter.Companion.getOverrideColor(getContext())));
-                            icon.setImageBitmap(
-                                    mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
-                        });
-                    }
-                });
-                return mnv;
-            }, Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
-                    mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
+        NotificationInfo mediaInfo = mnc.get() != null ? new NotificationInfo(getContext(),
+                mnc.get().getSbn()) : null;
+        cards.add(new Card(null, null, parent -> {
+            View mnv = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.media_notification, parent, false);
+            TextView title = mnv.findViewById(R.id.notification_title);
+            TextView author = mnv.findViewById(R.id.notification_author);
+            ImageButton pause = mnv.findViewById(R.id.play_button);
+            ImageButton next = mnv.findViewById(R.id.next_track);
+            ImageButton last = mnv.findViewById(R.id.last_track);
+            ImageView icon = mnv.findViewById(R.id.media_icon);
+            TextView duration = mnv.findViewById(R.id.notification_duration);
+            title.setText(
+                    mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(
+                            R.string.title_nothings_playing));
+            author.setText(
+                    mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
+            pause.setImageDrawable(
+                    mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
+                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
+                            R.drawable.ic_play_arrow_black_24dp));
+            pause.setImageTintList(ColorStateList.valueOf(
+                    FeedAdapter.Companion.getOverrideColor(getContext())));
+            next.setImageTintList(ColorStateList.valueOf(
+                    FeedAdapter.Companion.getOverrideColor(getContext())));
+            last.setImageTintList(ColorStateList.valueOf(
+                    FeedAdapter.Companion.getOverrideColor(getContext())));
+            icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
+            if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
+                long min = mnc.get().getInfo().getDuration() / 1000 / 60;
+                int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
+                duration.setText(String.format(Locale.CHINA, "%02d%02d", min, sec));
+            } else {
+                duration.setText(null);
+            }
+            pause.setOnClickListener(cause -> mediaListener.toggle(false));
+            next.setOnClickListener(cause -> mediaListener.next());
+            last.setOnClickListener(cause -> mediaListener.previous());
+            onMediaNotifChange.add(mn -> {
+                if (mn == null) {
+                    mnc.set(null);
+                    mnv.post(() -> {
+                        title.setText(
+                                mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(
+                                        R.string.title_nothings_playing));
+                        author.setText(
+                                mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
+                        pause.setImageDrawable(
+                                mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
+                                        R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
+                                        R.drawable.ic_play_arrow_black_24dp));
+                        icon.setImageBitmap(
+                                mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
+                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
+                            long min = mnc.get().getInfo().getDuration() / 1000 / 60;
+                            int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
+                            duration.setText(String.format(Locale.CHINA, "%02d%02d", min, sec));
+                        } else {
+                            duration.setText(null);
+                        }
+                    });
+                } else {
+                    mnc.set(mn);
+                    mnv.post(() -> {
+                        pause.setImageTintList(ColorStateList.valueOf(
+                                FeedAdapter.Companion.getOverrideColor(getContext())));
+                        title.setText(mnc.get().getInfo().getTitle());
+                        author.setText(
+                                mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
+                        pause.setImageDrawable(
+                                mnc.get().isPlaying() ? getContext().getDrawable(
+                                        R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
+                                        R.drawable.ic_play_arrow_black_24dp));
+                        pause.setImageTintList(ColorStateList.valueOf(
+                                FeedAdapter.Companion.getOverrideColor(getContext())));
+                        icon.setImageBitmap(
+                                mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
+                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
+                            long min = mnc.get().getInfo().getDuration() / 1000 / 60;
+                            int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
+                            duration.setText(String.format(Locale.CHINA, "%02d:%02d", min, sec));
+                        } else {
+                            duration.setText(null);
+                        }
+                    });
+                }
+            });
+            return mnv;
+        }, Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
+                mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
         return cards;
     }
 

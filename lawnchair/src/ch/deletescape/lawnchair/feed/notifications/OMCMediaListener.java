@@ -202,6 +202,7 @@ public class OMCMediaListener extends MediaController.Callback
         private CharSequence title;
         private CharSequence artist;
         private CharSequence album;
+        private Long length;
         private Bitmap bitmap;
 
         public CharSequence getTitle() {
@@ -220,6 +221,11 @@ public class OMCMediaListener extends MediaController.Callback
 
         public Bitmap getBitmap() {
             return bitmap;
+        }
+
+
+        public Long getDuration() {
+            return length;
         }
     }
 
@@ -274,6 +280,7 @@ public class OMCMediaListener extends MediaController.Callback
                 info.title = metadata.getText(MediaMetadata.METADATA_KEY_TITLE);
                 info.artist = metadata.getText(MediaMetadata.METADATA_KEY_ARTIST);
                 info.album = metadata.getText(MediaMetadata.METADATA_KEY_ALBUM);
+                info.length = metadata.getLong(MediaMetadata.METADATA_KEY_DURATION);
                 info.bitmap = metadata.getDescription().getIconBitmap();
             } else if (sbn != null) {
                 info = new MediaInfo();
