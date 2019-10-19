@@ -20,7 +20,6 @@ import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.Property
-import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -30,9 +29,11 @@ import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
+import kotlin.math.roundToLong
 import kotlin.math.sign
 
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
@@ -100,7 +101,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             setProgress(0f, true)
         } else {
             val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
-            animator.duration = if (duration != 0) duration.toLong() else 350L
+            animator.duration =
+                    if (duration != 0) duration.toLong() else (context.feedPrefs.openingAnimationSpeed * 350L * 2).roundToLong()
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -118,7 +120,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val handler = Handler()
             visibility = View.VISIBLE
             val animator = ObjectAnimator.ofFloat(0f, 1f)
-            animator.duration = if (duration != 0) duration.toLong() else 350L
+            animator.duration =
+                    if (duration != 0) duration.toLong() else (context.feedPrefs.openingAnimationSpeed * 350L * 2).roundToLong()
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -205,7 +208,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     protected fun initCurrentAnimation(): Float {
         val range = shiftRange
-        val maxAccuracy = (2 * range).toLong()
+        val maxAccuracy =
+                ((2 * range).toLong() * (context.feedPrefs.openingAnimationSpeed)).roundToLong()
 
         val startShift = mFromState!!.progress * range
         val endShift = mToState!!.progress * range
@@ -341,8 +345,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         val duration: Long
         // Increase the duration if we prevented the fling, as we are going against a high velocity.
         val durationMultiplier =
-                if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
-                else 1
+                ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
+                else 1) * context.feedPrefs.openingAnimationSpeed).roundToLong()
 
         if (targetState === mToState) {
             endProgress = 1f
