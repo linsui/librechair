@@ -216,8 +216,8 @@
             app:defaultSeekbarValue="0.5"
             app:maxValue="1"
             app:minValue="0.1"
-            app:steps="1000"
-            app:summaryFormat="%.01%"
+            app:steps="100"
+            app:summaryFormat="%.01f%%"
             app:summaryMultiplier="200" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="false"
