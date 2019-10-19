@@ -126,19 +126,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 val icon = findViewById(
                                                         R.id.forecast_weather_icon) as ImageView
 
-                                                viewTreeObserver.addOnGlobalLayoutListener {
-                                                    if (context.lawnchairPrefs.showVerticalHourlyForecast) {
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                (dailyLayout.parent as ViewGroup).measuredWidth,
-                                                                WRAP_CONTENT)
-                                                    } else {
-                                                        val width =
-                                                                ((hourlyLayout.parent as ViewGroup).measuredWidth / context.lawnchairPrefs.feedForecastItemCount.roundToInt())
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                width, WRAP_CONTENT)
-                                                    }
-                                                }
-
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
@@ -161,24 +148,68 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             })
                                 }
 
+                        (dailyLayout.parent as ViewGroup).apply {
+                            addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+                                override fun onLayoutChange(v: View, left: Int, top: Int,
+                                                            right: Int, bottom: Int, oldLeft: Int,
+                                                            oldTop: Int, oldRight: Int,
+                                                            oldBottom: Int) {
+                                    val w = v.measuredWidth
+                                    dailyLayout.childs.forEach {
+                                        it.apply {
+                                            viewTreeObserver.addOnGlobalLayoutListener {
+                                                if (context.lawnchairPrefs.showVerticalDailyForecast) {
+                                                    layoutParams = LinearLayout.LayoutParams(
+                                                            w,
+                                                            WRAP_CONTENT)
+                                                } else {
+                                                    val width =
+                                                            (w / context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
+                                                    layoutParams = LinearLayout.LayoutParams(
+                                                            width, WRAP_CONTENT)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    removeOnLayoutChangeListener(this)
+                                }
+                            })
+                        }
+
+                        (hourlyLayout.parent as ViewGroup).apply {
+                            addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+                                override fun onLayoutChange(v: View, left: Int, top: Int,
+                                                            right: Int, bottom: Int, oldLeft: Int,
+                                                            oldTop: Int, oldRight: Int,
+                                                            oldBottom: Int) {
+                                    val w = v.measuredWidth
+                                    hourlyLayout.childs.forEach {
+                                        it.apply {
+                                            viewTreeObserver.addOnGlobalLayoutListener {
+                                                if (context.lawnchairPrefs.showVerticalHourlyForecast) {
+                                                    layoutParams = LinearLayout.LayoutParams(
+                                                            w,
+                                                            WRAP_CONTENT)
+                                                } else {
+                                                    val width =
+                                                            (w / context.lawnchairPrefs.feedForecastItemCount.roundToInt())
+                                                    layoutParams = LinearLayout.LayoutParams(
+                                                            width, WRAP_CONTENT)
+                                                }
+                                            }
+                                        }
+                                    }
+                                    removeOnLayoutChangeListener(this)
+                                }
+                            })
+                        }
+
                         dailyForecast?.dailyForecastData
                                 ?.forEach {
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                viewTreeObserver.addOnGlobalLayoutListener {
-                                                    if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                (dailyLayout.parent as ViewGroup).measuredWidth,
-                                                                WRAP_CONTENT)
-                                                    } else {
-                                                        val width =
-                                                                ((dailyLayout.parent as ViewGroup).measuredWidth / context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                width, WRAP_CONTENT)
-                                                    }
-                                                }
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
                                                 val time = findViewById(
