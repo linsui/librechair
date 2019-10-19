@@ -28,10 +28,19 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:id="@+id/camera"/>
-    <View
+    <FrameLayout
+        android:layout_marginBottom="8dp"
         android:id="@+id/take_foto"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:background="@color/qsb_background_hotseat_dark"
-        android:foreground="?attr/selectableItemBackground"/>
+        android:foreground="?attr/selectableItemBackground">
+        <ImageView
+            android:contentDescription="@string/title_card_take_image"
+            android:src="@drawable/ic_camera_alt_black_24dp"
+            android:tint="@color/qsb_background_hotseat_white"
+            android:layout_height="64dp"
+            android:layout_width="64dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
 </LinearLayout>
