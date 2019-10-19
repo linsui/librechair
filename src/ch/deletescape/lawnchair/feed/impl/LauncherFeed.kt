@@ -58,6 +58,7 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
@@ -256,7 +257,13 @@ class LauncherFeed(val originalContext: Context,
         }
         if (reinit) {
             val background =
-                    if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
+                    if (!context.lawnchairPrefs.feedBlur) FeedUtil.overlayColor(backgroundToProcess, ColorUtils.setAlphaComponent(
+                            ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
+                            (LawnchairPreferences.getInstance(
+                                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())) else FeedUtil.overlayColor(backgroundToProcess, ColorUtils.setAlphaComponent(
+                            ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
+                            (LawnchairPreferences.getInstance(
+                                    originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()))?.blur(
                             originalContext)
             providerScreens.iterator().let {
                 it.forEach { screen ->
