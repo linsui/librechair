@@ -26,6 +26,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -112,6 +113,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 false
                             }
                         }
+                        (hourlyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled = false
+                        (dailyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled = false
                         hourlyWeatherForecast?.data
                                 ?.forEach {
                                     hourlyLayout.addView(
