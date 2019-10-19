@@ -55,7 +55,7 @@ class FeedPersistence private constructor(val context: Context) {
     val useRSSMinicard
             by BooleanDelegate(context, "feed_rss_minicard", false)
     val hideActions
-            by BooleanDelegate(context, "feed_hide_toolbar_actions", false)
+            by BooleanDelegate(context, "feed_hide_toolbar_actions2", false)
     val flatCardVerticalPadding
             by DipDimenDelegate(context, "feed_flat_card_vertical_margin", 16.0)
     val flatCardHorizontalPadding

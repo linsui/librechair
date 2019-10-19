@@ -1502,7 +1502,7 @@ class LauncherFeed(val originalContext: Context,
                 }
             }
         }
-        toolbar.visibility = if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.hasVisibleItems().not() && searchWidgetView == null))
+        toolbar.visibility = if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.size() == 0 && searchWidgetView == null))
             View.GONE else View.VISIBLE
     }
 
