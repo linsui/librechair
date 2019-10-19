@@ -102,7 +102,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     protected void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
             List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
-            articles = entries;
+            articles = entries.stream().distinct().collect(Collectors.toList());
             if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
                     || (entries.stream().allMatch(
                     it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
@@ -351,6 +351,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     }
 
     protected abstract void onInit(Consumer<String> tokenCallback);
+
     protected abstract void bindFeed(BindCallback callback, String token);
 
     protected interface BindCallback {
