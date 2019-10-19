@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -99,9 +100,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @AnyThread
     @Contract("null, null, _ -> fail")
     protected void refresh(Context c, Runnable finished, boolean diff) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            String id = getId();
-            List<NewsEntry> entries = NewsDb.getDatabase(c, id).open().all();
+        Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
+            List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
             articles = entries;
             if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
                     || (entries.stream().allMatch(
@@ -126,18 +126,18 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         return newsEntry;
                     }).collect(Collectors.toList());
                     synchronized (AbstractRSSFeedProvider.class) {
-                        NewsDb.getDatabase(c, id).open().purge();
+                        NewsDb.getDatabase(c, token).open().purge();
                         articles.stream()
                                 .peek(it -> it.order = articles.indexOf(it))
-                                .forEach(it -> NewsDb.getDatabase(c, id).open().insert(it));
+                                .forEach(it -> NewsDb.getDatabase(c, token).open().insert(it));
                     }
                     if (diff) {
                         showNotifications(old != null ? old : Collections.emptyList());
                     }
                     finished.run();
-                });
+                }, token);
             }
-        });
+        }));
     }
 
     private void showNotifications(List<NewsEntry> original) {
@@ -350,7 +350,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         }
     }
 
-    protected abstract void bindFeed(BindCallback callback);
+    protected abstract void onInit(Consumer<String> tokenCallback);
+    protected abstract void bindFeed(BindCallback callback, String token);
 
     protected interface BindCallback {
         void onBind(SyndFeed feed);

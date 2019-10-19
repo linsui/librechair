@@ -38,7 +38,19 @@ import com.rometools.rome.feed.synd.SyndFeed
 import com.squareup.picasso.Picasso
 import java.util.concurrent.TimeUnit
 
-abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeedProvider(c) {
+abstract class AbstractMultipleSyndicationProvider(c: Context): FeedProvider(c) {
+    override fun onFeedShown() {
+
+    }
+
+    override fun onCreate() {
+
+    }
+
+    override fun onDestroy() {
+
+    }
+
     private var feeds: List<SyndFeed>? = null
     private var lastUpdate: Long = 0
 
@@ -51,7 +63,8 @@ abstract class AbstractMultipleSyndicationProvider(c: Context) : AbstractRSSFeed
         })
     }
 
-    override fun bindFeed(callback: BindCallback) {
+    override fun onFeedHidden() {
+
     }
 
     override fun getCards(): List<Card> {

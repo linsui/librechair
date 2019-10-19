@@ -33,6 +33,7 @@ import org.jdom2.Element;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
 
@@ -43,7 +44,12 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
     }
 
     @Override
-    protected void bindFeed(BindCallback callback) {
+    protected void onInit(Consumer<String> tokenCallback) {
+        tokenCallback.accept(getId());
+    }
+
+    @Override
+    protected void bindFeed(BindCallback callback, String token) {
         Executors.newSingleThreadExecutor().submit(() -> {
             SyndFeedImpl feed = new SyndFeedImpl();
             feed.setTitle("Wikipedia");

@@ -33,9 +33,9 @@ import java.nio.charset.Charset
 import java.util.*
 
 class GSyndicationFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) {
-    override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
+    override fun getLocationAwareFeed(country: String): SyndFeed {
         val feed = IOUtils.toString(URL("https://news.google.com/rss?gl=${Locale("",
-                                                                                 country).twoLetterCountryCode}").openConnection().also {
+                country).twoLetterCountryCode}").openConnection().also {
             (it as HttpURLConnection).instanceFollowRedirects = true
             d("getLocationAwareFeed: URL is ${it.url.toExternalForm()}")
         }.getInputStream(), Charset.defaultCharset())
@@ -44,6 +44,6 @@ class GSyndicationFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c)
     }
 
     override fun getFallbackFeed(): SyndFeed {
-        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "US")
+        return getLocationAwareFeed("US")
     }
 }

@@ -32,10 +32,15 @@ import org.xml.sax.InputSource
 import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
+import java.util.function.Consumer
 
 class CustomSyndicationProvider(c: Context, internal val arguments: Map<String, String>) :
         AbstractRSSFeedProvider(c) {
-    override fun bindFeed(callback: BindCallback) {
+    override fun onInit(tokenCallback: Consumer<String>) {
+        tokenCallback.accept(id)
+    }
+
+    override fun bindFeed(callback: BindCallback, token: String) {
         FeedScope.launch {
             val feed: String
             try {

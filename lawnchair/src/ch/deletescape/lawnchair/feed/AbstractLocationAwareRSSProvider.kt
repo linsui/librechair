@@ -28,8 +28,8 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import geocode.GeocoderCompat
 import kotlinx.coroutines.launch
-import java.io.IOException
 import java.util.*
+import java.util.function.Consumer
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
     init {
@@ -46,55 +46,54 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                 "", context.lawnchairPrefs.overrideLocale).isO3Country else "??"
 
     @SuppressLint("MissingPermission")
-    final override fun bindFeed(callback: BindCallback) {
-        try {
-            if (context.lawnchairLocationManager.location != null && context.lawnchairPrefs.overrideLocale.isEmpty()) {
-                context.lawnchairLocationManager.location!!.let { (lat, lon) ->
-                    FeedScope.launch {
-                        val country =
-                                GeocoderCompat(context, true).nearestPlace(lat, lon).country
-                        try {
-                            callback.onBind(getLocationAwareFeed(lat to lon,
-                                    Locale("", country).isO3Country))
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            try {
-                                callback.onBind(getFallbackFeed())
-                            } catch (e: RuntimeException) {
-                                e.printStackTrace()
-                            } catch (e: IOException) {
-                                e.printStackTrace()
-                            }
-                        }
-                    }
-                }
-            } else if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
-                runOnNewThread {
-                    try {
-                        callback.onBind(getLocationAwareFeed(0.toDouble() to 0.toDouble(),
-                                Locale("",
-                                        context.lawnchairPrefs.overrideLocale).isO3Country))
-                    } catch (e: Exception) {
-                        callback.onBind(getFallbackFeed())
-                    }
-                }
-            } else {
-                d("bindFeed: location not available; binding to fallback feed")
-                runOnNewThread {
-                    try {
-                        callback.onBind(getFallbackFeed())
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+    final override fun bindFeed(callback: BindCallback, token: String) {
+        val locale = token.split("@")[1]
+        if (locale != "?") {
+            try {
+                callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
+            } catch (e: Exception) {
+                callback.onBind(getFallbackFeed())
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } else {
+            callback.onBind(getFallbackFeed())
         }
     }
 
-    override fun getId(): String = super.getId() + "@l-" + locale
+    final override fun onInit(tokenCallback: Consumer<String>) {
+        if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
+            runOnNewThread {
+                try {
+                    tokenCallback.accept(Locale("", context.lawnchairPrefs.overrideLocale).isO3Country)
+                } catch (e: Exception) {
+                    tokenCallback.accept("${javaClass.name}@?")
+                }
+            }
+        } else if (context.lawnchairLocationManager.location != null && context.lawnchairPrefs.overrideLocale.isEmpty()) {
+            context.lawnchairLocationManager.location!!.let { (lat, lon) ->
+                FeedScope.launch {
+                    val country =
+                            GeocoderCompat(context, true).nearestPlace(lat, lon).country
+                    try {
+                        tokenCallback.accept(javaClass.name + "@" + Locale("", country).isO3Country)
+                    } catch (e: Exception) {
+                        tokenCallback.accept(javaClass.name + "@?")
+                    }
+                }
+            }
+        } else {
+            d("bindFeed: location not available; binding to fallback feed")
+            runOnNewThread {
+                try {
+                    tokenCallback.accept(javaClass.name + "@?")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
 
-    abstract fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed
+    override fun getId(): String = throw UnsupportedOperationException("getId not implemented since token handling is done manually")
+
+    abstract fun getLocationAwareFeed(country: String): SyndFeed
     abstract fun getFallbackFeed(): SyndFeed
 }

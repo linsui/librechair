@@ -35,8 +35,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 
-import kotlin.Pair;
-
 public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
     private static final HashMap<String, String> feeds = new HashMap<>();
@@ -69,8 +67,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
     @NotNull
     @Override
-    public SyndFeed getLocationAwareFeed(@NotNull Pair<Double, Double> location,
-            @NotNull String country) {
+    public SyndFeed getLocationAwareFeed(@NotNull String country) {
         try {
             String feed = IOUtils.toString(
                     new URL(feeds.get(country)).openConnection()
@@ -86,6 +83,6 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
     @NotNull
     @Override
     public SyndFeed getFallbackFeed() {
-        return getLocationAwareFeed(new Pair<>(0d, 0d), "WORLD");
+        return getLocationAwareFeed("WORLD");
     }
 }

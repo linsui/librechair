@@ -21,15 +21,19 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CharSequenceInputStream;
+import org.xml.sax.InputSource;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceInputStream;
-import org.xml.sax.InputSource;
+import java.util.function.Consumer;
 
 public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
 
@@ -38,7 +42,12 @@ public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
     }
 
     @Override
-    public void bindFeed(BindCallback callback) {
+    protected void onInit(Consumer<String> tokenCallback) {
+        tokenCallback.accept(getId());
+    }
+
+    @Override
+    protected void bindFeed(BindCallback callback, String token) {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
