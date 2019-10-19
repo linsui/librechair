@@ -25,7 +25,6 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -101,12 +100,24 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                         if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                             hourlyLayout.orientation = LinearLayout.VERTICAL
                         }
+                        (hourlyLayout.parent as View).apply {
+                            setOnTouchListener { v, event ->
+                                controllerView?.disallowInterceptCurrentTouchEvent = true
+                                false
+                            }
+                        }
+                        (dailyLayout.parent as View).apply {
+                            setOnTouchListener { v, event ->
+                                controllerView?.disallowInterceptCurrentTouchEvent = true
+                                false
+                            }
+                        }
                         hourlyWeatherForecast?.data
-                                ?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
                                 ?.forEach {
                                     hourlyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
-                                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item, parent,
+                                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
+                                                    parent,
                                                     false).apply {
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
@@ -118,9 +129,14 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 viewTreeObserver.addOnGlobalLayoutListener {
                                                     if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                MATCH_PARENT, WRAP_CONTENT)
+                                                                (dailyLayout.parent as ViewGroup).measuredWidth,
+                                                                WRAP_CONTENT)
+                                                    } else {
+                                                        val width =
+                                                                ((hourlyLayout.parent as ViewGroup).measuredWidth / context.lawnchairPrefs.feedForecastItemCount.roundToInt())
+                                                        layoutParams = LinearLayout.LayoutParams(
+                                                                width, WRAP_CONTENT)
                                                     }
-                                                    true
                                                 }
 
                                                 icon.setImageBitmap(it.data.icon)
@@ -132,7 +148,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 temperature.text = it.data.temperature.toString(
                                                         context.lawnchairPrefs.weatherUnit)
 
-                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                if (useWhiteText(backgroundColor,
+                                                                context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
@@ -145,7 +162,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 }
 
                         dailyForecast?.dailyForecastData
-                                ?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
                                 ?.forEach {
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
@@ -154,9 +170,14 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 viewTreeObserver.addOnGlobalLayoutListener {
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                         layoutParams = LinearLayout.LayoutParams(
-                                                                MATCH_PARENT, WRAP_CONTENT)
+                                                                (dailyLayout.parent as ViewGroup).measuredWidth,
+                                                                WRAP_CONTENT)
+                                                    } else {
+                                                        val width =
+                                                                ((dailyLayout.parent as ViewGroup).measuredWidth / context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
+                                                        layoutParams = LinearLayout.LayoutParams(
+                                                                width, WRAP_CONTENT)
                                                     }
-                                                    true
                                                 }
                                                 val temperature = findViewById(
                                                         R.id.forecast_current_temperature) as TextView
@@ -171,8 +192,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    time.text = IcuDateTextView.getDateFormat(context, false, null, false).format(Date.from(
-                                                            Instant.ofEpochSecond(zonedDateTime.toEpochSecond())))
+                                                    time.text =
+                                                            IcuDateTextView.getDateFormat(context,
+                                                                    false, null, false)
+                                                                    .format(Date.from(
+                                                                            Instant.ofEpochSecond(
+                                                                                    zonedDateTime.toEpochSecond())))
 
                                                 } else {
                                                     time.text =
@@ -182,7 +207,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
                                                         context.lawnchairPrefs.weatherUnit)}"
 
-                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                if (useWhiteText(backgroundColor,
+                                                                context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
@@ -220,7 +246,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                         d("inflate: returning view")
                         return v
                     }
-                }, Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT, "nosort,top"))
+                },
+                        Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT,
+                        "nosort,top"))
         else mutableListOf()
     }
 
