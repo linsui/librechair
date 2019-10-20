@@ -27,6 +27,7 @@ import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
@@ -128,10 +129,15 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             return newsEntry;
                         }).collect(Collectors.toList());
                         synchronized (AbstractRSSFeedProvider.class) {
-                            NewsDb.getDatabase(c, token).open().purge();
-                            articles.stream()
-                                    .peek(it -> it.order = articles.indexOf(it))
-                                    .forEach(it -> NewsDb.getDatabase(c, token).open().insert(it));
+                            try {
+                                NewsDb.getDatabase(c, token).open().purge();
+                                articles.stream()
+                                        .peek(it -> it.order = articles.indexOf(it))
+                                        .forEach(it -> NewsDb.getDatabase(c, token).open().insert(
+                                                it));
+                            } catch (SQLiteConstraintException e) {
+                                e.printStackTrace();
+                            }
                         }
                         if (diff) {
                             showNotifications(old != null ? old : Collections.emptyList());
