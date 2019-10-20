@@ -167,7 +167,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     share.setDataAndType(Uri.parse(notif.url), "text/plain");
                     Intent choose = Intent.createChooser(share, getContext().getString(R.string.title_share));
                     List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(new android.util.Pair<>(getContext().getString(
-                            com.android.internal.R.string.whichSendApplication),
+                            R.string.title_share),
                             PendingIntent.getActivity(getContext(), 0, choose, 0)));
                     if (Html.fromHtml(notif.content,
                             0).toString().length() > 250) {
