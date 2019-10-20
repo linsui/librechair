@@ -24,16 +24,8 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.LightingColorFilter;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.View;
-
-import org.jetbrains.annotations.Contract;
-
-import javax.annotation.Nullable;
 
 public final class FeedUtil {
     private FeedUtil() {
@@ -48,19 +40,5 @@ public final class FeedUtil {
                         intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                 ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.getMeasuredWidth(),
                         view.getMeasuredHeight()).toBundle());
-    }
-
-    @Contract("null, _ -> null")
-    @Nullable
-    public static Bitmap overlayColor(@Nullable Bitmap src, int color) {
-        if (src == null) {
-            return null;
-        }
-        Bitmap result = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
-        Canvas c = new Canvas(result);
-        Paint paint = new Paint();
-        paint.setColorFilter(new LightingColorFilter(color, 0));
-        c.drawBitmap(src, 0, 0, paint);
-        return result;
     }
 }
