@@ -75,7 +75,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
                             .defaultCharset());
             return new SyndFeedInput().build(new InputSource(
                     new CharSequenceInputStream(feed, Charset.defaultCharset())));
-        } catch (FeedException | IOException e) {
+        } catch (FeedException | RuntimeException | IOException e) {
             throw new RuntimeException(e);
         }
     }
