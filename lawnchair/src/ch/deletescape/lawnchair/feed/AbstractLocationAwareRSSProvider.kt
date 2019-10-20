@@ -48,6 +48,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback, token: String) {
         val locale = token.split("@")[1]
+        d("bindFeed: binding to locale $locale")
         if (locale != "?") {
             try {
                 callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
@@ -60,6 +61,17 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     }
 
     final override fun onInit(tokenCallback: Consumer<String>) {
+        context.lawnchairLocationManager.addCallback { lat, lon ->
+            FeedScope.launch {
+                val country =
+                        GeocoderCompat(context, true).nearestPlace(lat, lon).country
+                try {
+                    tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale("", country).isO3Country)
+                } catch (e: Exception) {
+                    tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
+                }
+            }
+        }
         if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
             runOnNewThread {
                 try {
@@ -68,20 +80,19 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                     tokenCallback.accept("${javaClass.name}@?")
                 }
             }
-        } else if (context.lawnchairLocationManager.location != null && context.lawnchairPrefs.overrideLocale.isEmpty()) {
+        } else if (context.lawnchairLocationManager.location != null) {
             context.lawnchairLocationManager.location!!.let { (lat, lon) ->
                 FeedScope.launch {
                     val country =
                             GeocoderCompat(context, true).nearestPlace(lat, lon).country
                     try {
-                        tokenCallback.accept(javaClass.name + "@" + Locale("", country).isO3Country)
+                        tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + Locale("", country).isO3Country)
                     } catch (e: Exception) {
-                        tokenCallback.accept(javaClass.name + "@?")
+                        tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
                     }
                 }
             }
         } else {
-            d("bindFeed: location not available; binding to fallback feed")
             runOnNewThread {
                 try {
                     tokenCallback.accept(javaClass.name + "@?")

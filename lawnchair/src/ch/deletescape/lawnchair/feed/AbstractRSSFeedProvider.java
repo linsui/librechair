@@ -101,41 +101,44 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Contract("null, null, _ -> fail")
     protected void refresh(Context c, Runnable finished, boolean diff) {
         Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
-            List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
-            articles = entries.stream().distinct().collect(Collectors.toList());
-            if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
-                    || (entries.stream().allMatch(
-                    it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
-                            2)))) {
-                bindFeed(feed -> {
-                    Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                            "constructor: bound to feed");
-                    lastUpdate = System.currentTimeMillis();
-                    List<NewsEntry> old = articles;
-                    articles = feed.getEntries().stream().map(entry -> {
-                        NewsEntry newsEntry = new NewsEntry();
-                        newsEntry.date = entry.getPublishedDate();
-                        newsEntry.content = entry.getDescription().getValue();
-                        newsEntry.url = entry.getLink();
-                        newsEntry.title = entry.getTitle();
-                        newsEntry.categories = entry.getCategories()
-                                .stream()
-                                .map(SyndCategory::getName)
-                                .collect(Collectors.toList());
-                        newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
-                        return newsEntry;
-                    }).collect(Collectors.toList());
-                    synchronized (AbstractRSSFeedProvider.class) {
-                        NewsDb.getDatabase(c, token).open().purge();
-                        articles.stream()
-                                .peek(it -> it.order = articles.indexOf(it))
-                                .forEach(it -> NewsDb.getDatabase(c, token).open().insert(it));
-                    }
-                    if (diff) {
-                        showNotifications(old != null ? old : Collections.emptyList());
-                    }
-                    finished.run();
-                }, token);
+            Log.d(getClass().getName(), "refresh: " + token);
+            synchronized (AbstractRSSFeedProvider.class) {
+                List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
+                articles = entries.stream().distinct().collect(Collectors.toList());
+                if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
+                        || (entries.stream().allMatch(
+                        it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
+                                2)))) {
+                    bindFeed(feed -> {
+                        Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                                "constructor: bound to feed");
+                        lastUpdate = System.currentTimeMillis();
+                        List<NewsEntry> old = articles;
+                        articles = feed.getEntries().stream().map(entry -> {
+                            NewsEntry newsEntry = new NewsEntry();
+                            newsEntry.date = entry.getPublishedDate();
+                            newsEntry.content = entry.getDescription().getValue();
+                            newsEntry.url = entry.getLink();
+                            newsEntry.title = entry.getTitle();
+                            newsEntry.categories = entry.getCategories()
+                                    .stream()
+                                    .map(SyndCategory::getName)
+                                    .collect(Collectors.toList());
+                            newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
+                            return newsEntry;
+                        }).collect(Collectors.toList());
+                        synchronized (AbstractRSSFeedProvider.class) {
+                            NewsDb.getDatabase(c, token).open().purge();
+                            articles.stream()
+                                    .peek(it -> it.order = articles.indexOf(it))
+                                    .forEach(it -> NewsDb.getDatabase(c, token).open().insert(it));
+                        }
+                        if (diff) {
+                            showNotifications(old != null ? old : Collections.emptyList());
+                        }
+                        finished.run();
+                    }, token);
+                }
             }
         }));
     }
