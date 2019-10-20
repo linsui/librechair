@@ -26,6 +26,7 @@ import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Handler;
+import android.util.Pair;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -36,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -76,7 +78,8 @@ public final class NotificationManager {
                                               @NonNull Integer icon,
                                               @NonNull String title,
                                               @NonNull String message,
-                                              @Nullable PendingIntent intent) {
+                                              @Nullable PendingIntent intent,
+                                              @Nullable List<Pair<String, PendingIntent>> actions) {
         mainThreadHandler.post(() -> {
             if (provider == null || icon == null || title == null || message == null) {
                 throw new RuntimeException("no arguments may be null");
@@ -85,22 +88,29 @@ public final class NotificationManager {
                 if (manager.getNotificationChannel(
                         new Gson().toJson(provider.getContainer())) != null) {
                     channels.put(provider.getContainer(),
-                            manager.getNotificationChannel(new Gson().toJson(provider.getContainer())));
+                            manager.getNotificationChannel(
+                                    new Gson().toJson(provider.getContainer())));
                 } else {
                     NotificationChannel channel = new NotificationChannel(
                             new Gson().toJson(provider.getContainer()),
                             MainFeedController.Companion.getDisplayName(provider.getContainer(),
-                                    context.get()), android.app.NotificationManager.IMPORTANCE_DEFAULT);
+                                    context.get()),
+                            android.app.NotificationManager.IMPORTANCE_DEFAULT);
                     manager.createNotificationChannel(channel);
                     channels.put(provider.getContainer(), channel);
                 }
             }
             NotificationChannel channel = channels.get(provider.getContainer());
-            manager.notify(UUID.randomUUID().hashCode(), new Notification.Builder(context.get(), channel.getId()).setSmallIcon(icon)
+            Notification.Builder builder = new Notification.Builder(context.get(),
+                    channel.getId()).setSmallIcon(icon)
                     .setContentTitle(title)
                     .setContentText(message)
-                    .setContentIntent(intent)
-                    .build());
+                    .setContentIntent(intent);
+            if (actions != null) {
+                actions.forEach(it -> builder.addAction(new Notification.Action.Builder(null, it.first,
+                        it.second).build()));
+            }
+            manager.notify(UUID.randomUUID().hashCode(), builder.build());
         });
     }
 }

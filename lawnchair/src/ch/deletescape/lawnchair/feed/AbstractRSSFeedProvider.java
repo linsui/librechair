@@ -163,6 +163,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(notif.url));
                     PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    share.setDataAndType(Uri.parse(notif.url), "text/plain");
+                    Intent choose = Intent.createChooser(share, getContext().getString(
+                            com.android.internal.R.string.whichSendApplication));
+                    List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(new android.util.Pair<>(getContext().getString(
+                            com.android.internal.R.string.whichSendApplication),
+                            PendingIntent.getActivity(getContext(), 0, choose, 0)));
                     if (Html.fromHtml(notif.content,
                             0).toString().length() > 250) {
                         NotificationManager.getInstance(getContext())
@@ -170,13 +177,13 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                         notif.title,
                                         Html.fromHtml(notif.content,
                                                 0).toString().substring(0, 250) + "...",
-                                        intent2);
+                                        intent2, actions);
                     } else {
                         NotificationManager.getInstance(getContext())
                                 .postNotification(this, R.drawable.ic_newspaper_24dp,
                                         notif.title,
                                         Html.fromHtml(notif.content,
-                                                0).toString(), intent2);
+                                                0).toString(), intent2, actions);
                     }
                 }
             }
