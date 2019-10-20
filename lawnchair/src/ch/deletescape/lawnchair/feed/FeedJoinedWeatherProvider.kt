@@ -113,8 +113,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 false
                             }
                         }
-                        (hourlyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled = false
-                        (dailyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled = false
+                        (hourlyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled =
+                                false
+                        (dailyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled =
+                                false
                         hourlyWeatherForecast?.data
                                 ?.forEach {
                                     hourlyLayout.addView(
@@ -225,13 +227,22 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         .ofInstant(it.date.toInstant(),
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
+                                                d("inflate: ${zonedDateTime.toInstant().toEpochMilli()}")
+                                                val tomorrowDate = tomorrowL()
+                                                val nextDayAfterTomorrow = tomorrowL(tomorrowL())
+                                                d("inflate: $zonedDateTime $tomorrowDate $nextDayAfterTomorrow")
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    time.text =
-                                                            IcuDateTextView.getDateFormat(context,
-                                                                    false, null, false)
-                                                                    .format(Date.from(
-                                                                            Instant.ofEpochSecond(
-                                                                                    zonedDateTime.toEpochSecond())))
+                                                    if (zonedDateTime.toInstant().toEpochMilli() in tomorrowDate until nextDayAfterTomorrow) {
+                                                        time.text = context.getString(R.string.title_weather_item_tomorrow)
+                                                    } else {
+                                                        time.text =
+                                                                IcuDateTextView.getDateFormat(
+                                                                        context,
+                                                                        false, null, false)
+                                                                        .format(Date.from(
+                                                                                Instant.ofEpochSecond(
+                                                                                        zonedDateTime.toEpochSecond())))
+                                                    }
 
                                                 } else {
                                                     time.text =

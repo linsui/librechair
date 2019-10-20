@@ -109,6 +109,7 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -159,9 +160,14 @@ fun tomorrow(current: Date = Date()): Date {
     val date = current.clone() as Date
     val oneDayMillis = 1000 * 60 * 60 * 24
     date.time += oneDayMillis
-    date.minutes = 0
-    date.hours = 0
+    date.time = date.time - (date.time % oneDayMillis)
     return date
+}
+
+fun tomorrowL(current: Long = System.currentTimeMillis()): Long {
+    val oneDayMillis = TimeUnit.DAYS.toMillis(1)
+    val tp = current + oneDayMillis
+    return tp - (tp % oneDayMillis)
 }
 
 @ColorInt fun Context.getColorEngineAccent(): Int {
