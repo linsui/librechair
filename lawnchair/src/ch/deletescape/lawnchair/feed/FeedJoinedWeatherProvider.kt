@@ -170,8 +170,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 } else {
                                                     val width =
                                                             (w / context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
-                                                    layoutParams = LinearLayout.LayoutParams(
-                                                            width, WRAP_CONTENT)
+                                                    layoutParams.width = width
                                                 }
                                             }
                                         }
@@ -198,8 +197,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 } else {
                                                     val width =
                                                             (w / context.lawnchairPrefs.feedForecastItemCount.roundToInt())
-                                                    layoutParams = LinearLayout.LayoutParams(
-                                                            width, WRAP_CONTENT)
+                                                    layoutParams.width = width
                                                 }
                                             }
                                         }
