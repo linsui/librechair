@@ -268,19 +268,21 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDragStart(start: Boolean) {
-        mStartState = mCurrentState
-        if (mCurrentAnimationPlaybackController == null) {
-            mFromState = mStartState
-            mToState = null
-            cancelAnimationControllers()
-            reinitCurrentAnimation(false, mDetector.wasInitialTouchPositive())
-            mDisplacementShift = 0f
-        } else {
-            mCurrentAnimationPlaybackController!!.pause()
-            mStartProgress = mCurrentAnimationPlaybackController!!.progressFraction
+        post {
+            mStartState = mCurrentState
+            if (mCurrentAnimationPlaybackController == null) {
+                mFromState = mStartState
+                mToState = null
+                cancelAnimationControllers()
+                reinitCurrentAnimation(false, mDetector.wasInitialTouchPositive())
+                mDisplacementShift = 0f
+            } else {
+                mCurrentAnimationPlaybackController!!.pause()
+                mStartProgress = mCurrentAnimationPlaybackController!!.progressFraction
+            }
+            mCanBlockFling = false
+            mFlingBlockCheck.unblockFling()
         }
-        mCanBlockFling = false
-        mFlingBlockCheck.unblockFling()
     }
 
     override fun onDrag(displacement: Float, velocity: Float): Boolean {
@@ -310,86 +312,90 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         } else {
             mFlingBlockCheck.onEvent()
         }
-
         return true
     }
 
     protected fun updateProgress(fraction: Float) {
-        mCurrentAnimationPlaybackController!!.setPlayFraction(fraction)
+        mCurrentAnimationPlaybackController?.setPlayFraction(fraction)
     }
 
     override fun onDragEnd(velocity: Float, fling: Boolean) {
-        var fling = fling
-        val blockedFling = fling && mFlingBlockCheck.isBlocked
-        if (blockedFling) {
-            fling = false
-        }
-
-        val targetState: FeedState?
-        val progress =
-                mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
-                    -1 else 1)
-        val interpolatedProgress =
-                mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
-        if (fling) {
-            targetState = if (sign(velocity).compareTo(Math.signum(
-                            mProgressMultiplier)) == 0) mToState else mFromState
-            // snap to top or bottom using the release velocity
-        } else {
-            targetState =
-                    if (interpolatedProgress > SUCCESS_TRANSITION_PROGRESS) mToState else mFromState
-        }
-
-        val endProgress: Float
-        val startProgress: Float
-        val duration: Long
-        // Increase the duration if we prevented the fling, as we are going against a high velocity.
-        val durationMultiplier =
-                ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
-                else 1) * context.feedPrefs.openingAnimationSpeed).roundToLong()
-
-        if (targetState === mToState) {
-            endProgress = 1f
-            if (progress >= 1) {
-                duration = 0
-                startProgress = 1f
-            } else {
-                startProgress = Utilities.boundToRange(
-                        progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
-                        1f)
-                duration = SwipeDetector.calculateDuration(velocity,
-                        endProgress - Math.max(progress,
-                                0f)) * durationMultiplier
+        post {
+            var fling = fling
+            val blockedFling = fling && mFlingBlockCheck.isBlocked
+            if (blockedFling) {
+                fling = false
             }
-        } else {
-            // Let the state manager know that the animation didn't go to the target state,
-            // but don't cancel ourselves (we already clean up when the animation completes).
-            val onCancel = mCurrentAnimationPlaybackController!!.onCancelRunnable
-            mCurrentAnimationPlaybackController!!.onCancelRunnable = null
-            mCurrentAnimationPlaybackController!!.dispatchOnCancel()
-            mCurrentAnimationPlaybackController!!.onCancelRunnable = onCancel
 
-            endProgress = 0f
-            if (progress <= 0) {
-                duration = 0
-                startProgress = 0f
+            val targetState: FeedState?
+            val progress =
+                    mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                        -1 else 1)
+            val interpolatedProgress =
+                    mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
+            if (fling) {
+                targetState = if (sign(velocity).compareTo(Math.signum(
+                                mProgressMultiplier)) == 0) mToState else mFromState
+                // snap to top or bottom using the release velocity
             } else {
-                startProgress = Utilities.boundToRange(
-                        progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
-                        1f)
-                duration = SwipeDetector.calculateDuration(velocity, Math.min(progress,
-                        1f) - endProgress) * durationMultiplier
+                targetState =
+                        if (interpolatedProgress > SUCCESS_TRANSITION_PROGRESS) mToState else mFromState
             }
-        }
 
-        mCurrentAnimationPlaybackController!!.setEndAction {
-            onSwipeInteractionCompleted(targetState)
+            val endProgress: Float
+            val startProgress: Float
+            val duration: Long
+            // Increase the duration if we prevented the fling, as we are going against a high velocity.
+            val durationMultiplier =
+                    ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(
+                            velocity)
+                    else 1) * context.feedPrefs.openingAnimationSpeed).roundToLong()
+
+            if (targetState === mToState) {
+                endProgress = 1f
+                if (progress >= 1) {
+                    duration = 0
+                    startProgress = 1f
+                } else {
+                    startProgress = Utilities.boundToRange(
+                            progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier,
+                            0f,
+                            1f)
+                    duration = SwipeDetector.calculateDuration(velocity,
+                            endProgress - Math.max(progress,
+                                    0f)) * durationMultiplier
+                }
+            } else {
+                // Let the state manager know that the animation didn't go to the target state,
+                // but don't cancel ourselves (we already clean up when the animation completes).
+                val onCancel = mCurrentAnimationPlaybackController!!.onCancelRunnable
+                mCurrentAnimationPlaybackController!!.onCancelRunnable = null
+                mCurrentAnimationPlaybackController!!.dispatchOnCancel()
+                mCurrentAnimationPlaybackController!!.onCancelRunnable = onCancel
+
+                endProgress = 0f
+                if (progress <= 0) {
+                    duration = 0
+                    startProgress = 0f
+                } else {
+                    startProgress = Utilities.boundToRange(
+                            progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier,
+                            0f,
+                            1f)
+                    duration = SwipeDetector.calculateDuration(velocity, Math.min(progress,
+                            1f) - endProgress) * durationMultiplier
+                }
+            }
+
+            mCurrentAnimationPlaybackController!!.setEndAction {
+                onSwipeInteractionCompleted(targetState)
+            }
+            val anim = mCurrentAnimationPlaybackController!!.animationPlayer
+            anim.setFloatValues(startProgress, endProgress)
+            updateSwipeCompleteAnimation(anim, duration, targetState, velocity, fling)
+            mCurrentAnimationPlaybackController!!.dispatchOnStart()
+            anim.start()
         }
-        val anim = mCurrentAnimationPlaybackController!!.animationPlayer
-        anim.setFloatValues(startProgress, endProgress)
-        updateSwipeCompleteAnimation(anim, duration, targetState, velocity, fling)
-        mCurrentAnimationPlaybackController!!.dispatchOnStart()
-        anim.start()
     }
 
     protected fun updateSwipeCompleteAnimation(animator: ValueAnimator, expectedDuration: Long,
