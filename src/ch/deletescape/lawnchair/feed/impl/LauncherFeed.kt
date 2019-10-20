@@ -1254,7 +1254,7 @@ class LauncherFeed(val originalContext: Context,
             if (context.lawnchairPrefs.feedHighContrastToolbar) {
                 toolbarParent.setBackgroundColor(backgroundColor.setAlpha(
                         (context.feedPrefs.toolbarOpacity * 255f).roundToInt()))
-                toolbarParent.elevation = context.eightF
+                toolbarParent.elevation = context.feedPrefs.toolbarElevation.toFloat()
             } else {
                 toolbarParent.setBackgroundColor(0)
             }

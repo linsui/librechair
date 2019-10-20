@@ -298,6 +298,15 @@
             app:steps="100"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="100"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_toolbar_elevation"
+            android:title="@string/title_pref_feed_toolbar_elevation"
+            app:defaultSeekbarValue="8"
+            app:maxValue="64"
+            app:minValue="0"
+            app:steps="64"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1"/>
         <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="feed_hide_toolbar_actions2"

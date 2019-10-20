@@ -753,4 +753,5 @@
     <string name="title_pref_feed_opening_animation_speed">Animation speed</string>
     <string name="title_weather_item_tomorrow">Tomorrow</string>
     <string name="title_share">Share</string>
+    <string name="title_pref_feed_toolbar_elevation">Title bar elevation</string>
 </resources>

@@ -66,6 +66,8 @@ class FeedPersistence private constructor(val context: Context) {
             by DipDimenDelegate(context, "feed_card_corner_radius", 0.0)
     val openingAnimationSpeed
             by NumberDelegate(context, "feed_opening_animation_speed", 0.5)
+    val toolbarElevation
+            by DipDimenDelegate(context, "feed_toolbar_elevation", 8.0)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
