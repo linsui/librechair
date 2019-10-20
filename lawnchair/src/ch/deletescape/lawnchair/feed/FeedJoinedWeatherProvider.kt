@@ -145,6 +145,11 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
+                                                layoutParams = LinearLayout
+                                                        .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                                        .apply {
+                                                            weight = 1f
+                                                        }
                                             })
                                 }
 
@@ -252,6 +257,11 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
+                                                layoutParams = LinearLayout
+                                                        .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
+                                                        .apply {
+                                                            weight = 1f
+                                                        }
                                             })
                                 }
 
