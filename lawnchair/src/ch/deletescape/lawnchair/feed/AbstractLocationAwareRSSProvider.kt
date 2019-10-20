@@ -21,12 +21,12 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
-import geocode.GeocoderCompat
 import kotlinx.coroutines.launch
 import java.util.*
 import java.util.function.Consumer
@@ -38,25 +38,20 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
         }
     }
 
-    private val locale
-        get() = if (context.lawnchairPrefs.overrideLocale.isEmpty() && context.lawnchairLocationManager.location != null) Locale(
-                "", GeocoderCompat(context, true).nearestPlace(
-                context.lawnchairLocationManager.location!!.first,
-                context.lawnchairLocationManager.location!!.second).country).isO3Country else if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) Locale(
-                "", context.lawnchairPrefs.overrideLocale).isO3Country else "??"
-
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback, token: String) {
-        val locale = token.split("@")[1]
-        d("bindFeed: binding to locale $locale")
-        if (locale != "?") {
-            try {
-                callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
-            } catch (e: Exception) {
+        FeedScope.launch {
+            val locale = token.split("@")[1]
+            d("bindFeed: binding to locale $locale")
+            if (locale != "?") {
+                try {
+                    callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
+                } catch (e: Exception) {
+                    callback.onBind(getFallbackFeed())
+                }
+            } else {
                 callback.onBind(getFallbackFeed())
             }
-        } else {
-            callback.onBind(getFallbackFeed())
         }
     }
 
@@ -64,7 +59,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
         context.lawnchairLocationManager.addCallback { lat, lon ->
             FeedScope.launch {
                 val country =
-                        GeocoderCompat(context, true).nearestPlace(lat, lon).country
+                         context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
                 try {
                     tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale("", country).isO3Country)
                 } catch (e: Exception) {
@@ -84,9 +79,9 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
             context.lawnchairLocationManager.location!!.let { (lat, lon) ->
                 FeedScope.launch {
                     val country =
-                            GeocoderCompat(context, true).nearestPlace(lat, lon).country
+                            context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
                     try {
-                        tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + Locale("", country).isO3Country)
+                        tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale("", country).isO3Country)
                     } catch (e: Exception) {
                         tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
                     }

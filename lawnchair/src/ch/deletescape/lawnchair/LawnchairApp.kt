@@ -47,6 +47,7 @@ import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
+import geocode.GeocoderCompat
 import kg.net.bazi.gsb4j.Gsb4j
 import kotlinx.coroutines.launch
 import me.weishu.reflection.Reflection
@@ -70,6 +71,7 @@ class LawnchairApp : Application(), () -> Unit {
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
     val feedController by lazy { getFeedController(this) }
+    val geocoder by lazy { GeocoderCompat(this, true) }
     lateinit var gsb4j: Gsb4j
 
     lateinit var overlayWidgetHost: OverlayWidgetHost

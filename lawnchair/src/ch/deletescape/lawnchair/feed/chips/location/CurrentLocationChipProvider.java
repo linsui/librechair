@@ -21,8 +21,6 @@
 package ch.deletescape.lawnchair.feed.chips.location;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.android.launcher3.R;
 
@@ -30,7 +28,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -41,6 +38,7 @@ import geocode.GeoName;
 import geocode.GeocoderCompat;
 import geocode.ReverseGeoCode;
 import kotlin.Pair;
+import kotlin.Unit;
 
 public class CurrentLocationChipProvider extends ChipProvider {
     private ReverseGeoCode degeocoder;
@@ -49,31 +47,20 @@ public class CurrentLocationChipProvider extends ChipProvider {
 
     @SuppressWarnings("unused")
     public CurrentLocationChipProvider(Context context) {
-        AtomicReference<Runnable> refresh = new AtomicReference<>();
-        refresh.set(() -> {
-            while (true) {
+        LocationManager.INSTANCE.addCallback((lt, lo) -> {
+            Executors.newSingleThreadExecutor().submit(() -> {
                 try {
-                    loc = LocationManager.INSTANCE.getLocation();
-                    if (loc != null) {
+                    loc = new Pair<>(lt, lo);
+                    if (degeocoder == null) {
                         degeocoder = new GeocoderCompat(context, false);
-                        name = degeocoder.nearestPlace(loc.getFirst(), loc.getSecond());
-                        break;
                     }
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Executors.newSingleThreadExecutor().submit(() -> {
-                            refresh.get().run();
-                        });
-                    }, 10 * 60 * 1000);
-                    Thread.sleep(1000);
+                    name = degeocoder.nearestPlace(loc.getFirst(), loc.getSecond());
                 } catch (IOException e) {
                     e.printStackTrace();
-                    break;
-                } catch (InterruptedException e) {
-                    break;
                 }
-            }
+            });
+            return Unit.INSTANCE;
         });
-        Executors.newSingleThreadExecutor().submit(refresh.get());
     }
 
     @Override
