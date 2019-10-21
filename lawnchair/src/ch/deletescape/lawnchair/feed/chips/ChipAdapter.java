@@ -30,7 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
@@ -96,7 +95,8 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
     public void onBindViewHolder(@NotNull ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
         if (item.icon instanceof VectorDrawable) {
-            chipViewHolder.itemView.setChipIconTint(ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
+            chipViewHolder.itemView.setChipIconTint(
+                    ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
                             ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor()));
         } else {
             chipViewHolder.itemView.setChipIconTint(null);
@@ -111,14 +111,15 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         }
         ShapeAppearanceModel model = Objects.requireNonNull(ChipStyleRegistry.ALL.get(
                 ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment()));
+        Objects.requireNonNull(chipViewHolder.itemView.getBackgroundDrawable()).setAlpha(
+                (int) Math.round(ChipPersistence.Companion.getInstance(
+                        context).getChipOpacity() * (255f)));
         chipViewHolder.itemView.setShapeAppearanceModel(model);
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
-        chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
-                ColorUtils.setAlphaComponent(ColorEngine.getInstance(context).getResolverCache(
-                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
-                        (int) Math.round(ChipPersistence.Companion.getInstance(
-                                context).getChipOpacity() * (255f)))));
+        chipViewHolder.itemView.setChipBackgroundColor(
+                ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
+                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor()));
         chipViewHolder.itemView.setTextColor(
                 LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(
                         ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
