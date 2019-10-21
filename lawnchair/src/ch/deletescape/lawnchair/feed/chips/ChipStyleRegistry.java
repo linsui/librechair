@@ -35,18 +35,21 @@ public final class ChipStyleRegistry {
     public static final Map<String, ShapeAppearanceModel> ALL = new LinkedHashMap<>();
     public static final Map<String, Integer> NAMES = new LinkedHashMap<>();
     public static final String ROUND = "rnd";
+    public static final String SQUARE = "sqr";
     public static final String CUT = "cut";
 
     static {
         NAMES.put(ROUND, R.string.title_chip_style_round);
+        NAMES.put(SQUARE, R.string.icon_shape_square);
         NAMES.put(CUT, R.string.title_chip_style_cut);
     }
 
     public static void populateWithContext(Context c) {
         ALL.put(ROUND, new ShapeAppearanceModel.Builder().setAllCorners(
                 new RoundedCornerTreatment()).setAllCornerSizes(64f).build());
+        ALL.put(SQUARE, new ShapeAppearanceModel());
         ShapeAppearanceModel cut = new ShapeAppearanceModel.Builder().setAllCornerSizes(
-                8f).setAllCorners(new CutCornerTreatment()).build();
+                16f).setAllCorners(new CutCornerTreatment()).build();
         ALL.put(CUT, cut);
     }
 }
