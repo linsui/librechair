@@ -36,10 +36,12 @@ public final class ChipStyleRegistry {
     public static final Map<String, Integer> NAMES = new LinkedHashMap<>();
     public static final String ROUND = "rnd";
     public static final String SQUARE = "sqr";
+    public static final String ROUNDED_SQUARE = "rqr";
     public static final String CUT = "cut";
 
     static {
         NAMES.put(ROUND, R.string.title_chip_style_round);
+        NAMES.put(ROUNDED_SQUARE, R.string.icon_shape_rounded_square);
         NAMES.put(SQUARE, R.string.icon_shape_square);
         NAMES.put(CUT, R.string.title_chip_style_cut);
     }
@@ -47,6 +49,8 @@ public final class ChipStyleRegistry {
     public static void populateWithContext(Context c) {
         ALL.put(ROUND, new ShapeAppearanceModel.Builder().setAllCorners(
                 new RoundedCornerTreatment()).setAllCornerSizes(64f).build());
+        ALL.put(ROUNDED_SQUARE, new ShapeAppearanceModel.Builder().setAllCorners(
+                new RoundedCornerTreatment()).setAllCornerSizes(8f).build());
         ALL.put(SQUARE, new ShapeAppearanceModel());
         ShapeAppearanceModel cut = new ShapeAppearanceModel.Builder().setAllCornerSizes(
                 16f).setAllCorners(new CutCornerTreatment()).build();
