@@ -66,7 +66,7 @@
         android:text="@string/placeholder_rss_card_description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/weather_hud_day_night" />
-    <HorizontalScrollView
+    <ch.deletescape.lawnchair.views.SpringHorizontalScrollView
         android:id="@+id/unified_weather_forecast_c"
         app:layout_constraintTop_toBottomOf="@+id/weather_hud_information"
         android:layout_width="match_parent"
@@ -77,9 +77,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
-    </HorizontalScrollView>
+    </ch.deletescape.lawnchair.views.SpringHorizontalScrollView>
 
-    <HorizontalScrollView
+    <ch.deletescape.lawnchair.views.SpringHorizontalScrollView
         app:layout_constraintTop_toBottomOf="@+id/unified_weather_forecast_c"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -89,5 +89,5 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp" />
-    </HorizontalScrollView>
+    </ch.deletescape.lawnchair.views.SpringHorizontalScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
