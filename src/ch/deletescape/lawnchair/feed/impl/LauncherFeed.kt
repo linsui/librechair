@@ -81,7 +81,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
-class LauncherFeed(val originalContext: Context,
+class LauncherFeed(private val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
         ILauncherOverlay.Stub() {
     var backgroundColor: Int = ColorUtils.setAlphaComponent(
@@ -132,7 +132,7 @@ class LauncherFeed(val originalContext: Context,
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers).toMutableMap()
     private val tabs = tabController.allTabs.toMutableList()
     private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
-        it.viewTreeObserver.addOnGlobalLayoutListener { ->
+        it.viewTreeObserver.addOnGlobalLayoutListener {
             (it.getChildAt(0) as ViewGroup).childs.forEach {
                 val textView = it::class.java.getDeclaredField(
                         "textView").also { it.isAccessible = true }.get(it)
@@ -148,9 +148,9 @@ class LauncherFeed(val originalContext: Context,
         }
     }
         set(value) = run {
-            field = value.also {
-                it.viewTreeObserver.addOnGlobalLayoutListener { ->
-                    (it.getChildAt(0) as ViewGroup).childs.forEach {
+            field = value.also { tabLayout ->
+                tabLayout.viewTreeObserver.addOnGlobalLayoutListener { ->
+                    (tabLayout.getChildAt(0) as ViewGroup).childs.forEach {
                         val textView = it::class.java.getDeclaredField(
                                 "textView").also { it.isAccessible = true }.get(it)
                                 as? TextView // TODO figure out Kotlin reflection is being so slow
@@ -220,6 +220,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
+    @SuppressLint("SetTextI18n")
     fun initBitmapInfo(url: String, desc: String, bkg: Bitmap) {
         if (context.lawnchairPrefs.feedShowInfobox) {
             readMoreUrl = url
@@ -242,7 +243,7 @@ class LauncherFeed(val originalContext: Context,
         }
     }
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint("RestrictedApi", "InflateParams", "ClickableViewAccessibility")
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         if (context.appWidgetManager
                         .getAppWidgetInfo(
@@ -626,11 +627,11 @@ class LauncherFeed(val originalContext: Context,
                     adapter.providers = tabbedProviders[tabs[tab.position]]!!
                     if (context.lawnchairPrefs.feedHideTabText) {
                         for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
-                            val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
+                            val tv = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
                             val title =
-                                    tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                                    tv::class.declaredMembers.first { it.name == "textView" }.apply {
                                         isAccessible = true
-                                    }.call(tab) as TextView
+                                    }.call(tv) as TextView
                             title.visibility = View.GONE
                         }
                     }
