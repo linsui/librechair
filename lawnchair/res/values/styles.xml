@@ -174,7 +174,7 @@
         <item name="android:textColor">?android:colorAccent</item>
     </style>
 
-    <style name="SettingsTheme.Base" parent="@style/Theme.AppCompat.Light.NoActionBar">
+    <style name="SettingsTheme.Base" parent="@style/Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>
         <item name="settingsBackground">@android:color/white</item>
         <item name="settingsSearchBackground">?settingsBackground</item>
@@ -227,7 +227,7 @@
         <item name="android:buttonStyle">@style/SettingsTheme.V2.Button</item>
     </style>
 
-    <style name="SettingsTheme.V2.Dark" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="SettingsTheme.V2.Dark" parent="@style/Theme.MaterialComponents.NoActionBar">
         <item name="android:windowBackground">@color/settings_background_dark</item>
         <item name="colorPrimary">?android:windowBackground</item>
         <item name="colorPrimaryDark">?android:windowBackground</item>
