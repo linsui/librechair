@@ -29,15 +29,14 @@ import kotlinx.coroutines.launch
 class JobSchedulerService : JobService() {
     override fun onStartJob(params: JobParameters) = synchronized(JobSchedulerService) {
 
-            JobScope.launch {
-                idCallbacks.filter {it.first == params.jobId}.forEach {
-                    it.second {
-                        jobFinished(params, it)
-                    }
+        JobScope.launch {
+            idCallbacks.filter { it.first == params.jobId }.forEach {
+                it.second {
+                    jobFinished(params, it)
                 }
             }
-            return@synchronized true
-        return@synchronized false
+        }
+        return@synchronized true
     }
 
     override fun onStopJob(params: JobParameters): Boolean {
@@ -45,6 +44,7 @@ class JobSchedulerService : JobService() {
     }
 
     companion object {
-        val idCallbacks: List<Pair<Int, (finished: (reschedule: Boolean) -> Unit) -> Unit>> = mutableListOf()
+        val idCallbacks: List<Pair<Int, (finished: (reschedule: Boolean) -> Unit) -> Unit>> =
+                mutableListOf()
     }
 }
