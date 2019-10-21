@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
 import ch.deletescape.lawnchair.util.SingletonHolder
 
 class ChipPersistence private constructor(val context: Context) {
@@ -31,6 +32,8 @@ class ChipPersistence private constructor(val context: Context) {
     val elevation by NumberDelegate(context, "feed_chip_elevation", 8.0)
     val mixChips by BooleanDelegate(context, "feed_mix_chips", false)
     val maxPredictions by NumberDelegate(context, "feed_chip_max_predictions", 5.0)
+    val chipCornerTreatment by DefValueStringDelegate(context, "feed_chip_corner_treatment",
+            ChipStyleRegistry.ROUND)
 
     companion object : SingletonHolder<ChipPersistence, Context>(::ChipPersistence)
 }

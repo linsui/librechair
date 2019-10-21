@@ -36,6 +36,7 @@ import ch.deletescape.lawnchair.clipart.FancyClipartResolver
 import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.adblock.WebSafety
+import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
 import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
@@ -139,6 +140,7 @@ class LawnchairApp : Application(), () -> Unit {
             }
         }
         DynamicProviderController.attachContext(this)
+        ChipStyleRegistry.populateWithContext(this)
     }
 
     fun onLauncherAppStateCreated() {

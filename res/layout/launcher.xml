@@ -98,11 +98,4 @@
         </com.android.launcher3.dragndrop.DragLayer>
 
     </com.android.launcher3.LauncherRootView>
-    <include
-        layout="@layout/overlay_feed"
-        android:clickable="true"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="false"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 </ch.deletescape.lawnchair.feed.OverlayDrawerLayout>

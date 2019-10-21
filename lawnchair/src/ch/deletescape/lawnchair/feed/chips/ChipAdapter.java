@@ -26,35 +26,30 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.VectorDrawable;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.InvalidationTracker;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.feed.SortingAlgorithm;
-import ch.deletescape.lawnchair.feed.chips.sorting.MixerSortHelper;
-import ch.deletescape.lawnchair.feed.chips.sorting.NormalSortHelper;
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
+import ch.deletescape.lawnchair.persistence.ChipPersistenceKt;
 import kotlin.Unit;
 
 import static java.lang.StrictMath.round;
@@ -113,6 +108,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         } else {
             chipViewHolder.itemView.setChipStrokeWidth(0f);
         }
+        ShapeAppearanceModel model = Objects.requireNonNull(ChipStyleRegistry.ALL.get(
+                ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment()));
+        chipViewHolder.itemView.setShapeAppearanceModel(model);
+
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
@@ -179,3 +178,4 @@ class ChipViewHolder extends RecyclerView.ViewHolder {
         this.itemView = (Chip) itemView;
     }
 }
+

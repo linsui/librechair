@@ -754,4 +754,7 @@
     <string name="title_weather_item_tomorrow">Tomorrow</string>
     <string name="title_share">Share</string>
     <string name="title_pref_feed_toolbar_elevation">Title bar elevation</string>
+    <string name="title_chip_style_round">Round</string>
+    <string name="title_chip_style_cut">Cut</string>
+    <string name="title_pref_feed_chip_corner_treatment">Chip corner style</string>
 </resources>

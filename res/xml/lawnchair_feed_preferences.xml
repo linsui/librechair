@@ -371,6 +371,10 @@
             android:defaultValue="false"
             android:title="@string/title_pref_feed_mix_chips"
             android:summary="@string/summary_pref_feed_mix_chips"/>
+        <ch.deletescape.lawnchair.persistence.prefs.ChipCornerPreference
+            android:key="feed_chip_corner_treatment"
+            android:title="@string/title_pref_feed_chip_corner_treatment"
+            android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
