@@ -96,9 +96,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
     public void onBindViewHolder(@NotNull ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
         if (item.icon instanceof VectorDrawable) {
-            item.icon = LawnchairUtilsKt.tint(item.icon,
-                    ColorEngine.getInstance(context).getResolverCache(
-                            ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor());
+            chipViewHolder.itemView.setChipIconTint(ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
+                            ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor()));
+        } else {
+            chipViewHolder.itemView.setChipIconTint(null);
         }
         if (ChipPersistence.Companion.getInstance(context).getOutlineChips()) {
             chipViewHolder.itemView.setChipStrokeColor(
@@ -111,7 +112,6 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         ShapeAppearanceModel model = Objects.requireNonNull(ChipStyleRegistry.ALL.get(
                 ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment()));
         chipViewHolder.itemView.setShapeAppearanceModel(model);
-
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(ColorStateList.valueOf(
