@@ -26,6 +26,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -154,11 +155,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 }
 
                         (dailyLayout.parent as ViewGroup).apply {
-                            addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-                                override fun onLayoutChange(v: View, left: Int, top: Int,
-                                                            right: Int, bottom: Int, oldLeft: Int,
-                                                            oldTop: Int, oldRight: Int,
-                                                            oldBottom: Int) {
+                            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                                override fun onPreDraw(): Boolean {
                                     val w = v.measuredWidth
                                     dailyLayout.childs.forEach {
                                         it.apply {
@@ -175,17 +173,15 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             }
                                         }
                                     }
-                                    removeOnLayoutChangeListener(this)
+                                    viewTreeObserver.removeOnPreDrawListener(this)
+                                    return true
                                 }
                             })
                         }
 
                         (hourlyLayout.parent as ViewGroup).apply {
-                            addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-                                override fun onLayoutChange(v: View, left: Int, top: Int,
-                                                            right: Int, bottom: Int, oldLeft: Int,
-                                                            oldTop: Int, oldRight: Int,
-                                                            oldBottom: Int) {
+                            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                                override fun onPreDraw(): Boolean {
                                     val w = v.measuredWidth
                                     hourlyLayout.childs.forEach {
                                         it.apply {
@@ -202,7 +198,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             }
                                         }
                                     }
-                                    removeOnLayoutChangeListener(this)
+                                    viewTreeObserver.removeOnPreDrawListener(this)
+                                    return true
                                 }
                             })
                         }
@@ -372,4 +369,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
             }
         }
     }
+
+    override fun isVolatile() = true
 }
