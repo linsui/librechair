@@ -34,6 +34,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.colors.RGBColorResolver
 import ch.deletescape.lawnchair.feed.go.isDark
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.fromColorRes
 import ch.deletescape.lawnchair.getTabRipple
 import ch.deletescape.lawnchair.setCustomFont
 import com.android.launcher3.R
@@ -111,8 +112,10 @@ class TabbedPickerView(context: Context, val key: String, initialColor: Int,
         viewPager.childFilter = { it is ChromaView }
         tabLayout.setupWithViewPager(viewPager)
         val color = engine.accent
-        tabLayout.tabTextColors = ColorStateList(arrayOf(intArrayOf(android.R.attr.state_enabled, 0),
-                intArrayOf()), intArrayOf(color, tabLayout.tabTextColors!!.defaultColor))
+        tabLayout.tabTextColors = ColorStateList(arrayOf(intArrayOf(android.R.attr.state_selected),
+                intArrayOf()),
+                intArrayOf(color, if (context.isDark) R.color.textColorPrimary.fromColorRes(
+                        context) else R.color.textColorPrimaryInverse.fromColorRes(context)))
         tabLayout.tabRippleColor = getTabRipple(context, color)
         tabLayout.setSelectedTabIndicatorColor(color)
         tabLayout.setCustomFont(CustomFontManager.FONT_BUTTON, false)
