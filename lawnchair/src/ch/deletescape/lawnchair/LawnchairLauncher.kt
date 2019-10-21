@@ -36,7 +36,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.core.app.ActivityCompat
-import androidx.drawerlayout.widget.DrawerLayout
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
@@ -50,7 +49,6 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -72,12 +70,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-    val feed by lazy {
-        findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView
-    }
-    val drawerLayout by lazy {
-        (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout
-    }
     var overlay: ClientOverlay? = null
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
@@ -114,8 +106,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
         performSignatureVerification()
-        drawerLayout.setDrawerLockMode(
-                androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         setLauncherOverlay(overlay)
 
