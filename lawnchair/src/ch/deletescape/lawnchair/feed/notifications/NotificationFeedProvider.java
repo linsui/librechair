@@ -38,11 +38,17 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import kotlin.Unit;
 
 public class NotificationFeedProvider extends FeedProvider {
+    private final Object lockRef = new Object();
     private List<StatusBarNotification> notifs = new Vector<>();
 
     public NotificationFeedProvider(Context c) {
         super(c);
-        OverlayNotificationManager.addListener(sbns -> notifs = sbns);
+        OverlayNotificationManager.addListener(sbns -> {
+            synchronized (lockRef) {
+                notifs.clear();
+                notifs.addAll(sbns);
+            }
+        });
     }
 
     @Override
@@ -71,34 +77,37 @@ public class NotificationFeedProvider extends FeedProvider {
         if (notifs == null || notifs.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
-        List<Card> cards = notifs.stream().filter(
-                Objects::nonNull).map(it -> {
-            NotificationInfo info = new NotificationInfo(getContext(), it);
-            String title;
-            if (info.title != null) {
-                title = info.title.toString();
-            } else if (info.text != null) {
-                title = info.text.toString();
-            } else {
-                title = "?";
-            }
-            Card card = new Card(
-                    info.getIconForBackground(getContext(), getFeed().getBackgroundColor()),
-                    title, parent -> new View(getContext()), Card.Companion.getTEXT_ONLY() | Card.Companion.getRAISE(), "",
-                    info.notificationKey.hashCode());
-            card.globalClickListener = v -> {
-                if (info.intent != null) {
-                    try {
-                        info.intent.send();
-                    } catch (PendingIntent.CanceledException e) {
-                        e.printStackTrace();
-                    }
+        synchronized (lockRef) {
+            List<Card> cards = notifs.stream().filter(
+                    Objects::nonNull).map(it -> {
+                NotificationInfo info = new NotificationInfo(getContext(), it);
+                String title;
+                if (info.title != null) {
+                    title = info.title.toString();
+                } else if (info.text != null) {
+                    title = info.text.toString();
+                } else {
+                    title = "?";
                 }
-                return Unit.INSTANCE;
-            };
-            return card;
-        }).collect(Collectors.toCollection(Vector::new));
-        return cards;
+                Card card = new Card(
+                        info.getIconForBackground(getContext(), getFeed().getBackgroundColor()),
+                        title, parent -> new View(getContext()),
+                        Card.Companion.getTEXT_ONLY() | Card.Companion.getRAISE(), "",
+                        info.notificationKey.hashCode());
+                card.globalClickListener = v -> {
+                    if (info.intent != null) {
+                        try {
+                            info.intent.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    return Unit.INSTANCE;
+                };
+                return card;
+            }).collect(Collectors.toCollection(Vector::new));
+            return cards;
+        }
     }
 
     @Override
