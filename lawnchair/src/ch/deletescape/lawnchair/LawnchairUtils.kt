@@ -87,7 +87,6 @@ import com.android.launcher3.views.OptionsPopupView
 import com.android.systemui.shared.recents.model.TaskStack
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.CustomIconUtils
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
@@ -1005,15 +1004,15 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
 fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context,
                         parentView: ViewGroup, provider: FeedProvider): View {
     val v = LayoutInflater.from(parentView.context).inflate(R.layout.calendar_event, parentView, false)
-    val description = v.findViewById(R.id.calendar_event_title) as TextView
+    val description = v.findViewById(R.id.calendar_event_description) as TextView
     val address = v.findViewById(R.id.calendar_event_address) as TextView
     val directions = v.findViewById(R.id.calendar_event_directions) as TextView
     val maps = v.findViewById<MapView>(R.id.maps_view)
 
     directions.setTextColor(FeedAdapter.getOverrideColor(context))
 
-    v.findViewById<MaterialButton>(R.id.maps_more_btn).setBackgroundColor(FeedAdapter.getOverrideColor(context))
-    v.findViewById<MaterialButton>(R.id.maps_more_btn).setTextColor(FeedAdapter.getOverrideColor(context))
+    v.findViewById<Button>(R.id.maps_more_btn).setBackgroundColor(FeedAdapter.getOverrideColor(context))
+    v.findViewById<Button>(R.id.maps_more_btn).setTextColor(FeedAdapter.getOverrideColor(context))
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE

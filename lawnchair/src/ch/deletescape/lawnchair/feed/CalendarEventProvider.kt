@@ -33,6 +33,7 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
+import kotlinx.android.synthetic.main.calendar_event.view.*
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
@@ -57,10 +58,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     }
 
     init {
-        context.registerReceiver(broadcastReceiver, IntentFilter(Intent.ACTION_PROVIDER_CHANGED).apply {
-            addDataScheme("content")
-            addDataAuthority("com.android.calendar", null)
-        })
+        context.registerReceiver(broadcastReceiver,
+                IntentFilter(Intent.ACTION_PROVIDER_CHANGED).apply {
+                    addDataScheme("content")
+                    addDataAuthority("com.android.calendar", null)
+                })
     }
 
     override fun isVolatile(): Boolean {
@@ -174,11 +176,18 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             object : Card.Companion.InflateHelper {
                                 override fun inflate(parent: ViewGroup): View {
                                     return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
-                                            description, address, parent.context, parent, this@CalendarEventProvider) else View(
+                                            description, address, parent.context, parent,
+                                            this@CalendarEventProvider).apply {
+                                        calendar_event_title.text =
+                                                (if (title.trim().isEmpty()) context.getString(
+                                                        R.string.placeholder_empty_title) else title)
+                                        calendar_event_time_remaining.text = text
+                                    } else View(
                                             parent.getContext())
                                 }
                             },
-                            if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE else Card.RAISE or Card.TEXT_ONLY,
+                            if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE or
+                                    Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
                             if (diffMinutes < 120) "nosort,top" else "").apply {
                         globalClickListener = {
                             it.context.startActivity(intent)
@@ -255,7 +264,8 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     try {
                         context.startActivity(intent)
                     } catch (e: ActivityNotFoundException) {
-                        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_INSERT, Intent.CATEGORY_APP_CALENDAR)
+                        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_INSERT,
+                                Intent.CATEGORY_APP_CALENDAR)
                         intent.data = CalendarContract.Events.CONTENT_URI
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         try {
