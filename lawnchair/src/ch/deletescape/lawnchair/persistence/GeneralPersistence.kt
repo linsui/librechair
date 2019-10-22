@@ -21,13 +21,12 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
-import ch.deletescape.lawnchair.feed.maps.MapProvider
-import ch.deletescape.lawnchair.preferences.ForecastProviderPreference
+import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.util.SingletonHolder
 
 class GeneralPersistence private constructor(val context: Context) {
     val weatherProvider by DefValueStringDelegate(context, "smartspace_weather_provider",
-            ForecastProviderPreference::class.qualifiedName!!)
+            OWMForecastProvider::class.qualifiedName!!)
 
     companion object : SingletonHolder<GeneralPersistence, Context>(::GeneralPersistence)
 }
