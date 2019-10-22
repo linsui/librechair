@@ -19,7 +19,6 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +36,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     var canHide = false
     var categories: List<String>? = null
     var actionName: String? = null
-    var actionListener: ((c: Context) -> Unit)? = null
+    var actionListener: ((view: View) -> Unit)? = null
     var onRemoveListener: (() -> Unit)? = null
 
     @ValueRange(min = 0.0, max = 1.0)

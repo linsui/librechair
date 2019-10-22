@@ -61,6 +61,7 @@ import ch.deletescape.lawnchair.feed.jobs.JobSchedulerService;
 import ch.deletescape.lawnchair.feed.news.NewsDb;
 import ch.deletescape.lawnchair.feed.news.NewsEntry;
 import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 import kotlin.Pair;
@@ -334,12 +335,11 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 cards.add(card);
                 card.setActionName(getContext().getString(getContext().getResources()
                         .getIdentifier("whichSendApplicationLabel", "string", "android")));
-                card.setActionListener(context -> {
+                card.setActionListener(view -> {
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("text/plain");
                     i.putExtra(Intent.EXTRA_TEXT, entry.url);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(i);
+                    FeedUtil.startActivity(view.getContext(), i, view);
                     return Unit.INSTANCE;
                 });
                 if (minicard) {

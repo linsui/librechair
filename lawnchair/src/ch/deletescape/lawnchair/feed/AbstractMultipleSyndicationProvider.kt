@@ -161,7 +161,7 @@ abstract class AbstractMultipleSyndicationProvider(c: Context): FeedProvider(c) 
                         actionName = context.getString(
                                 context.resources.getIdentifier("whichSendApplicationLabel",
                                         "string", "android"))
-                        actionListener = { context ->
+                        actionListener = { view ->
                             val i = Intent(Intent.ACTION_SEND)
                             i.type = "text/plain"
                             i.putExtra(Intent.EXTRA_TEXT, entry.link)

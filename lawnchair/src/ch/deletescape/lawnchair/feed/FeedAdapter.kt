@@ -262,7 +262,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                             findViewById<Button>(R.id.delete_item_action).apply {
                                 text = cards[holder.adapterPosition].actionName
                                 setOnClickListener {
-                                    cards[holder.adapterPosition].actionListener?.invoke(it.context)
+                                    cards[holder.adapterPosition].actionListener?.invoke(it)
                                     isDeleteActive = false
                                     holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
                                     holder.itemView.removeView(holder.itemView.findViewById<View>(
