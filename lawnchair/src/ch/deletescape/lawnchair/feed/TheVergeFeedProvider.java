@@ -25,13 +25,10 @@ import android.util.Log;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceInputStream;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
@@ -52,15 +49,11 @@ public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
             Executors.newSingleThreadExecutor().submit(() -> {
-                String feed;
                 try {
-                    feed = IOUtils.toString(
+                    callback.onBind(new SyndFeedInput().build(new InputSource(
                             new URL("https://www.theverge.com/rss/index.xml")
                                     .openConnection()
-                                    .getInputStream(), Charset
-                                    .defaultCharset());
-                    callback.onBind(new SyndFeedInput().build(new InputSource(
-                            new CharSequenceInputStream(feed, Charset.defaultCharset()))));
+                                    .getInputStream())));
                 } catch (FeedException | IOException e) {
                     e.printStackTrace();
                 }
