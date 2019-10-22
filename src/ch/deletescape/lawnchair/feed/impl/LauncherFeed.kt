@@ -987,7 +987,7 @@ class LauncherFeed(private val originalContext: Context,
                         duration = 300
                         start()
                     }
-                    recyclerView.isLayoutFrozen = true
+                    recyclerView.suppressLayout(true)
                     toolbarParent.animate().translationY(0f)
                     return true;
                 }
@@ -1015,7 +1015,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         tabView.tabsEnabled = true
-        recyclerView.isLayoutFrozen = false
+        recyclerView.suppressLayout(false)
         v.apply {
             val (height, width) = measuredHeight to measuredWidth
             val radius = hypot(height.toDouble(), width.toDouble())
@@ -1041,7 +1041,7 @@ class LauncherFeed(private val originalContext: Context,
                 start()
                 animate().setDuration(300).translationZ(0f)
             }
-            recyclerView.isLayoutFrozen = false
+            recyclerView.suppressLayout(false)
         }
     }
 
@@ -1262,7 +1262,7 @@ class LauncherFeed(private val originalContext: Context,
         }
         recyclerView.apply {
             post {
-                recyclerView.isLayoutFrozen = true
+                recyclerView.suppressLayout(true)
             }
         }
         FeedScope.launch {
@@ -1361,7 +1361,7 @@ class LauncherFeed(private val originalContext: Context,
                                         (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
                                                 5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
                     recyclerView.post {
-                        recyclerView.isLayoutFrozen = false
+                        recyclerView.suppressLayout(false)
                         recyclerView.visibility = View.VISIBLE
                     }
                     return@launch
@@ -1393,7 +1393,7 @@ class LauncherFeed(private val originalContext: Context,
                                             }
                                             recyclerView.post {
                                                 adapter.notifyDataSetChanged()
-                                                recyclerView.isLayoutFrozen = false
+                                                recyclerView.suppressLayout(false)
                                                 recyclerView.visibility = View.VISIBLE
                                                 feedController.findViewById<View>(R.id.empty_view)
                                                         .visibility =
