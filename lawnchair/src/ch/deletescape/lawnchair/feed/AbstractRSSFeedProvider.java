@@ -166,7 +166,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent,
                                 0);
                         Intent share = new Intent(Intent.ACTION_SEND);
-                        share.setDataAndType(Uri.parse(notif.url), "text/plain");
+                        share.setType("text/plain");
+                        share.putExtra(Intent.EXTRA_TEXT, notif.url);
                         Intent choose = Intent.createChooser(share,
                                 getContext().getString(R.string.title_share));
                         List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(
