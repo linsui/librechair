@@ -17,6 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NestedLambdaShadowedImplicitParameter")
+
 package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
@@ -33,49 +35,63 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.persistence.cache.CacheTime
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
-import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
-    private var weatherData: WeatherData? = null
+class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
+    private var weatherData: ForecastProvider.CurrentWeather? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     private var dailyForecast: ForecastProvider.DailyForecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
-    private val refreshExecutor = Executors.newSingleThreadExecutor()
-    private val cache = CacheTime();
 
     init {
-        c.applicationContext.lawnchairApp.smartspace.addListener(this)
+        WeatherManager.subscribeWeather {
+            weatherData = it
+        }
+        WeatherManager.subscribeHourly {
+            hourlyWeatherForecast = it
+            val today: List<Int> = it.data.filter {
+                it.date.before(tomorrow())
+            }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
+            forecastLow = Collections.min(today)
+            forecastHigh = Collections.max(today)
+            val condCodes = run {
+                val list = newList<Int>()
+                hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                        .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                list
+            }
+            val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                    condCodes.toTypedArray())
+            val type = WeatherTypes
+                    .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+            weatherTypeResource = WeatherTypes.getStringResource(type)
+        }
+        WeatherManager.subscribeDaily {
+            dailyForecast = it
+        }
     }
 
     override fun onFeedShown() {
-        // TODO
     }
 
     override fun onFeedHidden() {
-        // TODO
     }
 
     override fun onCreate() {
-        // TODO
     }
 
     override fun onDestroy() {
-        // TODO
     }
 
     override fun getCards(): List<Card> {
@@ -83,10 +99,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                 Card(null, null, object : Card.Companion.InflateHelper {
                     @SuppressLint("SetTextI18n")
                     override fun inflate(parent: ViewGroup): View {
-                        d("inflate: inflating view")
-                        val v = LayoutInflater.from(parent.getContext())
+                        val v = LayoutInflater.from(parent.context)
                                 .inflate(R.layout.unified_weather, parent, false)
-                        d("inflate: inflated view")
                         val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                         val information = v.findViewById(R.id.weather_hud_information) as TextView
                         val currentInformation =
@@ -103,13 +117,13 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                             hourlyLayout.orientation = LinearLayout.VERTICAL
                         }
                         (hourlyLayout.parent as View).apply {
-                            setOnTouchListener { v, event ->
+                            setOnTouchListener { _, _ ->
                                 controllerView?.disallowInterceptCurrentTouchEvent = true
                                 false
                             }
                         }
                         (dailyLayout.parent as View).apply {
-                            setOnTouchListener { v, event ->
+                            setOnTouchListener { _, _ ->
                                 controllerView?.disallowInterceptCurrentTouchEvent = true
                                 false
                             }
@@ -125,12 +139,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                     if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
                                                     parent,
                                                     false).apply {
-                                                val temperature = findViewById(
-                                                        R.id.forecast_current_temperature) as TextView
-                                                val time = findViewById(
-                                                        R.id.forecast_current_time) as TextView
-                                                val icon = findViewById(
-                                                        R.id.forecast_weather_icon) as ImageView
+                                                val temperature = findViewById<TextView>(R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(R.id.forecast_weather_icon)
 
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
@@ -155,7 +166,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 }
 
                         (dailyLayout.parent as ViewGroup).apply {
-                            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                            viewTreeObserver.addOnPreDrawListener(object :
+                                    ViewTreeObserver.OnPreDrawListener {
                                 override fun onPreDraw(): Boolean {
                                     val w = v.measuredWidth
                                     dailyLayout.childs.forEach {
@@ -178,9 +190,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 }
                             })
                         }
-
                         (hourlyLayout.parent as ViewGroup).apply {
-                            viewTreeObserver.addOnPreDrawListener(object : ViewTreeObserver.OnPreDrawListener {
+                            viewTreeObserver.addOnPreDrawListener(object :
+                                    ViewTreeObserver.OnPreDrawListener {
                                 override fun onPreDraw(): Boolean {
                                     val w = v.measuredWidth
                                     hourlyLayout.childs.forEach {
@@ -203,32 +215,29 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 }
                             })
                         }
-
                         dailyForecast?.dailyForecastData
                                 ?.forEach {
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                val temperature = findViewById(
-                                                        R.id.forecast_current_temperature) as TextView
-                                                val time = findViewById(
-                                                        R.id.forecast_current_time) as TextView
-                                                val icon = findViewById(
-                                                        R.id.forecast_weather_icon) as ImageView
+                                                val temperature = findViewById<TextView>(R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(R.id.forecast_weather_icon)
 
                                                 icon.setImageBitmap(it.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
-                                                d("inflate: ${zonedDateTime.toInstant().toEpochMilli()}")
+
                                                 val tomorrowDate = tomorrowL()
                                                 val nextDayAfterTomorrow = tomorrowL(tomorrowL())
-                                                d("inflate: $zonedDateTime $tomorrowDate $nextDayAfterTomorrow")
+
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                     if (zonedDateTime.toInstant().toEpochMilli() in tomorrowDate until nextDayAfterTomorrow) {
-                                                        time.text = context.getString(R.string.title_weather_item_tomorrow)
+                                                        time.text = context.getString(
+                                                                R.string.title_weather_item_tomorrow)
                                                     } else {
                                                         time.text =
                                                                 IcuDateTextView.getDateFormat(
@@ -259,115 +268,29 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         }
                                             })
                                 }
-
-                        d("inflate: initialized views")
-
                         currentInformation.text =
-                                weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
+                                weatherData?.temperature?.toString(
+                                        context.lawnchairPrefs.weatherUnit)
                         currentIcon.setImageBitmap(weatherData?.icon)
-
-                        d("inflate: set text for current data text view")
-
                         if (forecastHigh != null && forecastLow != null) {
                             highLow.text =
                                     "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                         }
                         information.text = weatherTypeResource?.let { context.getString(it) }
-
-                        d("inflate: set thext for rest of views")
                         if (useWhiteText(backgroundColor, parent.context)) {
                             highLow.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
+                                    context.getColor(R.color.textColorPrimary))
                             information.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
+                                    context.getColor(R.color.textColorPrimary))
                             currentInformation.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
+                                    context.getColor(R.color.textColorPrimary))
                         }
-                        d("inflate: returning view")
                         return v
                     }
                 },
                         Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT,
                         "nosort,top"))
         else mutableListOf()
-    }
-
-    override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
-        if (weatherData?.coordLat != null && weatherData.coordLon != null && cache.expired) {
-            d("onDataUpdated: updating forcast HUD", Throwable())
-            refreshExecutor.submit {
-                this.weatherData = weatherData;
-
-                try {
-                    d("onDataUpdated: fetching weather data")
-                    try {
-                        hourlyWeatherForecast = context.forecastProvider
-                                .getHourlyForecast(weatherData.coordLat, weatherData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    try {
-                        dailyForecast = context.forecastProvider
-                                .getDailyForecast(weatherData.coordLat, weatherData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    d("onDataUpdated: data retrieved")
-                    val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
-                        if (it.date.before(tomorrow())) {
-                            it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
-                        } else {
-                            null
-                        }
-                    }
-
-                    d("tomorrow is: ${tomorrow()}")
-                    d("today is: ${Date()}")
-
-                    d("onDataUpdated: temp list: $tempList")
-                    val today = ArrayList<Int>()
-                    tempList.forEach {
-                        if (it != null) {
-                            today.add(it)
-                        }
-                    }
-
-                    d("onDataUpdated: today's weather: $today")
-
-                    forecastLow = Collections.min(today)
-                    forecastHigh = Collections.max(today)
-
-                    d("onDataUpdated: hi: $forecastHigh lo: $forecastLow")
-                    val condCodes = run {
-                        val list = newList<Int>()
-                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
-                                .forEach { list += it.condCode?.toList() ?: listOf(1) }
-                        list
-                    }
-
-                    d("onDataUpdated: classifying weather")
-
-                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                            condCodes.toTypedArray())
-
-
-                    d("onDataUpdated: sending classification statsitics to statistics function")
-                    val type = WeatherTypes
-                            .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-
-                    d("onDataUpdated: weather type is ${type.name}")
-
-                    weatherTypeResource = WeatherTypes.getStringResource(type)
-
-                    d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
-                    cache.trigger()
-                } catch (e: ForecastProvider.ForecastException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     override fun isVolatile() = true

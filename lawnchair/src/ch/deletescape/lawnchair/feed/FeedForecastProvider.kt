@@ -25,40 +25,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
+import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
-import net.aksingh.owmjapis.api.APIException
 
-class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
+class FeedForecastProvider(c: Context) : FeedProvider(c) {
 
     private var forecast: ForecastProvider.Forecast? = null
-    private var weatherData: WeatherData? = null
+    private var weatherData: ForecastProvider.CurrentWeather? = null
 
     init {
-        c.applicationContext.lawnchairApp.smartspace.addListener(this)
-    }
-
-    private fun updateData() {
-        runOnUiWorkerThread {
-            if (weatherData != null) {
-                try {
-                    try {
-                        forecast = context.forecastProvider
-                                .getHourlyForecast(weatherData!!.coordLat!!,
-                                                   weatherData!!.coordLon!!)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                } catch (e: APIException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace()
-                }
-            }
-        }
+        WeatherManager.subscribeHourly { this.forecast = it }
     }
 
     override fun onFeedShown() {
@@ -100,15 +81,5 @@ class FeedForecastProvider(c: Context) : FeedProvider(c), Listener {
                     }
 
                 }, Card.NO_HEADER, "nosort,top"))
-    }
-
-    override fun onDataUpdated(data: WeatherData?, card: CardData?) {
-        if (data != null && data != weatherData) {
-            weatherData = data
-            updateData()
-        } else {
-            weatherData = null
-            updateData()
-        }
     }
 }

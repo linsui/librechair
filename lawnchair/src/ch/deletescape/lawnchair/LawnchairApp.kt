@@ -25,9 +25,12 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.Settings
 import android.webkit.WebView
 import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
@@ -66,6 +69,7 @@ class LawnchairApp : Application(), () -> Unit {
         }
     }
 
+    val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also { it.start() }.looper)
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
     val bugReporter = LawnchairBugReporter(this, Thread.getDefaultUncaughtExceptionHandler())
@@ -127,8 +131,10 @@ class LawnchairApp : Application(), () -> Unit {
 
         ThemeManager.getInstance(this).changeCallbacks += this
 
-        org.osmdroid.config.Configuration.getInstance().osmdroidBasePath = File(filesDir, "osmdroid")
-        org.osmdroid.config.Configuration.getInstance().userAgentValue = "Librechair-" + BuildConfig.VERSION_CODE
+        org.osmdroid.config.Configuration.getInstance().osmdroidBasePath =
+                File(filesDir, "osmdroid")
+        org.osmdroid.config.Configuration.getInstance().userAgentValue =
+                "Librechair-" + BuildConfig.VERSION_CODE
         if (getCurrentProcessName(this).contains("overlay")) {
             WebSafety.context = this
             FeedScope.launch {
@@ -141,6 +147,7 @@ class LawnchairApp : Application(), () -> Unit {
         }
         DynamicProviderController.attachContext(this)
         ChipStyleRegistry.populateWithContext(this)
+        WeatherManager.attachToApplication(this)
     }
 
     fun onLauncherAppStateCreated() {
