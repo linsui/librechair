@@ -68,6 +68,8 @@ class FeedPersistence private constructor(val context: Context) {
             by NumberDelegate(context, "feed_opening_animation_speed", 0.5)
     val toolbarElevation
             by DipDimenDelegate(context, "feed_toolbar_elevation", 8.0)
+    val articleNotifications
+            by BooleanDelegate(context, "feed_article_notifications", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

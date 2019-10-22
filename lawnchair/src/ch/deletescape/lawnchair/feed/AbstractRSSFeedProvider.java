@@ -150,39 +150,44 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     }
 
     private void showNotifications(List<NewsEntry> original) {
-        if (!articles.isEmpty()) {
-            for (NewsEntry notif : articles.subList(
-                    articles.size() < (int) Math.round(
-                            FeedPersistence.Companion.getInstance(
-                                    getContext()).getNotificationCount()) ? articles.size() : articles.size() - (int) Math.round(
-                            FeedPersistence.Companion.getInstance(
-                                    getContext()).getNotificationCount())
-                    , articles.size() - 1)) {
-                if (original.stream().noneMatch(entry -> entry.title.equals(
-                        notif.title)) && notif != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(notif.url));
-                    PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent, 0);
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    share.setDataAndType(Uri.parse(notif.url), "text/plain");
-                    Intent choose = Intent.createChooser(share, getContext().getString(R.string.title_share));
-                    List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(new android.util.Pair<>(getContext().getString(
-                            R.string.title_share),
-                            PendingIntent.getActivity(getContext(), 0, choose, 0)));
-                    if (Html.fromHtml(notif.content,
-                            0).toString().length() > 250) {
-                        NotificationManager.getInstance(getContext())
-                                .postNotification(this, R.drawable.ic_newspaper_24dp,
-                                        notif.title,
-                                        Html.fromHtml(notif.content,
-                                                0).toString().substring(0, 250) + "...",
-                                        intent2, actions);
-                    } else {
-                        NotificationManager.getInstance(getContext())
-                                .postNotification(this, R.drawable.ic_newspaper_24dp,
-                                        notif.title,
-                                        Html.fromHtml(notif.content,
-                                                0).toString(), intent2, actions);
+        if (FeedPersistence.Companion.getInstance(getContext()).getArticleNotifications()) {
+            if (!articles.isEmpty()) {
+                for (NewsEntry notif : articles.subList(
+                        articles.size() < (int) Math.round(
+                                FeedPersistence.Companion.getInstance(
+                                        getContext()).getNotificationCount()) ? articles.size() : articles.size() - (int) Math.round(
+                                FeedPersistence.Companion.getInstance(
+                                        getContext()).getNotificationCount())
+                        , articles.size() - 1)) {
+                    if (original.stream().noneMatch(entry -> entry.title.equals(
+                            notif.title)) && notif != null) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(notif.url));
+                        PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent,
+                                0);
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setDataAndType(Uri.parse(notif.url), "text/plain");
+                        Intent choose = Intent.createChooser(share,
+                                getContext().getString(R.string.title_share));
+                        List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(
+                                new android.util.Pair<>(getContext().getString(
+                                        R.string.title_share),
+                                        PendingIntent.getActivity(getContext(), 0, choose, 0)));
+                        if (Html.fromHtml(notif.content,
+                                0).toString().length() > 250) {
+                            NotificationManager.getInstance(getContext())
+                                    .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                            notif.title,
+                                            Html.fromHtml(notif.content,
+                                                    0).toString().substring(0, 250) + "...",
+                                            intent2, actions);
+                        } else {
+                            NotificationManager.getInstance(getContext())
+                                    .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                            notif.title,
+                                            Html.fromHtml(notif.content,
+                                                    0).toString(), intent2, actions);
+                        }
                     }
                 }
             }
