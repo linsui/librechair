@@ -1010,8 +1010,6 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
     val maps = v.findViewById<MapView>(R.id.maps_view)
 
     directions.setTextColor(FeedAdapter.getOverrideColor(context))
-
-    v.findViewById<Button>(R.id.maps_more_btn).setBackgroundColor(FeedAdapter.getOverrideColor(context))
     v.findViewById<Button>(R.id.maps_more_btn).setTextColor(FeedAdapter.getOverrideColor(context))
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
