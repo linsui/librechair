@@ -30,6 +30,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
@@ -190,7 +191,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
                             if (diffMinutes < 120) "nosort,top" else "").apply {
                         globalClickListener = {
-                            it.context.startActivity(intent)
+                            FeedUtil.startActivity(context, intent, it)
                         }
                     })
                     eventCursor.moveToNext()
