@@ -31,14 +31,13 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.getPostionOnScreen
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.nominatim.NominatimFactory
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.util.*
@@ -128,7 +127,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                                 } else {
                                     FeedScope.launch(Dispatchers.Main) {
                                         try {
-                                            context.startActivity(intent)
+                                            FeedUtil.startActivity(context, intent, it)
                                         } catch (e: ActivityNotFoundException) {
                                             e.printStackTrace()
                                         }
