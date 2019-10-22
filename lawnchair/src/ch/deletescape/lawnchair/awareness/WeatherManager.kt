@@ -27,12 +27,12 @@ import android.annotation.MainThread
 import android.annotation.WorkerThread
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import ch.deletescape.lawnchair.forecastProvider
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.extensions.w
 import java.util.concurrent.TimeUnit
 
@@ -120,7 +120,7 @@ object WeatherManager {
         val refresh = object : Runnable {
             override fun run() {
                 try {
-                    d("run: refreshing forecast")
+                    Log.d(javaClass.name, "run: refresh in progress")
                     currentGeo = resolveGeolocation(app)
                     val (lat, lon) = currentGeo ?: null to null
                     app.lawnchairApp.weatherLooper.post {

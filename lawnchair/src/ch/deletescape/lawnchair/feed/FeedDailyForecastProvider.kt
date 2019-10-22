@@ -20,54 +20,23 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.LawnchairApp
+import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.owm.OWMWeatherActivity
+import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
-import java.io.IOException
 
-class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
-    override fun onDataUpdated(weather: WeatherData?, card: CardData?) {
-        if (weather != null) {
-            weatherData = weather
-            updateData()
-        } else {
-            weatherData = null
-            updateData()
-        }
-    }
-
+class FeedDailyForecastProvider(c: Context) : FeedProvider(c) {
     private var forecast: ForecastProvider.DailyForecast? = null
-    private var weatherData: WeatherData? = null
 
     init {
-        c.applicationContext.lawnchairApp.smartspace.addListener(this)
-    }
-
-    private fun updateData() {
-        runOnUiWorkerThread {
-            if (weatherData != null) {
-                try {
-                    try {
-                        forecast = context.forecastProvider
-                                .getDailyForecast(weatherData!!.coordLat!!,
-                                                   weatherData!!.coordLon!!)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace()
-                }
-            }
-        }
+        WeatherManager.subscribeDaily { forecast = it }
     }
 
     override fun onFeedShown() {
@@ -88,26 +57,30 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c), Listener {
 
     override fun getCards(): List<Card> {
         return if (forecast == null) emptyList() else listOf(
-            Card(BitmapDrawable(context.resources, weatherData?.icon),
-                 context.getString(R.string.forecast_s), object : Card.Companion.InflateHelper {
-                    override fun inflate(parent: ViewGroup): View {
-                        val recyclerView = LayoutInflater.from(parent.context).inflate(
-                            R.layout.width_inflatable_recyclerview, parent, false) as androidx.recyclerview.widget.RecyclerView
-                        if (forecast != null) {
-                            recyclerView.layoutManager =
-                                    androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
-                                            false)
-                            recyclerView.adapter = OWMWeatherActivity
-                                    .DailyForecastAdapter(forecast!!, context,
-                                                           (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit,
-                                                           useWhiteText(backgroundColor, parent.context))
-                        }
-                        recyclerView.layoutParams = ViewGroup
-                                .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                                              ViewGroup.LayoutParams.MATCH_PARENT)
-                        return recyclerView;
-                    }
+                Card(null,
+                        context.getString(R.string.forecast_s),
+                        object : Card.Companion.InflateHelper {
+                            override fun inflate(parent: ViewGroup): View {
+                                val recyclerView = LayoutInflater.from(parent.context).inflate(
+                                        R.layout.width_inflatable_recyclerview, parent,
+                                        false) as androidx.recyclerview.widget.RecyclerView
+                                if (forecast != null) {
+                                    recyclerView.layoutManager =
+                                            LinearLayoutManager(
+                                                    context,
+                                                    LinearLayoutManager.HORIZONTAL,
+                                                    false)
+                                    recyclerView.adapter = OWMWeatherActivity
+                                            .DailyForecastAdapter(forecast!!, context,
+                                                    (context.applicationContext as LawnchairApp).lawnchairPrefs.weatherUnit,
+                                                    useWhiteText(backgroundColor, parent.context))
+                                }
+                                recyclerView.layoutParams = ViewGroup
+                                        .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                ViewGroup.LayoutParams.MATCH_PARENT)
+                                return recyclerView
+                            }
 
-                }, Card.NO_HEADER, "nosort,top"))
+                        }, Card.NO_HEADER, "nosort,top"))
     }
 }
