@@ -339,7 +339,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("text/plain");
                     i.putExtra(Intent.EXTRA_TEXT, entry.url);
-                    FeedUtil.startActivity(view.getContext(), i, view);
+                    FeedUtil.startActivity(view.getContext(), Intent.createChooser(i,
+                            getContext().getString(getContext().getResources()
+                                    .getIdentifier("whichSendApplicationLabel", "string",
+                                            "android"))), view);
                     return Unit.INSTANCE;
                 });
                 if (minicard) {
