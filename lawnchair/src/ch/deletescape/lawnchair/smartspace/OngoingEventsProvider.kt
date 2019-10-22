@@ -39,8 +39,8 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
 import android.provider.CalendarContract
-import androidx.annotation.Keep
 import android.text.TextUtils
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.drawableToBitmap
 import com.android.launcher3.R
 import java.util.*
@@ -93,7 +93,7 @@ class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
                     TextUtils.TruncateAt.END))
             val description = eventCursor.getString(3);
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
+                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!), lines, true)
             eventCursor.close();
             updateData(null, card)
             return;
