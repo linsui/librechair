@@ -60,6 +60,11 @@ public class AlarmEventProvider extends FeedProvider {
     }
 
     @Override
+    public boolean isActionFree() {
+        return true;
+    }
+
+    @Override
     public boolean isVolatile() {
         return true;
     }

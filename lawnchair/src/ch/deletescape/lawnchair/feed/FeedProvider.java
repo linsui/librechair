@@ -61,6 +61,10 @@ public abstract class FeedProvider {
         return false;
     }
 
+    public boolean isActionFree() {
+        return false;
+    }
+
     public abstract void onFeedShown();
 
 
