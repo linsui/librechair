@@ -1425,7 +1425,7 @@ class LauncherFeed(private val originalContext: Context,
         toolbar.menu.clear()
         if (!context.feedPrefs.hideActions) {
             if (adapter.providers.filter { !it.isActionFree }.size == 1) {
-                (adapter.providers[0].getActions(true)).sortedBy { it.name }
+                (adapter.providers.first { !it.isActionFree }.getActions(true)).sortedBy { it.name }
                         .forEach {
                             toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
                                     .apply {
