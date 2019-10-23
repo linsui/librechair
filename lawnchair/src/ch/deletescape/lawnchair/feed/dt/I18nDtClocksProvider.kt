@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.dt
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.awareness.TickManager
@@ -36,6 +37,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
 
@@ -55,18 +57,21 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
 
     }
 
+    @SuppressLint("SetTextI18n")
     override fun getCards(): List<Card> {
         return context.feedPrefs.clockTimeZones.map {
             val card = Card(null, null, { parent, _ ->
                 val view = (parent as ViewGroup).inflate(R.layout.world_clock)
-                view.zid_name.text = ZoneId.of(it).getDisplayName(TextStyle.FULL_STANDALONE, context.locale)
+                view.zid_name.text =
+                        ZoneId.of(it).getDisplayName(TextStyle.FULL_STANDALONE, context.locale)
                 TickManager.subscribe {
                     view.zid_time.text = formatTime(
                             ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)), context)
                     Unit
                 }
-                view.zid_offset.text = ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toString()
+                view.zid_offset.text = "${TimeUnit.SECONDS.toHours(
+                        ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toLong())} h"
                 view
             }, Card.RAISE or Card.NO_HEADER, "",
                     ("dtc" + it + UUID.randomUUID().toString()).hashCode())
