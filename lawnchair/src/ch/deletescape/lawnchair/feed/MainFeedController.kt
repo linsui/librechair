@@ -24,6 +24,7 @@ import android.content.Context
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.feed.chips.ChipCardProvider
 import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
+import ch.deletescape.lawnchair.feed.dt.I18nDtClocksProvider
 import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
@@ -87,6 +88,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_the_guardian)
                     BBCFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_bbc)
+                    I18nDtClocksProvider::class.qualifiedName -> R.string.title_pref_feed_world_clocks.fromStringRes(
+                            context)
                     GSyndicationFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_google_news)
                     CustomizableRSSProvider::class.qualifiedName -> context.getString(

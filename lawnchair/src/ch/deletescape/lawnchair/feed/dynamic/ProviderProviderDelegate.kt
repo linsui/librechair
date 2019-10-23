@@ -24,6 +24,7 @@ import android.content.Context
 import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.chips.ChipCardProvider
 import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
+import ch.deletescape.lawnchair.feed.dt.I18nDtClocksProvider
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
@@ -42,6 +43,7 @@ class ProviderProviderDelegate(context: Context) : DynamicProviderDelegate(conte
             FeedForecastProvider::class.qualifiedName,
             FeedSearchboxProvider::class.qualifiedName,
             FeedContactsProvider::class.qualifiedName,
+            I18nDtClocksProvider::class.qualifiedName,
             ImageProvider::class.qualifiedName,
             NotificationFeedProvider::class.qualifiedName,
             ChipCardProvider::class.qualifiedName,

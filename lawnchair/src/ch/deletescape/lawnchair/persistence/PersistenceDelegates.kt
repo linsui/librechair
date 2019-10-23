@@ -21,9 +21,17 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
+import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableList
+import androidx.room.InvalidationTracker
 import ch.deletescape.lawnchair.applyAsDip
+import ch.deletescape.lawnchair.persistence.db.StringDatabase
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import kotlin.reflect.KProperty
 
+@Suppress("unused")
 class StringDelegate<T>(val context: Context, val key: String) {
     operator fun setValue(t: T, property: KProperty<*>, value: String) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value)
@@ -33,7 +41,8 @@ class StringDelegate<T>(val context: Context, val key: String) {
 }
 
 
-class DefValueStringDelegate<T>(val context: Context, val key: String, val defaultValue: String) {
+class DefValueStringDelegate<T>(val context: Context, val key: String,
+                                private val defaultValue: String) {
     operator fun setValue(t: T, property: KProperty<*>, value: String) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value)
 
@@ -41,7 +50,7 @@ class DefValueStringDelegate<T>(val context: Context, val key: String, val defau
             SimplePersistence.InstanceHolder.getInstance(context).get(key, defaultValue)
 }
 
-open class NumberDelegate<T>(val context: Context, val key: String, val defValue: Double) {
+open class NumberDelegate<T>(val context: Context, val key: String, private val defValue: Double) {
 
     open operator fun setValue(t: T, property: KProperty<*>, value: Double) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())
@@ -61,7 +70,7 @@ class DipDimenDelegate<T>(context: Context, key: String, defValue: Double) :
             property).toFloat().applyAsDip(context).toDouble()
 }
 
-class BooleanDelegate<T>(val context: Context, val key: String, val defValue: Boolean) {
+class BooleanDelegate<T>(val context: Context, val key: String, private val defValue: Boolean) {
 
     operator fun setValue(t: T, property: KProperty<*>, value: Boolean) =
             SimplePersistence.InstanceHolder.getInstance(context).put(key, value.toString())
@@ -69,4 +78,72 @@ class BooleanDelegate<T>(val context: Context, val key: String, val defValue: Bo
     operator fun getValue(t: T, property: KProperty<*>): Boolean =
             SimplePersistence.InstanceHolder.getInstance(context).get(key,
                     defValue.toString())?.toBoolean() ?: defValue
+}
+
+class ListDelegate<T>(val context: Context, val key: String, val defValue: List<String>) {
+
+    private val internal = ObservableArrayList<String>().apply {
+        addAll(defValue)
+    }
+    private val lastData = StringDatabase.getInstance(context).dao().getSafe(key)
+
+    init {
+        if (StringDatabase.getInstance(context).dao().getSafe(key) != null) {
+            internal.clear()
+            val str = StringDatabase.getInstance(context).dao().getSafe(key)
+            if (str != null) {
+                internal.addAll(JsonParser().parse(str).asJsonArray.map { it.asString })
+            }
+
+            internal.addOnListChangedCallback(object :
+                    ObservableList.OnListChangedCallback<ObservableList<String>>() {
+                override fun onChanged(sender: ObservableList<String>?) {
+                    save()
+                }
+
+                override fun onItemRangeRemoved(sender: ObservableList<String>?, positionStart: Int,
+                                                itemCount: Int) {
+                    save()
+                }
+
+                override fun onItemRangeMoved(sender: ObservableList<String>?, fromPosition: Int,
+                                              toPosition: Int, itemCount: Int) {
+                    save()
+                }
+
+                override fun onItemRangeInserted(sender: ObservableList<String>?,
+                                                 positionStart: Int, itemCount: Int) {
+                    save()
+                }
+
+                override fun onItemRangeChanged(sender: ObservableList<String>?, positionStart: Int,
+                                                itemCount: Int) {
+                    save()
+                }
+
+            })
+        }
+        StringDatabase.getInstance(context).invalidationTracker.addObserver(object :
+                InvalidationTracker.Observer("stringentry") {
+            override fun onInvalidated(tables: MutableSet<String>) {
+                if (lastData != StringDatabase.getInstance(context).dao().getSafe(key)) {
+                    synchronized(internal) {
+                        val ja = JsonParser().parse(
+                                StringDatabase.getInstance(context).dao().getSafe(key)).asJsonArray
+                        internal.clear()
+                        internal.addAll(ja.map { it.asString })
+                    }
+                }
+            }
+        })
+    }
+
+    private fun save() {
+        synchronized(internal) {
+            val jsonArray = JsonArray(internal.size)
+            internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
+        }
+    }
+
+    operator fun getValue(t: T?, property: KProperty<*>?): ObservableList<String> = internal
 }

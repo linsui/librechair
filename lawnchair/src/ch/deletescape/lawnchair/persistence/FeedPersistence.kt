@@ -70,6 +70,8 @@ class FeedPersistence private constructor(val context: Context) {
             by DipDimenDelegate(context, "feed_toolbar_elevation", 8.0)
     val articleNotifications
             by BooleanDelegate(context, "feed_article_notifications", false)
+    val clockTimeZones
+            by ListDelegate(context, "feed_clock_time_zones", listOf())
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

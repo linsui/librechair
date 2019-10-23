@@ -466,6 +466,7 @@
             android:key="feed_map_provider"
             android:title="@string/title_pref_feed_map_provider"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.I18nDtClocksPreference/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

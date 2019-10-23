@@ -759,4 +759,5 @@
     <string name="title_pref_feed_chip_corner_treatment">Chip corner style</string>
     <string name="title_pref_feed_article_notifications">Display article notifications</string>
     <string name="summary_pref_feed_article_notifications">Notifications will be displayed for new articles</string>
+    <string name="title_pref_feed_world_clocks">World clocks</string>
 </resources>

@@ -30,6 +30,7 @@ import android.os.HandlerThread
 import android.provider.Settings
 import android.webkit.WebView
 import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
@@ -148,6 +149,7 @@ class LawnchairApp : Application(), () -> Unit {
         DynamicProviderController.attachContext(this)
         ChipStyleRegistry.populateWithContext(this)
         WeatherManager.attachToApplication(this)
+        TickManager.bindToContext(this)
     }
 
     fun onLauncherAppStateCreated() {
