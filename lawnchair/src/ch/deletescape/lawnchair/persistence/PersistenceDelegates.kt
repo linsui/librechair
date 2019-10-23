@@ -85,64 +85,59 @@ class ListDelegate<T>(val context: Context, val key: String, val defValue: List<
     private val internal = ObservableArrayList<String>().apply {
         addAll(defValue)
     }
-    private val lastData = StringDatabase.getInstance(context).dao().getSafe(key)
+    private var lastData = StringDatabase.getInstance(context).dao().getSafe(key)
 
     init {
-        if (StringDatabase.getInstance(context).dao().getSafe(key) != null) {
+        if (lastData != null) {
             internal.clear()
-            val str = StringDatabase.getInstance(context).dao().getSafe(key)
-            if (str != null) {
-                internal.addAll(JsonParser().parse(str).asJsonArray.map { it.asString })
+            internal.addAll(JsonParser().parse(lastData).asJsonArray.map { it.asString })
+        }
+        internal.addOnListChangedCallback(object :
+                ObservableList.OnListChangedCallback<ObservableList<String>>() {
+            override fun onChanged(sender: ObservableList<String>?) {
+                save()
             }
 
-            internal.addOnListChangedCallback(object :
-                    ObservableList.OnListChangedCallback<ObservableList<String>>() {
-                override fun onChanged(sender: ObservableList<String>?) {
-                    save()
-                }
+            override fun onItemRangeRemoved(sender: ObservableList<String>?, positionStart: Int,
+                                            itemCount: Int) {
+                save()
+            }
 
-                override fun onItemRangeRemoved(sender: ObservableList<String>?, positionStart: Int,
-                                                itemCount: Int) {
-                    save()
-                }
+            override fun onItemRangeMoved(sender: ObservableList<String>?, fromPosition: Int,
+                                          toPosition: Int, itemCount: Int) {
+                save()
+            }
 
-                override fun onItemRangeMoved(sender: ObservableList<String>?, fromPosition: Int,
-                                              toPosition: Int, itemCount: Int) {
-                    save()
-                }
+            override fun onItemRangeInserted(sender: ObservableList<String>?,
+                                             positionStart: Int, itemCount: Int) {
+                save()
+            }
 
-                override fun onItemRangeInserted(sender: ObservableList<String>?,
-                                                 positionStart: Int, itemCount: Int) {
-                    save()
-                }
+            override fun onItemRangeChanged(sender: ObservableList<String>?, positionStart: Int,
+                                            itemCount: Int) {
+                save()
+            }
 
-                override fun onItemRangeChanged(sender: ObservableList<String>?, positionStart: Int,
-                                                itemCount: Int) {
-                    save()
-                }
-
-            })
-        }
+        })
         StringDatabase.getInstance(context).invalidationTracker.addObserver(object :
                 InvalidationTracker.Observer("stringentry") {
             override fun onInvalidated(tables: MutableSet<String>) {
                 if (lastData != StringDatabase.getInstance(context).dao().getSafe(key)) {
-                    synchronized(internal) {
-                        val ja = JsonParser().parse(
-                                StringDatabase.getInstance(context).dao().getSafe(key)).asJsonArray
-                        internal.clear()
-                        internal.addAll(ja.map { it.asString })
-                    }
+                    val ja = JsonParser().parse(
+                            StringDatabase.getInstance(context).dao().getSafe(key)).asJsonArray
+                    internal.clear()
+                    internal.addAll(ja.map { it.asString })
+                    lastData = ja.toString()
                 }
             }
         })
     }
 
     private fun save() {
-        synchronized(internal) {
-            val jsonArray = JsonArray(internal.size)
-            internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
-        }
+        val jsonArray = JsonArray(internal.size)
+        internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
+        lastData = jsonArray.toString()
+        StringDatabase.getInstance(context).dao().put(key, jsonArray.toString())
     }
 
     operator fun getValue(t: T?, property: KProperty<*>?): ObservableList<String> = internal

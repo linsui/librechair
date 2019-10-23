@@ -20,6 +20,8 @@
 
 package ch.deletescape.lawnchair.persistence.db;
 
+import android.util.Log;
+
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -37,6 +39,7 @@ public abstract class StringDao {
     protected abstract void set(String key, String value);
 
     public void put(String key, String value) {
+        Log.d(getClass().getName(), "put: " + "key|" + value + " originally: " + get(key));
         if (get(key) == null) {
             addString(new StringEntry(key, value));
         } else {

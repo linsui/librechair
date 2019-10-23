@@ -33,9 +33,7 @@ import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.preferences.ProviderItemViewHolder
 import ch.deletescape.lawnchair.theme.ThemeOverride
-import ch.deletescape.lawnchair.util.SingleUseHold
 import com.android.launcher3.R
-import kotlinx.coroutines.runBlocking
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.*
@@ -62,7 +60,6 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
     }
 
     private class Adapter(val context: Context) : RecyclerView.Adapter<ProviderItemViewHolder>() {
-        private val initHold = SingleUseHold()
         private lateinit var itemTouchHelper: ItemTouchHelper
 
         override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -94,7 +91,6 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
         }
 
         override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
-            runBlocking { initHold.waitFor() }
             holder.summary.text = ZoneId.of(context.feedPrefs.clockTimeZones[position])
                     .getDisplayName(TextStyle.FULL, context.locale)
             holder.dragHandle.visibility = View.VISIBLE
