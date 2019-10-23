@@ -63,7 +63,7 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
         private lateinit var itemTouchHelper: ItemTouchHelper
 
         override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT) {
                 override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                                     target: RecyclerView.ViewHolder): Boolean {
                     val startPos = viewHolder.adapterPosition
@@ -91,7 +91,7 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
         }
 
         override fun onBindViewHolder(holder: ProviderItemViewHolder, position: Int) {
-            holder.summary.text = ZoneId.of(context.feedPrefs.clockTimeZones[position])
+            holder.title.text = ZoneId.of(context.feedPrefs.clockTimeZones[position])
                     .getDisplayName(TextStyle.FULL, context.locale)
             holder.dragHandle.visibility = View.VISIBLE
             @Suppress("ClickableViewAccessibility")
