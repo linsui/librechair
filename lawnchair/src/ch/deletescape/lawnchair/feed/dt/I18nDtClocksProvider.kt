@@ -31,6 +31,7 @@ import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import kotlinx.android.synthetic.main.world_clock.view.*
+import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
@@ -65,6 +66,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                                     ZoneId.of(it)), context)
                     Unit
                 }
+                view.zid_offset.text = ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toString()
                 view
             }, Card.RAISE or Card.NO_HEADER, "",
                     ("dtc" + it + UUID.randomUUID().toString()).hashCode())
