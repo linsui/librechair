@@ -68,12 +68,12 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
                                     target: RecyclerView.ViewHolder): Boolean {
                     val startPos = viewHolder.adapterPosition
                     val endPos = target.adapterPosition
-                    if (startPos < endPos) {
+                    if (startPos > endPos) {
                         for (i in startPos until endPos) {
                             Collections.swap(context.feedPrefs.clockTimeZones, i, i + 1)
                         }
                     } else {
-                        for (i in endPos downTo startPos) {
+                        for (i in startPos downTo endPos - 1) {
                             Collections.swap(context.feedPrefs.clockTimeZones, i, i - 1)
                         }
                     }
