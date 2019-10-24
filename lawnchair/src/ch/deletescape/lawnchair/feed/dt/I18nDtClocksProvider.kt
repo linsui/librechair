@@ -102,4 +102,6 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
             card
         }
     }
+
+    override fun isVolatile() = true
 }
