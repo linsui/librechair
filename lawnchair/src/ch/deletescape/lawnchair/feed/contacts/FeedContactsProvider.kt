@@ -27,6 +27,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.util.extensions.d
+import java.util.*
 import kotlin.math.max
 
 class FeedContactsProvider(c: Context?) : FeedProvider(c) {
@@ -59,12 +60,11 @@ class FeedContactsProvider(c: Context?) : FeedProvider(c) {
             },
                     it.name, { _, _ -> View(context) },
                     Card.RAISE or Card.TEXT_ONLY, "",
-                    it.name.hashCode()).apply {
+                    UUID.randomUUID().hashCode()).apply {
                 globalClickListener = { v ->
                     v.context.startActivity(it.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
                 }
             }
         }
     }
-
 }
