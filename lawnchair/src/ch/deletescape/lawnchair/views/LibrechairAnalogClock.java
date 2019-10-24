@@ -46,12 +46,16 @@ import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.android.launcher3.R;
+
 import java.time.LocalTime;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
 /**
  * This is an adaption of the platform AnalogClock retrofitted for Java 8 time
  */
-public class AnalogClock extends View {
+public class LibrechairAnalogClock extends View {
     private LocalTime mCalendar;
     private Drawable mHourHand;
     private Drawable mMinuteHand;
@@ -65,42 +69,42 @@ public class AnalogClock extends View {
     private float mHour;
     private boolean mChanged;
 
-    public AnalogClock(Context context) {
+    public LibrechairAnalogClock(Context context) {
         this(context, null);
     }
 
-    public AnalogClock(Context context, AttributeSet attrs) {
+    public LibrechairAnalogClock(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public AnalogClock(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LibrechairAnalogClock(Context context, AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public AnalogClock(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public LibrechairAnalogClock(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         final Resources r = context.getResources();
         final TypedArray a = context.obtainStyledAttributes(
-                attrs, com.android.internal.R.styleable.AnalogClock, defStyleAttr, defStyleRes);
+                attrs, R.styleable.LibrechairAnalogClock, defStyleAttr, defStyleRes);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            saveAttributeDataForStyleable(context, com.android.internal.R.styleable.AnalogClock,
+            saveAttributeDataForStyleable(context, R.styleable.LibrechairAnalogClock,
                     attrs, a, defStyleAttr, defStyleRes);
         }
 
-        mDial = a.getDrawable(com.android.internal.R.styleable.AnalogClock_dial);
+        mDial = a.getDrawable(R.styleable.LibrechairAnalogClock_clockDial);
         if (mDial == null) {
             int resId = context.getResources().getIdentifier("clock_dial", "drawable", "android");
             mDial = context.getDrawable(resId);
         }
 
-        mHourHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_hour);
+        mHourHand = a.getDrawable(R.styleable.LibrechairAnalogClock_clockHandHour);
         if (mHourHand == null) {
             int resId = context.getResources().getIdentifier("clock_hand_hour", "drawable", "android");
             mHourHand = context.getDrawable(resId);
         }
 
-        mMinuteHand = a.getDrawable(com.android.internal.R.styleable.AnalogClock_hand_minute);
+        mMinuteHand = a.getDrawable(R.styleable.LibrechairAnalogClock_clockHandMinute);
         if (mMinuteHand == null) {
             int resId = context.getResources().getIdentifier("clock_hand_minute", "drawable", "android");
             mMinuteHand = context.getDrawable(resId);
@@ -110,6 +114,14 @@ public class AnalogClock extends View {
 
         mDialWidth = mDial.getIntrinsicWidth();
         mDialHeight = mDial.getIntrinsicHeight();
+    }
+
+
+    public void setTint(int tint) {
+        mDial = LawnchairUtilsKt.tint(mDial, tint);
+        mHourHand = LawnchairUtilsKt.tint(mHourHand, tint);
+        mMinuteHand = LawnchairUtilsKt.tint(mMinuteHand, tint);
+        postInvalidate();
     }
 
     @Override

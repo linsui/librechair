@@ -110,6 +110,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         view.zid_time_analog.updateTime(
                                 ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                         ZoneId.of(it)).toLocalTime());
+                        view.zid_time_analog.setTint(view.zid_direction.textColors.defaultColor)
                     }
                     Unit
                 }

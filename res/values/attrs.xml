@@ -51,6 +51,12 @@
         <attr name="centerVertically" format="boolean" />
     </declare-styleable>
 
+    <declare-styleable name="LibrechairAnalogClock">
+        <attr name="clockHandMinute" format="reference"/>
+        <attr name="clockHandHour" format="reference"/>
+        <attr name="clockDial" format="reference"/>
+    </declare-styleable>
+
     <declare-styleable name="ShadowInfo">
         <attr name="ambientShadowColor" format="color" />
         <attr name="ambientShadowBlur" format="dimension" />
