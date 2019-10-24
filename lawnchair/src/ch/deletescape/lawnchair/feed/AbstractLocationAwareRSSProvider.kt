@@ -26,6 +26,7 @@ import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.util.extensions.w
 import com.rometools.rome.feed.synd.SyndFeed
 import kotlinx.coroutines.launch
 import java.util.*
@@ -47,10 +48,18 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                 try {
                     callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
                 } catch (e: Exception) {
-                    callback.onBind(getFallbackFeed())
+                    try {
+                        callback.onBind(getFallbackFeed())
+                    } catch (e: IndexOutOfBoundsException) {
+                        w("bindFeed: couldn't retrieve fallback feed", e)
+                    }
                 }
             } else {
-                callback.onBind(getFallbackFeed())
+                try {
+                    callback.onBind(getFallbackFeed())
+                } catch (e: IndexOutOfBoundsException) {
+                    w("bindFeed: couldn't retrieve fallback feed", e)
+                }
             }
         }
     }
