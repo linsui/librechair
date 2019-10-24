@@ -66,8 +66,8 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN, ItemTouchHelper.RIGHT) {
                 override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
                                     target: RecyclerView.ViewHolder): Boolean {
-                    val startPos = viewHolder.adapterPosition
-                    val endPos = target.adapterPosition
+                    val startPos = target.adapterPosition
+                    val endPos = viewHolder.adapterPosition
                     if (startPos > endPos) {
                         for (i in startPos until endPos) {
                             Collections.swap(context.feedPrefs.clockTimeZones, i, i + 1)
