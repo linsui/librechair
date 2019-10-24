@@ -467,6 +467,10 @@
             android:title="@string/title_pref_feed_map_provider"
             android:summary="%s"/>
         <ch.deletescape.lawnchair.persistence.prefs.I18nDtClocksPreference/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_use_analog_clock"
+            android:title="@string/title_pref_feed_use_analog_clock"
+            android:summary="@string/summary_pref_feed_use_analog_clock"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

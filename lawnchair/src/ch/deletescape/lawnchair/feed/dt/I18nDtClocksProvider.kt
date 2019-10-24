@@ -32,6 +32,9 @@ import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import kotlinx.android.synthetic.main.world_clock.view.*
+import kotlinx.android.synthetic.main.world_clock.view.zid_name
+import kotlinx.android.synthetic.main.world_clock.view.zid_offset
+import kotlinx.android.synthetic.main.world_clock_analog.view.*
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -60,9 +63,11 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
 
     @SuppressLint("SetTextI18n")
     override fun getCards(): List<Card> {
+        val analog = context.feedPrefs.displayAnalogClock
         return context.feedPrefs.clockTimeZones.map {
             val card = Card(null, null, { parent, _ ->
-                val view = (parent as ViewGroup).inflate(R.layout.world_clock)
+                val view = (parent as ViewGroup).inflate(
+                        if (!analog) R.layout.world_clock else R.layout.world_clock_analog)
                 view.zid_name.text =
                         ZoneId.of(it).getDisplayName(TextStyle.FULL_STANDALONE, context.locale)
                 val offset = TimeUnit.SECONDS.toHours(
@@ -72,22 +77,39 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                 TickManager.subscribe {
                     if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)).toLocalDate() < LocalDate.now()) {
-                        view.zid_time.text = context.getString(R.string.title_card_dt_yesterday)
-                                .format(formatTime(
-                                        ZonedDateTime.now(
-                                                ZoneId.systemDefault()).withZoneSameInstant(
-                                                ZoneId.of(it)), context))
+                        if (!analog) {
+                            view.zid_time.text = context.getString(R.string.title_card_dt_yesterday)
+                                    .format(formatTime(
+                                            ZonedDateTime.now(
+                                                    ZoneId.systemDefault()).withZoneSameInstant(
+                                                    ZoneId.of(it)), context))
+                        } else {
+                            view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
+                        }
                     } else if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)).toLocalDate() > LocalDate.now()) {
-                        view.zid_time.text = context.getString(R.string.title_card_dt_tomorrow)
-                                .format(formatTime(
-                                        ZonedDateTime.now(
-                                                ZoneId.systemDefault()).withZoneSameInstant(
-                                                ZoneId.of(it)), context))
+                        if (!analog) {
+                            view.zid_time.text = context.getString(R.string.title_card_dt_tomorrow)
+                                    .format(formatTime(
+                                            ZonedDateTime.now(
+                                                    ZoneId.systemDefault()).withZoneSameInstant(
+                                                    ZoneId.of(it)), context))
+                        } else {
+                            view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
+                        }
                     } else {
-                        view.zid_time.text = formatTime(
+                        if (!analog) {
+                            view.zid_time.text = formatTime(
+                                    ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                            ZoneId.of(it)), context)
+                        } else {
+                            view.zid_direction.text = ""
+                        }
+                    }
+                    if (analog) {
+                        view.zid_time_analog.updateTime(
                                 ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                        ZoneId.of(it)), context)
+                                        ZoneId.of(it)).toLocalTime());
                     }
                     Unit
                 }

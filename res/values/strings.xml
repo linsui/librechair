@@ -762,4 +762,8 @@
     <string name="title_pref_feed_world_clocks">World clocks</string>
     <string name="title_card_dt_yesterday">Yesterday, %s</string>
     <string name="title_card_dt_tomorrow">Tomorrow, %s</string>
+    <string name="title_dt_yesterday">Yesterday</string>
+    <string name="title_dt_tomorrow">Tomorrow</string>
+    <string name="title_pref_feed_use_analog_clock">Use analog clock</string>
+    <string name="summary_pref_feed_use_analog_clock">An analog clock will be displayed in the world clock provider</string>
 </resources>
