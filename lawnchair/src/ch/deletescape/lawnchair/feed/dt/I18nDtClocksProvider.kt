@@ -70,8 +70,9 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                                     ZoneId.of(it)), context)
                     Unit
                 }
-                view.zid_offset.text = "-${TimeUnit.SECONDS.toHours(
-                        (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toLong()))} h"
+                val offset = TimeUnit.SECONDS.toHours(
+                        (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toLong()))
+                view.zid_offset.text = if (offset > 0) "-$offset h" else "$offset h"
                 view
             }, Card.RAISE or Card.NO_HEADER, "",
                     ("dtc" + it + UUID.randomUUID().toString()).hashCode())
