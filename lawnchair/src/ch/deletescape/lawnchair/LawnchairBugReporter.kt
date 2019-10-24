@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LawnchairBugReporter(private val context: Context, private val crashHandler: Thread.UncaughtExceptionHandler)
+class LawnchairBugReporter(private val context: Context, private val crashHandler: Thread.UncaughtExceptionHandler?)
     : Thread.UncaughtExceptionHandler {
 
     private val hasPermission get() = ContextCompat.checkSelfPermission(context,
@@ -46,9 +46,9 @@ class LawnchairBugReporter(private val context: Context, private val crashHandle
     private val cacheFolder by lazy { BugReportFileManager.getFolder(context) }
     private val appName by lazy { context.getString(R.string.derived_app_name) }
 
-    override fun uncaughtException(t: Thread?, e: Throwable?) {
+    override fun uncaughtException(t: Thread, e: Throwable) {
         handleException(e)
-        crashHandler.uncaughtException(t, e)
+        crashHandler?.uncaughtException(t, e)
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

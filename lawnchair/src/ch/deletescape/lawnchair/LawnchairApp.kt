@@ -116,6 +116,7 @@ class LawnchairApp : Application(), () -> Unit {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 WebView.setDataDirectorySuffix("_overlay")
             }
+            Thread.setDefaultUncaughtExceptionHandler(bugReporter)
         }
         if (lawnchairPrefs.leakCanary) {
             if (LeakCanary.isInAnalyzerProcess(this)) {

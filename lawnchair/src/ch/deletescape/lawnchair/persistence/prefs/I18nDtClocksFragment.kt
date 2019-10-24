@@ -73,7 +73,7 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
                             Collections.swap(context.feedPrefs.clockTimeZones, i, i + 1)
                         }
                     } else {
-                        for (i in startPos downTo endPos - 1) {
+                        for (i in startPos downTo endPos + 1) {
                             Collections.swap(context.feedPrefs.clockTimeZones, i, i - 1)
                         }
                     }
