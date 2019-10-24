@@ -33,6 +33,7 @@ import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import kotlinx.android.synthetic.main.world_clock.view.*
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.TextStyle
@@ -64,15 +65,25 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                 val view = (parent as ViewGroup).inflate(R.layout.world_clock)
                 view.zid_name.text =
                         ZoneId.of(it).getDisplayName(TextStyle.FULL_STANDALONE, context.locale)
+                val offset = TimeUnit.SECONDS.toHours(
+                        (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(
+                                Instant.now()).totalSeconds.toLong()))
+                view.zid_offset.text = if (offset > 0) "-$offset h" else "$offset h"
                 TickManager.subscribe {
-                    view.zid_time.text = formatTime(
-                            ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                    ZoneId.of(it)), context)
+                    if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                    ZoneId.of(it)).toLocalDate() < LocalDate.now()) {
+                        view.zid_time.text = context.getString(R.string.title_card_dt_yesterday)
+                                .format(formatTime(
+                                        ZonedDateTime.now(
+                                                ZoneId.systemDefault()).withZoneSameInstant(
+                                                ZoneId.of(it)), context))
+                    } else {
+                        view.zid_time.text = formatTime(
+                                ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                        ZoneId.of(it)), context)
+                    }
                     Unit
                 }
-                val offset = TimeUnit.SECONDS.toHours(
-                        (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(Instant.now()).totalSeconds.toLong()))
-                view.zid_offset.text = if (offset > 0) "-$offset h" else "$offset h"
                 view
             }, Card.RAISE or Card.NO_HEADER, "",
                     ("dtc" + it + UUID.randomUUID().toString()).hashCode())
