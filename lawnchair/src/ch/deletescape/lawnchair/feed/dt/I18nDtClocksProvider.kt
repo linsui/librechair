@@ -77,6 +77,13 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                                         ZonedDateTime.now(
                                                 ZoneId.systemDefault()).withZoneSameInstant(
                                                 ZoneId.of(it)), context))
+                    } else if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                    ZoneId.of(it)).toLocalDate() > LocalDate.now()) {
+                        view.zid_time.text = context.getString(R.string.title_card_dt_tomorrow)
+                                .format(formatTime(
+                                        ZonedDateTime.now(
+                                                ZoneId.systemDefault()).withZoneSameInstant(
+                                                ZoneId.of(it)), context))
                     } else {
                         view.zid_time.text = formatTime(
                                 ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
