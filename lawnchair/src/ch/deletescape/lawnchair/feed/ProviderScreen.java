@@ -24,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
@@ -45,6 +46,7 @@ import com.android.launcher3.LauncherState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -114,18 +116,22 @@ public abstract class ProviderScreen extends ContextWrapper
         if (findFeed() == null) {
             throw new IllegalStateException("no feed or other closing container attached");
         } else {
-            findFeed().closeScreen(this);
+            Objects.requireNonNull(findFeed()).closeScreen(this);
         }
     }
 
     public final void display(LauncherFeed feed, int tX, int tY) {
+        this.display(feed, tX, tY, (Rect) null);
+    }
+
+    public final void display(LauncherFeed feed, int tX, int tY, @Nullable Rect clipBounds) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.feed = feed;
         feed.displayProviderScreen(this, tX, tY, viewGroup -> {
             View v = getView(viewGroup);
             bindView(v);
             return v;
-        });
+        }, clipBounds);
         feed.getScreenActions().put(this, actions);
         feed.updateActions();
     }
@@ -143,10 +149,26 @@ public abstract class ProviderScreen extends ContextWrapper
     }
 
     public final void display(FeedProvider provider, int touchX, int touchY) {
+        this.display(provider, touchX, touchY, (Rect) null);
+    }
+
+    public final void display(FeedProvider provider, int touchX, int touchY, View view) {
+        Rect rect = new Rect();
+        view.getGlobalVisibleRect(rect);
+        this.display(provider, touchX, touchY, rect);
+    }
+
+    public final void display(LauncherFeed feed, int touchX, int touchY, View view) {
+        Rect rect = new Rect();
+        view.getGlobalVisibleRect(rect);
+        this.display(feed, touchX, touchY, rect);
+    }
+
+    public final void display(FeedProvider provider, int touchX, int touchY, @Nullable Rect clipBounds) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.provider = provider;
-        if (provider.getFeed() != null) {
-            display(provider.getFeed(), touchX, touchY);
+        if (findFeed() != null) {
+            display(Objects.requireNonNull(findFeed()), touchX, touchY, clipBounds);
         } else if (Launcher.getLauncherOrNull(provider.getContext()) != null) {
             Launcher.getLauncher(provider.getContext()).getStateManager()
                     .goToState(LauncherState.NEWS_OVERLAY, false);

@@ -23,6 +23,8 @@ package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
+import android.animation.RectEvaluator
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHostView
 import android.content.Context
@@ -30,6 +32,7 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -846,13 +849,14 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
+    @JvmOverloads
     fun displayProviderScreen(screen: ProviderScreen, x: Float, y: Float,
-                              inflater: (parent: ViewGroup) -> View) {
+                              inflater: (parent: ViewGroup) -> View, clipBounds: Rect? = null) {
         var view: View? = null
         displayView({
             inflater(it).also { view = it }
-        }, x, y)
-        providerScreens.add(screen to ScreenData(x, y, view!!))
+        }, x, y, clipBounds)
+        providerScreens.add(screen to ScreenData(x, y, view!!, clipBounds))
         synchronized(internalActions) {
             if (!internalActions.containsKey(R.id.cancel)) {
                 internalActions.put(R.id.cancel, FeedProvider.Action(
@@ -912,7 +916,8 @@ class LauncherFeed(private val originalContext: Context,
         updateActions()
     }
 
-    private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float) {
+    private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float,
+                            clipBounds: Rect? = null) {
         if (useTabbedMode) {
             tabView.tabsEnabled = false
             oldIconTint = tabView.tabIconTint!!
@@ -977,9 +982,20 @@ class LauncherFeed(private val originalContext: Context,
                     val (height, width) = measuredHeight to measuredWidth
                     viewTreeObserver.removeOnPreDrawListener(this)
                     val radius = hypot(height.toDouble(), width.toDouble())
-                    val animator = ViewAnimationUtils
-                            .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
-                                    radius.toFloat())
+                    val animator: Animator
+                    if (clipBounds == null) {
+                        animator = ViewAnimationUtils
+                                .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
+                                        radius.toFloat())
+                    } else {
+                        val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
+                                getX().roundToInt() + measuredWidth,
+                                getY().roundToInt() + measuredHeight);
+                        val evaluator = RectEvaluator()
+                        animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
+                                clipBounds, endRect)
+                        animator.interpolator = Interpolators.ACCEL_1_5
+                    }
                     animate().setDuration(0)
                             .translationZ(4f.applyAsDip(context) * (providerScreens.size - 1));
                     visibility = View.VISIBLE
@@ -1496,11 +1512,13 @@ class LauncherFeed(private val originalContext: Context,
                 }
             }
         }
-        toolbar.visibility = if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.size() == 0 && searchWidgetView == null))
-            View.GONE else View.VISIBLE
+        toolbar.visibility =
+                if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.size() == 0 && searchWidgetView == null))
+                    View.GONE else View.VISIBLE
     }
 
     fun onBackPressed() = false
 
-    private data class ScreenData(val x: Float, val y: Float, val view: View)
+    private data class ScreenData(val x: Float, val y: Float, val view: View,
+                                  val rect: Rect? = null)
 }

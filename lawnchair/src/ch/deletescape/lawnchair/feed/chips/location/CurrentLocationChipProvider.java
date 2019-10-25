@@ -63,6 +63,7 @@ public class CurrentLocationChipProvider extends ChipProvider {
         });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Item> getItems(Context context) {
         return name != null ? Collections.singletonList(((Supplier<Item>) () -> {
@@ -74,7 +75,7 @@ public class CurrentLocationChipProvider extends ChipProvider {
                         loc.getSecond(), 12.0);
                 screen.display(getLauncherFeed(),
                         LawnchairUtilsKt.getPostionOnScreen(v).getFirst() + v.getMeasuredWidth() / 2,
-                        LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2);
+                        LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2, v);
             };
             return item;
         }).get()) : Collections.EMPTY_LIST;
