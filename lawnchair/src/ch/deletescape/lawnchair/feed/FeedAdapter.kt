@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.colors.resolvers.FeedBackgroundResolver
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
@@ -51,6 +52,7 @@ import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
+import com.google.android.material.card.MaterialCardView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
@@ -133,7 +135,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         return changed
     }
 
-    open suspend fun refreshVolatile():  List<Pair<Int, FeedProvider>> {
+    open suspend fun refreshVolatile(): List<Pair<Int, FeedProvider>> {
         val coroutines = mutableListOf<Job>()
         val changed = Vector<Pair<Int, FeedProvider>>()
         providers.filter { it.isVolatile }.forEach {
@@ -375,7 +377,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        if (holder.itemView is CardView) {
+        if (holder.itemView is MaterialCardView) {
             if (!context.lawnchairPrefs.feedCardBlur && context.colorEngine.getResolver(
                             FEED_CARD) !is FeedBackgroundResolver) {
                 holder.itemView.setCardBackgroundColor(
@@ -394,6 +396,11 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                         .applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                                 context.lawnchairPrefs.feedCardElevation,
                                 context.resources.displayMetrics)
+            }
+            if (holder.itemView.shapeAppearanceModel !=
+                    CardStyleRegistry.ALL[context.feedPrefs.cardCornerTreatment]) {
+                holder.itemView.shapeAppearanceModel =
+                        CardStyleRegistry.ALL[context.feedPrefs.cardCornerTreatment]!!
             }
             holder.itemView.radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                     context.feedPrefs.cardCornerRadius.toFloat(),

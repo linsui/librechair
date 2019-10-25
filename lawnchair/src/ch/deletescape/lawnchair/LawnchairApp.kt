@@ -43,6 +43,7 @@ import ch.deletescape.lawnchair.feed.adblock.WebSafety
 import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
 import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
@@ -151,6 +152,7 @@ class LawnchairApp : Application(), () -> Unit {
         ChipStyleRegistry.populateWithContext(this)
         WeatherManager.attachToApplication(this)
         TickManager.bindToContext(this)
+        CardStyleRegistry.populateWithContext(this)
     }
 
     fun onLauncherAppStateCreated() {

@@ -767,4 +767,6 @@
     <string name="title_pref_feed_use_analog_clock">Use analog clock</string>
     <string name="summary_pref_feed_use_analog_clock">An analog clock will be displayed in the world clock provider</string>
     <string name="title_chip_style_triangular">Triangular</string>
+    <string name="title_pref_feed_card_corner_treatment">Card corner style</string>
+    <string name="summary_pref_feed_card_corner_treatment">Card corners will be rendered in the selected style</string>
 </resources>

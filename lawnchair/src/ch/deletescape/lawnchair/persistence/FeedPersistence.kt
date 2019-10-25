@@ -74,6 +74,8 @@ class FeedPersistence private constructor(val context: Context) {
             by ListDelegate(context, "feed_clock_time_zones", listOf())
     val displayAnalogClock
             by BooleanDelegate(context, "feed_use_analog_clock", false)
+    val cardCornerTreatment
+            by DefValueStringDelegate(context, "feed_card_corner_treatment", "rnd")
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

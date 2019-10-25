@@ -312,6 +312,10 @@
             android:key="feed_hide_toolbar_actions2"
             android:title="@string/title_pref_feed_hide_toolbar_actions"
             android:summary="@string/summary_pref_feed_hide_toolbar_actions"/>
+        <ch.deletescape.lawnchair.persistence.prefs.CardCornerPreference
+            android:key="feed_card_corner_treatment"
+            android:title="@string/title_pref_feed_card_corner_treatment"
+            android:summary="@string/summary_pref_feed_card_corner_treatment"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
