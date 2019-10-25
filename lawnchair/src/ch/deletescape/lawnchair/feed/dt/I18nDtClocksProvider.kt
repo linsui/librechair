@@ -27,6 +27,7 @@ import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.formatTime
+import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -70,10 +71,14 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         if (!analog) R.layout.world_clock else R.layout.world_clock_analog)
                 view.zid_name.text =
                         ZoneId.of(it).getDisplayName(TextStyle.FULL_STANDALONE, context.locale)
-                val offset = TimeUnit.SECONDS.toHours(
+                val offset = -TimeUnit.SECONDS.toHours(
                         (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(
                                 Instant.now()).totalSeconds.toLong()))
-                view.zid_offset.text = if (offset > 0) "-$offset h" else "$offset h"
+                view.zid_offset.text = when {
+                    offset > 0 -> context.resources.getQuantityText(R.plurals.title_dt_time_later, offset.toInt()).toString().format(offset)
+                    offset == 0L -> R.string.reusable_str_now.fromStringRes(context)
+                    else -> context.resources.getQuantityText(R.plurals.title_dt_time_sooner, offset.toInt()).toString().format(offset)
+                }
                 TickManager.subscribe {
                     if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)).toLocalDate() < LocalDate.now()) {
