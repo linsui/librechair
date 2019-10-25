@@ -26,20 +26,34 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.atomic.AtomicReference;
+
+import ch.deletescape.lawnchair.persistence.db.StringDatabase;
 
 public class SimplePersistence {
 
-    private final Context context;
+    private final AtomicReference<Context> context = new AtomicReference<>();
 
-    public SimplePersistence(Context context) {
-        this.context = context;
+    private SimplePersistence(Context context) {
+        this.context.set(context);
     }
 
     public String get(String key, String defaultValue) {
-        File file = new File(context.getFilesDir(), "persist_" + key);
+        String query;
+        if ((query = StringDatabase.getInstance(context.get()).dao().getSafe(key)) != null) {
+            return query;
+        } else {
+            return legacyGet(key, defaultValue);
+        }
+    }
+
+    private String legacyGet(String key, String defaultValue) {
+        File file = new File(context.get().getFilesDir(), "persist_" + key);
+        if (!file.exists()) {
+            return defaultValue;
+        }
         try {
             FileInputStream stream = new FileInputStream(file);
             return IOUtils.toString(stream, Charset.defaultCharset());
@@ -49,18 +63,11 @@ public class SimplePersistence {
     }
 
     public synchronized void put(String key, String value) {
-        File file = new File(context.getFilesDir(), "persist_" + key);
-        try {
-            FileOutputStream stream = new FileOutputStream(file);
-            stream.write(value.getBytes());
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        StringDatabase.getInstance(context.get()).dao().put(key, value);
     }
 
     public static class InstanceHolder {
-        private volatile transient static SimplePersistence sInstance;
+        private volatile static SimplePersistence sInstance;
 
         public static SimplePersistence getInstance(Context context) {
             return sInstance != null ? sInstance :
