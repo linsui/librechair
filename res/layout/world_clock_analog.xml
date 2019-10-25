@@ -25,7 +25,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:gravity="center"
-    android:padding="8dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="16dp"
+    android:paddingTop="16dp"
     android:layout_height="wrap_content">
     <TextView
         tools:text="GMT+8"
