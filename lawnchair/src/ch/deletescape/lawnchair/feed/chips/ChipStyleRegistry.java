@@ -38,12 +38,14 @@ public final class ChipStyleRegistry {
     public static final String SQUARE = "sqr";
     public static final String ROUNDED_SQUARE = "rqr";
     public static final String CUT = "cut";
+    public static final String TRIANGULAR = "trg";
 
     static {
         NAMES.put(ROUND, R.string.title_chip_style_round);
         NAMES.put(ROUNDED_SQUARE, R.string.icon_shape_rounded_square);
         NAMES.put(SQUARE, R.string.icon_shape_square);
         NAMES.put(CUT, R.string.title_chip_style_cut);
+        NAMES.put(TRIANGULAR, R.string.title_chip_style_triangular);
     }
 
     public static void populateWithContext(Context c) {
@@ -55,5 +57,7 @@ public final class ChipStyleRegistry {
         ShapeAppearanceModel cut = new ShapeAppearanceModel.Builder().setAllCornerSizes(
                 16f).setAllCorners(new CutCornerTreatment()).build();
         ALL.put(CUT, cut);
+        ALL.put(TRIANGULAR, ShapeAppearanceModel.builder().setAllCornerSizes(32f).setAllCorners(
+                new CutCornerTreatment()).build());
     }
 }
