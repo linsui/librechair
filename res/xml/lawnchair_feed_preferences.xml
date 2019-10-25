@@ -315,7 +315,7 @@
         <ch.deletescape.lawnchair.persistence.prefs.CardCornerPreference
             android:key="feed_card_corner_treatment"
             android:title="@string/title_pref_feed_card_corner_treatment"
-            android:summary="@string/summary_pref_feed_card_corner_treatment"/>
+            android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
