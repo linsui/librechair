@@ -29,6 +29,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.extensions.w
 import com.rometools.rome.feed.synd.SyndFeed
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.util.*
 import java.util.function.Consumer
 
@@ -50,14 +51,14 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                 } catch (e: Exception) {
                     try {
                         callback.onBind(getFallbackFeed())
-                    } catch (e: IndexOutOfBoundsException) {
+                    } catch (e: IOException) {
                         w("bindFeed: couldn't retrieve fallback feed", e)
                     }
                 }
             } else {
                 try {
                     callback.onBind(getFallbackFeed())
-                } catch (e: IndexOutOfBoundsException) {
+                } catch (e: IOException) {
                     w("bindFeed: couldn't retrieve fallback feed", e)
                 }
             }
