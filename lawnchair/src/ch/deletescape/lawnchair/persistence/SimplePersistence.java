@@ -56,7 +56,9 @@ public class SimplePersistence {
         }
         try {
             FileInputStream stream = new FileInputStream(file);
-            return IOUtils.toString(stream, Charset.defaultCharset());
+            String value = IOUtils.toString(stream, Charset.defaultCharset());
+            this.put(key, value);
+            return value;
         } catch (IOException e) {
             return defaultValue;
         }
