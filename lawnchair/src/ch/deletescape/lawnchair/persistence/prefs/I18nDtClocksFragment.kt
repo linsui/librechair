@@ -84,6 +84,7 @@ class I18nDtClocksFragment : PreferenceDialogFragmentCompat() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val pos = viewHolder.adapterPosition
                     context.feedPrefs.clockTimeZones.removeAt(pos)
+                    notifyItemRemoved(pos)
                 }
 
                 override fun isLongPressDragEnabled() = true
