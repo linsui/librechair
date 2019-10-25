@@ -769,4 +769,5 @@
     <string name="title_chip_style_triangular">Triangular</string>
     <string name="title_pref_feed_card_corner_treatment">Card corner style</string>
     <string name="summary_pref_feed_card_corner_treatment">Card corners will be rendered in the selected style</string>
+    <string name="title_pref_feed_chip_corner_radius">Corner radius</string>
 </resources>

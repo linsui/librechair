@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
-import com.google.android.material.shape.ShapeAppearanceModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -109,12 +108,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         } else {
             chipViewHolder.itemView.setChipStrokeWidth(0f);
         }
-        ShapeAppearanceModel model = Objects.requireNonNull(ChipStyleRegistry.ALL.get(
-                ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment()));
         Objects.requireNonNull(chipViewHolder.itemView.getBackgroundDrawable()).setAlpha(
                 (int) Math.round(ChipPersistence.Companion.getInstance(
                         context).getChipOpacity() * (255f)));
-        chipViewHolder.itemView.setShapeAppearanceModel(model);
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(
@@ -137,6 +133,13 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
                     chipViewHolder.itemView.setTypeface(typeface);
                     return Unit.INSTANCE;
                 });
+        if (chipViewHolder.itemView.getShapeAppearanceModel() != Objects.requireNonNull(ChipStyleRegistry.ALL.get(
+                ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment())).apply(
+                ChipPersistenceKt.getChipPrefs(context).getChipCornerRadius(), context)) {
+            chipViewHolder.itemView.setShapeAppearanceModel(Objects.requireNonNull(ChipStyleRegistry.ALL.get(
+                    ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment())).apply(
+                    ChipPersistenceKt.getChipPrefs(context).getChipCornerRadius(), context));
+        }
         if (item.click != null || item.viewClickListener != null) {
             chipViewHolder.itemView.setOnClickListener(v -> {
                 if (item.click != null) {

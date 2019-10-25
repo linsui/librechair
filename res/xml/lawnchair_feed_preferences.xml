@@ -343,6 +343,15 @@
             app:summaryFormat="%.0f"
             app:summaryMultiplier="1"/>
         <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_corner_radius"
+            android:title="@string/title_pref_feed_chip_corner_radius"
+            app:defaultSeekbarValue="64"
+            app:maxValue="128"
+            app:minValue="0"
+            app:steps="128"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
             android:key="feed_chip_elevation"
             android:title="@string/title_pref_feed_chip_elevation"
             app:defaultSeekbarValue="8"
@@ -376,7 +385,7 @@
             android:title="@string/title_pref_feed_mix_chips"
             android:summary="@string/summary_pref_feed_mix_chips"/>
         <ch.deletescape.lawnchair.persistence.prefs.ChipCornerPreference
-            android:key="feed_chip_corner_treatment"
+            android:key="feed_chip_corner_treatment2"
             android:title="@string/title_pref_feed_chip_corner_treatment"
             android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>

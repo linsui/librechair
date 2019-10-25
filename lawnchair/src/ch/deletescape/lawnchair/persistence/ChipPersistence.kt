@@ -32,8 +32,9 @@ class ChipPersistence private constructor(val context: Context) {
     val elevation by NumberDelegate(context, "feed_chip_elevation", 8.0)
     val mixChips by BooleanDelegate(context, "feed_mix_chips", false)
     val maxPredictions by NumberDelegate(context, "feed_chip_max_predictions", 5.0)
-    val chipCornerTreatment by DefValueStringDelegate(context, "feed_chip_corner_treatment",
+    val chipCornerTreatment by DefValueStringDelegate(context, "feed_chip_corner_treatment2",
             ChipStyleRegistry.ROUND)
+    val chipCornerRadius by DipDimenDelegate(context, "feed_chip_corner_radius", 64.0)
 
     companion object : SingletonHolder<ChipPersistence, Context>(::ChipPersistence)
 }
