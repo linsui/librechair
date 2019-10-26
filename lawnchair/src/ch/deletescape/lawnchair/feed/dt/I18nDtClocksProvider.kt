@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.world_clock.view.*
 import kotlinx.android.synthetic.main.world_clock.view.zid_name
 import kotlinx.android.synthetic.main.world_clock.view.zid_offset
 import kotlinx.android.synthetic.main.world_clock_analog.view.*
+import kotlinx.android.synthetic.main.world_clock_analog.view.zid_direction
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -82,40 +83,23 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                 TickManager.subscribe {
                     if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)).toLocalDate() < LocalDate.now()) {
-                        if (!analog) {
-                            view.zid_time.text = context.getString(R.string.title_card_dt_yesterday)
-                                    .format(formatTime(
-                                            ZonedDateTime.now(
-                                                    ZoneId.systemDefault()).withZoneSameInstant(
-                                                    ZoneId.of(it)), context))
-                        } else {
-                            view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
-                        }
+                        view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
                     } else if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                     ZoneId.of(it)).toLocalDate() > LocalDate.now()) {
-                        if (!analog) {
-                            view.zid_time.text = context.getString(R.string.title_card_dt_tomorrow)
-                                    .format(formatTime(
-                                            ZonedDateTime.now(
-                                                    ZoneId.systemDefault()).withZoneSameInstant(
-                                                    ZoneId.of(it)), context))
-                        } else {
-                            view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
-                        }
+                        view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
                     } else {
-                        if (!analog) {
-                            view.zid_time.text = formatTime(
-                                    ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                            ZoneId.of(it)), context)
-                        } else {
-                            view.zid_direction.text = ""
-                        }
+                        view.zid_direction.text = ""
                     }
                     if (analog) {
                         view.zid_time_analog.updateTime(
                                 ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
                                         ZoneId.of(it)).toLocalTime());
                         view.zid_time_analog.setTint(view.zid_direction.textColors.defaultColor)
+                    }
+                    if (!analog) {
+                        view.zid_time.text = formatTime(
+                                ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                        ZoneId.of(it)), context)
                     }
                     Unit
                 }

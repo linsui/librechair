@@ -25,7 +25,7 @@
     android:layout_width="match_parent"
     android:gravity="center"
     android:padding="8dp"
-    android:layout_height="210dp">
+    android:layout_height="240dp">
     <TextView
         tools:text="GMT+8"
         android:layout_height="wrap_content"
@@ -33,10 +33,18 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:id="@+id/zid_name"/>
     <TextView
+        tools:text="Today"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:id="@+id/zid_direction"
+        android:layout_marginBottom="8dp"/>
+    <TextView
         tools:text="19:00.84"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        android:layout_marginBottom="8dp"
         android:id="@+id/zid_time"/>
     <TextView
         tools:text="17 hours ahead"
