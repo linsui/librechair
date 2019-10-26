@@ -994,10 +994,11 @@ class LauncherFeed(private val originalContext: Context,
                         val evaluator = RectS2DEvaluator()
                         animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
                                 clipBounds, endRect)
+                        alpha = 0f
+                        animate().alpha(1f).duration = 300 / 4
                         animator.interpolator = Interpolators.ACCEL_DEACCEL
                     }
-                    animate().setDuration(0)
-                            .translationZ(4f.applyAsDip(context) * (providerScreens.size - 1));
+                    translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
                     visibility = View.VISIBLE
                     animator.apply {
                         duration = 300
