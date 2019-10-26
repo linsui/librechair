@@ -1047,8 +1047,8 @@ class LauncherFeed(private val originalContext: Context,
                 animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectS2DEvaluator(true),
                         clipBounds, startRect)
                 FeedScope.launch(Dispatchers.Main) {
-                    delay(300 * (3 / 4))
-                    animate().setStartDelay((300 / 4) * 3).alpha(0f).duration = 300 / 4
+                    delay(200)
+                    animate().alpha(0f).duration = 300 / 4
                 }
                 animator.interpolator = Interpolators.ACCEL_DEACCEL
             }
