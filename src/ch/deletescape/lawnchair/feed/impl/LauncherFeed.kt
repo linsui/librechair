@@ -24,7 +24,6 @@ package ch.deletescape.lawnchair.feed.impl
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
-import android.animation.RectEvaluator
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHostView
 import android.content.Context
@@ -53,6 +52,7 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.*
+import ch.deletescape.lawnchair.feed.anim.oa.RectS2DEvaluator
 import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipController
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
@@ -991,7 +991,7 @@ class LauncherFeed(private val originalContext: Context,
                         val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
                                 getX().roundToInt() + measuredWidth,
                                 getY().roundToInt() + measuredHeight);
-                        val evaluator = RectEvaluator()
+                        val evaluator = RectS2DEvaluator()
                         animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
                                 clipBounds, endRect)
                         animator.interpolator = Interpolators.ACCEL_1_5
@@ -1042,8 +1042,8 @@ class LauncherFeed(private val originalContext: Context,
             } else {
                 val startRect = Rect()
                 getGlobalVisibleRect(startRect)
-                animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectEvaluator(),
-                        startRect, clipBounds)
+                animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectS2DEvaluator(true),
+                        clipBounds, startRect)
                 animator.interpolator = Interpolators.ACCEL_1_5
             }
             visibility = View.VISIBLE
