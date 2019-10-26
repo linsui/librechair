@@ -361,7 +361,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                             (LawnchairUtilsKt.getPostionOnScreen(
                                                     v).getFirst() + v.getMeasuredWidth() / 2),
                                             (LawnchairUtilsKt.getPostionOnScreen(
-                                                    v).getSecond() + v.getMeasuredHeight() / 2));
+                                                    v).getSecond() + v.getMeasuredHeight() / 2), v);
                         } else {
                             Utilities.openURLinBrowser(getContext(),
                                     entry.url);
