@@ -39,6 +39,7 @@ import com.android.launcher3.Utilities;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -46,7 +47,6 @@ import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.web.WebSearchProvider;
-import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class FeedSearchboxProvider extends FeedProvider {
 
@@ -74,11 +74,13 @@ public class FeedSearchboxProvider extends FeedProvider {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Card> getCards() {
         Log.d(getClass().getName(), "getCards: retrieving cards");
         return Collections.singletonList(new Card(
-                LawnchairUtilsKt.tint(getContext().getDrawable(R.drawable.ic_search),
+                LawnchairUtilsKt.tint(
+                        Objects.requireNonNull(getContext().getDrawable(R.drawable.ic_search)),
                         FeedAdapter.Companion.getOverrideColor(getContext())),
                 getContext().getString(R.string.search), parent -> {
             LinearLayout layout = new LinearLayout(getContext());
@@ -121,7 +123,7 @@ public class FeedSearchboxProvider extends FeedProvider {
                                     "afterTextChanged: suggestions " + suggestions);
                             editText.post(() -> {
                                 adapter.clear();
-                                adapter.addAll(suggestions.stream().toArray(String[]::new));
+                                adapter.addAll(suggestions.toArray(new String[0]));
                                 adapter.notifyDataSetChanged();
                                 predictions.setOnItemClickListener(
                                         (parent1, view, position, id) -> {
@@ -133,7 +135,7 @@ public class FeedSearchboxProvider extends FeedProvider {
                                             WebViewScreen.obtain(parent.getContext(), String.format(
                                                     Utilities.getLawnchairPrefs(
                                                             getContext()).getFeedSearchUrl(),
-                                                    suggestions.get(position))).display(FeedSearchboxProvider.this, x, y);
+                                                    suggestions.get(position))).display(FeedSearchboxProvider.this, x, y, view);
                                         });
                             });
                         }
@@ -149,7 +151,7 @@ public class FeedSearchboxProvider extends FeedProvider {
                     y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
                     WebViewScreen.obtain(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
-                            editText.getText().toString())).display(this, x, y);
+                            editText.getText().toString())).display(this, x, y, v);
                 }
                 return true;
             });
