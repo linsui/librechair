@@ -995,7 +995,7 @@ class LauncherFeed(private val originalContext: Context,
                         animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
                                 clipBounds, endRect)
                         alpha = 0f
-                        animate().alpha(1f).duration = 300 / 4
+                        animate().alpha(1f).duration = 300 / 2
                         animator.interpolator = Interpolators.ACCEL_DEACCEL
                     }
                     translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
@@ -1045,6 +1045,7 @@ class LauncherFeed(private val originalContext: Context,
                 getGlobalVisibleRect(startRect)
                 animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectS2DEvaluator(true),
                         clipBounds, startRect)
+                animate().setStartDelay(300 * (3 / 4)).alpha(0f).duration = 300 / 4
                 animator.interpolator = Interpolators.ACCEL_DEACCEL
             }
             visibility = View.VISIBLE
