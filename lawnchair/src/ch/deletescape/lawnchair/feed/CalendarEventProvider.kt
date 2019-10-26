@@ -166,8 +166,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             intent.`package` = eventCursor.getString(5)!!
                         }
                     }
-                    intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK;
+                    intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
                     val address = eventCursor.getString(6)
+                    val color = eventCursor.getInt(7)
                     cards.add(Card(
                             if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
                                     eventCursor.getInt(7).setAlpha(
@@ -182,6 +183,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                         calendar_event_title.text =
                                                 (if (title.trim().isEmpty()) context.getString(
                                                         R.string.placeholder_empty_title) else title)
+                                        if (context.lawnchairPrefs.feedShowCalendarColour) {
+                                            calendar_event_title.setTextColor(color)
+                                        }
                                         calendar_event_time_remaining.text = text
                                     } else View(
                                             parent.getContext())
