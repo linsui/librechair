@@ -41,7 +41,6 @@ import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 class OverlayService : Service(), () -> Unit {
     companion object {
@@ -121,20 +120,23 @@ class OverlayService : Service(), () -> Unit {
                 set(value) = {
                     value?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
                         putBinder("listener", object : INotificationsChangedListener.Stub() {
-                            val notifs = Vector<StatusBarNotification>()
-                            override fun notificationRemoved(key: String) {
+                            val notifs = mutableListOf<StatusBarNotification>()
+
+                            override fun notificationRemoved(key: String) = synchronized(this) {
                                 notifs.removeIf { it.key == key }
+                                Unit
                             }
 
-                            override fun notificationPosted(notif: StatusBarNotification) {
+                            override fun notificationPosted(notif: StatusBarNotification) =  synchronized(this) {
                                 notifs += notif
                             }
 
                             override fun notificationsChanged(
-                                    notifsNew: MutableList<StatusBarNotification>) {
+                                    notifsNew: MutableList<StatusBarNotification>) =  synchronized(this) {
                                 notifs.clear()
                                 notifs.addAll(notifsNew)
                                 notifChangedListener?.invoke(notifs)
+                                Unit
                             }
                         })
                     })
@@ -146,20 +148,23 @@ class OverlayService : Service(), () -> Unit {
                     if (value != null) {
                         interfaze?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
                             putBinder("listener", object : INotificationsChangedListener.Stub() {
-                                val notifs = Vector<StatusBarNotification>()
-                                override fun notificationRemoved(key: String) {
+                                val notifs = mutableListOf<StatusBarNotification>()
+
+                                override fun notificationRemoved(key: String) = synchronized(this) {
                                     notifs.removeIf { it.key == key }
+                                    Unit
                                 }
 
-                                override fun notificationPosted(notif: StatusBarNotification) {
+                                override fun notificationPosted(notif: StatusBarNotification) =  synchronized(this) {
                                     notifs += notif
                                 }
 
                                 override fun notificationsChanged(
-                                        notifsNew: MutableList<StatusBarNotification>) {
+                                        notifsNew: MutableList<StatusBarNotification>) =  synchronized(this) {
                                     notifs.clear()
                                     notifs.addAll(notifsNew)
                                     notifChangedListener?.invoke(notifs)
+                                    Unit
                                 }
                             })
                         })
