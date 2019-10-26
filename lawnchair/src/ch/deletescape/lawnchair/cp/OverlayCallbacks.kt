@@ -48,7 +48,7 @@ object OverlayCallbacks {
         })
         context.startActivity(Intent(context, WidgetRequestActivity::class.java).apply {
             putExtra("request_id", id)
-            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
         })
     }
 
@@ -62,7 +62,7 @@ object OverlayCallbacks {
                         ActivityOptionsCompat.makeClipRevealAnimation(view, 0, 0,
                                 view.measuredWidth, view.measuredHeight).toBundle());
             }
-            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
+            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
         })
     }
 
