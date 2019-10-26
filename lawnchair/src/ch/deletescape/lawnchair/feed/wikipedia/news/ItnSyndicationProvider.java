@@ -58,6 +58,7 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
             for (NewsItem item : News.requireEntries()) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setUri(item.contentUrl);
+                entry.setLink(item.contentUrl);
                 entry.setTitle(item.title);
                 SyndContent content = new SyndContentImpl();
                 content.setValue(item.story);
