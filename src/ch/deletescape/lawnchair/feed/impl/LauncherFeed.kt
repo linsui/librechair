@@ -894,7 +894,7 @@ class LauncherFeed(private val originalContext: Context,
             updateActions()
         }
         removeDisplayedView(providerScreens.last().second.view, providerScreens.last().second.x,
-                providerScreens.last().second.y)
+                providerScreens.last().second.y, providerScreens.last().second.rect)
         screenActions.remove(providerScreens.last().first)
         providerScreens.last().first.onDestroy()
         providerScreens.remove(providerScreens.last())
@@ -909,7 +909,7 @@ class LauncherFeed(private val originalContext: Context,
         }
         removeDisplayedView(providerScreens.first { it.first == screen }.second.view,
                 providerScreens.first { it.first == screen }.second.x,
-                providerScreens.first { it.first == screen }.second.y)
+                providerScreens.first { it.first == screen }.second.y,  providerScreens.first { it.first == screen }.second.rect)
         screenActions.remove(providerScreens.first { it.first == screen }.first)
         providerScreens.first { it.first == screen }.first.onDestroy()
         providerScreens.remove(providerScreens.first { it.first == screen })
@@ -1021,7 +1021,7 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
-    fun removeDisplayedView(v: View, x: Float, y: Float) {
+    fun removeDisplayedView(v: View, x: Float, y: Float, clipBounds: Rect? = null) {
         if (useTabbedMode) {
             tabView.tabIconTint = oldIconTint
             tabView.tabTextColors = oldTextColor
@@ -1035,8 +1035,17 @@ class LauncherFeed(private val originalContext: Context,
         v.apply {
             val (height, width) = measuredHeight to measuredWidth
             val radius = hypot(height.toDouble(), width.toDouble())
-            val animator = ViewAnimationUtils
-                    .createCircularReveal(this@apply, x.toInt(), y.toInt(), radius.toFloat(), 0f)
+            val animator: Animator
+            if (clipBounds == null) {
+                animator = ViewAnimationUtils
+                        .createCircularReveal(this@apply, x.toInt(), y.toInt(), radius.toFloat(), 0f)
+            } else {
+                val startRect = Rect()
+                getGlobalVisibleRect(startRect)
+                animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectEvaluator(),
+                        startRect, clipBounds)
+                animator.interpolator = Interpolators.ACCEL_1_5
+            }
             visibility = View.VISIBLE
             animator.apply {
                 duration = 300
