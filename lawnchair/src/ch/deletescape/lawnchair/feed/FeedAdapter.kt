@@ -21,6 +21,7 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.Typeface
@@ -53,6 +54,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.internal.toImmutableList
@@ -162,7 +164,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint("MissingPermission", "RestrictedApi")
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
@@ -176,11 +178,17 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
 
         if (cards[position].hasGlobalClickListener()) {
-            holder.itemView.foreground =
-                    holder.itemView.context.getDrawableAttr(R.attr.selectableItemBackground)
             holder.itemView.setOnClickListener(cards[position].globalClickListener)
+            if (holder.itemView is MaterialCardView) {
+                holder.itemView.rippleColor = ColorStateList.valueOf(
+                        MaterialColors.getColor(holder.itemView,
+                                com.google.android.material.R.attr.colorControlHighlight));
+            }
         } else {
-            holder.itemView.foreground = null
+            holder.itemView.isClickable = false
+            if (holder.itemView is MaterialCardView) {
+                holder.itemView.rippleColor = ColorStateList.valueOf(0)
+            }
             holder.itemView.setOnClickListener(null)
         }
 
