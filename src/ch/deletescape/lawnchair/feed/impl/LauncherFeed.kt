@@ -75,6 +75,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.overlay_feed.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -1045,7 +1046,10 @@ class LauncherFeed(private val originalContext: Context,
                 getGlobalVisibleRect(startRect)
                 animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectS2DEvaluator(true),
                         clipBounds, startRect)
-                animate().setStartDelay(300 * (3 / 4)).alpha(0f).duration = 300 / 4
+                FeedScope.launch(Dispatchers.Main) {
+                    delay(300 * (3 / 4))
+                    animate().setStartDelay((300 / 4) * 3).alpha(0f).duration = 300 / 4
+                }
                 animator.interpolator = Interpolators.ACCEL_DEACCEL
             }
             visibility = View.VISIBLE
