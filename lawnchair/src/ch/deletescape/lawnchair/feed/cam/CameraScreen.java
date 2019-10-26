@@ -58,7 +58,7 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 
 public class CameraScreen extends ProviderScreen {
-    private static final android.os.Handler cameraHandler;
+    private static final Handler cameraHandler;
 
     static {
         HandlerThread thread = new HandlerThread("camera-1");

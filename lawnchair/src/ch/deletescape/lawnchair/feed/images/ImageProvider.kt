@@ -85,7 +85,7 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                         }
                     }.display(this@ImageProvider,
                             it.getPostionOnScreen().first + it.measuredWidth / 2,
-                            it.getPostionOnScreen().second + it.measuredHeight / 2)
+                            it.getPostionOnScreen().second + it.measuredHeight / 2, it)
                 }
             })
 
