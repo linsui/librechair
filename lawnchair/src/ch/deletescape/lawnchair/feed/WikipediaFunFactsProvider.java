@@ -30,14 +30,16 @@ import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
-import fastily.jwiki.core.Wiki;
-import info.bliki.wiki.model.WikiModel;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
+
+import fastily.jwiki.core.Wiki;
+import info.bliki.wiki.model.WikiModel;
 
 public class WikipediaFunFactsProvider extends FeedProvider {
 
@@ -102,7 +104,7 @@ public class WikipediaFunFactsProvider extends FeedProvider {
                                 return view;
                             }
                             return new View(getContext());
-                        }, Card.Companion.getRAISE(), null,
+                        }, Card.RAISE, null,
                         getContext().getString(R.string.title_feed_card_wikipedia_news)
                                 .hashCode()));
     }

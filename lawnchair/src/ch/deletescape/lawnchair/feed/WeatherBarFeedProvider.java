@@ -22,14 +22,18 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
+
+import com.android.launcher3.Utilities;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+import java.util.List;
+
 import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Listener;
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
-import com.android.launcher3.Utilities;
-import java.util.Collections;
-import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
 public class WeatherBarFeedProvider extends FeedProvider implements Listener {
 
@@ -70,7 +74,7 @@ public class WeatherBarFeedProvider extends FeedProvider implements Listener {
         if (weather != null) {
             this.card = new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
                     weather.getTitle(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
-                    parent -> new View(parent.getContext()), Card.Companion.getTEXT_ONLY(),
+                    parent -> new View(parent.getContext()), Card.TEXT_ONLY,
                     "nosort,top", "weatherBar".hashCode());
         }
     }

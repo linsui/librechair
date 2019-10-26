@@ -83,7 +83,7 @@ public class AlarmEventProvider extends FeedProvider {
             return Collections.singletonList(new Card(alarm,
                     LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), getContext()),
                     parent -> new View(getContext()),
-                    Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(),
+                    Card.RAISE | Card.TEXT_ONLY,
                     "nosort,top", "alarmEvent".hashCode()));
         }
         return Collections.emptyList();

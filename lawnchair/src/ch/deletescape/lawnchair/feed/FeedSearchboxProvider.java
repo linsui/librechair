@@ -157,7 +157,7 @@ public class FeedSearchboxProvider extends FeedProvider {
             });
             editText.setImeOptions(editText.getImeOptions() | EditorInfo.IME_ACTION_SEARCH);
             return layout;
-        }, Card.Companion.getRAISE(),
+        }, Card.RAISE,
                 "nosort,top", "searchBar".hashCode()));
     }
 }

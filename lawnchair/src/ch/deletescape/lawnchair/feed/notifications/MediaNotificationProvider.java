@@ -176,7 +176,7 @@ public class MediaNotificationProvider extends FeedProvider {
                 }
             });
             return mnv;
-        }, Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
+        }, Card.RAISE | Card.NO_HEADER, "nosort,top",
                 mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
         return cards;
     }

@@ -160,7 +160,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     adapter.refresh();
                     return v;
                 },
-                Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
+                Card.RAISE | Card.NO_HEADER, "nosort,top",
                 "dailySummary".hashCode()));
     }
 

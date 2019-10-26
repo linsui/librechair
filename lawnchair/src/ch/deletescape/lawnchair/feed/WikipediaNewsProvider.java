@@ -86,6 +86,6 @@ public class WikipediaNewsProvider extends FeedProvider {
                             view.setLayoutParams(new LinearLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                             return view;
-                        }, Card.Companion.getRAISE(), null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
+                        }, Card.RAISE, null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
     }
 }

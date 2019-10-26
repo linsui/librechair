@@ -67,11 +67,11 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     }
 
     companion object {
-        val DEFAULT = 0
-        val RAISE = 1 shl 1
-        val NARROW = 1 shl 2
-        val TEXT_ONLY = 1 shl 3
-        val NO_HEADER = 1 shl 4
+        const val DEFAULT = 0
+        const val RAISE = 1 shl 1
+        const val NARROW = 1 shl 2
+        const val TEXT_ONLY = 1 shl 3
+        const val NO_HEADER = 1 shl 4
 
         interface InflateHelper {
             fun inflate(parent: ViewGroup): View

@@ -182,7 +182,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             if (holder.itemView is MaterialCardView) {
                 holder.itemView.rippleColor = ColorStateList.valueOf(
                         MaterialColors.getColor(holder.itemView,
-                                com.google.android.material.R.attr.colorControlHighlight));
+                                com.google.android.material.R.attr.colorControlHighlight))
             }
         } else {
             holder.itemView.isClickable = false
