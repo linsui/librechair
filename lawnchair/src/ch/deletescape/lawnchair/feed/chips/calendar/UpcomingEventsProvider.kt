@@ -122,7 +122,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                                         MapScreen(context, launcherFeed, loc.first, loc.second,
                                                 13.0).display(launcherFeed,
                                                 it.getPostionOnScreen().first + it.measuredWidth / 2,
-                                                it.getPostionOnScreen().second + it.measuredHeight / 2)
+                                                it.getPostionOnScreen().second + it.measuredHeight / 2, it)
                                     }
                                 } else {
                                     FeedScope.launch(Dispatchers.Main) {
