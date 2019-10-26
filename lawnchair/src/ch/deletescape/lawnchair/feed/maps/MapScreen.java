@@ -118,7 +118,7 @@ public class MapScreen extends ProviderScreen {
 
             @Override
             public void stopLocationProvider() {
-                LocationManager.INSTANCE.getChangeCallbacks().remove(myLocationConsumer);
+                LocationManager.INSTANCE.getChangeCallbacks().remove(changeListener);
             }
 
             @Override
