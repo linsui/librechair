@@ -111,6 +111,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         Objects.requireNonNull(chipViewHolder.itemView.getBackgroundDrawable()).setAlpha(
                 (int) Math.round(ChipPersistence.Companion.getInstance(
                         context).getChipOpacity() * (255f)));
+        chipViewHolder.itemView.setSingleLine(true);
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(
