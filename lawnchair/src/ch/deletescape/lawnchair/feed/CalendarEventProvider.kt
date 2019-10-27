@@ -24,6 +24,7 @@ import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
@@ -186,6 +187,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                         if (context.lawnchairPrefs.feedShowCalendarColour) {
                                             calendar_event_title.setTextColor(color)
                                         }
+                                        calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
                                         calendar_event_time_remaining.text = text
                                     } else View(
                                             parent.getContext())
