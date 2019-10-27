@@ -115,6 +115,7 @@ class LauncherFeed(private val originalContext: Context,
     val screenActions = mutableMapOf<ProviderScreen, List<FeedProvider.Action>>()
 
     var readMoreUrl: String? = null
+    @SuppressLint("InflateParams")
     var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
             false) as FeedController)
             .also {
