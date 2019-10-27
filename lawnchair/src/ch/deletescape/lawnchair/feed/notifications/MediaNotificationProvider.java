@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.notifications;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Handler;
@@ -43,6 +44,7 @@ import java.util.function.Consumer;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
+import kotlin.Unit;
 
 public class MediaNotificationProvider extends FeedProvider {
     private final List<Consumer<OMCMediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
@@ -178,6 +180,16 @@ public class MediaNotificationProvider extends FeedProvider {
             return mnv;
         }, Card.RAISE | Card.NO_HEADER, "nosort,top",
                 mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
+        cards.get(0).setGlobalClickListener(v -> {
+            if (mnc.get() != null) {
+                try {
+                    mnc.get().getSbn().getNotification().contentIntent.send();
+                } catch (PendingIntent.CanceledException | NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+            return Unit.INSTANCE;
+        });
         return cards;
     }
 
