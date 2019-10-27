@@ -22,13 +22,19 @@ package com.android.overlayclient.compat;
 
 import com.android.overlayclient.client.ServiceClient;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 public abstract class MutableDelegate<T> implements ConfigurationDelegate {
     private ServiceClient client;
+    private List<Runnable> clientConnectQueue;
     protected T value;
 
     @SuppressWarnings("WeakerAccess")
     protected MutableDelegate(T value) {
         this.value = value;
+        this.clientConnectQueue = new LinkedList<>();
     }
 
     public void set(T value) {
@@ -36,12 +42,18 @@ public abstract class MutableDelegate<T> implements ConfigurationDelegate {
         if (client != null) {
             this.client.configure();
         } else {
-            throw new IllegalStateException("client wasn't attached when set called");
+            clientConnectQueue.clear();
+            clientConnectQueue.add(() -> this.client.configure());
         }
     }
 
     @Override
     public void attachToClient(ServiceClient client) {
         this.client = client;
+        Iterator<Runnable> queueIter = clientConnectQueue.iterator();
+        while (queueIter.hasNext()) {
+            queueIter.next().run();
+            queueIter.remove();
+        }
     }
 }

@@ -197,7 +197,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             });
         }, ServiceMode.OVERLAY);
         ColorDelegate primary = new ColorDelegate(
-                WallpaperColorInfo.getInstance(launcher).getMainColor(),
+                WallpaperColorInfo.getInstance(launcher).getActualMainColor(),
                 ColorDelegate.PRIMARY);
         ColorDelegate secondary = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
@@ -215,7 +215,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 ColorEngine.getInstance(launcher).getAccentResolver().resolveColor(),
                 ColorDelegate.ACCENT_COLOR);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
-            primary.set(wallpaperColorInfo.getMainColor());
+            primary.set(wallpaperColorInfo.getActualMainColor());
             secondary.set(wallpaperColorInfo.getSecondaryColor());
             tertiary.set(wallpaperColorInfo.getTertiaryColor());
         });
@@ -225,6 +225,9 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         client.addConfigurationDelegate(primary);
         client.addConfigurationDelegate(secondary);
         client.addConfigurationDelegate(tertiary);
+        client.addConfigurationDelegate(primaryActual);
+        client.addConfigurationDelegate(secondaryActual);
+        client.addConfigurationDelegate(accent);
     }
 
     @Override
