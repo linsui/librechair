@@ -97,7 +97,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             launcher.setLauncherOverlay(this);
             client.attachInterface(new ILauncherInterface.Stub() {
                 @Override
-                public List<String> getSupportedCalls() throws RemoteException {
+                public List<String> getSupportedCalls() {
                     return Arrays.asList(CustomServiceClient.PREDICTIONS_CALL,
                             CustomServiceClient.ACTIONS_CALL,
                             CustomServiceClient.NOTIFICATIONS_CALL);
@@ -106,89 +106,94 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 @SuppressWarnings("unchecked")
                 @Override
                 public Bundle call(String callName, Bundle opt) throws RemoteException {
-                    if (callName.equals(CustomServiceClient.PREDICTIONS_CALL)) {
-                        UserEventDispatcher dispatcher = launcher.getUserEventDispatcher();
-                        if (dispatcher instanceof CustomAppPredictor) {
+                    switch (callName) {
+                        case CustomServiceClient.PREDICTIONS_CALL:
+                            UserEventDispatcher dispatcher = launcher.getUserEventDispatcher();
+                            if (dispatcher instanceof CustomAppPredictor) {
+                                Bundle bundle = new Bundle();
+                                bundle.putParcelableArrayList("retval", new ArrayList<>(
+                                        ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(
+                                                opt.getInt("amt", -1) != -1 ? opt.getInt(
+                                                        "amt") : 10).map(
+                                                it -> new ParcelableComponentKeyMapper(
+                                                        it.getComponentKey(), it.getApp(
+                                                        launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
+                                                Collectors.toList())));
+                                return bundle;
+                            }
+                            break;
+                        case CustomServiceClient.ACTIONS_CALL:
                             Bundle bundle = new Bundle();
                             bundle.putParcelableArrayList("retval", new ArrayList<>(
-                                    ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(
-                                            opt.getInt("amt", -1) != -1 ? opt.getInt(
-                                                    "amt") : 10).map(
-                                            it -> new ParcelableComponentKeyMapper(
-                                                    it.getComponentKey(), it.getApp(
-                                                    launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
-                                            Collectors.toList())));
+                                    ((PredictionsFloatingHeader) LauncherAppState
+                                            .getInstanceNoCreate()
+                                            .getLauncher()
+                                            .getAppsView()
+                                            .getFloatingHeaderView())
+                                            .getActionsRowView()
+                                            .getActions()
+                                            .stream()
+                                            .limit(opt.getInt("amt", -1) != -1 ? opt.getInt(
+                                                    "amt") : 10)
+                                            .map(it -> new ParcelablePair(
+                                                    it.shortcutInfo.iconBitmap,
+                                                    it.shortcut.getShortcutInfo()))
+                                            .collect(Collectors.toList())));
                             return bundle;
-                        }
-                    } else if (callName.equals(CustomServiceClient.ACTIONS_CALL)) {
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelableArrayList("retval", new ArrayList<>(
-                                ((PredictionsFloatingHeader) LauncherAppState
-                                        .getInstanceNoCreate()
-                                        .getLauncher()
-                                        .getAppsView()
-                                        .getFloatingHeaderView())
-                                        .getActionsRowView()
-                                        .getActions()
-                                        .stream()
-                                        .limit(opt.getInt("amt", -1) != -1 ? opt.getInt("amt") : 10)
-                                        .map(it -> new ParcelablePair(it.shortcutInfo.iconBitmap,
-                                                it.shortcut.getShortcutInfo()))
-                                        .collect(Collectors.toList())));
-                        return bundle;
-                    } else if (callName.equals(CustomServiceClient.NOTIFICATIONS_CALL)) {
-                        INotificationsChangedListener listener =
-                                INotificationsChangedListener.Stub.asInterface(
-                                        opt.getBinder("listener"));
-                        if (listener != null) {
-                            LauncherNotifications.getInstance().addListener(
-                                    new NotificationListener.NotificationsChangedListener() {
-                                        @Override
-                                        public synchronized void onNotificationPosted(
-                                                PackageUserKey postedPackageUserKey,
-                                                NotificationKeyData notificationKey,
-                                                boolean shouldBeFilteredOut) {
-                                            NotificationListener ll = NotificationListener.getInstanceIfConnected();
-                                            if (ll != null) {
-                                                List<StatusBarNotification> sbn;
-                                                if ((sbn = ll.getNotificationsForKeys(
-                                                        Collections.singletonList(
-                                                                notificationKey))) != null && sbn.size() > 0) {
-                                                    sbn.forEach(posted -> {
-                                                        try {
-                                                            listener.notificationPosted(posted);
-                                                        } catch (RemoteException e) {
-                                                            e.printStackTrace();
-                                                        }
-                                                    });
+                        case CustomServiceClient.NOTIFICATIONS_CALL:
+                            INotificationsChangedListener listener =
+                                    INotificationsChangedListener.Stub.asInterface(
+                                            opt.getBinder("listener"));
+                            if (listener != null) {
+                                LauncherNotifications.getInstance().addListener(
+                                        new NotificationListener.NotificationsChangedListener() {
+                                            @Override
+                                            public synchronized void onNotificationPosted(
+                                                    PackageUserKey postedPackageUserKey,
+                                                    NotificationKeyData notificationKey,
+                                                    boolean shouldBeFilteredOut) {
+                                                NotificationListener ll = NotificationListener.getInstanceIfConnected();
+                                                if (ll != null) {
+                                                    List<StatusBarNotification> sbn;
+                                                    if ((sbn = ll.getNotificationsForKeys(
+                                                            Collections.singletonList(
+                                                                    notificationKey))) != null && sbn.size() > 0) {
+                                                        sbn.forEach(posted -> {
+                                                            try {
+                                                                listener.notificationPosted(posted);
+                                                            } catch (RemoteException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        });
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        @Override
-                                        public synchronized void onNotificationRemoved(
-                                                PackageUserKey removedPackageUserKey,
-                                                NotificationKeyData notificationKey) {
-                                            try {
-                                                listener.notificationRemoved(
-                                                        notificationKey.notificationKey);
-                                            } catch (RemoteException e) {
-                                                e.printStackTrace();
+                                            @Override
+                                            public synchronized void onNotificationRemoved(
+                                                    PackageUserKey removedPackageUserKey,
+                                                    NotificationKeyData notificationKey) {
+                                                try {
+                                                    listener.notificationRemoved(
+                                                            notificationKey.notificationKey);
+                                                } catch (RemoteException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
-                                        }
 
-                                        @Override
-                                        public synchronized void onNotificationFullRefresh(
-                                                List<StatusBarNotification> activeNotifications) {
-                                            try {
-                                                listener.notificationsChanged(activeNotifications);
-                                            } catch (RemoteException e) {
-                                                e.printStackTrace();
+                                            @Override
+                                            public synchronized void onNotificationFullRefresh(
+                                                    List<StatusBarNotification> activeNotifications) {
+                                                try {
+                                                    listener.notificationsChanged(
+                                                            activeNotifications);
+                                                } catch (RemoteException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
-                                        }
-                                    });
-                        }
-                        return new Bundle();
+                                        });
+                            }
+                            return new Bundle();
                     }
                     Bundle bundle = new Bundle();
                     bundle.putString("err", "e_unsupported");
