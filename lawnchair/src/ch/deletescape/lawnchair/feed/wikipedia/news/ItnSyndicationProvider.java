@@ -32,6 +32,7 @@ import org.jdom2.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
@@ -63,7 +64,7 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
                 SyndContent content = new SyndContentImpl();
                 content.setValue(item.story);
                 entry.setDescription(content);
-                entry.setPublishedDate(item.dt);
+                entry.setPublishedDate(new Date());
                 entry.setForeignMarkup(Collections.singletonList(
                         new Element("media", "thumbnail", "https://xml/res-auto").setAttribute(
                                 "url", item.thumbnail)));
