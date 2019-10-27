@@ -1011,7 +1011,7 @@ class LauncherFeed(private val originalContext: Context,
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     } else {
-                        translationY = 40f
+                        translationY = 80f
                         translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
                         alpha = 0f
                         scaleX = 0.7f
@@ -1090,7 +1090,7 @@ class LauncherFeed(private val originalContext: Context,
                     animate().setDuration(300).translationZ(0f)
                 }
             } else {
-                animate().translationY(40f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f).setDuration(300)
+                animate().translationY(120f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f).setDuration(300)
                         .setUpdateListener {
                             if (it.animatedFraction == 1f) {
                                 frame.removeView(this)
