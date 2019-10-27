@@ -22,14 +22,15 @@ package com.android.overlayclient.compat;
 
 import android.os.Bundle;
 
-public class BackgroundHintDelegate extends MutableDelegate<Integer> {
+public class ColorDelegate extends MutableDelegate<Integer> {
     public static final String PRIMARY = "background_color_hint";
     public static final String SECONDARY = "background_secondary_color_hint";
     public static final String TERTIARY = "background_tertiary_color_hint";
+    public static final String ACCENT_COLOR = "launcher_user_accent";
 
     private final String key;
 
-    public BackgroundHintDelegate(Integer value, String key) {
+    public ColorDelegate(Integer value, String key) {
         super(value);
         this.key = key;
     }

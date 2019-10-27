@@ -43,7 +43,7 @@ import com.android.overlayclient.client.CompanionServiceFactory;
 import com.android.overlayclient.client.CustomServiceClient;
 import com.android.overlayclient.client.OverlayCallback;
 import com.android.overlayclient.client.ServiceMode;
-import com.android.overlayclient.compat.BackgroundHintDelegate;
+import com.android.overlayclient.compat.ColorDelegate;
 import com.google.android.apps.nexuslauncher.CustomAppPredictor;
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.libraries.launcherclient.ILauncherInterface;
@@ -55,6 +55,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
+import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
@@ -195,26 +196,32 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
                 }
             });
         }, ServiceMode.OVERLAY);
-        BackgroundHintDelegate primary = new BackgroundHintDelegate(
+        ColorDelegate primary = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getMainColor(),
-                BackgroundHintDelegate.PRIMARY);
-        BackgroundHintDelegate secondary = new BackgroundHintDelegate(
+                ColorDelegate.PRIMARY);
+        ColorDelegate secondary = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
-                BackgroundHintDelegate.SECONDARY);
-        BackgroundHintDelegate primaryActual = new BackgroundHintDelegate(
+                ColorDelegate.SECONDARY);
+        ColorDelegate primaryActual = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
-                BackgroundHintDelegate.PRIMARY + "_actual");
-        BackgroundHintDelegate secondaryActual = new BackgroundHintDelegate(
+                ColorDelegate.PRIMARY + "_actual");
+        ColorDelegate secondaryActual = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
-                BackgroundHintDelegate.SECONDARY + "_actual");
-        BackgroundHintDelegate tertiary = new BackgroundHintDelegate(
+                ColorDelegate.SECONDARY + "_actual");
+        ColorDelegate tertiary = new ColorDelegate(
                 WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
-                BackgroundHintDelegate.TERTIARY);
+                ColorDelegate.TERTIARY);
+        ColorDelegate accent = new ColorDelegate(
+                ColorEngine.getInstance(launcher).getAccentResolver().resolveColor(),
+                ColorDelegate.ACCENT_COLOR);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
             primary.set(wallpaperColorInfo.getMainColor());
             secondary.set(wallpaperColorInfo.getSecondaryColor());
             tertiary.set(wallpaperColorInfo.getTertiaryColor());
         });
+        ColorEngine.getInstance(launcher).addColorChangeListeners(resolveInfo -> {
+            accent.set(resolveInfo.getColor());
+        }, ColorEngine.Resolvers.ACCENT);
         client.addConfigurationDelegate(primary);
         client.addConfigurationDelegate(secondary);
         client.addConfigurationDelegate(tertiary);
