@@ -1011,13 +1011,13 @@ class LauncherFeed(private val originalContext: Context,
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     } else {
+                        visibility = View.VISIBLE
                         translationY = 80f
                         translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
                         alpha = 0f
                         scaleX = 0.7f
                         scaleY = 0.7f
                         animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).duration = 300
-                        visibility = View.VISIBLE
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     }
