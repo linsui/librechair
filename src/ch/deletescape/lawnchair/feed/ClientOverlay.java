@@ -201,6 +201,12 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         BackgroundHintDelegate secondary = new BackgroundHintDelegate(
                 WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
                 BackgroundHintDelegate.SECONDARY);
+        BackgroundHintDelegate primaryActual = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
+                BackgroundHintDelegate.PRIMARY + "_actual");
+        BackgroundHintDelegate secondaryActual = new BackgroundHintDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
+                BackgroundHintDelegate.SECONDARY + "_actual");
         BackgroundHintDelegate tertiary = new BackgroundHintDelegate(
                 WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
                 BackgroundHintDelegate.TERTIARY);
