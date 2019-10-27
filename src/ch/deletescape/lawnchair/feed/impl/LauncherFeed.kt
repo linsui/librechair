@@ -851,7 +851,7 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     @JvmOverloads
-    fun displayProviderScreen(screen: ProviderScreen, x: Float, y: Float,
+    fun displayProviderScreen(screen: ProviderScreen, x: Float?, y: Float?,
                               inflater: (parent: ViewGroup) -> View, clipBounds: Rect? = null) {
         var view: View? = null
         displayView({
@@ -910,14 +910,15 @@ class LauncherFeed(private val originalContext: Context,
         }
         removeDisplayedView(providerScreens.first { it.first == screen }.second.view,
                 providerScreens.first { it.first == screen }.second.x,
-                providerScreens.first { it.first == screen }.second.y,  providerScreens.first { it.first == screen }.second.rect)
+                providerScreens.first { it.first == screen }.second.y,
+                providerScreens.first { it.first == screen }.second.rect)
         screenActions.remove(providerScreens.first { it.first == screen }.first)
         providerScreens.first { it.first == screen }.first.onDestroy()
         providerScreens.remove(providerScreens.first { it.first == screen })
         updateActions()
     }
 
-    private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float, y: Float,
+    private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float?, y: Float?,
                             clipBounds: Rect? = null) {
         if (useTabbedMode) {
             tabView.tabsEnabled = false
@@ -983,30 +984,41 @@ class LauncherFeed(private val originalContext: Context,
                     val (height, width) = measuredHeight to measuredWidth
                     viewTreeObserver.removeOnPreDrawListener(this)
                     val radius = hypot(height.toDouble(), width.toDouble())
-                    val animator: Animator
-                    if (clipBounds == null) {
-                        animator = ViewAnimationUtils
-                                .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
-                                        radius.toFloat())
+                    if (x != null && y != null) {
+                        val animator: Animator
+                        if (clipBounds == null) {
+                            animator = ViewAnimationUtils
+                                    .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
+                                            radius.toFloat())
+                        } else {
+                            val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
+                                    getX().roundToInt() + measuredWidth,
+                                    getY().roundToInt() + measuredHeight);
+                            val evaluator = RectS2DEvaluator()
+                            animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
+                                    clipBounds, endRect)
+                            alpha = 0f
+                            animate().alpha(1f).duration = 300 / 2
+                            animator.interpolator = Interpolators.ACCEL_DEACCEL
+                        }
+                        translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
+                        visibility = View.VISIBLE
+                        animator.apply {
+                            duration = 300
+                            start()
+                        }
+                        recyclerView.suppressLayout(true)
+                        toolbarParent.animate().translationY(0f)
                     } else {
-                        val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
-                                getX().roundToInt() + measuredWidth,
-                                getY().roundToInt() + measuredHeight);
-                        val evaluator = RectS2DEvaluator()
-                        animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
-                                clipBounds, endRect)
+                        translationY = -40f
                         alpha = 0f
-                        animate().alpha(1f).duration = 300 / 2
-                        animator.interpolator = Interpolators.ACCEL_DEACCEL
+                        scaleX = 0.7f
+                        scaleY = 0.7f
+                        animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).duration = 300
+                        visibility = View.VISIBLE
+                        recyclerView.suppressLayout(true)
+                        toolbarParent.animate().translationY(0f)
                     }
-                    translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
-                    visibility = View.VISIBLE
-                    animator.apply {
-                        duration = 300
-                        start()
-                    }
-                    recyclerView.suppressLayout(true)
-                    toolbarParent.animate().translationY(0f)
                     return true;
                 }
             })
@@ -1023,7 +1035,7 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
-    fun removeDisplayedView(v: View, x: Float, y: Float, clipBounds: Rect? = null) {
+    fun removeDisplayedView(v: View, x: Float?, y: Float?, clipBounds: Rect? = null) {
         if (useTabbedMode) {
             tabView.tabIconTint = oldIconTint
             tabView.tabTextColors = oldTextColor
@@ -1037,40 +1049,51 @@ class LauncherFeed(private val originalContext: Context,
         v.apply {
             val (height, width) = measuredHeight to measuredWidth
             val radius = hypot(height.toDouble(), width.toDouble())
-            val animator: Animator
-            if (clipBounds == null) {
-                animator = ViewAnimationUtils
-                        .createCircularReveal(this@apply, x.toInt(), y.toInt(), radius.toFloat(), 0f)
-            } else {
-                val startRect = Rect()
-                getGlobalVisibleRect(startRect)
-                animator = ObjectAnimator.ofObject(this@apply, "clipBounds", RectS2DEvaluator(true),
-                        clipBounds, startRect)
-                FeedScope.launch(Dispatchers.Main) {
-                    delay(200)
-                    animate().alpha(0f).duration = 300 / 4
+            if (x != null && y != null) {
+                val animator: Animator
+                if (clipBounds == null) {
+                    animator = ViewAnimationUtils
+                            .createCircularReveal(this@apply, x.toInt(), y.toInt(),
+                                    radius.toFloat(), 0f)
+                } else {
+                    val startRect = Rect()
+                    getGlobalVisibleRect(startRect)
+                    animator = ObjectAnimator.ofObject(this@apply, "clipBounds",
+                            RectS2DEvaluator(true),
+                            clipBounds, startRect)
+                    FeedScope.launch(Dispatchers.Main) {
+                        delay(200)
+                        animate().alpha(0f).duration = 300 / 4
+                    }
+                    animator.interpolator = Interpolators.ACCEL_DEACCEL
                 }
-                animator.interpolator = Interpolators.ACCEL_DEACCEL
-            }
-            visibility = View.VISIBLE
-            animator.apply {
-                duration = 300
-                addListener(object : Animator.AnimatorListener {
-                    override fun onAnimationRepeat(animation: Animator?) {
-                    }
+                visibility = View.VISIBLE
+                animator.apply {
+                    duration = 300
+                    addListener(object : Animator.AnimatorListener {
+                        override fun onAnimationRepeat(animation: Animator?) {
+                        }
 
-                    override fun onAnimationEnd(animation: Animator?) {
-                        frame.removeView(v)
-                    }
+                        override fun onAnimationEnd(animation: Animator?) {
+                            frame.removeView(v)
+                        }
 
-                    override fun onAnimationCancel(animation: Animator?) {
-                    }
+                        override fun onAnimationCancel(animation: Animator?) {
+                        }
 
-                    override fun onAnimationStart(animation: Animator?) {
-                    }
-                })
-                start()
-                animate().setDuration(300).translationZ(0f)
+                        override fun onAnimationStart(animation: Animator?) {
+                        }
+                    })
+                    start()
+                    animate().setDuration(300).translationZ(0f)
+                }
+            } else {
+                animate().translationZ(-40f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f).setDuration(300)
+                        .setUpdateListener {
+                            if (it.animatedFraction == 1f) {
+                                frame.removeView(this)
+                            }
+                        }
             }
             recyclerView.suppressLayout(false)
         }
@@ -1534,6 +1557,6 @@ class LauncherFeed(private val originalContext: Context,
 
     fun onBackPressed() = false
 
-    private data class ScreenData(val x: Float, val y: Float, val view: View,
+    private data class ScreenData(val x: Float?, val y: Float?, val view: View,
                                   val rect: Rect? = null)
 }

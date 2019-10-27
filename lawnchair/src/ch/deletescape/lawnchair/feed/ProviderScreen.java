@@ -120,23 +120,25 @@ public abstract class ProviderScreen extends ContextWrapper
         }
     }
 
-    public final void display(LauncherFeed feed, int tX, int tY) {
+    public final void display(LauncherFeed feed, @Nullable Integer tX, @Nullable Integer tY) {
         this.display(feed, tX, tY, (Rect) null);
     }
 
-    public final void display(LauncherFeed feed, int tX, int tY, @Nullable Rect clipBounds) {
+    public final void display(LauncherFeed feed, @Nullable Integer tX, @Nullable Integer tY,
+                              @Nullable Rect clipBounds) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.feed = feed;
-        feed.displayProviderScreen(this, tX, tY, viewGroup -> {
-            View v = getView(viewGroup);
-            bindView(v);
-            return v;
-        }, clipBounds);
+        feed.displayProviderScreen(this, tX != null ? (float) (int) tX : null,
+                tY != null ? (float) (int) tY : null, viewGroup -> {
+                    View v = getView(viewGroup);
+                    bindView(v);
+                    return v;
+                }, clipBounds);
         feed.getScreenActions().put(this, actions);
         feed.updateActions();
     }
 
-    public final void display(ProviderScreen screen, int tX, int tY) {
+    public final void display(ProviderScreen screen, @Nullable Integer tX, @Nullable Integer tY) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         if (feed != null && provider == null) {
             display(feed, tX, tY);
@@ -148,28 +150,36 @@ public abstract class ProviderScreen extends ContextWrapper
         }
     }
 
-    public final void display(FeedProvider provider, int touchX, int touchY) {
+    public final void display(FeedProvider provider, @Nullable Integer touchX,
+                              @Nullable Integer touchY) {
         this.display(provider, touchX, touchY, (Rect) null);
     }
 
-    public final void display(FeedProvider provider, int touchX, int touchY, View view) {
+    public final void display(FeedProvider provider, @Nullable Integer touchX,
+                              @Nullable Integer touchY, View view) {
         Rect rect = new Rect();
         view.getGlobalVisibleRect(rect);
         this.display(provider, touchX, touchY, rect);
     }
 
-    public final void display(LauncherFeed feed, int touchX, int touchY, View view) {
+    public final void display(LauncherFeed feed, @Nullable Integer touchX, @Nullable Integer touchY,
+                              View view) {
         Rect rect = new Rect();
         view.getGlobalVisibleRect(rect);
         this.display(feed, touchX, touchY, rect);
     }
 
-    public final void display(FeedProvider provider, int touchX, int touchY, @Nullable Rect clipBounds) {
+    public final void display(FeedProvider provider, @Nullable Integer touchX,
+                              @Nullable Integer touchY, @Nullable Rect clipBounds) {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
         this.provider = provider;
         if (findFeed() != null) {
             display(Objects.requireNonNull(findFeed()), touchX, touchY, clipBounds);
         } else if (Launcher.getLauncherOrNull(provider.getContext()) != null) {
+            if (touchX == null || touchY == null) {
+                throw new IllegalStateException(
+                        "this provider isn't attached to a container that accepts unknown position attributes");
+            }
             Launcher.getLauncher(provider.getContext()).getStateManager()
                     .goToState(LauncherState.NEWS_OVERLAY, false);
             LayoutParams params = new WindowManager.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -205,7 +215,7 @@ public abstract class ProviderScreen extends ContextWrapper
                             Integer.MAX_VALUE / 32);
                     overlayView.getViewTreeObserver().removeOnPreDrawListener(this);
                     Animator animator = ViewAnimationUtils
-                            .createCircularReveal(overlayView, (int) touchX, (int) touchY, 0,
+                            .createCircularReveal(overlayView, touchX, touchY, 0,
                                     radius);
                     animator.setDuration(50000);
                     overlayView.setVisibility(View.VISIBLE);

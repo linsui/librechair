@@ -127,15 +127,11 @@ public class FeedSearchboxProvider extends FeedProvider {
                                 adapter.notifyDataSetChanged();
                                 predictions.setOnItemClickListener(
                                         (parent1, view, position, id) -> {
-                                            int x, y;
-                                            x = LawnchairUtilsKt.getPostionOnScreen(
-                                                    view).getFirst();
-                                            y = LawnchairUtilsKt.getPostionOnScreen(
-                                                    view).getSecond();
                                             WebViewScreen.obtain(parent.getContext(), String.format(
                                                     Utilities.getLawnchairPrefs(
                                                             getContext()).getFeedSearchUrl(),
-                                                    suggestions.get(position))).display(FeedSearchboxProvider.this, x, y, view);
+                                                    suggestions.get(position))).display(
+                                                    FeedSearchboxProvider.this, null, null);
                                         });
                             });
                         }
@@ -146,12 +142,9 @@ public class FeedSearchboxProvider extends FeedProvider {
             editText.setMaxLines(1);
             editText.setOnEditorActionListener((v, actionId, event) -> {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    int x, y;
-                    x = LawnchairUtilsKt.getPostionOnScreen(v).getFirst();
-                    y = LawnchairUtilsKt.getPostionOnScreen(v).getSecond();
                     WebViewScreen.obtain(parent.getContext(), String.format(
                             Utilities.getLawnchairPrefs(getContext()).getFeedSearchUrl(),
-                            editText.getText().toString())).display(this, x, y, v);
+                            editText.getText().toString())).display(this, null, null);
                 }
                 return true;
             });
