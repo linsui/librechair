@@ -34,30 +34,29 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import ch.deletescape.lawnchair.LawnchairApp;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
+import kotlin.Unit;
 
-public class ForecastChipProvider extends ChipProvider
-        implements LawnchairSmartspaceController.Listener {
-    @Nullable
-    private LawnchairSmartspaceController.WeatherData weather;
-
+public class ForecastChipProvider extends ChipProvider {
     @Nullable
     private ForecastProvider.Forecast forecast;
     private Context context;
 
     public ForecastChipProvider(Context context) {
         this.context = context;
-        ((LawnchairApp) context.getApplicationContext()).getSmartspace().addListener(this);
+        WeatherManager.INSTANCE.subscribeHourly(fc -> {
+            forecast = fc;
+            return Unit.INSTANCE;
+        });
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Item> getItems(Context context) {
         return forecast == null ? Collections.EMPTY_LIST : Arrays.stream(forecast.getData()).map(
@@ -75,24 +74,5 @@ public class ForecastChipProvider extends ChipProvider
                 }).limit((int) Math.round(
                 ChipPersistence.Companion.getInstance(context).getWeatherItems())).collect(
                 Collectors.toList());
-    }
-
-    @Override
-    public void onDataUpdated(@Nullable LawnchairSmartspaceController.WeatherData weather,
-                              @Nullable LawnchairSmartspaceController.CardData card) {
-        this.weather = weather;
-        if (weather != null && (forecast == null || ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-                System.currentTimeMillis()), TimeZone.getDefault().toZoneId()).withZoneSameInstant(
-                ZoneId.of(
-                        "UTC")).toEpochSecond() * 1000 > forecast.getData()[0].getDate().getTime())) {
-            Executors.newSingleThreadExecutor().submit(() -> {
-                try {
-                    forecast = LawnchairUtilsKt.getForecastProvider(context).getHourlyForecast(
-                            weather.getCoordLat(), weather.getCoordLon());
-                } catch (ForecastProvider.ForecastException e) {
-                    e.printStackTrace();
-                }
-            });
-        }
     }
 }
