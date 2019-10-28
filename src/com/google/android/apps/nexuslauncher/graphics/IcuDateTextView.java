@@ -75,7 +75,7 @@ public class IcuDateTextView extends DoubleShadowTextView {
 
     public static DateTimeFormatter getDateTimeFormat(Context context) {
         return DateTimeFormatter.ofPattern(context
-                .getString(R.string.icu_abbrev_wday_month_day_no_year), Locale.getDefault());
+                .getString(R.string.icu_abbrev_wday_month_day_no_year_jstdicu), Locale.getDefault());
     }
 
     private void registerReceiver() {

@@ -24,6 +24,7 @@
     <string name="default_owm_key" translatable="false">a9b41f104ced7c20b203203529eb1809</string>
     <string name="action_switch_apps_class" translatable="false">ch.deletescape.lawnchair.gestures.SwitchAppsGestureHandler</string>
     <string name="icu_abbrev_wday_month_day_no_year">EEEEMMMd</string>
+    <string name="icu_abbrev_wday_month_day_no_year_jstdicu">EEEE MMM d</string>
     <string name="icu_abbrev_time">HH:mm</string>
 
     <string name="icu_abbrev_time_12h">hh:mm aa</string>
