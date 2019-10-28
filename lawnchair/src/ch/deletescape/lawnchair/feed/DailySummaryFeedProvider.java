@@ -19,8 +19,10 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract;
@@ -149,7 +151,8 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     RecyclerView recyclerView = v.findViewById(R.id.daily_summary_information);
                     Adapter adapter = new Adapter(parent.getContext(), this);
                     recyclerView.setAdapter(adapter);
-                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(parent.getContext());
+                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(
+                            parent.getContext());
                     layoutManager.setFlexWrap(FlexWrap.WRAP);
                     layoutManager.setFlexDirection(FlexDirection.COLUMN);
                     layoutManager.setJustifyContent(JustifyContent.FLEX_START);
@@ -188,25 +191,28 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             + " ) AND ( " + CalendarContract.Events.DTSTART + " <= "
                             + LawnchairUtilsKt
                             .tomorrow(currentTime).getTime() + " ))";
-            Cursor calendarEvents = context.getContentResolver()
-                    .query(CalendarContract.Events.CONTENT_URI,
-                            new String[]{CalendarContract.Instances.TITLE,
-                                    CalendarContract.Instances.DTSTART,
-                                    CalendarContract.Instances.DTEND,
-                                    CalendarContract.Instances.DESCRIPTION,
-                                    CalendarContract.Events._ID,
-                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                    CalendarContract.Events.EVENT_LOCATION}, query, null,
-                            CalendarContract.Instances.DTSTART + " ASC");
-            if (calendarEvents.getCount() > 0) {
-                items.add(new DailySummaryItem(LawnchairUtilsKt
-                        .tint(
-                                Objects.requireNonNull(
-                                        context.getDrawable(R.drawable.ic_event_black_24dp)),
-                                FeedAdapter.Companion.getOverrideColor(context)),
-                        context.getResources()
-                                .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
-                                        calendarEvents.getCount(), calendarEvents.getCount())));
+            if (context.checkSelfPermission(
+                    Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
+                Cursor calendarEvents = context.getContentResolver()
+                        .query(CalendarContract.Events.CONTENT_URI,
+                                new String[]{CalendarContract.Instances.TITLE,
+                                        CalendarContract.Instances.DTSTART,
+                                        CalendarContract.Instances.DTEND,
+                                        CalendarContract.Instances.DESCRIPTION,
+                                        CalendarContract.Events._ID,
+                                        CalendarContract.Instances.CUSTOM_APP_PACKAGE,
+                                        CalendarContract.Events.EVENT_LOCATION}, query, null,
+                                CalendarContract.Instances.DTSTART + " ASC");
+                if (calendarEvents.getCount() > 0) {
+                    items.add(new DailySummaryItem(LawnchairUtilsKt
+                            .tint(
+                                    Objects.requireNonNull(
+                                            context.getDrawable(R.drawable.ic_event_black_24dp)),
+                                    FeedAdapter.Companion.getOverrideColor(context)),
+                            context.getResources()
+                                    .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
+                                            calendarEvents.getCount(), calendarEvents.getCount())));
+                }
             }
             Log.d(getClass().getName(),
                     "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
