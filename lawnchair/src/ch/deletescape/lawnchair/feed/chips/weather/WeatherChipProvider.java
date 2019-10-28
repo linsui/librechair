@@ -31,32 +31,29 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import ch.deletescape.lawnchair.LawnchairApp;
+import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController;
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
+import kotlin.Unit;
 
-public class WeatherChipProvider extends ChipProvider
-        implements LawnchairSmartspaceController.Listener {
+public class WeatherChipProvider extends ChipProvider {
     @Nullable
-    private LawnchairSmartspaceController.WeatherData weather;
+    private ForecastProvider.CurrentWeather weather;
 
     public WeatherChipProvider(Context context) {
-        ((LawnchairApp) context.getApplicationContext()).getSmartspace().addListener(this);
+        WeatherManager.INSTANCE.subscribeWeather(weather -> {
+            this.weather = weather;
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
     public List<Item> getItems(Context context) {
-        return weather == null ? Collections.EMPTY_LIST : Collections.singletonList(((Supplier<Item>) () -> {
+        return weather == null ? Collections.emptyList() : Collections.singletonList(((Supplier<Item>) () -> {
             Item item = new Item();
             item.icon = new BitmapDrawable(context.getResources(), weather.getIcon());
-            item.title = weather.getTitle(Utilities.getLawnchairPrefs(context).getWeatherUnit());
+            item.title = weather.getTemperature().toString(Utilities.getLawnchairPrefs(context).getWeatherUnit());
             return item;
         }).get());
-    }
-
-    @Override
-    public void onDataUpdated(@Nullable LawnchairSmartspaceController.WeatherData weather,
-                              @Nullable LawnchairSmartspaceController.CardData card) {
-        this.weather = weather;
     }
 }
