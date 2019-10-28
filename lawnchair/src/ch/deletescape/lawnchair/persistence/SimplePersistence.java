@@ -49,6 +49,7 @@ public class SimplePersistence {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private String legacyGet(String key, String defaultValue) {
         File file = new File(context.get().getFilesDir(), "persist_" + key);
         if (!file.exists()) {
@@ -57,6 +58,7 @@ public class SimplePersistence {
         try {
             FileInputStream stream = new FileInputStream(file);
             String value = IOUtils.toString(stream, Charset.defaultCharset());
+            file.delete();
             this.put(key, value);
             return value;
         } catch (IOException e) {
