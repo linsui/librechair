@@ -24,6 +24,7 @@ import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 
 import com.android.launcher3.Utilities;
+import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,6 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
@@ -66,11 +66,10 @@ public class DailyForecastChipProvider extends ChipProvider {
                             Utilities.getLawnchairPrefs(context).getWeatherUnit()),
                             it.getHigh().toString(
                                     Utilities.getLawnchairPrefs(context).getWeatherUnit()),
-                            LawnchairUtilsKt.formatTime(
-                                    ZonedDateTime.ofInstant(Instant.ofEpochMilli(
-                                            it.getDate().getTime()),
-                                            ZoneId.of("UTC")).withZoneSameInstant(
-                                            TimeZone.getDefault().toZoneId()), context));
+                            ZonedDateTime.ofInstant(Instant.ofEpochMilli(
+                                    it.getDate().getTime()),
+                                    ZoneId.of("UTC")).withZoneSameInstant(
+                                    TimeZone.getDefault().toZoneId()).toLocalDate().format(IcuDateTextView.getDateTimeFormat(context)));
                     return item;
                 }).limit((int) Math.round(
                 ChipPersistence.Companion.getInstance(context).getWeatherItems())).collect(
