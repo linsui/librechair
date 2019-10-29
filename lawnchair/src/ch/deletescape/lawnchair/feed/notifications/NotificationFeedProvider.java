@@ -25,6 +25,8 @@ import android.content.Context;
 import android.service.notification.StatusBarNotification;
 import android.view.View;
 
+import androidx.core.graphics.ColorUtils;
+
 import com.android.launcher3.notification.NotificationInfo;
 
 import java.util.Collections;
@@ -90,7 +92,7 @@ public class NotificationFeedProvider extends FeedProvider {
                     title = "?";
                 }
                 Card card = new Card(
-                        info.getIconForBackground(getContext(), getFeed().getBackgroundColor()),
+                        info.getIconForBackground(getContext(), ColorUtils.setAlphaComponent(getFeed().getBackgroundColor(), 255)),
                         title, parent -> new View(getContext()),
                         Card.TEXT_ONLY | Card.RAISE, "",
                         info.notificationKey.hashCode());

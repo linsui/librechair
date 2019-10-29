@@ -23,56 +23,49 @@ package ch.deletescape.lawnchair.feed.chips
 import android.content.Context
 import android.graphics.drawable.VectorDrawable
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.Card
-import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.feed.pod.FeedPod
+import ch.deletescape.lawnchair.feed.pod.PodFeedProvider
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.tint
 import java.util.*
 import java.util.function.Consumer
 
-class ChipCardProvider(c: Context) : FeedProvider(c), Consumer<List<ChipProvider.Item>?> {
-    lateinit var recycler: RecyclerView
+class ChipCardProvider(context: Context) : PodFeedProvider(context, null) {
+
+    init {
+        setDefaultPod { HorizontalChipPodImpl(context, feed) }
+        setChangeCallback { HorizontalChipPodImpl(context, feed) }
+    }
+
+    override fun isVolatile() = context.feedPrefs.chipCompactCard.not()
+}
+
+class HorizontalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod,
+        Consumer<List<ChipProvider.Item>?> {
     val items = mutableListOf<ChipProvider.Item>()
     val controller
         get() = ChipController.getInstance(context, feed)
 
-    override fun setFeed(feed: LauncherFeed?) {
-        super.setFeed(feed)
+    init {
         controller.subscribe(this)
     }
 
-    override fun onFeedShown() {
-
-    }
-
-    override fun onFeedHidden() {
-
-    }
-
-    override fun onCreate() {
-
-    }
-
-    override fun onDestroy() {
-
-    }
-
-    override fun accept(t: List<ChipProvider.Item>?) = synchronized(this) {
+    override fun accept(t: List<ChipProvider.Item>?) {
         items.clear()
         if (t != null) {
             items += t;
         }
     }
 
-    override fun isVolatile() = true
-
-    override fun getCards(): List<Card> = synchronized(this) {
+    override fun getCards(): List<Card> {
         return items.map {
-            Card(it.icon.let { if (it is VectorDrawable) it.tint(
-                    ColorEngine.getInstance(context).getResolverCache(
-                            ColorEngine.Resolvers.FEED_CHIP).value.computeForegroundColor()) else it
+            Card(it.icon.let {
+                if (it is VectorDrawable) it.tint(
+                        ColorEngine.getInstance(context).getResolverCache(
+                                ColorEngine.Resolvers.FEED_CHIP).value.computeForegroundColor()) else it
             }, it.title,
                     { _, _ -> View(context) }, Card.TEXT_ONLY or Card.RAISE, "",
                     (it.title?.hashCode() ?: UUID.randomUUID().hashCode())
@@ -90,5 +83,4 @@ class ChipCardProvider(c: Context) : FeedProvider(c), Consumer<List<ChipProvider
             }
         }
     }
-
 }
