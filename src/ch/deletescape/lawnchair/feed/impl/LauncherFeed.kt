@@ -1305,6 +1305,7 @@ class LauncherFeed(private val originalContext: Context,
 
     fun refresh(sleep: Long, count: Int = 0, quick: Boolean = true,
                 clearCache: Boolean = false): Unit = synchronized(this) {
+        d("refresh: beginning refresh")
         Thread.sleep(sleep + 150)
         swipeRefreshLayout.post {
             swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
@@ -1326,6 +1327,7 @@ class LauncherFeed(private val originalContext: Context,
                 recyclerView.suppressLayout(true)
             }
         }
+        d("refresh: refreshing chips")
         FeedScope.launch {
             ChipController.getInstance(context, this@LauncherFeed).refresh()
         }
@@ -1427,6 +1429,7 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     return@launch
                 }
+                d("refresh: beginning refresh 4")
                 tabChanged = false
                 runOnMainThread {
                     var flag = false

@@ -127,6 +127,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         val coroutines = mutableListOf<Job>()
         val changed = Vector<Pair<Int, FeedProvider>>()
         providers.forEach {
+            d("refresh: refreshing $it")
             changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedScope.launch {
                 it.feed = feed
