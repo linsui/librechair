@@ -102,7 +102,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         } else {
             val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
             animator.duration =
-                    if (duration != 0) duration.toLong() else (context.feedPrefs.openingAnimationSpeed * 350L * 2).roundToLong()
+                    if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -121,7 +121,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             visibility = View.VISIBLE
             val animator = ObjectAnimator.ofFloat(0f, 1f)
             animator.duration =
-                    if (duration != 0) duration.toLong() else (context.feedPrefs.openingAnimationSpeed * 350L * 2).roundToLong()
+                    if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
             animator.interpolator = Interpolators.DEACCEL_1_5
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
@@ -209,7 +209,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     protected fun initCurrentAnimation(): Float {
         val range = shiftRange
         val maxAccuracy =
-                ((2 * range).toLong() * (context.feedPrefs.openingAnimationSpeed)).roundToLong()
+                ((2 * range).toLong() * (1.0 - context.feedPrefs.openingAnimationSpeed)).roundToLong()
 
         val startShift = mFromState!!.progress * range
         val endShift = mToState!!.progress * range
@@ -346,7 +346,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         // Increase the duration if we prevented the fling, as we are going against a high velocity.
         val durationMultiplier =
                 ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
-                else 1) * context.feedPrefs.openingAnimationSpeed).roundToLong()
+                else 1) * (1.0 - context.feedPrefs.openingAnimationSpeed)).roundToLong()
 
         if (targetState === mToState) {
             endProgress = 1f
