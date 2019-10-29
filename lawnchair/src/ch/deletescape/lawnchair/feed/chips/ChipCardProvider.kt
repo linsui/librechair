@@ -34,24 +34,23 @@ import ch.deletescape.lawnchair.feed.pod.FeedPod
 import ch.deletescape.lawnchair.feed.pod.PodFeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.tint
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 import java.util.function.Consumer
 
-class ChipCardProvider(context: Context) : PodFeedProvider(context, null) {
+class ChipCardProvider(context: Context) : PodFeedProvider(context) {
 
     init {
-        setDefaultPod { HorizontalChipPodImpl(context, feed) }
-        setChangeCallback {
-            if (context.feedPrefs.chipCompactCard.not())
-                HorizontalChipPodImpl(context, feed) else CompactChipPodImpl(context, feed)
+        setPod {
+            if (context.feedPrefs.chipCompactCard.not()) VerticalChipPodImpl(context, feed) else CompactChipPodImpl(context, feed)
         }
     }
 
     override fun isVolatile() = true
 }
 
-class HorizontalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod,
+class VerticalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod,
         Consumer<List<ChipProvider.Item>?> {
     val items = mutableListOf<ChipProvider.Item>()
     val controller
@@ -108,9 +107,13 @@ class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod
         }
     }
 
-    override fun getCards(): List<Card> = listOf(
-            Card(null, context.getString(R.string.title_card_chips), { parent, _ ->
-                parentView = parent as ViewGroup
-                rv
-            }, Card.RAISE, "nosort,top", "chips".hashCode()));
+    override fun getCards(): List<Card> {
+        d("getCards: retrieving cards")
+        return listOf(
+                Card(null, context.getString(R.string.title_card_chips), { parent, _ ->
+                    ch.deletescape.lawnchair.util.extensions.d("inflate: $parent");
+                    parentView = parent as ViewGroup
+                    rv
+                }, Card.RAISE, "nosort,top", "chips".hashCode()))
+    }
 }

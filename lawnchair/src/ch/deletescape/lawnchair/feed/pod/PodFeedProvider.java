@@ -31,31 +31,21 @@ import java.util.function.Supplier;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 
-@SuppressWarnings("WeakerAccess")
 public abstract class PodFeedProvider extends FeedProvider {
     private FeedPod activePod;
-    private Supplier<FeedPod> defaultPod;
+    private Supplier<FeedPod> pod;
 
     private Consumer<Consumer<FeedPod>> changeCallback;
 
-    public PodFeedProvider(Context c,
-                           Supplier<FeedPod> defaultPod1) {
-        this(c, new HashMap<>(), defaultPod1);
+    public PodFeedProvider(Context c) {
+        this(c, new HashMap<>());
     }
 
-    protected PodFeedProvider(Context c, Map<String, String> arguments,
-                              Supplier<FeedPod> defaultPod) {
-        super(c, arguments);
-        this.defaultPod = defaultPod;
-    }
+    protected PodFeedProvider(Context c, Map<String, String> arguments) {
+        super(c, arguments); }
 
-    public void setChangeCallback(
-            Consumer<Consumer<FeedPod>> changeCallback) {
-        this.changeCallback = changeCallback;
-    }
-
-    public void setDefaultPod(Supplier<FeedPod> dp) {
-        this.defaultPod = dp;
+    public void setPod(Supplier<FeedPod> pod) {
+        this.pod = pod;
     }
 
     @Override
@@ -81,10 +71,10 @@ public abstract class PodFeedProvider extends FeedProvider {
     @Override
     public final List<Card> getCards() {
         if (activePod == null) {
-            activePod = defaultPod.get();
+            activePod = pod.get();
         }
-        if (changeCallback != null) {
-            changeCallback.accept(pod -> activePod = pod);
+        if (activePod == null) {
+            throw new IllegalStateException("");
         }
         return activePod.getCards();
     }
