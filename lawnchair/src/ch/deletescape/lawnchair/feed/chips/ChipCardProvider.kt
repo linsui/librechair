@@ -43,6 +43,7 @@ class ChipCardProvider(context: Context) : PodFeedProvider(context) {
 
     init {
         setPod {
+            d("setPod: ${context.feedPrefs.chipCompactCard.not()}")
             if (context.feedPrefs.chipCompactCard.not()) VerticalChipPodImpl(context, feed) else CompactChipPodImpl(context, feed)
         }
     }
