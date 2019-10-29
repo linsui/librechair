@@ -1331,6 +1331,7 @@ class LauncherFeed(private val originalContext: Context,
         FeedScope.launch {
             ChipController.getInstance(context, this@LauncherFeed).refresh()
         }
+        d("refresh: beginning refresh 1")
         runOnMainThread {
             if (!context.lawnchairPrefs.feedShowInfobox) {
                 toolbarParent.removeView(infobox.parent as View)
@@ -1359,6 +1360,7 @@ class LauncherFeed(private val originalContext: Context,
         }
         val oldCards = adapter.immutableCards
         FeedScope.launch {
+            d("refresh: beginning refresh 2 $quick")
             if (!quick) {
                 if (clearCache || !context.feedPrefs.conservativeRefreshes ||
                         ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
@@ -1418,12 +1420,14 @@ class LauncherFeed(private val originalContext: Context,
             }
             val cards = adapter.immutableCards
             if (quick) {
+                d("refresh: beginning refresh 3")
                 if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
                                 ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                         5)) ||
                                         (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
                                                 5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
                     recyclerView.post {
+                        adapter.notifyDataSetChanged()
                         recyclerView.suppressLayout(false)
                         recyclerView.visibility = View.VISIBLE
                     }

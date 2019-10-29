@@ -28,7 +28,7 @@ import kotlin.coroutines.CoroutineContext
 object FeedScope : CoroutineScope {
     @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =
-            newFixedThreadPoolContext(64, "feed")
+            newFixedThreadPoolContext(256, "feed")
 
 }
 
