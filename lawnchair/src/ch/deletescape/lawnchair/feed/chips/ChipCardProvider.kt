@@ -23,6 +23,10 @@ package ch.deletescape.lawnchair.feed.chips
 import android.content.Context
 import android.graphics.drawable.VectorDrawable
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
@@ -30,6 +34,7 @@ import ch.deletescape.lawnchair.feed.pod.FeedPod
 import ch.deletescape.lawnchair.feed.pod.PodFeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.tint
+import com.android.launcher3.R
 import java.util.*
 import java.util.function.Consumer
 
@@ -37,10 +42,13 @@ class ChipCardProvider(context: Context) : PodFeedProvider(context, null) {
 
     init {
         setDefaultPod { HorizontalChipPodImpl(context, feed) }
-        setChangeCallback { HorizontalChipPodImpl(context, feed) }
+        setChangeCallback {
+            if (context.feedPrefs.chipCompactCard.not())
+                HorizontalChipPodImpl(context, feed) else CompactChipPodImpl(context, feed)
+        }
     }
 
-    override fun isVolatile() = context.feedPrefs.chipCompactCard.not()
+    override fun isVolatile() = true
 }
 
 class HorizontalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod,
@@ -83,4 +91,26 @@ class HorizontalChipPodImpl(val context: Context, val feed: LauncherFeed) : Feed
             }
         }
     }
+}
+
+class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod {
+    lateinit var parentView: ViewGroup
+    val rv by lazy {
+        RecyclerView(parentView.context).also {
+            it.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            it.adapter = feed.chipAdapter
+            it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT)
+            it.setOnTouchListener { v, event ->
+                feed.feedController.disallowInterceptCurrentTouchEvent = true
+                false
+            }
+        }
+    }
+
+    override fun getCards(): List<Card> = listOf(
+            Card(null, context.getString(R.string.title_card_chips), { parent, _ ->
+                parentView = parent as ViewGroup
+                rv
+            }, Card.RAISE, "nosort,top", "chips".hashCode()));
 }
