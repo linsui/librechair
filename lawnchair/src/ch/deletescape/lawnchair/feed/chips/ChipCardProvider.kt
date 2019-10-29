@@ -26,7 +26,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
@@ -35,6 +34,7 @@ import ch.deletescape.lawnchair.feed.pod.PodFeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.tint
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.views.SpringRecyclerView
 import com.android.launcher3.R
 import java.util.*
 import java.util.function.Consumer
@@ -96,7 +96,7 @@ class VerticalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPo
 class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod {
     lateinit var parentView: ViewGroup
     val rv by lazy {
-        RecyclerView(parentView.context).also {
+        SpringRecyclerView(parentView.context).also {
             it.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             it.adapter = feed.chipAdapter
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
