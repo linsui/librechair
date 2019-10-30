@@ -15,7 +15,7 @@ environment:
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 secrets:
-  - df62a2d1-3106-448e-9a47-00dcd697396b # bot token
+  - 1ee7c785-17bc-4530-a78d-a23616c1490f # bot token, other secrets
   - 97ec254d-ce28-40b5-a907-57b7fcc083b3 # signing keys [ TOP SECRET ]
   - 685bfdb2-ca3a-4332-bbdb-d7d0d722c923 # keystore alias [ TOP SECRET ]
   - bd60efd1-123b-43ca-a61f-4c0522ab9114 # keystore password [ TOP SECRET ]
@@ -61,5 +61,5 @@ tasks:
       ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-aligned.apk
   - send: |
       cd librechair
-      curl -F document=@"outputs/librechair-ci-signed-aligned.apk" "https://api.telegram.org/bot`cat ~/tg_bot_secret`/sendDocument?chat_id=@${CHAT_ID}"
+      /bin/sh ~/send.sh
 
