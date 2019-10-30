@@ -25,13 +25,11 @@ import com.android.launcher3.Utilities;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Executors;
-
 import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.location.LocationManager.LocationProvider;
-import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider.ForecastException;
 import kotlin.Pair;
+import kotlin.Unit;
 
 public class WeatherCityLocationProvider extends LocationProvider implements
         LawnchairPreferences.OnPreferenceChangeListener {
@@ -43,20 +41,15 @@ public class WeatherCityLocationProvider extends LocationProvider implements
         super(context);
         Utilities.getLawnchairPrefs(context)
                 .addOnPreferenceChangeListener("pref_weather_city", this);
+        WeatherManager.INSTANCE.subscribeGeo(geo -> {
+            location = geo;
+            return Unit.INSTANCE;
+        });
 
     }
 
     @Override
     public void refresh() {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try {
-                location = LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
-                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
-                updateLocation(location.getFirst(), location.getSecond(), true);
-            } catch (ForecastException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
     @Override
