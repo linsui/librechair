@@ -43,6 +43,7 @@ public class WeatherCityLocationProvider extends LocationProvider implements
                 .addOnPreferenceChangeListener("pref_weather_city", this);
         WeatherManager.INSTANCE.subscribeGeo(geo -> {
             location = geo;
+            updateLocation(geo.getFirst(), geo.getSecond(), true);
             return Unit.INSTANCE;
         });
 
