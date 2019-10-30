@@ -43,7 +43,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
 
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback, token: String) {
-        FeedScope.launch {
+        ArticleJobsScope.launch {
             val locale = token.split("@")[1]
             d("bindFeed: binding to locale $locale")
             if (locale != "?") {
@@ -72,7 +72,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
 
     final override fun onInit(tokenCallback: Consumer<String>) {
         context.lawnchairLocationManager.addCallback { lat, lon ->
-            FeedScope.launch {
+            ArticleJobsScope.launch {
                 val country =
                          context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
                 try {
@@ -92,7 +92,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
             }
         } else if (context.lawnchairLocationManager.location != null) {
             context.lawnchairLocationManager.location!!.let { (lat, lon) ->
-                FeedScope.launch {
+                ArticleJobsScope.launch {
                     val country =
                             context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
                     try {

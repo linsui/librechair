@@ -20,7 +20,7 @@ package ch.deletescape.lawnchair.location
 import android.content.Context
 import android.os.NetworkOnMainThreadException
 import android.os.SystemClock
-import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.LocationScope
 import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
 import kotlinx.coroutines.delay
@@ -33,7 +33,7 @@ class IPLocation(context: Context,
                  private val cacheValidityMs: Long = TimeUnit.MINUTES.toMillis(30)) :
         LocationManager.LocationProvider(context) {
     init {
-        FeedScope.launch {
+        LocationScope.launch {
             get()
         }
     }
@@ -42,7 +42,7 @@ class IPLocation(context: Context,
         if (get().success) {
             updateLocation(get().lat, get().lon)
         } else {
-            FeedScope.launch {
+            LocationScope.launch {
                 delay(1000)
                 refresh()
             }

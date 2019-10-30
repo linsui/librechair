@@ -32,6 +32,27 @@ object FeedScope : CoroutineScope {
 
 }
 
+object ArticleJobsScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(64, "articles")
+
+}
+
+object LocationScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(64, "lbclm")
+
+}
+
+object DbScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(16, "dba")
+
+}
+
 object JobScope : CoroutineScope {
     @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =

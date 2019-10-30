@@ -27,8 +27,8 @@ import android.os.Bundle
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.Card
+import ch.deletescape.lawnchair.feed.DbScope
 import ch.deletescape.lawnchair.feed.FeedProvider
-import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.launch
@@ -103,7 +103,7 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                             it shl 2 + UUID.randomUUID().hashCode()).apply {
                         canHide = true
                         onRemoveListener = {
-                            FeedScope.launch {
+                            DbScope.launch {
                                 synchronized(WidgetDatabase.getInstance(context)) {
                                     val widgets = WidgetDatabase.getInstance(context).dao()
                                             .all.filter { it != widget }
@@ -134,7 +134,7 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
             feed?.pickWidget {
                 d("getActions: got widget $it")
                 if (it != -1) {
-                    FeedScope.launch {
+                    DbScope.launch {
                         try {
                             WidgetDatabase.getInstance(context)
                                     .dao()
