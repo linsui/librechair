@@ -15,7 +15,7 @@ environment:
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 secrets:
-  - 1ee7c785-17bc-4530-a78d-a23616c1490f # bot token, other secrets
+  - d2f72036-bb5d-42df-959b-c02c0e43acc7 # bot token, other secrets
   - 97ec254d-ce28-40b5-a907-57b7fcc083b3 # signing keys [ TOP SECRET ]
   - 685bfdb2-ca3a-4332-bbdb-d7d0d722c923 # keystore alias [ TOP SECRET ]
   - bd60efd1-123b-43ca-a61f-4c0522ab9114 # keystore password [ TOP SECRET ]
