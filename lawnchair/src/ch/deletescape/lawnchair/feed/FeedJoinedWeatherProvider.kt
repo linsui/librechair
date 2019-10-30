@@ -24,7 +24,6 @@ package ch.deletescape.lawnchair.feed
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -135,15 +134,20 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         (dailyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled =
                                 false
                         hourlyWeatherForecast?.data
+                                ?.take(if (context.lawnchairPrefs.showVerticalHourlyForecast) context.lawnchairPrefs.feedForecastItemCount.roundToInt()
+                                else hourlyWeatherForecast!!.data.size)
                                 ?.forEach {
                                     hourlyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
                                                     parent,
                                                     false).apply {
-                                                val temperature = findViewById<TextView>(R.id.forecast_current_temperature)
-                                                val time = findViewById<TextView>(R.id.forecast_current_time)
-                                                val icon = findViewById<ImageView>(R.id.forecast_weather_icon)
+                                                val temperature = findViewById<TextView>(
+                                                        R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(
+                                                        R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(
+                                                        R.id.forecast_weather_icon)
 
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
@@ -171,29 +175,37 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                             viewTreeObserver.addOnPreDrawListener(object :
                                     ViewTreeObserver.OnPreDrawListener {
                                 override fun onPreDraw(): Boolean {
-                                    val w = (dailyLayout.parent as View).measuredWidth
-                                    (dailyLayout as ExpandFillLinearLayout).childWidth =
-                                            (w / context.lawnchairPrefs.feedDailyForecastItemCount).roundToInt()
-                                    dailyLayout.requestLayout()
-                                    val w2 = (hourlyLayout.parent as View).measuredWidth
-                                    Log.d("FeedJoinedWeatherProvider$01", "onPreDraw: item width is $w $w2")
-                                    (hourlyLayout as ExpandFillLinearLayout).childWidth =
-                                            (w2 / context.lawnchairPrefs.feedForecastItemCount).roundToInt()
-                                    Log.d("FeedJoinedWeatherProvider$01", "onPreDraw: item width is $w")
-                                    hourlyLayout.requestLayout()
+                                    if (!context.lawnchairPrefs.showVerticalDailyForecast) {
+                                        val w = (dailyLayout.parent as View).measuredWidth
+                                        (dailyLayout as ExpandFillLinearLayout).childWidth =
+                                                (w / context.lawnchairPrefs.feedDailyForecastItemCount).roundToInt()
+                                        dailyLayout.requestLayout()
+                                    }
+                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) {
+                                        val w2 = (hourlyLayout.parent as View).measuredWidth
+                                        (hourlyLayout as ExpandFillLinearLayout).childWidth =
+                                                (w2 / context.lawnchairPrefs.feedForecastItemCount).roundToInt()
+                                        hourlyLayout.requestLayout()
+                                    }
+                                    viewTreeObserver.removeOnPreDrawListener(this)
                                     return true
                                 }
                             })
                         }
                         dailyForecast?.dailyForecastData
+                                ?.take(if (context.lawnchairPrefs.showVerticalDailyForecast) context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt()
+                                else dailyForecast!!.dailyForecastData.size)
                                 ?.forEach {
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                val temperature = findViewById<TextView>(R.id.forecast_current_temperature)
-                                                val time = findViewById<TextView>(R.id.forecast_current_time)
-                                                val icon = findViewById<ImageView>(R.id.forecast_weather_icon)
+                                                val temperature = findViewById<TextView>(
+                                                        R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(
+                                                        R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(
+                                                        R.id.forecast_weather_icon)
 
                                                 icon.setImageBitmap(it.icon)
                                                 val zonedDateTime = ZonedDateTime
