@@ -103,7 +103,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
-            animator.interpolator = Interpolators.DEACCEL
+            animator.interpolator = Interpolators.AGGRESSIVE_EASE_IN_OUT
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.CLOSED
@@ -122,7 +122,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val animator = ObjectAnimator.ofFloat(0f, 1f)
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
-            animator.interpolator = Interpolators.DEACCEL
+            animator.interpolator = Interpolators.AGGRESSIVE_EASE_IN_OUT
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.OPEN
