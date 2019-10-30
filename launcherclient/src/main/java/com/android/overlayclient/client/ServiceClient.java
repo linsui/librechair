@@ -490,21 +490,8 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         switch (msg.what) {
             case MESSAGE_CHANGE_SCROLL:
                 if (overlay != null) {
-                    boundActivity.runOnUiThread(
-                            () -> callback.overlayScrollChanged((float) msg.obj));
+                    callback.overlayScrollChanged((float) msg.obj);
                 }
-                return true;
-            case 3:
-                WindowManager.LayoutParams attrs = params;
-                if ((boolean) msg.obj) {
-                    attrs.x = windowShift;
-                    attrs.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-                } else {
-                    attrs.x = windowShift;
-                    attrs.flags &= ~WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS;
-                }
-                boundActivity.getWindowManager().updateViewLayout(
-                        boundActivity.getWindow().getDecorView(), attrs);
                 return true;
             case MESSAGE_CHANGE_STATUS:
                 serviceState.setOverlayAttached((msg.arg1 & ServiceState.FLAG_ATTACHED) != 0);

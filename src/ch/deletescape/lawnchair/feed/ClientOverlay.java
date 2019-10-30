@@ -28,6 +28,7 @@ import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
 import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAppState;
@@ -83,7 +84,13 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         }, new OverlayCallback() {
             @Override
             public void overlayScrollChanged(float progress) {
-                mainThread.post(() -> callbacks.onScrollChanged(progress));
+                if (Looper.myLooper() != Looper.getMainLooper()) {
+                    Log.w(ClientOverlay.this.getClass().getSimpleName(),
+                            "overlayScrollChanged: scroll changed from non-main thread");
+                    mainThread.post(() -> callbacks.onScrollChanged(progress));
+                } else {
+                    callbacks.onScrollChanged(progress);
+                }
             }
 
             @Override
