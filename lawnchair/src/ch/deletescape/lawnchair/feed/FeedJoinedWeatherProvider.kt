@@ -27,6 +27,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
@@ -113,9 +114,15 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
 
                         if (context.lawnchairPrefs.showVerticalDailyForecast) {
                             dailyLayout.orientation = LinearLayout.VERTICAL
+                            dailyLayout.viewTreeObserver.addOnGlobalLayoutListener {
+                                dailyLayout.layoutParams.width = MATCH_PARENT
+                            }
                         }
                         if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                             hourlyLayout.orientation = LinearLayout.VERTICAL
+                            hourlyLayout.viewTreeObserver.addOnGlobalLayoutListener {
+                                dailyLayout.layoutParams.width = MATCH_PARENT
+                            }
                         }
                         (hourlyLayout.parent as View).apply {
                             setOnTouchListener { _, _ ->

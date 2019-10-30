@@ -52,9 +52,9 @@ class ExpandFillLinearLayout(context: Context, attrs: AttributeSet?) : LinearLay
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         when (orientation) {
-            VERTICAL -> calculateChildSize(heightMeasureSpec, childHeight) { view, size ->
-                view.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
-                view.layoutParams.height = size
+            VERTICAL -> forEachChild { view ->
+                view.layoutParams.width = (parent as? View)?.measuredWidth ?: ViewGroup.LayoutParams.MATCH_PARENT
+                view.layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
             }
             HORIZONTAL -> calculateChildSize(widthMeasureSpec, childWidth) { view, size ->
                 view.layoutParams.width = size
