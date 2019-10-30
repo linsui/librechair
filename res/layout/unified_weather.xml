@@ -71,7 +71,7 @@
         app:layout_constraintTop_toBottomOf="@+id/weather_hud_information"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
+        <ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
             android:orientation="horizontal"
             android:id="@+id/unified_weather_forecast"
             android:layout_width="wrap_content"
@@ -83,7 +83,7 @@
         app:layout_constraintTop_toBottomOf="@+id/unified_weather_forecast_c"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
+        <ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
             android:orientation="horizontal"
             android:id="@+id/unified_weather_daily"
             android:layout_width="wrap_content"

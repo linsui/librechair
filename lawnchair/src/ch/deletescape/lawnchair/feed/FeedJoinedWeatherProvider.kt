@@ -24,6 +24,7 @@ package ch.deletescape.lawnchair.feed
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,6 +37,7 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
@@ -165,52 +167,20 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                             })
                                 }
 
-                        (dailyLayout.parent as ViewGroup).apply {
+                        v.apply {
                             viewTreeObserver.addOnPreDrawListener(object :
                                     ViewTreeObserver.OnPreDrawListener {
                                 override fun onPreDraw(): Boolean {
-                                    val w = v.measuredWidth
-                                    dailyLayout.childs.forEach {
-                                        it.apply {
-                                            viewTreeObserver.addOnGlobalLayoutListener {
-                                                if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    layoutParams = LinearLayout.LayoutParams(
-                                                            w,
-                                                            WRAP_CONTENT)
-                                                } else {
-                                                    val width =
-                                                            (w / context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
-                                                    layoutParams.width = width
-                                                }
-                                            }
-                                        }
-                                    }
-                                    viewTreeObserver.removeOnPreDrawListener(this)
-                                    return true
-                                }
-                            })
-                        }
-                        (hourlyLayout.parent as ViewGroup).apply {
-                            viewTreeObserver.addOnPreDrawListener(object :
-                                    ViewTreeObserver.OnPreDrawListener {
-                                override fun onPreDraw(): Boolean {
-                                    val w = v.measuredWidth
-                                    hourlyLayout.childs.forEach {
-                                        it.apply {
-                                            viewTreeObserver.addOnGlobalLayoutListener {
-                                                if (context.lawnchairPrefs.showVerticalHourlyForecast) {
-                                                    layoutParams = LinearLayout.LayoutParams(
-                                                            w,
-                                                            WRAP_CONTENT)
-                                                } else {
-                                                    val width =
-                                                            (w / context.lawnchairPrefs.feedForecastItemCount.roundToInt())
-                                                    layoutParams.width = width
-                                                }
-                                            }
-                                        }
-                                    }
-                                    viewTreeObserver.removeOnPreDrawListener(this)
+                                    val w = (dailyLayout.parent as View).measuredWidth
+                                    (dailyLayout as ExpandFillLinearLayout).childWidth =
+                                            (w / context.lawnchairPrefs.feedDailyForecastItemCount).roundToInt()
+                                    dailyLayout.requestLayout()
+                                    val w2 = (hourlyLayout.parent as View).measuredWidth
+                                    Log.d("FeedJoinedWeatherProvider$01", "onPreDraw: item width is $w $w2")
+                                    (hourlyLayout as ExpandFillLinearLayout).childWidth =
+                                            (w2 / context.lawnchairPrefs.feedForecastItemCount).roundToInt()
+                                    Log.d("FeedJoinedWeatherProvider$01", "onPreDraw: item width is $w")
+                                    hourlyLayout.requestLayout()
                                     return true
                                 }
                             })
