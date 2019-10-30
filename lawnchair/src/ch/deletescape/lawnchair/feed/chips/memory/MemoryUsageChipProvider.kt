@@ -41,7 +41,7 @@ class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
         val availableMegs = mi.availMem / 0x100000L
         val totalMegs = mi.totalMem / 0x100000L
         viewClickListener = Consumer {
-            FeedUtil.startActivity(context, Intent(Intent.ACTION_ALL_APPS), it)
+            FeedUtil.startActivity(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), it)
         }
         title =
                 "$availableMegs MB / ${if (totalMegs < 0x400) totalMegs else (totalMegs.toDouble() / 0x400).roundToInt()} ${if (totalMegs < 0x400) "MB" else "GB"}"
