@@ -127,13 +127,15 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         }
                         (hourlyLayout.parent as View).apply {
                             setOnTouchListener { _, _ ->
-                                controllerView?.disallowInterceptCurrentTouchEvent = true
+                                controllerView?.disallowInterceptCurrentTouchEvent =
+                                        context.lawnchairPrefs.showVerticalHourlyForecast.not()
                                 false
                             }
                         }
                         (dailyLayout.parent as View).apply {
                             setOnTouchListener { _, _ ->
-                                controllerView?.disallowInterceptCurrentTouchEvent = true
+                                controllerView?.disallowInterceptCurrentTouchEvent =
+                                        context.lawnchairPrefs.showVerticalDailyForecast.not()
                                 false
                             }
                         }
@@ -226,13 +228,16 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                         .withSecond(0)
                                                         .withNano(0)
                                                         .plusDays(1).withZoneSameInstant(
-                                                        ZoneId.of("UTC")).toLocalDate()
+                                                                ZoneId.of("UTC")).toLocalDate()
                                                 val nextDayAfterTomorrow = tomorrowDate.plusDays(1)
 
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    if (zonedDateTime.toLocalDate().isEqual(tomorrowDate) ||
-                                                            zonedDateTime.toLocalDate().isAfter(tomorrowDate) &&
-                                                            zonedDateTime.toLocalDate().isBefore(nextDayAfterTomorrow)) {
+                                                    if (zonedDateTime.toLocalDate().isEqual(
+                                                                    tomorrowDate) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    tomorrowDate) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    nextDayAfterTomorrow)) {
                                                         time.text = context.getString(
                                                                 R.string.title_weather_item_tomorrow)
                                                     } else {
@@ -260,8 +265,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 } else {
                                                     if (useWhiteText(backgroundColor,
                                                                     context) && !context.lawnchairPrefs.elevateWeatherCard) {
-                                                        time.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
-                                                        temperature.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                                                        time.setTextColor(
+                                                                R.color.primary_text_material_dark.fromColorRes(
+                                                                        context))
+                                                        temperature.setTextColor(
+                                                                R.color.primary_text_material_dark.fromColorRes(
+                                                                        context))
                                                     }
                                                 }
                                                 layoutParams = LinearLayout
@@ -281,7 +290,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         }
                         information.text = weatherTypeResource?.let { context.getString(it) }
                         dI("inflate: backgroundColor is ${String.format("#%08X",
-                                0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(backgroundColor, parent.context)}")
+                                0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(
+                                backgroundColor, parent.context)}")
                         if (!context.lawnchairPrefs.elevateWeatherCard) {
                             if (useWhiteText(backgroundColor, parent.context)) {
                                 highLow.setTextColor(
@@ -291,9 +301,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                 currentInformation.setTextColor(
                                         context.getColor(R.color.textColorPrimary))
                             } else {
-                                highLow.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
-                                information.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
-                                currentInformation.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
+                                highLow.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
+                                information.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
+                                currentInformation.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
                             }
                         }
                         return v
