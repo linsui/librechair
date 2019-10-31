@@ -33,7 +33,6 @@ import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
-import java.util.concurrent.Executors
 
 class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
 
@@ -43,8 +42,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
-
-    private val refreshExecutor = Executors.newSingleThreadExecutor()
 
     init {
         WeatherManager.subscribeWeather {
