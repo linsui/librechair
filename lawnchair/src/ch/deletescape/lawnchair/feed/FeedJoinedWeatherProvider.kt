@@ -259,8 +259,26 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                     }
 
                                                 } else {
-                                                    time.text =
-                                                            "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                    if (zonedDateTime.toLocalDate().isEqual(
+                                                                    tomorrowDate) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    tomorrowDate) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    nextDayAfterTomorrow)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_weather_item_tomorrow)
+                                                    } else if (zonedDateTime.toLocalDate().isEqual(
+                                                                    today) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    today) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    tomorrowDate)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_text_today)
+                                                    } else {
+                                                        time.text =
+                                                                "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                    }
                                                 }
                                                 temperature.text = "${it.low.toString(
                                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
