@@ -220,11 +220,18 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
 
-                                                val tomorrowDate = tomorrowL()
-                                                val nextDayAfterTomorrow = tomorrowL(tomorrowL())
+                                                val tomorrowDate = ZonedDateTime.now()
+                                                        .withMinute(0)
+                                                        .withSecond(0)
+                                                        .withNano(0)
+                                                        .plusDays(1).withZoneSameInstant(
+                                                        ZoneId.of("UTC")).toLocalDate()
+                                                val nextDayAfterTomorrow = tomorrowDate.plusDays(1)
 
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    if (zonedDateTime.toInstant().toEpochMilli() in tomorrowDate until nextDayAfterTomorrow) {
+                                                    if (zonedDateTime.toLocalDate().isEqual(tomorrowDate) ||
+                                                            zonedDateTime.toLocalDate().isAfter(tomorrowDate) &&
+                                                            zonedDateTime.toLocalDate().isBefore(nextDayAfterTomorrow)) {
                                                         time.text = context.getString(
                                                                 R.string.title_weather_item_tomorrow)
                                                     } else {
