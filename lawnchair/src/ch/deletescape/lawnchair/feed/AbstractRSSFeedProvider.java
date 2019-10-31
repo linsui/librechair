@@ -102,6 +102,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @AnyThread
     @Contract("null, null, _ -> fail")
     protected void refresh(Context c, Runnable finished, boolean diff) {
+        Log.d(getClass().getName(), "refresh: back trace is", new Throwable());
         Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
             Log.d(getClass().getName(), "refresh: " + token);
             synchronized (AbstractRSSFeedProvider.class) {

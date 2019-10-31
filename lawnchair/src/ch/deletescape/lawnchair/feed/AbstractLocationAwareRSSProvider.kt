@@ -24,17 +24,19 @@ import android.content.Context
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.extensions.e
 import ch.deletescape.lawnchair.util.extensions.w
 import com.rometools.rome.feed.synd.SyndFeed
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.*
 import java.util.function.Consumer
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
+    var callbackAdded: Boolean = false
+
     init {
         ch.deletescape.lawnchair.location.LocationManager.addCallback { _, _ ->
             refresh(context, { }, true)
@@ -71,19 +73,8 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     }
 
     final override fun onInit(tokenCallback: Consumer<String>) {
-        context.lawnchairLocationManager.addCallback { lat, lon ->
-            ArticleJobsScope.launch {
-                val country =
-                         context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
-                try {
-                    tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale("", country).isO3Country)
-                } catch (e: Exception) {
-                    tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
-                }
-            }
-        }
         if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
-            runOnNewThread {
+            ArticleJobsScope.launch {
                 try {
                     tokenCallback.accept(Locale("", context.lawnchairPrefs.overrideLocale).isO3Country)
                 } catch (e: Exception) {
@@ -100,14 +91,49 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                     } catch (e: Exception) {
                         tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
                     }
+                    if (!callbackAdded) {
+                        context.lawnchairLocationManager.changeCallbacks += { lat, lon ->
+                            ArticleJobsScope.launch {
+                                val s =
+                                        context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
+                                try {
+                                    tokenCallback.accept(
+                                            this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale(
+                                                    "", s).isO3Country)
+                                } catch (e: Exception) {
+                                    tokenCallback.accept(
+                                            this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
+                                }
+                            }
+                        }
+                        callbackAdded = true
+                    }
                 }
             }
         } else {
-            runOnNewThread {
+            ArticleJobsScope.launch {
                 try {
                     tokenCallback.accept(javaClass.name + "@?")
                 } catch (e: Exception) {
                     e.printStackTrace()
+                }
+                if (!callbackAdded) {
+                    delay(5)
+                    context.lawnchairLocationManager.addCallback { lat, lon ->
+                        ArticleJobsScope.launch {
+                            val s =
+                                    context.lawnchairApp.geocoder.nearestPlace(lat, lon).country
+                            try {
+                                tokenCallback.accept(
+                                        this@AbstractLocationAwareRSSProvider.javaClass.name + "@" + Locale(
+                                                "", s).isO3Country)
+                            } catch (e: Exception) {
+                                tokenCallback.accept(
+                                        this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
+                            }
+                        }
+                    }
+                    callbackAdded = true
                 }
             }
         }
