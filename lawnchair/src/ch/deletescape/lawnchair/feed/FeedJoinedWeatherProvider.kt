@@ -282,17 +282,19 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         information.text = weatherTypeResource?.let { context.getString(it) }
                         dI("inflate: backgroundColor is ${String.format("#%08X",
                                 0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(backgroundColor, parent.context)}")
-                        if (useWhiteText(backgroundColor, parent.context)) {
-                            highLow.setTextColor(
-                                    context.getColor(R.color.textColorPrimary))
-                            information.setTextColor(
-                                    context.getColor(R.color.textColorPrimary))
-                            currentInformation.setTextColor(
-                                    context.getColor(R.color.textColorPrimary))
-                        } else {
-                            highLow.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
-                            information.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
-                            currentInformation.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                        if (!context.lawnchairPrefs.elevateWeatherCard) {
+                            if (useWhiteText(backgroundColor, parent.context)) {
+                                highLow.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                                information.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                                currentInformation.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                            } else {
+                                highLow.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
+                                information.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
+                                currentInformation.setTextColor(R.color.primary_text_material_light.fromColorRes(context))
+                            }
                         }
                         return v
                     }
