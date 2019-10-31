@@ -222,6 +222,11 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                         .ofInstant(it.date.toInstant(),
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
+                                                val today = ZonedDateTime.now()
+                                                        .withMinute(0)
+                                                        .withSecond(0)
+                                                        .withNano(0)
+                                                        .toLocalDate()
 
                                                 val tomorrowDate = ZonedDateTime.now()
                                                         .withMinute(0)
@@ -230,6 +235,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                         .plusDays(1).withZoneSameInstant(
                                                                 ZoneId.of("UTC")).toLocalDate()
                                                 val nextDayAfterTomorrow = tomorrowDate.plusDays(1)
+
+
 
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
                                                     if (zonedDateTime.toLocalDate().isEqual(
@@ -240,6 +247,13 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                     nextDayAfterTomorrow)) {
                                                         time.text = context.getString(
                                                                 R.string.title_weather_item_tomorrow)
+                                                    } else if (zonedDateTime.toLocalDate().isEqual(
+                                                                    today) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    today) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    tomorrowDate)) {
+                                                        time.text = context.getString(R.string.title_text_today)
                                                     } else {
                                                         time.text =
                                                                 IcuDateTextView.getDateFormat(
