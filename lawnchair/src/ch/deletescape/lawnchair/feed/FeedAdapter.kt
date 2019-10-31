@@ -516,12 +516,12 @@ private class Decoration(private val spaceHeightVertical: Int,
     override fun getItemOffsets(outRect: Rect, view: View,
                                 parent: RecyclerView,
                                 state: RecyclerView.State) {
-        with(outRect) {
+        outRect.apply {
             if (parent.getChildAdapterPosition(view) == 0) {
                 top = spaceHeightVertical
             }
-            left = spaceHeightHorizontal
-            right = spaceHeightHorizontal
+            left = if (spaceHeightHorizontal != 0) spaceHeightHorizontal else 1
+            right = if (spaceHeightHorizontal != 0) spaceHeightHorizontal else 1
             bottom = spaceHeightVertical
         }
     }
