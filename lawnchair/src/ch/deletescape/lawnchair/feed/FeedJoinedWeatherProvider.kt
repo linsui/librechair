@@ -223,17 +223,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
                                                 val today = ZonedDateTime.now()
-                                                        .withMinute(0)
-                                                        .withSecond(0)
-                                                        .withNano(0)
                                                         .toLocalDate()
 
                                                 val tomorrowDate = ZonedDateTime.now()
-                                                        .withMinute(0)
-                                                        .withSecond(0)
-                                                        .withNano(0)
-                                                        .plusDays(1).withZoneSameInstant(
-                                                                ZoneId.of("UTC")).toLocalDate()
+                                                        .plusDays(1).toLocalDate()
                                                 val nextDayAfterTomorrow = tomorrowDate.plusDays(1)
 
 
@@ -253,7 +246,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                     today) &&
                                                             zonedDateTime.toLocalDate().isBefore(
                                                                     tomorrowDate)) {
-                                                        time.text = context.getString(R.string.title_text_today)
+                                                        time.text = context.getString(
+                                                                R.string.title_text_today)
                                                     } else {
                                                         time.text =
                                                                 IcuDateTextView.getDateFormat(
