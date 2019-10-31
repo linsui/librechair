@@ -83,7 +83,8 @@ public abstract class FeedProvider {
     }
 
     public int getBackgroundColor() {
-        return adapter == null ? 0 : adapter.getBackgroundColor();
+        return feed != null ? feed.getBackgroundColor() :
+                adapter == null ? 0 : adapter.getBackgroundColor();
     }
 
     public LauncherFeed getFeed() {

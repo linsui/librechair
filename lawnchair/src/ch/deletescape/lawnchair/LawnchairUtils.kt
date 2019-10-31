@@ -1125,10 +1125,12 @@ fun <T> newList(): MutableList<T> {
 }
 
 fun useWhiteText(color: Int, c: Context): Boolean {
+    d("useWhiteText: luminance: ${ColorUtils.calculateLuminance(color)}")
     if (ColorUtils.calculateLuminance(color) < 0.5) {
         return !ThemeManager.getInstance(c).supportsDarkText
     } else {
-        return alpha(color) < 50
+        d("useWhiteText: alpha: ${color.alpha}")
+        return color.alpha < 35
     }
 }
 

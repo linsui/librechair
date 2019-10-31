@@ -446,9 +446,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
     }
 
     constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(LayoutInflater.from(
-            if (type and Card.RAISE != 0) ContextThemeWrapper(parent.context, if (useWhiteText(
-                            parent.context.colorEngine.getResolver(FEED_CARD).resolveColor(),
-                            parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.FeedTheme_Dark else R.style.FeedTheme_Light) else parent.context).inflate(
+           ContextThemeWrapper(parent.context, if (useWhiteText(
+                            if (type and Card.RAISE != 0) parent.context.colorEngine.getResolver(FEED_CARD).resolveColor() else backgroundColor,
+                            parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)).inflate(
             when (type) {
                 Card.DEFAULT -> R.layout.card_default
                 Card.DEFAULT or Card.NARROW -> R.layout.card_narrow

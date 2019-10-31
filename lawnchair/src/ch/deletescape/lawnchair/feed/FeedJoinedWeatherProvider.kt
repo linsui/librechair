@@ -39,6 +39,7 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
+import ch.deletescape.lawnchair.util.extensions.dI
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
@@ -256,6 +257,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                 context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
+                                                } else {
+                                                    if (useWhiteText(backgroundColor,
+                                                                    context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                        time.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                                                        temperature.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                                                    }
                                                 }
                                                 layoutParams = LinearLayout
                                                         .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
@@ -273,6 +280,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                     "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                         }
                         information.text = weatherTypeResource?.let { context.getString(it) }
+                        dI("inflate: backgroundColor is ${String.format("#%08X",
+                                0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(backgroundColor, parent.context)}")
                         if (useWhiteText(backgroundColor, parent.context)) {
                             highLow.setTextColor(
                                     context.getColor(R.color.textColorPrimary))
@@ -280,6 +289,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                     context.getColor(R.color.textColorPrimary))
                             currentInformation.setTextColor(
                                     context.getColor(R.color.textColorPrimary))
+                        } else {
+                            highLow.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                            information.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
+                            currentInformation.setTextColor(R.color.primary_text_material_dark.fromColorRes(context))
                         }
                         return v
                     }
