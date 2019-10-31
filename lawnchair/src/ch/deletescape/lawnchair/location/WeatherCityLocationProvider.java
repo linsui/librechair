@@ -21,8 +21,6 @@ package ch.deletescape.lawnchair.location;
 
 import android.content.Context;
 
-import com.android.launcher3.Utilities;
-
 import org.jetbrains.annotations.NotNull;
 
 import ch.deletescape.lawnchair.LawnchairPreferences;
@@ -39,8 +37,6 @@ public class WeatherCityLocationProvider extends LocationProvider implements
     public WeatherCityLocationProvider(
             @NotNull Context context) {
         super(context);
-        Utilities.getLawnchairPrefs(context)
-                .addOnPreferenceChangeListener("pref_weather_city", this);
     }
 
     @Override
