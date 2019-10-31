@@ -21,7 +21,11 @@ package ch.deletescape.lawnchair.feed.images.ng
 
 import com.google.gson.annotations.SerializedName
 
-data class GalleryItem(val title: String, val caption: String, val credit: String,
-                       val profileUrl: String, val originalUrl: String, val altText: String,
+data class GalleryItem(val image: GalleryImage)
+
+data class GalleryImage(val title: String, val caption: String, val credit: String,
+                       val uuid: String,
+                       val profileUrl: String, @SerializedName("uri")
+                       val originalUrl: String, val altText: String,
                        @SerializedName("full-path-url") val fullPathUrl: String,
                        val aspectRatio: Double, val sizes: Map<String, String>)

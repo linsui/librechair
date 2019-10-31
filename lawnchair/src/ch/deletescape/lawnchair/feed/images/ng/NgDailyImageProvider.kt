@@ -50,8 +50,8 @@ class NgDailyImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                     FeedScope.launch {
                         response.body()!!.items.take(4).forEach {
                             images += withContext(Dispatchers.Default) {
-                                BitmapFactory.decodeStream(URL(it.originalUrl).openStream())
-                            } to it.originalUrl
+                                BitmapFactory.decodeStream(URL(it.image.originalUrl).openStream())
+                            } to it.image.originalUrl
                         }
                     }
                 }

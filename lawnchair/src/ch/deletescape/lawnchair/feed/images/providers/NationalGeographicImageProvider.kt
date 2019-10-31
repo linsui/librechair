@@ -55,7 +55,7 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
                     return@async null
                 } else {
                     return@async BitmapFactory
-                            .decodeStream(URL(response.body()!!.items[0].originalUrl).openStream())
+                            .decodeStream(URL(response.body()!!.items[0].image.originalUrl).openStream())
                             .also {
                                 it.compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(cache))
                             }

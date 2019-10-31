@@ -41,16 +41,15 @@ public class WeatherCityLocationProvider extends LocationProvider implements
         super(context);
         Utilities.getLawnchairPrefs(context)
                 .addOnPreferenceChangeListener("pref_weather_city", this);
+    }
+
+    @Override
+    public void refresh() {
         WeatherManager.INSTANCE.subscribeGeo(geo -> {
             location = geo;
             updateLocation(geo.getFirst(), geo.getSecond(), true);
             return Unit.INSTANCE;
         });
-
-    }
-
-    @Override
-    public void refresh() {
     }
 
     @Override
