@@ -1065,8 +1065,8 @@ class LauncherFeed(private val originalContext: Context,
                             RectS2DEvaluator(true),
                             clipBounds, startRect).also {
                         it.addUpdateListener {
-                            if (it.animatedFraction > 0.7f) {
-                                alpha = (it.animatedFraction - 0.7f) / 0.3f
+                            if (it.animatedFraction >= 0.5f) {
+                                alpha = (1f - (it.animatedFraction - 0.5f)) / 0.5f
                             }
                         }
                     }
