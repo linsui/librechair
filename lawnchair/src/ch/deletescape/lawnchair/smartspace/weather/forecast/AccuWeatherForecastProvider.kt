@@ -134,7 +134,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                     AccuWeatherDataProvider.getIcon(c,
                                             weatherResponse.body()!!.currentConditions.weatherIcon,
                                             weatherResponse.body()!!.currentConditions.isDayTime),
-                                    weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble()))
+                                    weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble(), weatherResponse.body()!!.currentConditions.mobileLink))
                     return cachedCurrent!!.value
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)

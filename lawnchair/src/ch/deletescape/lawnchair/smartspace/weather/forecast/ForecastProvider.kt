@@ -40,8 +40,8 @@ interface ForecastProvider {
         constructor(dataList: List<ForecastData>, url: String?) : this(dataList.toTypedArray(), url)
     }
 
-    data class CurrentWeather(val condCodes: Array<Int>, val date: Date,
-                              val temperature: Temperature, val icon: Bitmap, val precip: Double?) {
+    data class CurrentWeather @JvmOverloads constructor(val condCodes: Array<Int>, val date: Date,
+                              val temperature: Temperature, val icon: Bitmap, val precip: Double?, val url: String? = null) {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true

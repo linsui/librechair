@@ -24,12 +24,9 @@ package ch.deletescape.lawnchair.feed
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -100,6 +97,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
     override fun onDestroy() {
     }
 
+    @Suppress("ClickableViewAccessibility")
     override fun getCards(): List<Card> {
         return if (weatherData != null) listOf(
                 Card(null, null, object : Card.Companion.InflateHelper {
@@ -115,6 +113,31 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         val hourlyLayout =
                                 v.findViewById(R.id.unified_weather_forecast) as LinearLayout
                         val dailyLayout = v.findViewById(R.id.unified_weather_daily) as LinearLayout
+
+                        val gd = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (currentIcon.getPostionOnScreen().first + e.x).roundToInt(),
+                                                                (currentIcon.getPostionOnScreen().second + e.y).roundToInt(),
+                                                                currentIcon)
+                                            } else {
+                                                Utilities.openURLinBrowser(context, url)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        currentIcon.setOnTouchListener { _, ev ->
+                            gd.onTouchEvent(ev)
+                            true
+                        }
 
                         if (context.lawnchairPrefs.showVerticalDailyForecast) {
                             dailyLayout.orientation = LinearLayout.VERTICAL
@@ -159,8 +182,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 if (url != null) {
                                                     hourlyLayout.setOnClickListener {
                                                         if (!context.feedPrefs.directlyOpenLinksInBrowser) {
-                                                            WebViewScreen.obtain(context, url.replace("http://", "https://"))
-                                                                    .display(this@FeedJoinedWeatherProvider, 0, 0, it)
+                                                            WebViewScreen.obtain(context,
+                                                                    url.replace("http://",
+                                                                            "https://"))
+                                                                    .display(
+                                                                            this@FeedJoinedWeatherProvider,
+                                                                            0, 0, it)
                                                         } else {
                                                             Utilities.openURLinBrowser(context, url)
                                                         }
@@ -172,7 +199,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                         R.id.forecast_current_time)
                                                 val icon = findViewById<ImageView>(
                                                         R.id.forecast_weather_icon)
-
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
@@ -334,7 +360,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         if (url != null) {
                             hourlyLayout.setOnClickListener {
                                 if (!context.feedPrefs.directlyOpenLinksInBrowser) {
-                                    WebViewScreen.obtain(context, url.replace("http://", "https://"))
+                                    WebViewScreen.obtain(context,
+                                            url.replace("http://", "https://"))
                                             .display(this@FeedJoinedWeatherProvider, 0, 0, it)
                                 } else {
                                     Utilities.openURLinBrowser(context, url)
