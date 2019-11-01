@@ -34,13 +34,13 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
 import ch.deletescape.lawnchair.feed.web.WebViewScreen
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.dI
 import com.android.launcher3.R
-import com.android.launcher3.Utilities
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.time.ZoneId
@@ -126,7 +126,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                 (currentIcon.getPostionOnScreen().first + e.x).roundToInt(),
                                                                 (currentIcon.getPostionOnScreen().second + e.y).roundToInt())
                                             } else {
-                                                Utilities.openURLinBrowser(context, url)
+                                                FeedUtil.openUrl(context, url, currentIcon)
                                             }
                                         }
                                         return true
@@ -179,7 +179,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                     false).apply {
                                                 val url = hourlyWeatherForecast?.url
                                                 if (url != null) {
-                                                    hourlyLayout.setOnClickListener {
+                                                    setOnClickListener {
                                                         if (!context.feedPrefs.directlyOpenLinksInBrowser) {
                                                             WebViewScreen.obtain(context,
                                                                     url.replace("http://",
@@ -188,7 +188,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                             this@FeedJoinedWeatherProvider,
                                                                             0, 0, it)
                                                         } else {
-                                                            Utilities.openURLinBrowser(context, url)
+                                                            FeedUtil.openUrl(context, url, it)
                                                         }
                                                     }
                                                 }
@@ -363,7 +363,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                             url.replace("http://", "https://"))
                                             .display(this@FeedJoinedWeatherProvider, 0, 0, it)
                                 } else {
-                                    Utilities.openURLinBrowser(context, url)
+                                    FeedUtil.openUrl(context, url, it)
                                 }
                             }
                         }
