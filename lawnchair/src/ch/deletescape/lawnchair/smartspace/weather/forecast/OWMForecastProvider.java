@@ -23,26 +23,31 @@ package ch.deletescape.lawnchair.smartspace.weather.forecast;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
-import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
-import ch.deletescape.lawnchair.util.Temperature;
-import ch.deletescape.lawnchair.util.Temperature.Unit;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import kotlin.Pair;
+
 import net.aksingh.owmjapis.api.APIException;
 import net.aksingh.owmjapis.core.OWM;
 import net.aksingh.owmjapis.core.OWMPro;
 import net.aksingh.owmjapis.model.DailyWeatherForecast;
 import net.aksingh.owmjapis.model.HourlyWeatherForecast;
 import net.aksingh.owmjapis.model.param.Weather;
+
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
+import ch.deletescape.lawnchair.smartspace.WeatherIconProvider;
+import ch.deletescape.lawnchair.util.Temperature;
+import ch.deletescape.lawnchair.util.Temperature.Unit;
+import kotlin.Pair;
 
 public class OWMForecastProvider implements ForecastProvider {
 
@@ -90,7 +95,8 @@ public class OWMForecastProvider implements ForecastProvider {
                         weather.getDateTime(),
                         Arrays.copyOf(integers.toArray(), integers.size(), Integer[].class)));
             }
-            forecastCachedResponse = new Forecast(dataList);
+            forecastCachedResponse = new Forecast(dataList, "https://openweathermap.org/city/" +
+                    forecast.getCityData().getId());
             hourlyForecastCacheExpiry = System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(25);
             return forecastCachedResponse;
         } catch (Throwable e) {
