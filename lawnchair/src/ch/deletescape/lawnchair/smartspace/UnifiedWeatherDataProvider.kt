@@ -37,7 +37,7 @@ class UnifiedWeatherDataProvider(
                 updateData(
                         LawnchairSmartspaceController.WeatherData(it.icon,
                                 it.temperature,
-                                null,
+                                it.url,
                                 null,
                                 null,
                                 location.first,
