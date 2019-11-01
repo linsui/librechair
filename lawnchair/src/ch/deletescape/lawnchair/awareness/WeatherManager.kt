@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.forecastProvider
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.smartspace.BlankDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.w
 import java.util.concurrent.TimeUnit
@@ -119,53 +120,57 @@ object WeatherManager {
         this.app = app
         val refresh = object : Runnable {
             override fun run() {
-                try {
-                    Log.d(javaClass.name, "run: refresh in progress")
-                    currentGeo = resolveGeolocation(app)
-                    val (lat, lon) = currentGeo ?: null to null
-                    app.lawnchairApp.weatherLooper.post {
-                        if (lat != null && lon != null) {
-                            try {
-                                currentWeather = app.forecastProvider.getCurrentWeather(lat, lon)
-                            } catch (e: ForecastProvider.ForecastException) {
-                                w("run: failed to retrieve forecast", e)
-                            } catch (e: RuntimeException) {
-                                ch.deletescape.lawnchair.util.extensions.e(
-                                        "run: failed to retrieve forecast", e)
+                if (app.lawnchairPrefs.weatherProvider != BlankDataProvider::class.qualifiedName) {
+                    try {
+                        Log.d(javaClass.name, "run: refresh in progress")
+                        currentGeo = resolveGeolocation(app)
+                        val (lat, lon) = currentGeo ?: null to null
+                        app.lawnchairApp.weatherLooper.post {
+                            if (lat != null && lon != null) {
+                                try {
+                                    currentWeather =
+                                            app.forecastProvider.getCurrentWeather(lat, lon)
+                                } catch (e: ForecastProvider.ForecastException) {
+                                    w("run: failed to retrieve forecast", e)
+                                } catch (e: RuntimeException) {
+                                    ch.deletescape.lawnchair.util.extensions.e(
+                                            "run: failed to retrieve forecast", e)
+                                }
                             }
                         }
-                    }
-                    app.lawnchairApp.weatherLooper.post {
-                        if (lat != null && lon != null) {
-                            try {
-                                currentDailyForecast = app.forecastProvider.getDailyForecast(lat, lon)
-                            } catch (e: ForecastProvider.ForecastException) {
-                                w("run: failed to retrieve forecast", e)
-                            } catch (e: RuntimeException) {
-                                ch.deletescape.lawnchair.util.extensions.e(
-                                        "run: failed to retrieve forecast", e)
+                        app.lawnchairApp.weatherLooper.post {
+                            if (lat != null && lon != null) {
+                                try {
+                                    currentDailyForecast =
+                                            app.forecastProvider.getDailyForecast(lat, lon)
+                                } catch (e: ForecastProvider.ForecastException) {
+                                    w("run: failed to retrieve forecast", e)
+                                } catch (e: RuntimeException) {
+                                    ch.deletescape.lawnchair.util.extensions.e(
+                                            "run: failed to retrieve forecast", e)
+                                }
                             }
                         }
-                    }
-                    app.lawnchairApp.weatherLooper.post {
-                        if (lat != null && lon != null) {
-                            try {
-                                currentForecast = app.forecastProvider.getHourlyForecast(lat, lon)
-                            } catch (e: ForecastProvider.ForecastException) {
-                                w("run: failed to retrieve forecast", e)
-                            } catch (e: RuntimeException) {
-                                ch.deletescape.lawnchair.util.extensions.e(
-                                        "run: failed to retrieve forecast", e)
+                        app.lawnchairApp.weatherLooper.post {
+                            if (lat != null && lon != null) {
+                                try {
+                                    currentForecast =
+                                            app.forecastProvider.getHourlyForecast(lat, lon)
+                                } catch (e: ForecastProvider.ForecastException) {
+                                    w("run: failed to retrieve forecast", e)
+                                } catch (e: RuntimeException) {
+                                    ch.deletescape.lawnchair.util.extensions.e(
+                                            "run: failed to retrieve forecast", e)
+                                }
                             }
                         }
+                    } catch (e: ForecastProvider.ForecastException) {
+                        w("run: failed to retrieve forecast", e)
+                    } catch (e: RuntimeException) {
+                        ch.deletescape.lawnchair.util.extensions.e(
+                                "run: failed to retrieve forecast", e)
                     }
-                } catch (e: ForecastProvider.ForecastException) {
-                    w("run: failed to retrieve forecast", e)
-                } catch (e: RuntimeException) {
-                    ch.deletescape.lawnchair.util.extensions.e(
-                            "run: failed to retrieve forecast", e)
                 }
-
                 app.lawnchairApp.weatherLooper.postDelayed(this, TimeUnit.MINUTES.toMillis(10))
             }
         }
