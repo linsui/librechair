@@ -305,8 +305,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                                                         readMore).getSecond() + Math.round(
                                                                         e.getY())));
                                             } else {
-                                                Utilities.openURLinBrowser(getContext(),
-                                                        entry.url);
+                                                FeedUtil.openUrl(getContext(), entry.url, readMore);
                                             }
                                             return true;
                                         }
