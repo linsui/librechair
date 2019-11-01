@@ -124,8 +124,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                         url.replace("http://", "https://"))
                                                         .display(this@FeedJoinedWeatherProvider,
                                                                 (currentIcon.getPostionOnScreen().first + e.x).roundToInt(),
-                                                                (currentIcon.getPostionOnScreen().second + e.y).roundToInt(),
-                                                                currentIcon)
+                                                                (currentIcon.getPostionOnScreen().second + e.y).roundToInt())
                                             } else {
                                                 Utilities.openURLinBrowser(context, url)
                                             }
