@@ -155,6 +155,17 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                     if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
                                                     parent,
                                                     false).apply {
+                                                val url = hourlyWeatherForecast?.url
+                                                if (url != null) {
+                                                    hourlyLayout.setOnClickListener {
+                                                        if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                            WebViewScreen.obtain(context, url.replace("http://", "https://"))
+                                                                    .display(this@FeedJoinedWeatherProvider, 0, 0, it)
+                                                        } else {
+                                                            Utilities.openURLinBrowser(context, url)
+                                                        }
+                                                    }
+                                                }
                                                 val temperature = findViewById<TextView>(
                                                         R.id.forecast_current_temperature)
                                                 val time = findViewById<TextView>(
