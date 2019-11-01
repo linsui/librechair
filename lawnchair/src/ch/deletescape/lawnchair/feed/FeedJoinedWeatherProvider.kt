@@ -38,9 +38,12 @@ import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
+import ch.deletescape.lawnchair.feed.web.WebViewScreen
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.util.extensions.dI
 import com.android.launcher3.R
+import com.android.launcher3.Utilities
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.time.ZoneId
@@ -314,6 +317,20 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                             highLow.text =
                                     "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                         }
+
+                        val url = hourlyWeatherForecast?.url
+
+                        if (url != null) {
+                            hourlyLayout.setOnClickListener {
+                                if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                    WebViewScreen.obtain(context, url.replace("http://", "https://"))
+                                            .display(this@FeedJoinedWeatherProvider, null, null, it)
+                                } else {
+                                    Utilities.openURLinBrowser(context, url)
+                                }
+                            }
+                        }
+
                         information.text = weatherTypeResource?.let { context.getString(it) }
                         dI("inflate: backgroundColor is ${String.format("#%08X",
                                 0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(

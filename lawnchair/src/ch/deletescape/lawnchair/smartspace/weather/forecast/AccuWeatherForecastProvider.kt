@@ -28,7 +28,6 @@ import ch.deletescape.lawnchair.smartspace.accu.AccuRetrofitServiceFactory
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuDailyForecastsGSon
 import ch.deletescape.lawnchair.smartspace.accu.model.AccuHourlyForecastGSon
 import ch.deletescape.lawnchair.util.Temperature
-import ch.deletescape.lawnchair.util.extensions.d
 import retrofit2.Response
 import java.io.IOException
 import java.time.Instant
@@ -106,7 +105,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                         null, null, lat, lon,
                                         iconRes), date, conds)
                     }
-                    return ForecastProvider.Forecast(data)
+                    return ForecastProvider.Forecast(data, responseResult.body()!![0].mobileLink)
                 }
             } catch (e: NullPointerException) {
                 throw ForecastProvider.ForecastException(e)
