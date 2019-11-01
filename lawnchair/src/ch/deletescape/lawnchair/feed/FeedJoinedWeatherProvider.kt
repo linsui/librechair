@@ -324,7 +324,7 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                             hourlyLayout.setOnClickListener {
                                 if (!context.feedPrefs.directlyOpenLinksInBrowser) {
                                     WebViewScreen.obtain(context, url.replace("http://", "https://"))
-                                            .display(this@FeedJoinedWeatherProvider, null, null, it)
+                                            .display(this@FeedJoinedWeatherProvider, 0, 0, it)
                                 } else {
                                     Utilities.openURLinBrowser(context, url)
                                 }
