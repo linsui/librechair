@@ -28,6 +28,7 @@ import android.os.Bundle
 import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.lastKnownPosition
 import ch.deletescape.lawnchair.locationManager
+import ch.deletescape.lawnchair.util.extensions.d
 import java.util.concurrent.TimeUnit
 
 class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c), LocationListener {
@@ -44,6 +45,7 @@ class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c), Loc
     }
 
     override fun onLocationChanged(location: Location?) {
+        d("onLocationChanged: new location is $location")
         updateLocation(location?.latitude, location?.longitude)
     }
 
@@ -75,7 +77,7 @@ class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c), Loc
                     Criteria(), true)
             if (provider != null) {
                 context.locationManager.requestLocationUpdates(provider, TimeUnit.MINUTES.toMillis(1),
-                        10f, this)
+                        1f, this)
             }
         }
     }
