@@ -264,6 +264,11 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                             FeedUtil.openUrl(context, url, it)
                                                         }
                                                     }
+                                                    setOnTouchListener { _, _ ->
+                                                        controllerView?.disallowInterceptCurrentTouchEvent =
+                                                                context.lawnchairPrefs.showVerticalHourlyForecast.not()
+                                                        false
+                                                    }
                                                 }
                                                 val temperature = findViewById<TextView>(
                                                         R.id.forecast_current_temperature)
