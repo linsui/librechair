@@ -45,6 +45,7 @@ import com.android.overlayclient.client.CustomServiceClient;
 import com.android.overlayclient.client.OverlayCallback;
 import com.android.overlayclient.client.ServiceMode;
 import com.android.overlayclient.compat.ColorDelegate;
+import com.android.overlayclient.compat.FloatDelegate;
 import com.google.android.apps.nexuslauncher.CustomAppPredictor;
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
 import com.google.android.libraries.launcherclient.ILauncherInterface;
@@ -58,6 +59,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
@@ -112,7 +114,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
 
                 @SuppressWarnings("unchecked")
                 @Override
-                public Bundle call(String callName, Bundle opt) throws RemoteException {
+                public Bundle call(String callName, Bundle opt) {
                     switch (callName) {
                         case CustomServiceClient.PREDICTIONS_CALL:
                             UserEventDispatcher dispatcher = launcher.getUserEventDispatcher();
@@ -226,6 +228,9 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         ColorDelegate accent = new ColorDelegate(
                 ColorEngine.getInstance(launcher).getAccentResolver().resolveColor(),
                 ColorDelegate.ACCENT_COLOR);
+        FloatDelegate cardCornerRadius = new FloatDelegate(
+                (float) FeedPersistence.Companion.getInstance(launcher).getCardCornerRadius(),
+                FloatDelegate.CARD_CORNER_RADIUS);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
             primary.set(wallpaperColorInfo.getActualMainColor());
             secondary.set(wallpaperColorInfo.getSecondaryColor());
@@ -240,6 +245,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         client.addConfigurationDelegate(primaryActual);
         client.addConfigurationDelegate(secondaryActual);
         client.addConfigurationDelegate(accent);
+        client.addConfigurationDelegate(cardCornerRadius);
     }
 
     @Override

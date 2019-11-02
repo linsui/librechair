@@ -22,21 +22,18 @@ package com.android.overlayclient.compat;
 
 import android.os.Bundle;
 
-public class ColorDelegate extends MutableDelegate<Integer> {
-    public static final String PRIMARY = "background_color_hint";
-    public static final String SECONDARY = "background_secondary_color_hint";
-    public static final String TERTIARY = "background_tertiary_color_hint";
-    public static final String ACCENT_COLOR = "launcher_user_accent";
+public class FloatDelegate extends MutableDelegate<Float> {
+    public static final String CARD_CORNER_RADIUS = "pref_card_corner_radius";
 
     private final String key;
 
-    public ColorDelegate(Integer value, String key) {
+    public FloatDelegate(Float value, String key) {
         super(value);
         this.key = key;
     }
 
     @Override
     public void bind(Bundle opt) {
-        opt.putInt(key, value);
+        opt.putFloat(key, value);
     }
 }
