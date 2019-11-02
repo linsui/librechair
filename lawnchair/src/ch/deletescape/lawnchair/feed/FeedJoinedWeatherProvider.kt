@@ -163,6 +163,30 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                             true
                         }
 
+                        val gd3 = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (highLow.getPostionOnScreen().first + e.x).roundToInt(),
+                                                                (highLow.getPostionOnScreen().second + e.y).roundToInt())
+                                            } else {
+                                                FeedUtil.openUrl(context, url, highLow)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        highLow.setOnTouchListener { _, ev ->
+                            gd3.onTouchEvent(ev)
+                            true
+                        }
+
                         if (context.lawnchairPrefs.showVerticalDailyForecast) {
                             dailyLayout.orientation = LinearLayout.VERTICAL
                             dailyLayout.viewTreeObserver.addOnGlobalLayoutListener {
