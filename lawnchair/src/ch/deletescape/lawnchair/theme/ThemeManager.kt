@@ -29,7 +29,6 @@ import ch.deletescape.lawnchair.twilight.TwilightState
 import ch.deletescape.lawnchair.util.SingletonHolder
 import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.hasFlag
-import ch.deletescape.lawnchair.util.removeFlag
 import com.android.launcher3.R
 import com.android.launcher3.uioverrides.WallpaperColorInfo
 
@@ -195,21 +194,8 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
             listenToTwilight = false
             return theme
         }
-        if (twilightManager.isAvailable) {
-            listenToTwilight = true
-            return theme
-        }
-
-        BlankActivity.requestPermission(context, android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                LawnchairLauncher.REQUEST_PERMISSION_LOCATION_ACCESS) { granted ->
-            if (granted) {
-                listenToTwilight = true
-            } else {
-                prefs.launcherTheme = theme.removeFlag(THEME_DARK_MASK)
-            }
-        }
-
-        return theme.removeFlag(THEME_DARK_MASK)
+        listenToTwilight = true
+        return theme
     }
 
     override fun onTwilightStateChanged(state: TwilightState?) {

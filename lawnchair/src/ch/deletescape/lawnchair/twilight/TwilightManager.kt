@@ -30,7 +30,6 @@ import android.os.Message
 import android.util.ArrayMap
 import android.util.Log
 import androidx.core.content.ContextCompat
-import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.ensureOnMainThread
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.useApplicationContext
@@ -70,8 +69,6 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
             }
         }
 
-    val isAvailable get() = context.checkLocationAccess()
-
     private val updateIntent = Intent(ACTION_UPDATE_TWILIGHT)
             .setPackage(BuildConfig.APPLICATION_ID)
 
@@ -86,7 +83,6 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
 
     fun registerListener(listener: TwilightListener,
                          handler: Handler) {
-        if (!isAvailable) throw IllegalStateException("location access not available")
         synchronized(listeners) {
             val wasEmpty = listeners.isEmpty()
             listeners[listener] = handler
