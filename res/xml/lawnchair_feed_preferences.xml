@@ -141,7 +141,7 @@
             app:steps="255"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="1" />
-        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+        <ch.deletescape.lawnchair.persistence.prefs.CardCornerRadiusSeekbarPreference
             android:key="feed_card_corner_radius"
             android:persistent="true"
             android:title="@string/title_pref_feed_corner_rounding"

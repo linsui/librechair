@@ -66,6 +66,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
     private CustomServiceClient client;
     private Handler mainThread;
 
+    public FloatDelegate cardCornerRadius;
+
     public ClientOverlay(Launcher launcher) {
         mainThread = new Handler(Looper.getMainLooper());
         client = new CustomServiceClient(launcher, new CompanionServiceFactory(launcher) {
@@ -228,7 +230,7 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         ColorDelegate accent = new ColorDelegate(
                 ColorEngine.getInstance(launcher).getAccentResolver().resolveColor(),
                 ColorDelegate.ACCENT_COLOR);
-        FloatDelegate cardCornerRadius = new FloatDelegate(
+        cardCornerRadius = new FloatDelegate(
                 (float) FeedPersistence.Companion.getInstance(launcher).getCardCornerRadius(),
                 FloatDelegate.CARD_CORNER_RADIUS);
         WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
