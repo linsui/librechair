@@ -236,9 +236,8 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
             secondary.set(wallpaperColorInfo.getSecondaryColor());
             tertiary.set(wallpaperColorInfo.getTertiaryColor());
         });
-        ColorEngine.getInstance(launcher).addColorChangeListeners(resolveInfo -> {
-            accent.set(resolveInfo.getColor());
-        }, ColorEngine.Resolvers.ACCENT);
+        ColorEngine.getInstance(launcher).addColorChangeListeners(resolveInfo ->
+                accent.set(resolveInfo.getColor()), ColorEngine.Resolvers.ACCENT);
         client.addConfigurationDelegate(primary);
         client.addConfigurationDelegate(secondary);
         client.addConfigurationDelegate(tertiary);
