@@ -1213,7 +1213,10 @@ class LauncherFeed(private val originalContext: Context,
                                 flags: Int) {
         callback = cb
         cb.overlayStatusChanged(1)
-        layoutParams = lp
+        if (::layoutParams.isInitialized.not() || layoutParams != lp) {
+            feedAttached = false
+            layoutParams = lp
+        }
         //        layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
         //        layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
     }
