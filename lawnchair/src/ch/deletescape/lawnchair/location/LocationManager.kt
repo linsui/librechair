@@ -39,6 +39,7 @@ object LocationManager {
                     WeatherCityLocationProvider(value)))
             slots.clear()
             providers.forEach {
+                it.onInitialAttach()
                 slots.add(it to MutablePair.of<Double?, Double?>(null, null))
                 LocationScope.launch {
                     while (true) {
@@ -67,6 +68,8 @@ object LocationManager {
     abstract class LocationProvider(val context: Context) {
 
         abstract fun refresh()
+
+        open fun onInitialAttach() = Unit
 
         fun updateLocation(lat: Double?, lon: Double?,
                            notifyCallbacks: Boolean = true) {
