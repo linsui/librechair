@@ -118,6 +118,11 @@ object WeatherManager {
     @MainThread
     fun attachToApplication(app: Application) {
         this.app = app
+        app.lawnchairLocationManager.addCallback { lat, lon ->
+            if (app.lawnchairPrefs.weatherCity == "##Auto") {
+                currentGeo = lat to lon
+            }
+        }
         val refresh = object : Runnable {
             override fun run() {
                 if (app.lawnchairPrefs.weatherProvider != BlankDataProvider::class.qualifiedName) {
