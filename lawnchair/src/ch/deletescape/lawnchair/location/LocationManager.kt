@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.location
 import android.annotation.SuppressLint
 import android.content.Context
 import ch.deletescape.lawnchair.feed.LocationScope
+import ch.deletescape.lawnchair.persistence.generalPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -34,16 +35,22 @@ object LocationManager {
     val slots: MutableList<Pair<LocationProvider, MutablePair<Double?, Double?>>> = mutableListOf()
     var context: Context? = null
         set(value) = {
-            providers.addAll(listOf(GpsLocationProvider(value!!), IPLocation(value),
-                    LastKnownLocationProvider(value),
-                    WeatherCityLocationProvider(value)))
+            if (!value!!.generalPrefs.killLocationManager) {
+                providers.addAll(listOf(GpsLocationProvider(value), IPLocation(value),
+                        LastKnownLocationProvider(value),
+                        WeatherCityLocationProvider(value)))
+            }
             slots.clear()
             providers.forEach {
-                it.onInitialAttach()
+                if (!value.generalPrefs.killLocationManager) {
+                    it.onInitialAttach()
+                }
                 slots.add(it to MutablePair.of<Double?, Double?>(null, null))
                 LocationScope.launch {
                     while (true) {
-                        it.refresh()
+                        if (!value.generalPrefs.killLocationManager) {
+                            it.refresh()
+                        }
                         delay(TimeUnit.MINUTES.toMillis(10))
                     }
                 }

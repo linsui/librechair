@@ -774,4 +774,6 @@
     <string name="title_pref_feed_chip_provider_compact_card">Use compact card for the chip card provider</string>
     <string name="summary_pref_feed_chip_provider_compact_card">Chips will be displayed horizontally</string>
     <string name="title_text_today">Today</string>
+    <string name="title_pref_kill_location_manager">Disable geolocation</string>
+    <string name="summary_pref_kill_location_manager">Requires restart</string>
 </resources>

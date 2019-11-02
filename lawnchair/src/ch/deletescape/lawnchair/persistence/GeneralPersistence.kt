@@ -27,6 +27,8 @@ import ch.deletescape.lawnchair.util.SingletonHolder
 class GeneralPersistence private constructor(val context: Context) {
     val weatherProvider by DefValueStringDelegate(context, "smartspace_weather_provider",
             OWMForecastProvider::class.qualifiedName!!)
+    val killLocationManager
+            by BooleanDelegate(context, "kill_location_manager", false)
 
     companion object : SingletonHolder<GeneralPersistence, Context>(::GeneralPersistence)
 }
