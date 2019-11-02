@@ -89,8 +89,10 @@ class ListDelegate<T>(val context: Context, val key: String, val defValue: List<
 
     init {
         if (lastData != null) {
-            internal.clear()
-            internal.addAll(JsonParser().parse(lastData).asJsonArray.map { it.asString })
+            synchronized(internal) {
+                internal.clear()
+                internal.addAll(JsonParser().parse(lastData).asJsonArray.map { it.asString })
+            }
         }
         internal.addOnListChangedCallback(object :
                 ObservableList.OnListChangedCallback<ObservableList<String>>() {
@@ -122,12 +124,16 @@ class ListDelegate<T>(val context: Context, val key: String, val defValue: List<
         StringDatabase.getInstance(context).invalidationTracker.addObserver(object :
                 InvalidationTracker.Observer("stringentry") {
             override fun onInvalidated(tables: MutableSet<String>) {
-                if (lastData != StringDatabase.getInstance(context).dao().getSafe(key)) {
-                    val ja = JsonParser().parse(
-                            StringDatabase.getInstance(context).dao().getSafe(key)).asJsonArray
-                    internal.clear()
-                    internal.addAll(ja.map { it.asString })
-                    lastData = ja.toString()
+                val currentData = StringDatabase.getInstance(context).dao().getSafe(key)
+                if (lastData != currentData) {
+                    val ja = JsonParser().parse(currentData).asJsonArray
+                    synchronized(internal) {
+                        internal.clear()
+                        internal.addAll(ja.map { it.asString })
+                    }
+                    synchronized(lastData) {
+                        lastData = ja.toString()
+                    }
                 }
             }
         })
