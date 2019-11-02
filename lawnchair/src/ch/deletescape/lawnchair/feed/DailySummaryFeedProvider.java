@@ -47,6 +47,7 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.luckycatlabs.sunrisesunset.dto.Location;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -58,6 +59,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import kotlin.Pair;
@@ -73,14 +75,13 @@ public class DailySummaryFeedProvider extends FeedProvider {
     public DailySummaryFeedProvider(Context c) {
         super(c);
         LawnchairUtilsKt.getLawnchairLocationManager(c).addCallback((lat, lon) -> {
-            Calendar sunrise = SunriseSunsetCalculator
-                    .getSunrise(lat, lon,
-                            Calendar.getInstance().getTimeZone(),
-                            new GregorianCalendar(), 6);
-            Calendar sunset = SunriseSunsetCalculator
-                    .getSunset(lat, lon,
-                            Calendar.getInstance().getTimeZone(),
-                            new GregorianCalendar(), 6);
+            SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(new Location(lat, lon),
+                    TimeZone.getTimeZone("UTC"));
+            Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(new GregorianCalendar());
+            Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(new GregorianCalendar());
+            Log.d(getClass().getName(),
+                    "init: sunrise and sunset times retrieved: " + sunrise + ", "
+                            + sunset);
             sunriseSunset = new Pair<>(ZonedDateTime
                     .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
                             ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
@@ -119,14 +120,10 @@ public class DailySummaryFeedProvider extends FeedProvider {
             Pair<Double, Double> location = LawnchairUtilsKt
                     .getLawnchairLocationManager(getContext()).getLocation();
             if (location != null) {
-                Calendar sunrise = SunriseSunsetCalculator
-                        .getSunrise(location.getFirst(), location.getSecond(),
-                                Calendar.getInstance().getTimeZone(),
-                                new GregorianCalendar(), 6);
-                Calendar sunset = SunriseSunsetCalculator
-                        .getSunset(location.getFirst(), location.getSecond(),
-                                Calendar.getInstance().getTimeZone(),
-                                new GregorianCalendar(), 6);
+                SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(new Location(location.getFirst(), location.getSecond()),
+                        TimeZone.getTimeZone("UTC"));
+                Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(new GregorianCalendar());
+                Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(new GregorianCalendar());
                 Log.d(getClass().getName(),
                         "init: sunrise and sunset times retrieved: " + sunrise + ", "
                                 + sunset);
