@@ -77,7 +77,7 @@ class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c), Loc
                     Criteria(), true)
             if (provider != null) {
                 context.locationManager.requestLocationUpdates(provider, TimeUnit.MINUTES.toMillis(1),
-                        1f, this)
+                        100f, this)
             }
         }
     }
