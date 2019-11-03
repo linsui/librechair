@@ -21,9 +21,12 @@
 package ch.deletescape.lawnchair.persistence
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.maps.MapProvider
+import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.util.SingletonHolder
 import com.android.launcher3.BuildConfig
+import com.google.gson.Gson
 
 class FeedPersistence private constructor(val context: Context) {
     val useBackgroundImageAsScreenBackground
@@ -78,8 +81,28 @@ class FeedPersistence private constructor(val context: Context) {
             by DefValueStringDelegate(context, "feed_card_corner_treatment", "rnd")
     val chipCompactCard
             by BooleanDelegate(context, "feed_chip_provider_compact_card", false)
+    val feedProviders
+            by ContainerListDelegate(context,
+                    "feed_providers", listOf(
+                    FeedWeatherStatsProvider::class.java.name,
+                    FeedForecastProvider::class.java.name,
+                    DeviceStateProvider::class.java.name,
+                    CalendarEventProvider::class.java.name,
+                    WikipediaNewsProvider::class.java.name,
+                    WikinewsFeedProvider::class.java.name,
+                    WikipediaNewsProvider::class.qualifiedName,
+                    FeedWidgetsProvider::class.qualifiedName).map {
+                FeedProviderContainer(it, null)
+            })
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
+}
+
+class ContainerListDelegate(context: Context, key: String, defValue: List<FeedProviderContainer>) :
+        SerializableListDelegate<FeedPersistence, FeedProviderContainer>(context, key, defValue) {
+    override fun serialize(t: FeedProviderContainer): String = Gson().toJson(t)
+    override fun deserialize(s: String) = Gson().fromJson(s,
+            FeedProviderContainer::class.java)
 }
 
 val Context.feedPrefs get() = FeedPersistence.getInstance(this)

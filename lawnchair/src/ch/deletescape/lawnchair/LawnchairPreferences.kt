@@ -41,7 +41,6 @@ import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
-import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
@@ -218,19 +217,10 @@ class LawnchairPreferences(val context: Context) :
                                   PersonalityProvider::class.java.name))
     var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay, emptyList())
     var feedBlur by BooleanPref("pref_feed_blur", true, ::restartOverlay)
-    var feedProviders = object :
+    var feedProvidersLegacy2 = object :
             MutableListPref<FeedProviderContainer>(sharedPrefs, "pref_feed_provider_containers",
                                                    ::restartOverlay,
-                                                   listOf(FeedWeatherStatsProvider::class.java.name,
-                                                          FeedForecastProvider::class.java.name,
-                                                          DeviceStateProvider::class.java.name,
-                                                          CalendarEventProvider::class.java.name,
-                                                          WikipediaNewsProvider::class.java.name,
-                                                          WikinewsFeedProvider::class.java.name,
-                                                          WikipediaNewsProvider::class.qualifiedName,
-                                                          FeedWidgetsProvider::class.qualifiedName).map {
-                                                       FeedProviderContainer(it, null)
-                                                   }) {
+                                                   listOf()) {
         override fun unflattenValue(value: String) = Gson().fromJson(value,
                                                                      FeedProviderContainer::class.java).apply {
             if (arguments == null) {
@@ -257,33 +247,6 @@ class LawnchairPreferences(val context: Context) :
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
                                              MixerSortingAlgorithm::class.java.name,
                                              ::restartOverlay)
-    var feedWidgetList = object :
-            MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restartOverlay, listOf()) {
-        override fun customAdder(value: Int) {
-            setAll(getAll().filter { it != value } + value)
-        }
-
-        override fun unflattenValue(value: String): Int {
-            return Integer.valueOf(value)
-        }
-    }
-
-
-    var feedWidgetMetadata = object :
-            MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata_2",
-                    ::restartOverlay, listOf()) {
-        override fun flattenValue(
-                value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
-
-        override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
-            return value.split("@")[0].toInt() to Gson().fromJson(value.split("@", limit = 2)[1],
-                    WidgetMetadata::class.java)
-        }
-
-        override fun customAdder(value: Pair<Int, WidgetMetadata>) {
-            setAll(getAll().filter { it.first != value.first } + value)
-        }
-    }
 
     var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null, ::restartOverlay)
     var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),

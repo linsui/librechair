@@ -45,6 +45,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toolbar
 import androidx.core.graphics.ColorUtils
+import androidx.databinding.ObservableList
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -851,6 +852,47 @@ class LauncherFeed(private val originalContext: Context,
                 title.visibility = View.GONE
             }
         }
+        context.feedPrefs.feedProviders.addOnListChangedCallback(object :
+                ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
+            override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
+                adapter.providers = getFeedController(context).getProviders()
+                FeedScope.launch {
+                    refresh(0, clearCache = true)
+                }
+            }
+
+            override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
+                                            positionStart: Int, itemCount: Int) {
+                adapter.providers = getFeedController(context).getProviders()
+                FeedScope.launch {
+                    refresh(0, clearCache = true)
+                }
+            }
+
+            override fun onItemRangeMoved(sender: ObservableList<FeedProviderContainer>?,
+                                          fromPosition: Int, toPosition: Int, itemCount: Int) {
+                adapter.providers = getFeedController(context).getProviders()
+                FeedScope.launch {
+                    refresh(0, clearCache = true)
+                }
+            }
+
+            override fun onItemRangeInserted(sender: ObservableList<FeedProviderContainer>?,
+                                             positionStart: Int, itemCount: Int) {
+                adapter.providers = getFeedController(context).getProviders()
+                FeedScope.launch {
+                    refresh(0, clearCache = true)
+                }
+            }
+
+            override fun onItemRangeChanged(sender: ObservableList<FeedProviderContainer>?,
+                                            positionStart: Int, itemCount: Int) {
+                adapter.providers = getFeedController(context).getProviders()
+                FeedScope.launch {
+                    refresh(0, clearCache = true)
+                }
+            }
+        })
     }
 
     @JvmOverloads

@@ -30,14 +30,12 @@ import ch.deletescape.lawnchair.feed.METADATA_CONTROLLER_PACKAGE
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.getColorEngineAccent
 import ch.deletescape.lawnchair.isVisible
-import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class FeedProvidersAdapter(private val context: Context)
     : androidx.recyclerview.widget.RecyclerView.Adapter<FeedProvidersAdapter.Holder>() {
-
-    private val prefs = context.lawnchairPrefs
     private val allProviders = ArrayList<ProviderItem>()
     private val handler = Handler()
 
@@ -55,7 +53,7 @@ class FeedProvidersAdapter(private val context: Context)
         allProviders.addAll(MainFeedController.getFeedProviders(context).map {
             ProviderItem(ProviderInfo(it))
         })
-        currentSpecs.addAll(prefs.feedProviders.getAll())
+        currentSpecs.addAll(context.feedPrefs.feedProviders)
 
         fillItems()
     }

@@ -37,6 +37,7 @@ import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 
 @SuppressLint("StaticFieldLeak")
@@ -51,8 +52,10 @@ fun getFeedController(c: Context): MainFeedController {
 
 class MainFeedController(val context: Context) {
     fun getProviders(): List<FeedProvider> {
-        migrateToContainerSystem(context);
-        return (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.getList()
+        migrateToContainerSystem(context)
+        migrateToPersistenceSystem(context)
+
+        return (context.applicationContext as LawnchairApp).feedPrefs.feedProviders
                 .map { it.instantiate(context) }
     }
 
@@ -140,7 +143,7 @@ class MainFeedController(val context: Context) {
         fun migrateToContainerSystem(context: Context) {
             context.lawnchairPrefs.beginBlockingEdit()
             if (context.lawnchairPrefs.feedProvidersLegacy.getAll().isNotEmpty()) {
-                context.lawnchairPrefs.feedProviders
+                context.lawnchairPrefs.feedProvidersLegacy2
                         .setAll(context.lawnchairPrefs.feedProvidersLegacy.getAll().mapNotNull {
                             if (it != RemoteFeedProvider::class.qualifiedName) substitutions[it]
                                     ?: it else null
@@ -149,10 +152,20 @@ class MainFeedController(val context: Context) {
             }
         }
 
+        fun migrateToPersistenceSystem(context: Context) {
+            if (context.lawnchairPrefs.feedProvidersLegacy2.getAll().isNotEmpty()
+                    && context.lawnchairPrefs.feedProvidersLegacy2.getAll() != context.lawnchairPrefs.feedProvidersLegacy2.defaultValue) {
+                context.feedPrefs.feedProviders.clear()
+                context.feedPrefs.feedProviders.addAll(context.lawnchairPrefs.feedProvidersLegacy2.getAll())
+                context.lawnchairPrefs.feedProvidersLegacy2.setAll(listOf())
+            }
+        }
+
         fun getFeedProviders(context: Context,
                              calledFromPrefs: Boolean = false): List<FeedProviderContainer> {
             if (!calledFromPrefs) {
                 migrateToContainerSystem(context)
+                migrateToPersistenceSystem(context)
             }
             return DynamicProviderController.getProviders()
         }
