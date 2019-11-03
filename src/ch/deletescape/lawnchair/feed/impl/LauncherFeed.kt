@@ -137,7 +137,8 @@ class LauncherFeed(private val originalContext: Context,
     private var tabChanged = false
     private val tabController: TabController =
             TabController.inflate(context.lawnchairPrefs.feedTabController, context)
-    private val useTabbedMode = tabController.allTabs.isNotEmpty()
+    private val useTabbedMode
+        get() = tabController.allTabs.isNotEmpty()
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers).toMutableMap()
     private val tabs = tabController.allTabs.toMutableList()
     private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
@@ -858,6 +859,8 @@ class LauncherFeed(private val originalContext: Context,
             override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
                 FeedScope.launch(Dispatchers.Main) {
                     if (useTabbedMode) {
+                        tabs.clear()
+                        tabs.addAll(tabController.allTabs)
                         tabbedProviders.clear()
                         tabbedProviders.putAll(tabController.sortFeedProviders(
                                 getFeedController(context).getProviders()))
@@ -877,20 +880,23 @@ class LauncherFeed(private val originalContext: Context,
 
             override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
                                             positionStart: Int, itemCount: Int) {
-                if (useTabbedMode) {
-                    tabbedProviders.clear()
-                    tabbedProviders.putAll(tabController.sortFeedProviders(
-                            getFeedController(context).getProviders()))
-                    adapter.providers = tabbedProviders[currentTab]!!
-                    FeedScope.launch(Dispatchers.Main) {
-                        processTabs()
-                        refresh(0, clearCache = true)
-                    }
-                } else {
-                    adapter.providers = getFeedController(context).getProviders()
-                    FeedScope.launch {
-                        processTabs()
-                        refresh(0, clearCache = true)
+                FeedScope.launch(Dispatchers.Main) {
+                    if (useTabbedMode) {
+                        tabs.clear()
+                        tabs.addAll(tabController.allTabs)
+                        tabbedProviders.clear()
+                        tabbedProviders.putAll(tabController.sortFeedProviders(
+                                getFeedController(context).getProviders()))
+                        adapter.providers = tabbedProviders[currentTab]!!
+                        FeedScope.launch(Dispatchers.Main) {
+                            processTabs()
+                            refresh(0, clearCache = true)
+                        }
+                    } else {
+                        adapter.providers = getFeedController(context).getProviders()
+                        FeedScope.launch {
+                            refresh(0, clearCache = true)
+                        }
                     }
                 }
             }
@@ -899,6 +905,8 @@ class LauncherFeed(private val originalContext: Context,
                                           fromPosition: Int, toPosition: Int, itemCount: Int) {
                 FeedScope.launch(Dispatchers.Main) {
                     if (useTabbedMode) {
+                        tabs.clear()
+                        tabs.addAll(tabController.allTabs)
                         tabbedProviders.clear()
                         tabbedProviders.putAll(tabController.sortFeedProviders(
                                 getFeedController(context).getProviders()))
@@ -920,6 +928,8 @@ class LauncherFeed(private val originalContext: Context,
                                              positionStart: Int, itemCount: Int) {
                 FeedScope.launch(Dispatchers.Main) {
                     if (useTabbedMode) {
+                        tabs.clear()
+                        tabs.addAll(tabController.allTabs)
                         tabbedProviders.clear()
                         tabbedProviders.putAll(tabController.sortFeedProviders(
                                 getFeedController(context).getProviders()))
@@ -941,6 +951,8 @@ class LauncherFeed(private val originalContext: Context,
                                             positionStart: Int, itemCount: Int) {
                 FeedScope.launch(Dispatchers.Main) {
                     if (useTabbedMode) {
+                        tabs.clear()
+                        tabs.addAll(tabController.allTabs)
                         tabbedProviders.clear()
                         tabbedProviders.putAll(tabController.sortFeedProviders(
                                 getFeedController(context).getProviders()))
