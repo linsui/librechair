@@ -76,8 +76,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
         if (context.lawnchairPrefs.overrideLocale.isNotEmpty()) {
             ArticleJobsScope.launch {
                 try {
-                    tokenCallback.accept("${javaClass.name}@${Locale("", context.lawnchairPrefs.overrideLocale).isO3Country}"
-                    )
+                    tokenCallback.accept("${javaClass.name}@${Locale("", context.lawnchairPrefs.overrideLocale).isO3Country}")
                 } catch (e: Exception) {
                     tokenCallback.accept("${javaClass.name}@?")
                 }
