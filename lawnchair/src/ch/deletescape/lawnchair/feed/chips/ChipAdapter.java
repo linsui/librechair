@@ -30,12 +30,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipDrawable;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -108,15 +111,25 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         } else {
             chipViewHolder.itemView.setChipStrokeWidth(0f);
         }
-        Objects.requireNonNull(chipViewHolder.itemView.getBackgroundDrawable()).setAlpha(
-                (int) Math.round(ChipPersistence.Companion.getInstance(
-                        context).getChipOpacity() * (255f)));
+        try {
+            Field field = ChipDrawable.class.getDeclaredField("currentChipSurfaceColor");
+            Field field2 = ChipDrawable.class.getDeclaredField("chipSurfaceColor");
+            field.setAccessible(true);
+            field2.setAccessible(true);
+            field.set(chipViewHolder.itemView.getBackgroundDrawable(), 0);
+            field2.set(chipViewHolder.itemView.getBackgroundDrawable(), ColorStateList.valueOf(0));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         chipViewHolder.itemView.setSingleLine(true);
         chipViewHolder.itemView.setText(item.title);
         chipViewHolder.itemView.setChipIcon(item.icon);
         chipViewHolder.itemView.setChipBackgroundColor(
-                ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
-                        ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor()));
+                ColorStateList.valueOf(ColorUtils.setAlphaComponent(
+                        ColorEngine.getInstance(context).getResolverCache(
+                                ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
+                        (int) Math.round(ChipPersistence.Companion.getInstance(
+                                context).getChipOpacity() * (255f)))));
         chipViewHolder.itemView.setTextColor(
                 LawnchairUtilsKt.useWhiteText(ColorEngine.getInstance(context).getResolverCache(
                         ColorEngine.Resolvers.FEED_CHIP).getValue().resolveColor(),
@@ -134,12 +147,16 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
                     chipViewHolder.itemView.setTypeface(typeface);
                     return Unit.INSTANCE;
                 });
-        if (chipViewHolder.itemView.getShapeAppearanceModel() != Objects.requireNonNull(ChipStyleRegistry.ALL.get(
-                ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment())).apply(
+        if (chipViewHolder.itemView.getShapeAppearanceModel() != Objects.requireNonNull(
+                ChipStyleRegistry.ALL.get(
+                        ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment())).apply(
                 ChipPersistenceKt.getChipPrefs(context).getChipCornerRadius(), context)) {
-            chipViewHolder.itemView.setShapeAppearanceModel(Objects.requireNonNull(ChipStyleRegistry.ALL.get(
-                    ChipPersistenceKt.getChipPrefs(context).getChipCornerTreatment())).apply(
-                    ChipPersistenceKt.getChipPrefs(context).getChipCornerRadius(), context));
+            chipViewHolder.itemView.setShapeAppearanceModel(
+                    Objects.requireNonNull(ChipStyleRegistry.ALL.get(
+                            ChipPersistenceKt.getChipPrefs(
+                                    context).getChipCornerTreatment())).apply(
+                            ChipPersistenceKt.getChipPrefs(context).getChipCornerRadius(),
+                            context));
         }
         if (item.click != null || item.viewClickListener != null) {
             chipViewHolder.itemView.setOnClickListener(v -> {
