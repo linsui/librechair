@@ -23,7 +23,6 @@ package ch.deletescape.lawnchair.feed.notifications;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.launcher3.LauncherModel;
 import com.android.launcher3.R;
 import com.android.launcher3.notification.NotificationInfo;
 
@@ -48,14 +46,12 @@ import kotlin.Unit;
 
 public class MediaNotificationProvider extends FeedProvider {
     private final List<Consumer<OMCMediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
-    private OMCMediaListener mediaListener = null;
+    private OMCMediaListener mediaListener;
 
     public MediaNotificationProvider(Context c) {
         super(c);
         mediaListener = new OMCMediaListener(c,
-                () -> onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking())),
-                new Handler(
-                        LauncherModel.getWorkerLooper()));
+                () -> onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking())));
     }
 
     @Override

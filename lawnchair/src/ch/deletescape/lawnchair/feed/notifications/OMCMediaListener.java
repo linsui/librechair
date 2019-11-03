@@ -32,6 +32,7 @@ import android.media.session.MediaSessionManager.OnActiveSessionsChangedListener
 import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -63,7 +64,7 @@ public class OMCMediaListener extends MediaController.Callback
     private final Handler mWorkHandler;
 
     @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
-    public OMCMediaListener(Context context, Runnable onChange, Handler handler) {
+    public OMCMediaListener(Context context, Runnable onChange) {
         mComponent = new ComponentName(context, NotificationListener.class);
         mManager = (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
         mOnChange = onChange;
@@ -72,7 +73,9 @@ public class OMCMediaListener extends MediaController.Callback
             notifications.addAll(list);
             onActiveSessionsChanged(null);
         });
-        mWorkHandler = handler;
+        HandlerThread handlerThread = new HandlerThread("");
+        handlerThread.start();
+        mWorkHandler = new Handler(handlerThread.getLooper());
         try {
             mManager.addOnActiveSessionsChangedListener(this,
                     new ComponentName(context, NotificationListener.class));
@@ -102,7 +105,9 @@ public class OMCMediaListener extends MediaController.Callback
 
     @Override
     public void onActiveSessionsChanged(List<MediaController> controllers) {
-        mWorkHandler.post(() -> updateTracking(controllers));
+        if (mWorkHandler != null) {
+            mWorkHandler.post(() -> updateTracking(controllers));
+        }
     }
 
     private void updateTracking(List<MediaController> controllers) {
