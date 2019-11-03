@@ -153,8 +153,7 @@ class MainFeedController(val context: Context) {
         }
 
         fun migrateToPersistenceSystem(context: Context) {
-            if (context.lawnchairPrefs.feedProvidersLegacy2.getAll().isNotEmpty()
-                    && context.lawnchairPrefs.feedProvidersLegacy2.getAll() != context.lawnchairPrefs.feedProvidersLegacy2.defaultValue) {
+            if (context.lawnchairPrefs.feedProvidersLegacy2.getAll().isNotEmpty()) {
                 context.feedPrefs.feedProviders.clear()
                 context.feedPrefs.feedProviders.addAll(context.lawnchairPrefs.feedProvidersLegacy2.getAll())
                 context.lawnchairPrefs.feedProvidersLegacy2.setAll(listOf())

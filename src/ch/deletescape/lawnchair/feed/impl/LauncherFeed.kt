@@ -79,6 +79,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlayCallback
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.overlay_feed.view.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -855,41 +856,105 @@ class LauncherFeed(private val originalContext: Context,
         context.feedPrefs.feedProviders.addOnListChangedCallback(object :
                 ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
             override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
-                adapter.providers = getFeedController(context).getProviders()
-                FeedScope.launch {
-                    refresh(0, clearCache = true)
+                FeedScope.launch(Dispatchers.Main) {
+                    if (useTabbedMode) {
+                        tabbedProviders.clear()
+                        tabbedProviders.putAll(tabController.sortFeedProviders(
+                                getFeedController(context).getProviders()))
+                        adapter.providers = tabbedProviders[currentTab]!!
+                        FeedScope.launch(Dispatchers.Main) {
+                            processTabs()
+                            refresh(0, clearCache = true)
+                        }
+                    } else {
+                        adapter.providers = getFeedController(context).getProviders()
+                        FeedScope.launch {
+                            refresh(0, clearCache = true)
+                        }
+                    }
                 }
             }
 
             override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
                                             positionStart: Int, itemCount: Int) {
-                adapter.providers = getFeedController(context).getProviders()
-                FeedScope.launch {
-                    refresh(0, clearCache = true)
+                if (useTabbedMode) {
+                    tabbedProviders.clear()
+                    tabbedProviders.putAll(tabController.sortFeedProviders(
+                            getFeedController(context).getProviders()))
+                    adapter.providers = tabbedProviders[currentTab]!!
+                    FeedScope.launch(Dispatchers.Main) {
+                        processTabs()
+                        refresh(0, clearCache = true)
+                    }
+                } else {
+                    adapter.providers = getFeedController(context).getProviders()
+                    FeedScope.launch {
+                        processTabs()
+                        refresh(0, clearCache = true)
+                    }
                 }
             }
 
             override fun onItemRangeMoved(sender: ObservableList<FeedProviderContainer>?,
                                           fromPosition: Int, toPosition: Int, itemCount: Int) {
-                adapter.providers = getFeedController(context).getProviders()
-                FeedScope.launch {
-                    refresh(0, clearCache = true)
+                FeedScope.launch(Dispatchers.Main) {
+                    if (useTabbedMode) {
+                        tabbedProviders.clear()
+                        tabbedProviders.putAll(tabController.sortFeedProviders(
+                                getFeedController(context).getProviders()))
+                        adapter.providers = tabbedProviders[currentTab]!!
+                        FeedScope.launch(Dispatchers.Main) {
+                            processTabs()
+                            refresh(0, clearCache = true)
+                        }
+                    } else {
+                        adapter.providers = getFeedController(context).getProviders()
+                        FeedScope.launch {
+                            refresh(0, clearCache = true)
+                        }
+                    }
                 }
             }
 
             override fun onItemRangeInserted(sender: ObservableList<FeedProviderContainer>?,
                                              positionStart: Int, itemCount: Int) {
-                adapter.providers = getFeedController(context).getProviders()
-                FeedScope.launch {
-                    refresh(0, clearCache = true)
+                FeedScope.launch(Dispatchers.Main) {
+                    if (useTabbedMode) {
+                        tabbedProviders.clear()
+                        tabbedProviders.putAll(tabController.sortFeedProviders(
+                                getFeedController(context).getProviders()))
+                        adapter.providers = tabbedProviders[currentTab]!!
+                        FeedScope.launch(Dispatchers.Main) {
+                            processTabs()
+                            refresh(0, clearCache = true)
+                        }
+                    } else {
+                        adapter.providers = getFeedController(context).getProviders()
+                        FeedScope.launch {
+                            refresh(0, clearCache = true)
+                        }
+                    }
                 }
             }
 
             override fun onItemRangeChanged(sender: ObservableList<FeedProviderContainer>?,
                                             positionStart: Int, itemCount: Int) {
-                adapter.providers = getFeedController(context).getProviders()
-                FeedScope.launch {
-                    refresh(0, clearCache = true)
+                FeedScope.launch(Dispatchers.Main) {
+                    if (useTabbedMode) {
+                        tabbedProviders.clear()
+                        tabbedProviders.putAll(tabController.sortFeedProviders(
+                                getFeedController(context).getProviders()))
+                        adapter.providers = tabbedProviders[currentTab]!!
+                        FeedScope.launch(Dispatchers.Main) {
+                            processTabs()
+                            refresh(0, clearCache = true)
+                        }
+                    } else {
+                        adapter.providers = getFeedController(context).getProviders()
+                        FeedScope.launch {
+                            refresh(0, clearCache = true)
+                        }
+                    }
                 }
             }
         })
