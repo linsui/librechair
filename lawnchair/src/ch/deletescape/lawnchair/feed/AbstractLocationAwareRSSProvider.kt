@@ -93,7 +93,7 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
                     tokenCallback.accept("${this@AbstractLocationAwareRSSProvider.javaClass.name}@?")
                 }
             }
-        } else {
+        } else if (context.lawnchairLocationManager.location == null) {
             ArticleJobsScope.launch {
                 try {
                     tokenCallback.accept(this@AbstractLocationAwareRSSProvider.javaClass.name + "@?")
