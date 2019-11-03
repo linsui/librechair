@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit
 
 @SuppressLint("StaticFieldLeak")
 object LocationManager {
-    val SYNC_LOCK = Any()
     val slots: MutableList<Pair<LocationProvider, MutablePair<Double?, Double?>>> = mutableListOf()
     var context: Context? = null
         set(value) = {
