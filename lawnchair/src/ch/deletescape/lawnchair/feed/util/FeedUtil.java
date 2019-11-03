@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.util;
 
+import android.annotation.AnyThread;
 import android.annotation.MainThread;
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -31,6 +32,8 @@ import android.view.View;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
@@ -62,5 +65,11 @@ public final class FeedUtil {
             Snackbar.make(view, "No application is available for the url " + url, BaseTransientBottomBar.LENGTH_LONG)
                     .show();
         }
+    }
+
+    @AnyThread
+    public static <T> T apply(T object, Consumer<T> consumer) {
+        consumer.accept(object);
+        return object;
     }
 }

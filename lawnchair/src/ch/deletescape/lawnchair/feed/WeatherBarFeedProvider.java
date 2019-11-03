@@ -29,6 +29,9 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.deletescape.lawnchair.awareness.WeatherManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
 import kotlin.Unit;
 
@@ -66,9 +69,21 @@ public class WeatherBarFeedProvider extends FeedProvider {
 
     @Override
     public List<Card> getCards() {
-        return weather == null ? Collections.emptyList() : Collections.singletonList(new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
+        return weather == null ? Collections.emptyList() : Collections.singletonList(
+                FeedUtil.apply(new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
                 weather.getTemperature().toString(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
                 parent -> new View(parent.getContext()), Card.TEXT_ONLY,
-                "nosort,top", "weatherBar".hashCode()));
+                "nosort,top", "weatherBar".hashCode()), it -> {
+            if (weather.getUrl() != null) {
+                it.setGlobalClickListener(v -> {
+                    if (!FeedPersistence.Companion.getInstance(getContext()).getDirectlyOpenLinksInBrowser()) {
+                        WebViewScreen.obtain(getContext(), weather.getUrl()).display(this, 0, 0, v);
+                    } else {
+                        FeedUtil.openUrl(getContext(), weather.getUrl(), v);
+                    }
+                    return Unit.INSTANCE;
+                });
+            }
+        }));
     }
 }
