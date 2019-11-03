@@ -100,9 +100,10 @@ public class WebViewScreen extends ProviderScreen {
             public WebResourceResponse shouldInterceptRequest(WebView view,
                                                               WebResourceRequest request) {
                 try {
+                    String authority = request.getUrl().getAuthority() != null ? request.getUrl().getAuthority() : "example.com";
                     if (FeedPersistenceKt.getFeedPrefs(
                             WebViewScreen.this).getEnableHostsFilteringInWebView() && WebSafety.INSTANCE.shouldBlock(
-                            request.getUrl().getAuthority(), request.getUrl().toString())) {
+                            authority, request.getUrl().toString())) {
                         return new WebResourceResponse("text/html", "utf8",
                                 new ByteArrayInputStream(new byte[0]));
                     }
