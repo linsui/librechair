@@ -25,23 +25,23 @@ import android.view.View;
 
 import com.android.launcher3.Utilities;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 
-import ch.deletescape.lawnchair.LawnchairApp;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Listener;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
+import ch.deletescape.lawnchair.awareness.WeatherManager;
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
+import kotlin.Unit;
 
-public class WeatherBarFeedProvider extends FeedProvider implements Listener {
+public class WeatherBarFeedProvider extends FeedProvider {
 
-    private Card card;
+    private ForecastProvider.CurrentWeather weather;
 
     public WeatherBarFeedProvider(Context c) {
         super(c);
-        ((LawnchairApp) c.getApplicationContext()).getSmartspace().addListener(this);
+        WeatherManager.INSTANCE.subscribeWeather(currentWeather -> {
+            weather = currentWeather;
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
@@ -66,16 +66,9 @@ public class WeatherBarFeedProvider extends FeedProvider implements Listener {
 
     @Override
     public List<Card> getCards() {
-        return card == null ? Collections.emptyList() : Collections.singletonList(card);
-    }
-
-    @Override
-    public void onDataUpdated(@Nullable WeatherData weather, @Nullable CardData card) {
-        if (weather != null) {
-            this.card = new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
-                    weather.getTitle(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
-                    parent -> new View(parent.getContext()), Card.TEXT_ONLY,
-                    "nosort,top", "weatherBar".hashCode());
-        }
+        return weather == null ? Collections.emptyList() : Collections.singletonList(new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
+                weather.getTemperature().toString(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
+                parent -> new View(parent.getContext()), Card.TEXT_ONLY,
+                "nosort,top", "weatherBar".hashCode()));
     }
 }
