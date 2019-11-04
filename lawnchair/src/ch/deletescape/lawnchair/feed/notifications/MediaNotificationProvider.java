@@ -201,7 +201,7 @@ public class MediaNotificationProvider extends FeedProvider {
                             }
                         } while (System.currentTimeMillis() <= hideDelay.get());
                         synchronized (seekbarContainer) {
-                            if (hideDelay.get() <= System.currentTimeMillis()) {
+                            if (hideDelay.get() <= System.currentTimeMillis() && !trackingTouch.get()) {
                                 seekbarContainer.post(() -> {
                                     seekbarContainer.setAlpha(1f);
                                     seekbarContainer.setClickable(false);
