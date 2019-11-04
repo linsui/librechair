@@ -20,7 +20,6 @@
 
 package ch.deletescape.lawnchair.feed.notifications;
 
-import android.animation.Animator;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -98,7 +97,7 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageView icon = mnv.findViewById(R.id.media_icon);
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
-            seekbarContainer.setAlpha(0);
+                seekbarContainer.setAlpha(0);
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             VolumeManager.subscribe(seekbar::setProgress);
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
@@ -116,28 +115,7 @@ public class MediaNotificationProvider extends FeedProvider {
                             seekbarContainer.post(() -> {
                                 seekbarContainer.setAlpha(1f);
                                 seekbarContainer.animate().setDuration(200).alpha(
-                                        0f).setListener(
-                                        new Animator.AnimatorListener() {
-                                            @Override
-                                            public void onAnimationStart(Animator animation) {
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationEnd(Animator animation) {
-                                                seekbarContainer.setVisibility(View.INVISIBLE);
-                                            }
-
-                                            @Override
-                                            public void onAnimationCancel(Animator animation) {
-
-                                            }
-
-                                            @Override
-                                            public void onAnimationRepeat(Animator animation) {
-
-                                            }
-                                        });
+                                        0f);
                             });
                         }
                     }
