@@ -41,6 +41,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Vector;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -103,68 +104,73 @@ public class MediaNotificationProvider extends FeedProvider {
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
                 seekbarContainer.setAlpha(0);
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
+            AtomicBoolean trackingTouch = new AtomicBoolean(false);
+            seekbar.setOnTouchListener((v, ev) -> {
+                Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(true);
+                return false;
+            });
+            seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    if (fromUser) {
+                        ((AudioManager) Objects.requireNonNull(getContext().getSystemService(Context.AUDIO_SERVICE)))
+                                .setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                    }
+                }
+
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    trackingTouch.set(true);
+                    hideDelay.addAndGet(1000);
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    trackingTouch.set(false);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            Thread.sleep(1800);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        synchronized (seekbarContainer) {
+                            if (hideDelay.get() <= System.currentTimeMillis()) {
+                                seekbarContainer.post(() -> {
+                                    seekbarContainer.setAlpha(1f);
+                                    seekbarContainer.setClickable(false);
+                                    seekbarContainer.animate().setDuration(200).alpha(
+                                            0f);
+                                });
+                            }
+                        }
+                    });
+                }
+            });
             VolumeManager.subscribe(seekbar::setProgress);
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
-                seekbar.setOnTouchListener((v, ev) -> {
-                    Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(true);
-                    return false;
-                });
-                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (fromUser) {
-                            ((AudioManager) Objects.requireNonNull(getContext().getSystemService(Context.AUDIO_SERVICE)))
-                                    .setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                if (!trackingTouch.get()) {
+                    hideDelay.set(System.currentTimeMillis() + 1800);
+                    seekbarContainer.setClickable(true);
+                    seekbarContainer.setAlpha(0);
+                    seekbarContainer.animate().setDuration(200).alpha(1f);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        try {
+                            Thread.sleep(1800);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        hideDelay.addAndGet(1000);
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        Executors.newSingleThreadExecutor().submit(() -> {
-                            try {
-                                Thread.sleep(1800);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                        synchronized (seekbarContainer) {
+                            if (hideDelay.get() <= System.currentTimeMillis()) {
+                                seekbarContainer.post(() -> {
+                                    seekbarContainer.setAlpha(1f);
+                                    seekbarContainer.setClickable(false);
+                                    seekbarContainer.animate().setDuration(200).alpha(
+                                            0f);
+                                });
                             }
-                            synchronized (seekbarContainer) {
-                                if (hideDelay.get() <= System.currentTimeMillis()) {
-                                    seekbarContainer.post(() -> {
-                                        seekbarContainer.setAlpha(1f);
-                                        seekbarContainer.setClickable(false);
-                                        seekbarContainer.animate().setDuration(200).alpha(
-                                                0f);
-                                    });
-                                }
-                            }
-                        });
-                    }
-                });
-                hideDelay.set(System.currentTimeMillis() + 1800);
-                seekbarContainer.setClickable(true);
-                seekbarContainer.setAlpha(0);
-                seekbarContainer.animate().setDuration(200).alpha(1f);
-                Executors.newSingleThreadExecutor().submit(() -> {
-                    try {
-                        Thread.sleep(1800);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    synchronized (seekbarContainer) {
-                        if (hideDelay.get() <= System.currentTimeMillis()) {
-                            seekbarContainer.post(() -> {
-                                seekbarContainer.setAlpha(1f);
-                                seekbarContainer.setClickable(false);
-                                seekbarContainer.animate().setDuration(200).alpha(
-                                        0f);
-                            });
                         }
-                    }
-                });
+                    });
+                }
             }), false);
 
             TextView duration = mnv.findViewById(R.id.notification_duration);
