@@ -193,8 +193,10 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
     }
 
     override fun getLocationAwareFeed(country: String): SyndFeed {
-        val feed = IOUtils.toString(URL(feeds[country] + "/rss").openConnection().getInputStream(),
+        val `is` = URL(feeds[country] + "/rss").openConnection().getInputStream()
+        val feed = IOUtils.toString(`is`,
                 Charset.defaultCharset())
+        `is`.close()
         return SyndFeedInput()
                 .build(InputSource(CharSequenceInputStream(feed, Charset.defaultCharset())))
     }

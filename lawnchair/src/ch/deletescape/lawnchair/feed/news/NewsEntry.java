@@ -42,6 +42,7 @@ public class NewsEntry {
     public String url;
     public List<String> categories;
     public Date date;
+    public Date lastUpdate;
 
     @TypeConverter
     public static Date fromTimestamp(Long value) {

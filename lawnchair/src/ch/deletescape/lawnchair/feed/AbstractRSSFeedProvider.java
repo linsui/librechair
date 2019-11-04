@@ -48,6 +48,7 @@ import com.squareup.picasso.Picasso.Builder;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -110,7 +111,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 articles = entries.stream().distinct().collect(Collectors.toList());
                 if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
                         || (entries.stream().allMatch(
-                        it -> it.date != null && System.currentTimeMillis() - it.date.getTime() > TimeUnit.HOURS.toMillis(
+                        it -> it.lastUpdate != null && System.currentTimeMillis() - it.lastUpdate.getTime() > TimeUnit.HOURS.toMillis(
                                 2)))) {
                     bindFeed(feed -> {
                         Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
@@ -127,6 +128,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                     .stream()
                                     .map(SyndCategory::getName)
                                     .collect(Collectors.toList());
+                            newsEntry.lastUpdate = new Date();
                             newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                             return newsEntry;
                         }).collect(Collectors.toList());

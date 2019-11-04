@@ -29,7 +29,7 @@ import androidx.room.TypeConverters;
 
 import java.util.HashMap;
 
-@Database(entities = {NewsEntry.class}, version = 1)
+@Database(entities = {NewsEntry.class}, version = 2)
 @TypeConverters({NewsEntry.class})
 public abstract class NewsDb extends RoomDatabase {
     private static volatile HashMap<String, NewsDb> databases = new HashMap<>();
