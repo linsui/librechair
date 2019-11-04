@@ -184,7 +184,7 @@ public class MediaNotificationProvider extends FeedProvider {
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
                 if (!trackingTouch.get()) {
                     if (seekbarContainer.getAlpha() > 0) {
-                        hideDelay.getAndAdd(1800);
+                        hideDelay.set(System.currentTimeMillis() + 1800);
                         return;
                     } else {
                         hideDelay.set(System.currentTimeMillis() + 1800);
