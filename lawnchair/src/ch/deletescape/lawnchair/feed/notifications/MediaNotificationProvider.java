@@ -140,11 +140,13 @@ public class MediaNotificationProvider extends FeedProvider {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     Executors.newSingleThreadExecutor().submit(() -> {
-                        try {
-                            Thread.sleep(1800);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        do {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } while (System.currentTimeMillis() <= hideDelay.get());
                         synchronized (seekbarContainer) {
                             if (hideDelay.get() <= System.currentTimeMillis()) {
                                 seekbarContainer.post(() -> {
@@ -181,16 +183,23 @@ public class MediaNotificationProvider extends FeedProvider {
             VolumeManager.subscribe(seekbar::setProgress);
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
                 if (!trackingTouch.get()) {
-                    hideDelay.set(System.currentTimeMillis() + 1800);
+                    if (seekbarContainer.getAlpha() > 0) {
+                        hideDelay.getAndAdd(1800);
+                        return;
+                    } else {
+                        hideDelay.set(System.currentTimeMillis() + 1800);
+                    }
                     seekbarContainer.setClickable(true);
                     seekbarContainer.setAlpha(0);
                     seekbarContainer.animate().setDuration(200).alpha(1f);
                     Executors.newSingleThreadExecutor().submit(() -> {
-                        try {
-                            Thread.sleep(1800);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        do {
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } while (System.currentTimeMillis() <= hideDelay.get());
                         synchronized (seekbarContainer) {
                             if (hideDelay.get() <= System.currentTimeMillis()) {
                                 seekbarContainer.post(() -> {
