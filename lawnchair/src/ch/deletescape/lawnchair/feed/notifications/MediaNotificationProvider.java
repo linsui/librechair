@@ -102,18 +102,22 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageView icon = mnv.findViewById(R.id.media_icon);
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
-                seekbarContainer.setAlpha(0);
+            seekbarContainer.setAlpha(0);
+            seekbar.setProgressTintList(ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext())));
+            seekbar.setTickMarkTintList(ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext())));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             AtomicBoolean trackingTouch = new AtomicBoolean(false);
             seekbar.setOnTouchListener((v, ev) -> {
-                Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(true);
+                Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(
+                        true);
                 return false;
             });
             seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser) {
-                        ((AudioManager) Objects.requireNonNull(getContext().getSystemService(Context.AUDIO_SERVICE)))
+                        ((AudioManager) Objects.requireNonNull(
+                                getContext().getSystemService(Context.AUDIO_SERVICE)))
                                 .setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
                     }
                 }
