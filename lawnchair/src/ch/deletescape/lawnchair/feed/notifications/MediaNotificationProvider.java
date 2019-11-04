@@ -20,9 +20,11 @@
 
 package ch.deletescape.lawnchair.feed.notifications;
 
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.media.AudioManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,7 @@ import com.android.launcher3.notification.NotificationInfo;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -78,6 +81,7 @@ public class MediaNotificationProvider extends FeedProvider {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public List<Card> getCards() {
         Vector<Card> cards = new Vector<>();
@@ -101,7 +105,47 @@ public class MediaNotificationProvider extends FeedProvider {
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             VolumeManager.subscribe(seekbar::setProgress);
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
+                seekbar.setOnTouchListener((v, ev) -> {
+                    Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(true);
+                    return false;
+                });
+                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (fromUser) {
+                            ((AudioManager) Objects.requireNonNull(getContext().getSystemService(Context.AUDIO_SERVICE)))
+                                    .setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        hideDelay.addAndGet(1000);
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        Executors.newSingleThreadExecutor().submit(() -> {
+                            try {
+                                Thread.sleep(1800);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            synchronized (seekbarContainer) {
+                                if (hideDelay.get() <= System.currentTimeMillis()) {
+                                    seekbarContainer.post(() -> {
+                                        seekbarContainer.setAlpha(1f);
+                                        seekbarContainer.setClickable(false);
+                                        seekbarContainer.animate().setDuration(200).alpha(
+                                                0f);
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
                 hideDelay.set(System.currentTimeMillis() + 1800);
+                seekbarContainer.setClickable(true);
                 seekbarContainer.setAlpha(0);
                 seekbarContainer.animate().setDuration(200).alpha(1f);
                 Executors.newSingleThreadExecutor().submit(() -> {
@@ -114,6 +158,7 @@ public class MediaNotificationProvider extends FeedProvider {
                         if (hideDelay.get() <= System.currentTimeMillis()) {
                             seekbarContainer.post(() -> {
                                 seekbarContainer.setAlpha(1f);
+                                seekbarContainer.setClickable(false);
                                 seekbarContainer.animate().setDuration(200).alpha(
                                         0f);
                             });
