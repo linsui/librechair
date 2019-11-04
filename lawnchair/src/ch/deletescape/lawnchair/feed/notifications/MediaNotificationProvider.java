@@ -108,7 +108,7 @@ public class MediaNotificationProvider extends FeedProvider {
             seekbar.setProgressTintList(
                     ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext(),
                             LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
-            seekbar.setTickMarkTintList(ColorStateList.valueOf(
+            seekbar.setThumbTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(getContext(),
                             LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
