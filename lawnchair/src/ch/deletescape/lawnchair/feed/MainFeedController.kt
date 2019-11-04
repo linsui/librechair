@@ -31,6 +31,7 @@ import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
 import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider
+import ch.deletescape.lawnchair.feed.news.NPRFeedProvider
 import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider
 import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -135,6 +136,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_feed_contacts)
                     ChipCardProvider::class.qualifiedName -> R.string.pref_category_chips.fromStringRes(
                             context)
+                    NPRFeedProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_npr)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -155,7 +158,8 @@ class MainFeedController(val context: Context) {
         fun migrateToPersistenceSystem(context: Context) {
             if (context.lawnchairPrefs.feedProvidersLegacy2.getAll().isNotEmpty()) {
                 context.feedPrefs.feedProviders.clear()
-                context.feedPrefs.feedProviders.addAll(context.lawnchairPrefs.feedProvidersLegacy2.getAll())
+                context.feedPrefs.feedProviders.addAll(
+                        context.lawnchairPrefs.feedProvidersLegacy2.getAll())
                 context.lawnchairPrefs.feedProvidersLegacy2.setAll(listOf())
             }
         }

@@ -30,6 +30,7 @@ import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
 import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider
+import ch.deletescape.lawnchair.feed.news.NPRFeedProvider
 import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider
 import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
@@ -55,6 +56,7 @@ class ProviderProviderDelegate(context: Context) : DynamicProviderDelegate(conte
             WeatherBarFeedProvider::class.qualifiedName,
             WikipediaNewsProvider::class.qualifiedName,
             ItnSyndicationProvider::class.qualifiedName,
+            NPRFeedProvider::class.qualifiedName,
             WikipediaFunFactsProvider::class.qualifiedName,
             WikinewsFeedProvider::class.qualifiedName,
             TheGuardianFeedProvider::class.qualifiedName,
@@ -69,6 +71,7 @@ class ProviderProviderDelegate(context: Context) : DynamicProviderDelegate(conte
             PredictedAppsProvider::class.qualifiedName,
             WebApplicationsProvider::class.qualifiedName,
             AlarmEventProvider::class.qualifiedName).map {
+        it!!
         FeedProviderContainer(it, null)
     }
 }
