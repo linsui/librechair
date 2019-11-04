@@ -47,6 +47,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.VolumeManager;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
@@ -104,8 +105,12 @@ public class MediaNotificationProvider extends FeedProvider {
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
             seekbarContainer.setAlpha(0);
-            seekbar.setProgressTintList(ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext())));
-            seekbar.setTickMarkTintList(ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext())));
+            seekbar.setProgressTintList(
+                    ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext(),
+                            LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
+            seekbar.setTickMarkTintList(ColorStateList.valueOf(
+                    FeedAdapter.Companion.getOverrideColor(getContext(),
+                            LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             AtomicBoolean trackingTouch = new AtomicBoolean(false);
             seekbar.setOnTouchListener((v, ev) -> {

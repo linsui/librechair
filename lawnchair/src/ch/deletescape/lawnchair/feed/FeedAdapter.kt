@@ -418,17 +418,16 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 
     companion object {
-        fun getOverrideColor(c: Context, currentColor: Int): Int {
+        @JvmOverloads
+        fun getOverrideColor(c: Context, currentColor: Int = c.getColorEngineAccent(),
+                             dark: Boolean = false): Int {
             return if (currentColor == R.color.colorAccent.fromColorRes(c)
                     || currentColor == R.color.colorAccentDark.fromColorRes(c)) {
-                c.getColorAttr(R.attr.colorAccent)
+                if (!dark) c.getColorAttr(
+                        R.attr.colorAccent) else R.color.colorAccentDark.fromColorRes(c)
             } else {
                 currentColor
             }
-        }
-
-        fun getOverrideColor(c: Context): Int {
-            return getOverrideColor(c, c.getColorEngineAccent())
         }
     }
 }
@@ -446,8 +445,9 @@ class CardViewHolder : RecyclerView.ViewHolder {
     }
 
     constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(LayoutInflater.from(
-           ContextThemeWrapper(parent.context, if (useWhiteText(
-                            if (type and Card.RAISE != 0) parent.context.colorEngine.getResolver(FEED_CARD).resolveColor() else backgroundColor,
+            ContextThemeWrapper(parent.context, if (useWhiteText(
+                            if (type and Card.RAISE != 0) parent.context.colorEngine.getResolver(
+                                    FEED_CARD).resolveColor() else backgroundColor,
                             parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)).inflate(
             when (type) {
                 Card.DEFAULT -> R.layout.card_default
