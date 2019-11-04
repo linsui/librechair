@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.notifications;
 
+import android.animation.Animator;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -28,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.launcher3.R;
@@ -36,9 +38,11 @@ import com.android.launcher3.notification.NotificationInfo;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.awareness.VolumeManager;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
@@ -91,6 +95,49 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageButton next = mnv.findViewById(R.id.next_track);
             ImageButton last = mnv.findViewById(R.id.last_track);
             ImageView icon = mnv.findViewById(R.id.media_icon);
+            SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
+            View seekbarContainer = mnv.findViewById(R.id.volume_container);
+            seekbarContainer.setVisibility(View.GONE);
+            AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
+            VolumeManager.subscribe(seekbar::setProgress);
+            VolumeManager.subscribe(value -> {
+                seekbarContainer.post(() -> {
+                    if (seekbarContainer.getAlpha() == 0 || seekbarContainer.getVisibility() == View.GONE) {
+                        hideDelay.set(System.currentTimeMillis() + 1700);
+                        seekbarContainer.setVisibility(View.VISIBLE);
+                        seekbarContainer.setAlpha(0);
+                        seekbarContainer.animate().setDuration(200).alpha(1f);
+                        seekbarContainer.postDelayed(() -> {
+                            if (hideDelay.get() <= System.currentTimeMillis()) {
+                                seekbarContainer.setAlpha(1f);
+                                seekbarContainer.animate().setDuration(200).alpha(0f).setListener(
+                                        new Animator.AnimatorListener() {
+                                            @Override
+                                            public void onAnimationStart(Animator animation) {
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                seekbarContainer.setVisibility(View.INVISIBLE);
+                                            }
+
+                                            @Override
+                                            public void onAnimationCancel(Animator animation) {
+
+                                            }
+
+                                            @Override
+                                            public void onAnimationRepeat(Animator animation) {
+
+                                            }
+                                        });
+                            }
+                        }, 1710);
+                    }
+                });
+            }, false);
+
             TextView duration = mnv.findViewById(R.id.notification_duration);
             title.setText(
                     mnc.get() != null ? mnc.get().getInfo().getTitle() : getContext().getString(

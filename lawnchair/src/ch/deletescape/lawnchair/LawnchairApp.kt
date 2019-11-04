@@ -31,6 +31,7 @@ import android.provider.Settings
 import android.webkit.WebView
 import androidx.annotation.Keep
 import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.awareness.VolumeManager
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
@@ -153,6 +154,8 @@ class LawnchairApp : Application(), () -> Unit {
         WeatherManager.attachToApplication(this)
         TickManager.bindToContext(this)
         CardStyleRegistry.populateWithContext(this)
+        VolumeManager.attachToContext(this)
+        VolumeManager.subscribe { d("onCreate: volume changed to $it") }
     }
 
     fun onLauncherAppStateCreated() {

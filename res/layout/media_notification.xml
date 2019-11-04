@@ -18,99 +18,119 @@
   ~     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp">
-
+    android:orientation="horizontal">
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="16dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/notification_title"
+                <LinearLayout
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                    tools:text="Free software, Free society" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/notification_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                        tools:text="Free software, Free society" />
+
+                    <TextView
+                        android:id="@+id/notification_duration"
+                        tools:text="EOF:EOF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/notification_duration"
-                    tools:text="EOF:EOF"
+                    android:id="@+id/notification_author"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    tools:text="Richard M. Stallman" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/notification_author"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginStart="16dp"
-                android:layout_weight="1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                tools:text="Richard M. Stallman" />
+                android:gravity="end"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp">
+
+                <ImageButton
+                    android:id="@+id/last_track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="?attr/colorAccent" />
+
+                <ImageButton
+                    android:id="@+id/play_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_play_arrow_black_24dp"
+                    android:tint="?attr/colorAccent" />
+
+                <ImageButton
+                    android:id="@+id/next_track"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:rotation="180"
+                    android:src="@drawable/ic_arrow_back"
+                    android:tint="?attr/colorAccent" />
+            </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <me.jfenn.attribouter.views.CircleImageView
+            android:id="@+id/media_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+    </LinearLayout>
+    <FrameLayout
+        android:id="@+id/volume_container"
+        android:background="@color/qsb_background_hotseat_dark"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+        <SeekBar
+            android:id="@+id/volume_seekbar"
+            android:min="0"
+            android:max="15"
+            android:progress="4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp">
-
-            <ImageButton
-                android:id="@+id/last_track"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="?attr/colorAccent" />
-
-            <ImageButton
-                android:id="@+id/play_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
-                android:src="@drawable/ic_play_arrow_black_24dp"
-                android:tint="?attr/colorAccent" />
-
-            <ImageButton
-                android:id="@+id/next_track"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
-                android:rotation="180"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="?attr/colorAccent" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <me.jfenn.attribouter.views.CircleImageView
-        android:id="@+id/media_icon"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_gravity="center"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-</LinearLayout>
+            android:layout_marginHorizontal="32dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+</FrameLayout>
