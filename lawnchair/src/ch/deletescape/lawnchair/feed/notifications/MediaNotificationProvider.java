@@ -38,6 +38,7 @@ import com.android.launcher3.notification.NotificationInfo;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -97,20 +98,25 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageView icon = mnv.findViewById(R.id.media_icon);
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
-            seekbarContainer.setVisibility(View.GONE);
+            seekbarContainer.setAlpha(0);
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             VolumeManager.subscribe(seekbar::setProgress);
-            VolumeManager.subscribe(value -> {
-                seekbarContainer.post(() -> {
-                    if (seekbarContainer.getAlpha() == 0 || seekbarContainer.getVisibility() == View.GONE) {
-                        hideDelay.set(System.currentTimeMillis() + 1700);
-                        seekbarContainer.setVisibility(View.VISIBLE);
-                        seekbarContainer.setAlpha(0);
-                        seekbarContainer.animate().setDuration(200).alpha(1f);
-                        seekbarContainer.postDelayed(() -> {
-                            if (hideDelay.get() <= System.currentTimeMillis()) {
+            VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
+                hideDelay.set(System.currentTimeMillis() + 1800);
+                seekbarContainer.setAlpha(0);
+                seekbarContainer.animate().setDuration(200).alpha(1f);
+                Executors.newSingleThreadExecutor().submit(() -> {
+                    try {
+                        Thread.sleep(1800);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    synchronized (seekbarContainer) {
+                        if (hideDelay.get() <= System.currentTimeMillis()) {
+                            seekbarContainer.post(() -> {
                                 seekbarContainer.setAlpha(1f);
-                                seekbarContainer.animate().setDuration(200).alpha(0f).setListener(
+                                seekbarContainer.animate().setDuration(200).alpha(
+                                        0f).setListener(
                                         new Animator.AnimatorListener() {
                                             @Override
                                             public void onAnimationStart(Animator animation) {
@@ -132,11 +138,11 @@ public class MediaNotificationProvider extends FeedProvider {
 
                                             }
                                         });
-                            }
-                        }, 1710);
+                            });
+                        }
                     }
                 });
-            }, false);
+            }), false);
 
             TextView duration = mnv.findViewById(R.id.notification_duration);
             title.setText(
