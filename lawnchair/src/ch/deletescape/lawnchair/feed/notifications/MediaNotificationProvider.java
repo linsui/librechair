@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.notifications;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -133,7 +134,6 @@ public class MediaNotificationProvider extends FeedProvider {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    trackingTouch.set(false);
                     Executors.newSingleThreadExecutor().submit(() -> {
                         try {
                             Thread.sleep(1800);
@@ -146,7 +146,27 @@ public class MediaNotificationProvider extends FeedProvider {
                                     seekbarContainer.setAlpha(1f);
                                     seekbarContainer.setClickable(false);
                                     seekbarContainer.animate().setDuration(200).alpha(
-                                            0f);
+                                            0f).setListener(new Animator.AnimatorListener() {
+                                        @Override
+                                        public void onAnimationStart(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            trackingTouch.set(false);
+                                        }
+
+                                        @Override
+                                        public void onAnimationCancel(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animator animation) {
+
+                                        }
+                                    });
                                 });
                             }
                         }
