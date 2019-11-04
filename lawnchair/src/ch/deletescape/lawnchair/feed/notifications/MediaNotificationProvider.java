@@ -125,6 +125,9 @@ public class MediaNotificationProvider extends FeedProvider {
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     trackingTouch.set(true);
+                    if (seekbarContainer.getAlpha() == 0) {
+                        seekbarContainer.animate().setDuration(200).alpha(1f);
+                    }
                     hideDelay.addAndGet(1000);
                 }
 
