@@ -129,7 +129,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     if (fromUser) {
                         ((AudioManager) Objects.requireNonNull(
                                 getContext().getSystemService(Context.AUDIO_SERVICE)))
-                                .setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0);
+                                .setStreamVolume(AudioManager.STREAM_MUSIC, (int) (progress * (float) 15 / 100), 0);
                     }
                 }
 
@@ -197,7 +197,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     });
                 }
             });
-            VolumeManager.subscribe(seekbar::setProgress);
+            VolumeManager.subscribe(volume -> seekbar.setProgress(volume * (100 / 15)));
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
                 seekbarContainer.setOnClickListener(v -> {
                     hideDelay.set(0);

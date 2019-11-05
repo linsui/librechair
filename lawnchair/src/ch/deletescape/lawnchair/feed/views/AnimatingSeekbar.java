@@ -25,9 +25,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.widget.SeekBar;
 
-public class AnimatingSeekbar extends SeekBar {
+import androidx.appcompat.widget.AppCompatSeekBar;
+
+public class AnimatingSeekbar extends AppCompatSeekBar {
 
     private static final Interpolator DEFAULT_INTERPOLATER = new AccelerateDecelerateInterpolator();
 
