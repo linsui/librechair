@@ -109,10 +109,15 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             synchronized (AbstractRSSFeedProvider.class) {
                 List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
                 articles = entries.stream().distinct().collect(Collectors.toList());
+                Log.d(getClass().getName(),
+                        "refresh: last update times are " + articles.stream().map(
+                                it -> it.lastUpdate).collect(Collectors.toList()));
                 if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
-                        || (entries.stream().allMatch(
-                        it -> it.lastUpdate != null && System.currentTimeMillis() - it.lastUpdate.getTime() > TimeUnit.HOURS.toMillis(
+                        || (entries.stream().anyMatch(
+                        it -> it.lastUpdate == null || System.currentTimeMillis() - it.lastUpdate.getTime() >= TimeUnit.HOURS.toMillis(
                                 2)))) {
+                    Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
+                            "refresh: binding to feed");
                     bindFeed(feed -> {
                         Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
                                 "constructor: bound to feed");
