@@ -488,6 +488,10 @@
             android:key="feed_chip_provider_compact_card"
             android:title="@string/title_pref_feed_chip_provider_compact_card"
             android:summary="@string/summary_pref_feed_chip_provider_compact_card"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_hide_image_operator_cards"
+            android:summary="@string/summary_pref_feed_hide_image_operator_cards"
+            android:title="@string/title_pref_feed_hide_image_operator_cards"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

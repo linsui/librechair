@@ -81,6 +81,8 @@ class FeedPersistence private constructor(val context: Context) {
             by DefValueStringDelegate(context, "feed_card_corner_treatment", "rnd")
     val chipCompactCard
             by BooleanDelegate(context, "feed_chip_provider_compact_card", false)
+    val hideImageOperatorCards
+            by BooleanDelegate(context, "feed_hide_image_operator_cards", false)
     val feedProviders
             by ContainerListDelegate(context,
                     "feed_providers", listOf(
