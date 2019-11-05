@@ -785,4 +785,5 @@
     <string name="title_interpolator_snappy_decelerating">Snappy decelerating</string>
     <string name="title_interpolator_ease_in_out">Slide in-out</string>
     <string name="title_pref_feed_animation_interpolator">Animation interpolator</string>
+    <string name="title_interpolator_linear">Linear</string>
 </resources>

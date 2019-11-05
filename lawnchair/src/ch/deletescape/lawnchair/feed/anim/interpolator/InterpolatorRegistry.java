@@ -36,6 +36,7 @@ public final class InterpolatorRegistry {
 
     public static final LinkedHashMap<String, Interpolator> ALL = FeedUtil.apply(
             new LinkedHashMap<>(), map -> {
+                map.put("linear", Interpolators.LINEAR);
                 map.put("accel", Interpolators.ACCEL);
                 map.put("snappy_accel", Interpolators.ACCEL_1_5);
                 map.put("deaccel", Interpolators.DEACCEL);
@@ -45,6 +46,7 @@ public final class InterpolatorRegistry {
     
     public static final LinkedHashMap<String, Integer> NAMES = FeedUtil.apply(
             new LinkedHashMap<>(), map -> {
+                map.put("linear", R.string.title_interpolator_linear);
                 map.put("accel", R.string.title_interpolator_accelerating);
                 map.put("snappy_accel", R.string.title_interpolator_snappy_accelerating);
                 map.put("deaccel", R.string.title_interpolator_decelerating);
