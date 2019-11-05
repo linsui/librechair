@@ -179,6 +179,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                         public void onAnimationEnd(Animator animation) {
                                             trackingTouch.set(false);
                                             seekbarContainer.setOnClickListener(null);
+                                            seekbarContainer.setClickable(false);
                                         }
 
                                         @Override
@@ -225,7 +226,6 @@ public class MediaNotificationProvider extends FeedProvider {
                             if (hideDelay.get() <= System.currentTimeMillis() && !trackingTouch.get()) {
                                 seekbarContainer.post(() -> {
                                     seekbarContainer.setAlpha(1f);
-                                    seekbarContainer.setClickable(false);
                                     seekbarContainer.animate().setDuration(200).alpha(
                                             0f).setListener(new Animator.AnimatorListener() {
                                         @Override
@@ -236,6 +236,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
                                             seekbarContainer.setOnClickListener(null);
+                                            seekbarContainer.setClickable(false);
                                         }
 
                                         @Override
