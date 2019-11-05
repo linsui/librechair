@@ -26,7 +26,6 @@ import android.widget.FrameLayout
 import ch.deletescape.lawnchair.feed.anim.AnimationDelegate
 import ch.deletescape.lawnchair.feed.anim.inflate
 import ch.deletescape.lawnchair.feed.anim.interpolator.InterpolatorRegistry
-import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -233,7 +232,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private fun createAnim(toState: FeedState, duration: Long): AnimatorSet {
         val translationX = ObjectAnimator.ofFloat(this, PROGRESS, toState.progress)
         translationX.duration = duration
-        translationX.interpolator = LINEAR
+        translationX.interpolator =  InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
 
         val animatorSet = AnimatorSet()
         animatorSet.play(translationX)
