@@ -128,7 +128,7 @@
             android:id="@+id/vc_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-        <SeekBar
+        <ch.deletescape.lawnchair.feed.views.AnimatingSeekbar
             android:id="@+id/volume_seekbar"
             android:min="0"
             android:max="15"

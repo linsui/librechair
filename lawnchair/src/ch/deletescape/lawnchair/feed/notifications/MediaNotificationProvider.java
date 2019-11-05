@@ -53,6 +53,7 @@ import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.views.AnimatingSeekbar;
 import kotlin.Unit;
 
 public class MediaNotificationProvider extends FeedProvider {
@@ -134,6 +135,7 @@ public class MediaNotificationProvider extends FeedProvider {
 
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
+                    ((AnimatingSeekbar) seekBar).setAnimated(false);
                     trackingTouch.set(true);
                     trackingTouchImt.set(true);
                     hideDelay.set(System.currentTimeMillis() + 2900);
@@ -150,6 +152,7 @@ public class MediaNotificationProvider extends FeedProvider {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    ((AnimatingSeekbar) seekBar).setAnimated(true);
                     trackingTouchImt.set(false);
                     Executors.newSingleThreadExecutor().submit(() -> {
                         do {
