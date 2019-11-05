@@ -204,6 +204,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     hideDelay.set(0);
                     offsetDelay.set(0);
                 });
+                seekbarContainer.setClickable(true);
                 if (!trackingTouch.get()) {
                     if (seekbarContainer.getAlpha() > 0) {
                         hideDelay.set(System.currentTimeMillis() + 1800);
