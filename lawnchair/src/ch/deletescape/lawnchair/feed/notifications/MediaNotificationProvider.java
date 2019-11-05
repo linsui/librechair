@@ -112,7 +112,9 @@ public class MediaNotificationProvider extends FeedProvider {
                     FeedAdapter.Companion.getOverrideColor(getContext(),
                             LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
+            AtomicLong offsetDelay = new AtomicLong(100);
             AtomicBoolean trackingTouch = new AtomicBoolean(false);
+            AtomicBoolean trackingTouchImt = new AtomicBoolean(false);
             seekbar.setOnTouchListener((v, ev) -> {
                 Objects.requireNonNull(getControllerView()).setDisallowInterceptCurrentTouchEvent(
                         true);
@@ -131,14 +133,17 @@ public class MediaNotificationProvider extends FeedProvider {
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
                     trackingTouch.set(true);
+                    trackingTouchImt.set(true);
+                    hideDelay.set(System.currentTimeMillis() + 2900);
                     if (seekbarContainer.getAlpha() == 0) {
                         seekbarContainer.animate().setDuration(200).alpha(1f);
                     }
-                    hideDelay.addAndGet(1000);
+                    hideDelay.addAndGet(2900);
                 }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
+                    trackingTouchImt.set(false);
                     Executors.newSingleThreadExecutor().submit(() -> {
                         do {
                             try {
@@ -146,7 +151,8 @@ public class MediaNotificationProvider extends FeedProvider {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                        } while (System.currentTimeMillis() <= hideDelay.get());
+                        } while (System.currentTimeMillis() <= hideDelay.get() || trackingTouchImt.get()
+                                || System.currentTimeMillis() <= hideDelay.get());
                         synchronized (seekbarContainer) {
                             if (hideDelay.get() <= System.currentTimeMillis()) {
                                 seekbarContainer.post(() -> {
@@ -199,7 +205,7 @@ public class MediaNotificationProvider extends FeedProvider {
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
-                        } while (System.currentTimeMillis() <= hideDelay.get());
+                        } while (System.currentTimeMillis() <= hideDelay.get() || trackingTouch.get() || trackingTouchImt.get());
                         synchronized (seekbarContainer) {
                             if (hideDelay.get() <= System.currentTimeMillis() && !trackingTouch.get()) {
                                 seekbarContainer.post(() -> {
