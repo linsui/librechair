@@ -138,6 +138,10 @@ public class MediaNotificationProvider extends FeedProvider {
                     if (seekbarContainer.getAlpha() == 0) {
                         seekbarContainer.animate().setDuration(200).alpha(1f);
                     }
+                    seekbarContainer.setOnClickListener(v -> {
+                        hideDelay.set(0);
+                        offsetDelay.set(0);
+                    });
                     hideDelay.addAndGet(2900);
                 }
 
@@ -168,6 +172,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                         @Override
                                         public void onAnimationEnd(Animator animation) {
                                             trackingTouch.set(false);
+                                            seekbarContainer.setOnClickListener(null);
                                         }
 
                                         @Override
@@ -188,6 +193,10 @@ public class MediaNotificationProvider extends FeedProvider {
             });
             VolumeManager.subscribe(seekbar::setProgress);
             VolumeManager.subscribe(value -> seekbarContainer.post(() -> {
+                seekbarContainer.setOnClickListener(v -> {
+                    hideDelay.set(0);
+                    offsetDelay.set(0);
+                });
                 if (!trackingTouch.get()) {
                     if (seekbarContainer.getAlpha() > 0) {
                         hideDelay.set(System.currentTimeMillis() + 1800);
@@ -195,7 +204,6 @@ public class MediaNotificationProvider extends FeedProvider {
                     } else {
                         hideDelay.set(System.currentTimeMillis() + 1800);
                     }
-                    seekbarContainer.setClickable(true);
                     seekbarContainer.setAlpha(0);
                     seekbarContainer.animate().setDuration(200).alpha(1f);
                     Executors.newSingleThreadExecutor().submit(() -> {
@@ -212,7 +220,27 @@ public class MediaNotificationProvider extends FeedProvider {
                                     seekbarContainer.setAlpha(1f);
                                     seekbarContainer.setClickable(false);
                                     seekbarContainer.animate().setDuration(200).alpha(
-                                            0f);
+                                            0f).setListener(new Animator.AnimatorListener() {
+                                        @Override
+                                        public void onAnimationStart(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationEnd(Animator animation) {
+                                            seekbarContainer.setOnClickListener(null);
+                                        }
+
+                                        @Override
+                                        public void onAnimationCancel(Animator animation) {
+
+                                        }
+
+                                        @Override
+                                        public void onAnimationRepeat(Animator animation) {
+
+                                        }
+                                    });
                                 });
                             }
                         }
