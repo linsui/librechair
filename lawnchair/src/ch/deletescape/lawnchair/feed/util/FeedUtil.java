@@ -29,6 +29,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.SurfaceView;
 import android.view.View;
@@ -81,10 +82,16 @@ public final class FeedUtil {
         if (view instanceof SurfaceView) {
             throw new IllegalArgumentException("SurfaceViews are incompatible with this function");
         }
-        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(),
-                Bitmap.Config.ARGB_8888);
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(),
+                view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
-        view.layout(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        Drawable background = view.getBackground();
+
+        if (background != null) {
+            background.draw(canvas);
+        }
         view.draw(canvas);
         return bitmap;
     }
