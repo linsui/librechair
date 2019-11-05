@@ -52,6 +52,7 @@ import ch.deletescape.lawnchair.awareness.VolumeManager;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import kotlin.Unit;
 
 public class MediaNotificationProvider extends FeedProvider {
@@ -102,6 +103,7 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageButton next = mnv.findViewById(R.id.next_track);
             ImageButton last = mnv.findViewById(R.id.last_track);
             ImageView icon = mnv.findViewById(R.id.media_icon);
+            ImageView scBackground = mnv.findViewById(R.id.vc_background);
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
             seekbarContainer.setAlpha(0);
@@ -136,6 +138,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     trackingTouchImt.set(true);
                     hideDelay.set(System.currentTimeMillis() + 2900);
                     if (seekbarContainer.getAlpha() == 0) {
+                        scBackground.setImageBitmap(FeedUtil.blur(mnv));
                         seekbarContainer.animate().setDuration(200).alpha(1f);
                     }
                     seekbarContainer.setOnClickListener(v -> {
@@ -204,6 +207,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     } else {
                         hideDelay.set(System.currentTimeMillis() + 1800);
                     }
+                    scBackground.setImageBitmap(FeedUtil.blur(mnv));
                     seekbarContainer.setAlpha(0);
                     seekbarContainer.animate().setDuration(200).alpha(1f);
                     Executors.newSingleThreadExecutor().submit(() -> {

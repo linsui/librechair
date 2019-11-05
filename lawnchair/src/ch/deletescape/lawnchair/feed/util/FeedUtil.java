@@ -27,7 +27,10 @@ import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
+import android.view.SurfaceView;
 import android.view.View;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -36,14 +39,19 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
+@SuppressWarnings("WeakerAccess")
 public final class FeedUtil {
     private FeedUtil() {
         throw new RuntimeException("putting your time on instantiating this class smh");
     }
 
     @MainThread
-    public static void startActivity(@Nonnull Context context, @Nonnull Intent intent, @Nonnull View view) {
+    public static void startActivity(@Nonnull Context context, @Nonnull Intent intent,
+                                     @Nonnull View view) {
         context.startActivity(
                 context instanceof Activity || (intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0 ? intent : new Intent(
                         intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
@@ -62,13 +70,33 @@ public final class FeedUtil {
                     ActivityOptions.makeClipRevealAnimation(view, 0, 0, view.getMeasuredWidth(),
                             view.getMeasuredHeight()).toBundle());
         } catch (ActivityNotFoundException e) {
-            Snackbar.make(view, "No application is available for the url " + url, BaseTransientBottomBar.LENGTH_LONG)
+            Snackbar.make(view, "No application is available for the url " + url,
+                    BaseTransientBottomBar.LENGTH_LONG)
                     .show();
         }
     }
 
+    @MainThread
+    public static Bitmap dumpViewTreeToBitmap(@Nonnull View view) {
+        if (view instanceof SurfaceView) {
+            throw new IllegalArgumentException("SurfaceViews are incompatible with this function");
+        }
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(),
+                Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.layout(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        view.draw(canvas);
+        return bitmap;
+    }
+
+    @MainThread
+    public static Bitmap blur(@Nonnull View view) {
+        return LawnchairUtilsKt.blur(dumpViewTreeToBitmap(view), view.getContext());
+    }
+
     @AnyThread
-    public static <T> T apply(T object, Consumer<T> consumer) {
+    public static <T> T apply(@Nullable T object,
+                              @Nonnull Consumer<T> consumer) {
         consumer.accept(object);
         return object;
     }
