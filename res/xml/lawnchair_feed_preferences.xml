@@ -316,6 +316,10 @@
             android:key="feed_card_corner_treatment"
             android:title="@string/title_pref_feed_card_corner_treatment"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.InterpolatorPreference
+            android:key="feed_animation_interpolator"
+            android:title="@string/title_pref_feed_animation_interpolator"
+            android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

@@ -25,6 +25,7 @@ import android.view.View
 import android.widget.FrameLayout
 import ch.deletescape.lawnchair.feed.anim.AnimationDelegate
 import ch.deletescape.lawnchair.feed.anim.inflate
+import ch.deletescape.lawnchair.feed.anim.interpolator.InterpolatorRegistry
 import ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR
 import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVelocity
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
@@ -103,7 +104,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val animator = ObjectAnimator.ofFloat(this, PROGRESS, 1f, 0f)
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
-            animator.interpolator = Interpolators.AGGRESSIVE_EASE_IN_OUT
+            animator.interpolator =
+                    InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.CLOSED
@@ -122,7 +124,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             val animator = ObjectAnimator.ofFloat(0f, 1f)
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
-            animator.interpolator = Interpolators.AGGRESSIVE_EASE_IN_OUT
+            animator.interpolator =
+                    InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.OPEN
@@ -345,7 +348,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         val duration: Long
         // Increase the duration if we prevented the fling, as we are going against a high velocity.
         val durationMultiplier =
-                ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(velocity)
+                ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(
+                        velocity)
                 else 1) * (1.0 - context.feedPrefs.openingAnimationSpeed)).roundToLong()
 
         if (targetState === mToState) {

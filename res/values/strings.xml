@@ -779,4 +779,10 @@
     <string name="title_feed_provider_npr">NPR</string>
     <string name="summary_pref_feed_hide_image_operator_cards">This hides the header cards in the image provider, which can be used to add or modify images</string>
     <string name="title_pref_feed_hide_image_operator_cards">Hide image header cards</string>
+    <string name="title_interpolator_accelerating">Accelerating</string>
+    <string name="title_interpolator_snappy_accelerating">Snappy accelerating</string>
+    <string name="title_interpolator_decelerating">Decelerating</string>
+    <string name="title_interpolator_snappy_decelerating">Snappy decelerating</string>
+    <string name="title_interpolator_ease_in_out">Slide in-out</string>
+    <string name="title_pref_feed_animation_interpolator">Animation interpolator</string>
 </resources>
