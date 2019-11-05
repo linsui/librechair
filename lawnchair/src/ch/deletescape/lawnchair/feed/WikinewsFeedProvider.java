@@ -30,6 +30,7 @@ import org.apache.commons.io.input.CharSequenceInputStream;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
@@ -54,13 +55,15 @@ public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
             Executors.newSingleThreadExecutor().submit(() -> {
                 String feed;
                 try {
-                    feed = IOUtils.toString(
-                            new URL("https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only")
-                                    .openConnection()
-                                    .getInputStream(), Charset
+                    InputStream is = new URL(
+                            "https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only")
+                            .openConnection()
+                            .getInputStream();
+                    feed = IOUtils.toString(is, Charset
                                     .defaultCharset());
                     callback.onBind(new SyndFeedInput().build(new InputSource(
                             new CharSequenceInputStream(feed, Charset.defaultCharset()))));
+                    is.close();
                 } catch (FeedException | IOException e) {
                     e.printStackTrace();
                 }
