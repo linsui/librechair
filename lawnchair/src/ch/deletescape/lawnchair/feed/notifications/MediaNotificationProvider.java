@@ -53,6 +53,7 @@ import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.views.AnimatingSeekbar;
+import ch.deletescape.lawnchair.theme.ThemeManager;
 import kotlin.Unit;
 
 public class MediaNotificationProvider extends FeedProvider {
@@ -105,13 +106,17 @@ public class MediaNotificationProvider extends FeedProvider {
             ImageView icon = mnv.findViewById(R.id.media_icon);
             SeekBar seekbar = mnv.findViewById(R.id.volume_seekbar);
             View seekbarContainer = mnv.findViewById(R.id.volume_container);
+            seekbarContainer.setBackgroundColor(ThemeManager.Companion.getInstance(
+                    getContext()).isDark() ? getContext().getColor(
+                    R.color.qsb_background_hotseat_dark) : getContext().getColor(
+                    R.color.qsb_background_hotseat_white));
             seekbarContainer.setAlpha(0);
             seekbar.setProgressTintList(
                     ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext(),
-                            LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
+                            LawnchairUtilsKt.getColorEngineAccent(getContext()))));
             seekbar.setThumbTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(getContext(),
-                            LawnchairUtilsKt.getColorEngineAccent(getContext()), true)));
+                            LawnchairUtilsKt.getColorEngineAccent(getContext()))));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             AtomicLong offsetDelay = new AtomicLong(100);
             AtomicBoolean trackingTouch = new AtomicBoolean(false);
@@ -127,7 +132,8 @@ public class MediaNotificationProvider extends FeedProvider {
                     if (fromUser) {
                         ((AudioManager) Objects.requireNonNull(
                                 getContext().getSystemService(Context.AUDIO_SERVICE)))
-                                .setStreamVolume(AudioManager.STREAM_MUSIC, (int) (progress * (float) 15 / 100), 0);
+                                .setStreamVolume(AudioManager.STREAM_MUSIC,
+                                        (int) (progress * (float) 15 / 100), 0);
                     }
                 }
 
