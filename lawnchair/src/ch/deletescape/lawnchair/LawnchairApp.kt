@@ -63,15 +63,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.HashSet
 
-class LawnchairApp : Application(), () -> Unit {
-    override fun invoke() {
-        try {
-            lawnchairPrefs.restartOverlay()
-        } catch (e: RuntimeException) {
-            e.printStackTrace()
-        }
-    }
-
+class LawnchairApp : Application() {
     val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also { it.start() }.looper)
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
@@ -132,8 +124,6 @@ class LawnchairApp : Application(), () -> Unit {
                 .also { it.startListening() }
         ClipartCache.providers += ResourceClipartResolver(this)
         ClipartCache.providers += FancyClipartResolver(this)
-
-        ThemeManager.getInstance(this).changeCallbacks += this
 
         org.osmdroid.config.Configuration.getInstance().osmdroidBasePath =
                 File(filesDir, "osmdroid")

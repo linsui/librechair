@@ -32,6 +32,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.util.ParcelablePair
 import com.android.overlayclient.client.CustomOverscrollClient.ACTIONS_CALL
@@ -50,6 +51,14 @@ class OverlayService : Service(), () -> Unit {
     }
 
     val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
+
+    override fun onCreate() {
+        super.onCreate()
+        ThemeManager.getInstance(this).changeCallbacks += {
+            this()
+            stopSelf()
+        }
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         if (!feedInitialized) {
@@ -127,12 +136,14 @@ class OverlayService : Service(), () -> Unit {
                                 Unit
                             }
 
-                            override fun notificationPosted(notif: StatusBarNotification) =  synchronized(this) {
+                            override fun notificationPosted(
+                                    notif: StatusBarNotification) = synchronized(this) {
                                 notifs += notif
                             }
 
                             override fun notificationsChanged(
-                                    notifsNew: MutableList<StatusBarNotification>) =  synchronized(this) {
+                                    notifsNew: MutableList<StatusBarNotification>) = synchronized(
+                                    this) {
                                 notifs.clear()
                                 notifs.addAll(notifsNew)
                                 notifChangedListener?.invoke(notifs)
@@ -155,12 +166,14 @@ class OverlayService : Service(), () -> Unit {
                                     Unit
                                 }
 
-                                override fun notificationPosted(notif: StatusBarNotification) =  synchronized(this) {
+                                override fun notificationPosted(
+                                        notif: StatusBarNotification) = synchronized(this) {
                                     notifs += notif
                                 }
 
                                 override fun notificationsChanged(
-                                        notifsNew: MutableList<StatusBarNotification>) =  synchronized(this) {
+                                        notifsNew: MutableList<StatusBarNotification>) = synchronized(
+                                        this) {
                                     notifs.clear()
                                     notifs.addAll(notifsNew)
                                     notifChangedListener?.invoke(notifs)
@@ -171,14 +184,16 @@ class OverlayService : Service(), () -> Unit {
                     }
                 }
 
-            fun getPredictions(amt: Int): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+            fun getPredictions(
+                    amt: Int): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
                             PREDICTIONS_CALL) == true) interfaze?.call(
-                    PREDICTIONS_CALL,  Bundle().apply { putInt("amt", amt) })?.apply {
+                    PREDICTIONS_CALL, Bundle().apply { putInt("amt", amt) })?.apply {
                 classLoader = ParcelableComponentKeyMapper::class.java.classLoader
             }?.getParcelableArrayList(
                     "retval") ?: emptyList() else emptyList()
 
-            fun getActions(amt: Int): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
+            fun getActions(
+                    amt: Int): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
                             ACTIONS_CALL) == true) interfaze?.call(
                     ACTIONS_CALL, Bundle().apply { putInt("amt", amt) })?.apply {
                 classLoader = ParcelablePair::class.java.classLoader
