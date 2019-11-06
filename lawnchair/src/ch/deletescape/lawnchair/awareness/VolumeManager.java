@@ -34,20 +34,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.AtomicReference;
-
 public class VolumeManager {
     private static int volume = 0;
     private static final List<Consumer<Integer>> listeners = new Vector<>();
-    // TODO convert-to-atomic.el: automated to-atomic conversion
     private static final AtomicReference<Context> context = new AtomicReference<>();
 
     private static final ContentObserver observer = new ContentObserver(
