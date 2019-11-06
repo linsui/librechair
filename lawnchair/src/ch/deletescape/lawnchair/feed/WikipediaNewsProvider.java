@@ -24,6 +24,7 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -44,15 +45,13 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     private Drawable newsIcon;
     private ITNAdapter adapter;
+    private boolean init;
 
     public WikipediaNewsProvider(Context c) {
         super(c);
         this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
-        News.addListener(items -> {
-            adapter = new ITNAdapter(items);
-        });
     }
 
     @Override
@@ -75,8 +74,13 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public List<Card> getCards() {
+        if (!init) {
+            News.addListener(items -> adapter = new ITNAdapter(items, getControllerView()));
+            init = true;
+        }
         return adapter == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
@@ -85,7 +89,18 @@ public class WikipediaNewsProvider extends FeedProvider {
                             view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
                             view.setLayoutParams(new LinearLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            view.setOnTouchListener((v, e) -> {
+                                if (getControllerView() != null) {
+                                    getControllerView().setDisallowInterceptCurrentTouchEvent(true);
+                                }
+                                return false;
+                            });
                             return view;
                         }, Card.RAISE, null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return true;
     }
 }
