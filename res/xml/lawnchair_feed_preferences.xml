@@ -539,5 +539,10 @@
             android:key="feed_article_notifications"
             android:title="@string/title_pref_feed_article_notifications"
             android:summary="@string/summary_pref_feed_article_notifications"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_enable_gsb"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_enable_gsb"
+            android:summary="@string/summary_pref_feed_enable_gsb"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

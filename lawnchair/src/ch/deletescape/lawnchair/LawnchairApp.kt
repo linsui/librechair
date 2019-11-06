@@ -47,6 +47,7 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
@@ -80,7 +81,7 @@ class LawnchairApp : Application() {
         d("Hidden APIs allowed: ${Utilities.HIDDEN_APIS_ALLOWED}")
     }
 
-    fun isGsb4jAvailable() = ::gsb4j.isInitialized
+    fun isGsb4jAvailable() = ::gsb4j.isInitialized && feedPrefs.enableGsb
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -92,7 +93,7 @@ class LawnchairApp : Application() {
     override fun onCreate() {
         super.onCreate()
         FeedScope.launch {
-            if (Utilities.ATLEAST_P) {
+            if (Utilities.ATLEAST_P && feedPrefs.enableGsb) {
                 try {
                     gsb4j = Gsb4j.bootstrap(Properties().apply {
                         put("api.key", WebSafety.GSB_API_KEY)
