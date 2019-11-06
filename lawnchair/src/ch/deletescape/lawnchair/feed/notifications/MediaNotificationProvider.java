@@ -138,6 +138,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     ((AnimatingSeekbar) seekBar).setAnimated(false);
                     trackingTouch.set(true);
                     trackingTouchImt.set(true);
+                    offsetDelay.set(System.currentTimeMillis() + 1000);
                     hideDelay.set(System.currentTimeMillis() + 2900);
                     if (seekbarContainer.getAlpha() == 0) {
                         scBackground.setImageBitmap(FeedUtil.blur(mnv));
@@ -154,6 +155,8 @@ public class MediaNotificationProvider extends FeedProvider {
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     ((AnimatingSeekbar) seekBar).setAnimated(true);
                     trackingTouchImt.set(false);
+
+                    hideDelay.set(System.currentTimeMillis() + 100);
                     Executors.newSingleThreadExecutor().submit(() -> {
                         do {
                             try {
@@ -162,7 +165,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                 e.printStackTrace();
                             }
                         } while (System.currentTimeMillis() <= hideDelay.get() || trackingTouchImt.get()
-                                || System.currentTimeMillis() <= hideDelay.get());
+                                || System.currentTimeMillis() <= offsetDelay.get());
                         synchronized (seekbarContainer) {
                             if (hideDelay.get() <= System.currentTimeMillis()) {
                                 seekbarContainer.post(() -> {
