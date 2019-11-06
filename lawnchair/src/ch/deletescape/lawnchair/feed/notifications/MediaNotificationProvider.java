@@ -36,8 +36,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 import com.android.launcher3.notification.NotificationInfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -57,6 +60,7 @@ import ch.deletescape.lawnchair.feed.views.AnimatingSeekbar;
 import ch.deletescape.lawnchair.theme.ThemeManager;
 import kotlin.Unit;
 
+@SuppressWarnings("JavaReflectionMemberAccess")
 public class MediaNotificationProvider extends FeedProvider {
     private final List<Consumer<OMCMediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
     private OMCMediaListener mediaListener;
@@ -272,12 +276,18 @@ public class MediaNotificationProvider extends FeedProvider {
                     mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
             AtomicBoolean paused = new AtomicBoolean(true);
             if (mnc.get() != null && mnc.get().isPlaying()) {
-                pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
                 ((AnimatedVectorDrawable) pause.getDrawable()).start();
                 paused.set(false);
             } else {
-                pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
-                ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                if (Utilities.HIDDEN_APIS_ALLOWED) {
+                    try {
+                        @SuppressLint("SoonBlockedPrivateApi")
+                        Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
+                        method.invoke(pause.getDrawable());
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
                 paused.set(true);
             }
             pause.setImageTintList(ColorStateList.valueOf(
@@ -310,13 +320,18 @@ public class MediaNotificationProvider extends FeedProvider {
                         author.setText(
                                 mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
                         if (mnc.get() != null && mnc.get().isPlaying() && paused.get()) {
-                            pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
                             ((AnimatedVectorDrawable) pause.getDrawable()).start();
                             paused.set(false);
                         } else {
-                            pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
-                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
-                            paused.set(true);
+                            if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                try {
+                                    @SuppressLint("SoonBlockedPrivateApi")
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
+                                    method.invoke(pause.getDrawable());
+                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                         icon.setVisibility(
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
@@ -339,13 +354,18 @@ public class MediaNotificationProvider extends FeedProvider {
                         author.setText(
                                 mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
                         if (mnc.get() != null && mnc.get().isPlaying()) {
-                            pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
                             ((AnimatedVectorDrawable) pause.getDrawable()).start();
                             paused.set(false);
                         } else {
-                            pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
-                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
-                            paused.set(true);
+                            if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                try {
+                                    @SuppressLint("SoonBlockedPrivateApi")
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
+                                    method.invoke(pause.getDrawable());
+                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                         pause.setImageTintList(ColorStateList.valueOf(
                                 FeedAdapter.Companion.getOverrideColor(getContext())));
