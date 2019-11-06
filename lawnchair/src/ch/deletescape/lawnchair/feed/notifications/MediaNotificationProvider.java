@@ -288,7 +288,6 @@ public class MediaNotificationProvider extends FeedProvider {
                         e.printStackTrace();
                     }
                 }
-                paused.set(true);
             }
             pause.setImageTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(getContext())));
@@ -319,7 +318,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                         R.string.title_nothings_playing));
                         author.setText(
                                 mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
-                        if (mnc.get() != null && mnc.get().isPlaying() && paused.get()) {
+                        if (mnc.get() != null && mnc.get().isPlaying()) {
                             ((AnimatedVectorDrawable) pause.getDrawable()).start();
                             paused.set(false);
                         } else {
