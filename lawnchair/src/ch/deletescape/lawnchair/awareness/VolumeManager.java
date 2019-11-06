@@ -22,7 +22,6 @@ package ch.deletescape.lawnchair.awareness;
 
 import android.annotation.AnyThread;
 import android.annotation.MainThread;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.media.AudioManager;
@@ -41,11 +40,15 @@ import javax.annotation.Nonnull;
 
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReference;
+
 public class VolumeManager {
     private static int volume = 0;
     private static final List<Consumer<Integer>> listeners = new Vector<>();
-    @SuppressLint("StaticFieldLeak")
-    private static Context context;
+    // TODO convert-to-atomic.el: automated to-atomic conversion
+    private static final AtomicReference<Context> context = new AtomicReference<>();
 
     private static final ContentObserver observer = new ContentObserver(
             new Handler(FeedUtil.apply(new HandlerThread("volume-manager"),
@@ -61,7 +64,7 @@ public class VolumeManager {
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
 
-            AudioManager audio = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            AudioManager audio = (AudioManager) context.get().getSystemService(Context.AUDIO_SERVICE);
             assert audio != null;
             int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
 
@@ -85,7 +88,7 @@ public class VolumeManager {
 
     @MainThread
     public static void attachToContext(@NotNull @Nonnull Context context) {
-        VolumeManager.context = context;
+        VolumeManager.context.set(context);
         volume = Objects.requireNonNull(
                 (AudioManager) context.getSystemService(Context.AUDIO_SERVICE)).getStreamVolume(
                 AudioManager.STREAM_MUSIC);
