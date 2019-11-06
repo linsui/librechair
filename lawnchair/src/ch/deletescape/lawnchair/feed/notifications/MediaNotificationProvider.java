@@ -25,6 +25,7 @@ import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.AnimatedVectorDrawable;
 import android.media.AudioManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -269,10 +270,16 @@ public class MediaNotificationProvider extends FeedProvider {
                             R.string.title_nothings_playing));
             author.setText(
                     mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
-            pause.setImageDrawable(
-                    mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
-                            R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                            R.drawable.ic_play_arrow_black_24dp));
+            AtomicBoolean paused = new AtomicBoolean(true);
+            if (mnc.get() != null && mnc.get().isPlaying()) {
+                pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
+                ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                paused.set(false);
+            } else {
+                pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
+                ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                paused.set(true);
+            }
             pause.setImageTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(getContext())));
             next.setImageTintList(ColorStateList.valueOf(
@@ -292,6 +299,7 @@ public class MediaNotificationProvider extends FeedProvider {
             pause.setOnClickListener(cause -> mediaListener.toggle(false));
             next.setOnClickListener(cause -> mediaListener.next());
             last.setOnClickListener(cause -> mediaListener.previous());
+
             onMediaNotifChange.add(mn -> {
                 if (mn == null) {
                     mnc.set(null);
@@ -301,10 +309,15 @@ public class MediaNotificationProvider extends FeedProvider {
                                         R.string.title_nothings_playing));
                         author.setText(
                                 mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
-                        pause.setImageDrawable(
-                                mnc.get() != null && mnc.get().isPlaying() ? getContext().getDrawable(
-                                        R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                        R.drawable.ic_play_arrow_black_24dp));
+                        if (mnc.get() != null && mnc.get().isPlaying() && paused.get()) {
+                            pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
+                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                            paused.set(false);
+                        } else {
+                            pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
+                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                            paused.set(true);
+                        }
                         icon.setVisibility(
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
@@ -312,7 +325,7 @@ public class MediaNotificationProvider extends FeedProvider {
                         if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
                             long min = mnc.get().getInfo().getDuration() / 1000 / 60;
                             int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
-                            duration.setText(String.format(Locale.CHINA, "%02d%02d", min, sec));
+                            duration.setText(String.format(Locale.CHINA, "%02d:%02d", min, sec));
                         } else {
                             duration.setText(null);
                         }
@@ -325,10 +338,15 @@ public class MediaNotificationProvider extends FeedProvider {
                         title.setText(mnc.get().getInfo().getTitle());
                         author.setText(
                                 mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
-                        pause.setImageDrawable(
-                                mnc.get().isPlaying() ? getContext().getDrawable(
-                                        R.drawable.ic_pause_black_24dp) : getContext().getDrawable(
-                                        R.drawable.ic_play_arrow_black_24dp));
+                        if (mnc.get() != null && mnc.get().isPlaying()) {
+                            pause.setImageDrawable(getContext().getDrawable(R.drawable.play_pause));
+                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                            paused.set(false);
+                        } else {
+                            pause.setImageDrawable(getContext().getDrawable(R.drawable.pause_play));
+                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                            paused.set(true);
+                        }
                         pause.setImageTintList(ColorStateList.valueOf(
                                 FeedAdapter.Companion.getOverrideColor(getContext())));
                         icon.setVisibility(

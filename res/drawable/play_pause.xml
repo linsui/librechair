@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019 oldosfan.
+  ~ Copyright (c) 2019 the Lawnchair developers
+  ~
+  ~     This file is part of Librechair.
+  ~
+  ~     Librechair is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Librechair is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+    <aapt:attr name="android:drawable">
+        <vector
+            android:name="vector"
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:name="path"
+                android:fillColor="#FF000000"
+                android:pathData="M 8 5 L 8 19 L 19 12 Z" />
+        </vector>
+    </aapt:attr>
+    <target android:name="path">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:interpolator="@android:anim/linear_interpolator"
+                android:propertyName="pathData"
+                android:valueFrom="M 8 5 L 8 9.667 L 8 14.333 L 8 19 L 19 12 L 8 5 M 16 12 L 16 12 L 16 12 L 16 12 L 16 12 L 16 12"
+                android:valueTo="M 10 5 L 6 5 L 6 19 L 6 19 L 10 19 L 10 5 M 14 5 L 14 19 L 18 19 L 18 5 L 14 5 L 14 5"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+</animated-vector>
