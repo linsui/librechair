@@ -326,7 +326,8 @@ public class MediaNotificationProvider extends FeedProvider {
                             if (Utilities.HIDDEN_APIS_ALLOWED) {
                                 try {
                                     @SuppressLint("SoonBlockedPrivateApi")
-                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                            "reverse");
                                     method.invoke(pause.getDrawable());
                                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                                     e.printStackTrace();
@@ -337,7 +338,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
                                 mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
-                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
+                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != null &&
+                                mnc.get().getInfo().getDuration() != -1) {
                             long min = mnc.get().getInfo().getDuration() / 1000 / 60;
                             int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
                             duration.setText(String.format(Locale.CHINA, "%02d:%02d", min, sec));
@@ -360,7 +362,8 @@ public class MediaNotificationProvider extends FeedProvider {
                             if (Utilities.HIDDEN_APIS_ALLOWED) {
                                 try {
                                     @SuppressLint("SoonBlockedPrivateApi")
-                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                            "reverse");
                                     method.invoke(pause.getDrawable());
                                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
                                     e.printStackTrace();
@@ -373,7 +376,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
                                 mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
-                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != -1) {
+                        if (mnc.get() != null && mnc.get().getInfo().getDuration() != null
+                                && mnc.get().getInfo().getDuration() != -1) {
                             long min = mnc.get().getInfo().getDuration() / 1000 / 60;
                             int sec = (int) (mnc.get().getInfo().getDuration() / 1000) % 60;
                             duration.setText(String.format(Locale.CHINA, "%02d:%02d", min, sec));
