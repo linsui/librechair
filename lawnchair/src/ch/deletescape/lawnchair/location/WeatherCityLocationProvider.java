@@ -41,16 +41,20 @@ public class WeatherCityLocationProvider extends LocationProvider implements
 
     @Override
     public void refresh() {
+
         WeatherManager.INSTANCE.subscribeGeo(geo -> {
-            location = geo;
-            updateLocation(geo.getFirst(), geo.getSecond(), true);
+            if (!LawnchairPreferences.Companion.getInstance(getContext()).getWeatherCity().equals(
+                    "##Auto")) {
+                location = geo;
+                updateLocation(geo.getFirst(), geo.getSecond(), true);
+            }
             return Unit.INSTANCE;
         });
     }
 
     @Override
     public void onValueChanged(@NotNull String key, @NotNull LawnchairPreferences prefs,
-            boolean force) {
+                               boolean force) {
         refresh();
     }
 }
