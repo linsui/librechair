@@ -38,6 +38,7 @@ import com.android.launcher3.R;
 import java.util.Collections;
 import java.util.List;
 
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
 import ch.deletescape.lawnchair.feed.wikipedia.news.News;
 
@@ -55,8 +56,8 @@ public class WikipediaNewsProvider extends FeedProvider {
     }
 
     @Override
-    protected void onAttachedToAdapter(FeedAdapter adapter) {
-        super.onAttachedToAdapter(adapter);
+    public void setFeed(LauncherFeed feed) {
+        super.setFeed(feed);
         if (!init) {
             News.addListener(items -> this.adapter = new ITNAdapter(items, getControllerView()));
             init = true;
