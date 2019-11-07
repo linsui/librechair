@@ -26,6 +26,11 @@ import com.android.launcher3.R;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
 
+import net.time4j.PlainDate;
+import net.time4j.calendar.astro.SolarTime;
+import net.time4j.engine.CalendarDate;
+
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -47,12 +52,15 @@ public class SunriseSunsetChipProvider extends ChipProvider {
     public List<Item> getItems(Context context) {
         Pair<Double, Double> location;
         if ((location = LocationManager.INSTANCE.getLocation()) != null) {
-            SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(new Location(location.getFirst(), location.getSecond()),
-                    TimeZone.getTimeZone("UTC"));
-            ZonedDateTime sunrise = ZonedDateTime.ofInstant(calculator.getAstronomicalSunriseCalendarForDate(new GregorianCalendar()).toInstant(),
-                    ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault());
-            ZonedDateTime sunset = ZonedDateTime.ofInstant(calculator.getAstronomicalSunsetCalendarForDate(new GregorianCalendar()).toInstant(),
-                    ZoneId.of("UTC")).withZoneSameInstant(ZoneId.systemDefault());
+            SolarTime st = SolarTime.ofLocation(location.getFirst(), location.getSecond());
+            ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                    PlainDate.nowInSystemTime().get(st.sunrise()).inZonalView(
+                            ZoneId.systemDefault().getId()).getPosixTime()),
+                    ZoneId.systemDefault());
+            ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                    PlainDate.nowInSystemTime().get(st.sunset()).inZonalView(
+                            ZoneId.systemDefault().getId()).getPosixTime()),
+                    ZoneId.systemDefault());
 
             Item sunriseItem = new Item();
             sunriseItem.icon = context.getDrawable(R.drawable.ic_sunrise_24dp);
