@@ -55,6 +55,15 @@ public class WikipediaNewsProvider extends FeedProvider {
     }
 
     @Override
+    protected void onAttachedToAdapter(FeedAdapter adapter) {
+        super.onAttachedToAdapter(adapter);
+        if (!init) {
+            News.addListener(items -> this.adapter = new ITNAdapter(items, getControllerView()));
+            init = true;
+        }
+    }
+
+    @Override
     public void onFeedShown() {
 
     }
@@ -77,10 +86,6 @@ public class WikipediaNewsProvider extends FeedProvider {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public List<Card> getCards() {
-        if (!init) {
-            News.addListener(items -> adapter = new ITNAdapter(items, getControllerView()));
-            init = true;
-        }
         return adapter == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
