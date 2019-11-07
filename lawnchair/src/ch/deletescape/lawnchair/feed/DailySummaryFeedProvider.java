@@ -49,6 +49,10 @@ import com.google.android.flexbox.JustifyContent;
 import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
 import com.luckycatlabs.sunrisesunset.dto.Location;
 
+import net.time4j.PlainDate;
+import net.time4j.calendar.astro.SolarTime;
+import net.time4j.calendar.astro.Twilight;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -75,20 +79,19 @@ public class DailySummaryFeedProvider extends FeedProvider {
     public DailySummaryFeedProvider(Context c) {
         super(c);
         LawnchairUtilsKt.getLawnchairLocationManager(c).addCallback((lat, lon) -> {
-            SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(new Location(lat, lon),
-                    TimeZone.getTimeZone("UTC"));
-            Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(new GregorianCalendar());
-            Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(new GregorianCalendar());
+            SolarTime solarTime = SolarTime.ofLocation(lat, lon);
+            ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                    PlainDate.nowInSystemTime().get(
+                            solarTime.sunrise(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                    ZoneId.systemDefault());
+            ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                    PlainDate.nowInSystemTime().get(
+                            solarTime.sunset(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                    ZoneId.systemDefault());
             Log.d(getClass().getName(),
                     "init: sunrise and sunset times retrieved: " + sunrise + ", "
                             + sunset);
-            sunriseSunset = new Pair<>(ZonedDateTime
-                    .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                            ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
-                    ZonedDateTime.ofInstant(
-                            Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                            ZoneId
-                                    .of(Calendar.getInstance().getTimeZone().getID())));
+            sunriseSunset = new Pair<>(sunrise, sunset);
             sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
             return Unit.INSTANCE;
         });
@@ -120,10 +123,13 @@ public class DailySummaryFeedProvider extends FeedProvider {
             Pair<Double, Double> location = LawnchairUtilsKt
                     .getLawnchairLocationManager(getContext()).getLocation();
             if (location != null) {
-                SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(new Location(location.getFirst(), location.getSecond()),
+                SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(
+                        new Location(location.getFirst(), location.getSecond()),
                         TimeZone.getTimeZone("UTC"));
-                Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(new GregorianCalendar());
-                Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(new GregorianCalendar());
+                Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(
+                        new GregorianCalendar());
+                Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(
+                        new GregorianCalendar());
                 Log.d(getClass().getName(),
                         "init: sunrise and sunset times retrieved: " + sunrise + ", "
                                 + sunset);
@@ -207,7 +213,8 @@ public class DailySummaryFeedProvider extends FeedProvider {
                                             context.getDrawable(R.drawable.ic_event_black_24dp)),
                                     FeedAdapter.Companion.getOverrideColor(context)),
                             context.getResources()
-                                    .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
+                                    .getQuantityString(
+                                            R.plurals.title_daily_briefing_calendar_events,
                                             calendarEvents.getCount(), calendarEvents.getCount())));
                 }
             }
@@ -216,13 +223,13 @@ public class DailySummaryFeedProvider extends FeedProvider {
             if (feedProvider.sunriseSunset != null) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
-                                        context.getDrawable(R.drawable.ic_sunrise_24dp)),
+                                context.getDrawable(R.drawable.ic_sunrise_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
                                 .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
-                                        context.getDrawable(R.drawable.ic_sunset_24dp)),
+                                context.getDrawable(R.drawable.ic_sunset_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
                                 .formatTime(feedProvider.sunriseSunset.getSecond(), context)));
