@@ -205,8 +205,8 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
             val solarTime = SolarTime.ofLocation(latitude, longitude)
             val sunrise = solarTime.sunrise()
             val sunset = solarTime.sunset()
-            return TwilightState(PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunrise).inLocalView().toMoment().posixTime,
-                                 PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunset).inLocalView().toMoment().posixTime)
+            return TwilightState(PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunrise).inLocalView().toMoment().posixTime * 1000,
+                                 PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunset).inLocalView().toMoment().posixTime * 1000)
         }
     }
 }
