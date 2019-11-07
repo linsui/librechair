@@ -36,6 +36,9 @@ import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
+import net.time4j.PlainDate
+import net.time4j.calendar.astro.SolarTime
+import net.time4j.engine.EpochDays
 import java.util.*
 
 @SuppressLint("MissingPermission")
@@ -196,21 +199,14 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
 
         fun calculateTwilightState(latitude: Double?, longitude: Double?,
                                    timeMillis: Long): TwilightState? {
-            val c = Calendar.getInstance().apply { timeInMillis = timeMillis }
-            val calc = SunriseSunsetCalculatorCompat(latitude, longitude, c.timeZone)
-            val sunrise = calc.getOfficialSunriseCalendarForDate(c)
-            val adjustedSunset: Calendar
-            val adjustedSunrise: Calendar
-            if (sunrise.before(c)) {
-                adjustedSunset = calc.getOfficialSunsetCalendarForDate(c)
-                c.add(Calendar.DATE, 1)
-                adjustedSunrise = calc.getOfficialSunriseCalendarForDate(c)
-            } else {
-                adjustedSunrise = sunrise
-                c.add(Calendar.DATE, -1)
-                adjustedSunset = calc.getOfficialSunsetCalendarForDate(c)
+            if (latitude == null || longitude == null) {
+                return null
             }
-            return TwilightState(adjustedSunrise.timeInMillis, adjustedSunset.timeInMillis)
+            val solarTime = SolarTime.ofLocation(latitude, longitude)
+            val sunrise = solarTime.sunrise()
+            val sunset = solarTime.sunset()
+            return TwilightState(PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunrise).inLocalView().toMoment().posixTime,
+                                 PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunset).inLocalView().toMoment().posixTime)
         }
     }
 }

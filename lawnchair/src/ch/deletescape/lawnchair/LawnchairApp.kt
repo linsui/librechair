@@ -59,6 +59,7 @@ import geocode.GeocoderCompat
 import kg.net.bazi.gsb4j.Gsb4j
 import kotlinx.coroutines.launch
 import me.weishu.reflection.Reflection
+import net.time4j.android.ApplicationStarter
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -92,6 +93,7 @@ class LawnchairApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        ApplicationStarter.initialize(this, true)
         FeedScope.launch {
             if (Utilities.ATLEAST_P && feedPrefs.enableGsb) {
                 try {

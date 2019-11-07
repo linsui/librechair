@@ -371,6 +371,8 @@ dependencies {
     implementation 'me.weishu:free_reflection:2.1.0'
     implementation 'com.implimentz:unsafe:0.0.6'
 
+    implementation 'net.time4j:time4j-android:4.4.3-2019c'
+
     compileOnly fileTree(dir: 'prebuilts/libs', include: '*.jar')
 
     implementation 'io.github.java-diff-utils:java-diff-utils:4.0'
