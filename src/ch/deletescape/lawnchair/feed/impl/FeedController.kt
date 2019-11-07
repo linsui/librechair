@@ -104,7 +104,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
             animator.interpolator =
-                    InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
+                    Interpolators.ACCEL_DEACCEL
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.CLOSED
