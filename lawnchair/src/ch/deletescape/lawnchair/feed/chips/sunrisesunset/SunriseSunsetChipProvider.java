@@ -28,6 +28,7 @@ import com.luckycatlabs.sunrisesunset.dto.Location;
 
 import net.time4j.PlainDate;
 import net.time4j.calendar.astro.SolarTime;
+import net.time4j.calendar.astro.Twilight;
 import net.time4j.engine.CalendarDate;
 
 import java.time.Instant;
@@ -54,11 +55,11 @@ public class SunriseSunsetChipProvider extends ChipProvider {
         if ((location = LocationManager.INSTANCE.getLocation()) != null) {
             SolarTime st = SolarTime.ofLocation(location.getFirst(), location.getSecond());
             ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunrise()).inZonalView(
+                    PlainDate.nowInSystemTime().get(st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
                             ZoneId.systemDefault().getId()).getPosixTime()),
                     ZoneId.systemDefault());
             ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunset()).inZonalView(
+                    PlainDate.nowInSystemTime().get(st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
                             ZoneId.systemDefault().getId()).getPosixTime()),
                     ZoneId.systemDefault());
 

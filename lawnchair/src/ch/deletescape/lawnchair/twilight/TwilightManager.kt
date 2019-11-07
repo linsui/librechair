@@ -38,6 +38,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
 import net.time4j.PlainDate
 import net.time4j.calendar.astro.SolarTime
+import net.time4j.calendar.astro.Twilight
 import net.time4j.engine.EpochDays
 import java.util.*
 
@@ -203,8 +204,8 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
                 return null
             }
             val solarTime = SolarTime.ofLocation(latitude, longitude)
-            val sunrise = solarTime.sunrise()
-            val sunset = solarTime.sunset()
+            val sunrise = solarTime.sunrise(Twilight.ASTRONOMICAL)
+            val sunset = solarTime.sunset(Twilight.ASTRONOMICAL)
             return TwilightState(PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunrise).inLocalView().toMoment().posixTime * 1000,
                                  PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunset).inLocalView().toMoment().posixTime * 1000)
         }
