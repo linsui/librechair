@@ -123,23 +123,19 @@ public class DailySummaryFeedProvider extends FeedProvider {
             Pair<Double, Double> location = LawnchairUtilsKt
                     .getLawnchairLocationManager(getContext()).getLocation();
             if (location != null) {
-                SunriseSunsetCalculator calculator = new SunriseSunsetCalculator(
-                        new Location(location.getFirst(), location.getSecond()),
-                        TimeZone.getTimeZone("UTC"));
-                Calendar sunrise = calculator.getAstronomicalSunriseCalendarForDate(
-                        new GregorianCalendar());
-                Calendar sunset = calculator.getAstronomicalSunsetCalendarForDate(
-                        new GregorianCalendar());
+                SolarTime solarTime = SolarTime.ofLocation(location.getFirst(), location.getSecond());
+                ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                        PlainDate.nowInSystemTime().get(
+                                solarTime.sunrise(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                        ZoneId.systemDefault());
+                ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                        PlainDate.nowInSystemTime().get(
+                                solarTime.sunset(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                        ZoneId.systemDefault());
                 Log.d(getClass().getName(),
                         "init: sunrise and sunset times retrieved: " + sunrise + ", "
                                 + sunset);
-                sunriseSunset = new Pair<>(ZonedDateTime
-                        .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                                ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
-                        ZonedDateTime.ofInstant(
-                                Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                                ZoneId
-                                        .of(Calendar.getInstance().getTimeZone().getID())));
+                sunriseSunset = new Pair<>(sunrise, sunset);
                 sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
             }
         }
