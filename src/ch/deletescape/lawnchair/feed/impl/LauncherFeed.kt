@@ -1309,10 +1309,6 @@ class LauncherFeed(private val originalContext: Context,
                     }
                 }, 0f, 0f)
             }
-            if (!useWhiteText(backgroundColor, context)) {
-                feedController.systemUiVisibility =
-                        View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
             feedController.startScroll()
         }
     }

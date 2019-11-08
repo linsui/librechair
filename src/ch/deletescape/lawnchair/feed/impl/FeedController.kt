@@ -30,6 +30,7 @@ import ch.deletescape.lawnchair.feed.impl.Interpolators.scrollInterpolatorForVel
 import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
+import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
@@ -152,6 +153,16 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     private fun setProgress(progress: Float, notify: Boolean) {
         mProgress = progress
+
+        if (progress >= 0.5) {
+            if (!useWhiteText(mLauncherFeed!!.backgroundColor, context)) {
+                mLauncherFeed!!.feedController.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        } else {
+            systemUiVisibility = 0
+        }
+
         if (notify) {
             mLauncherFeed!!.onProgress(mProgress, mDetector.isDraggingOrSettling)
         }
