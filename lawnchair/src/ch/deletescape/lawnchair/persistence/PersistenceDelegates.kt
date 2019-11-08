@@ -80,18 +80,22 @@ class BooleanDelegate<T>(val context: Context, val key: String, private val defV
                     defValue.toString())?.toBoolean() ?: defValue
 }
 
-class ListDelegate<T>(val context: Context, val key: String, val defValue: List<String>) {
+class ListDelegate<T>(val context: Context, val key: String, private val defValue: List<String>) {
 
-    private val internal = ObservableArrayList<String>().apply {
-        addAll(defValue)
-    }
     private var lastData = StringDatabase.getInstance(context).dao().getSafe(key)
+    private val internal: ObservableArrayList<String>
 
     init {
         if (lastData != null) {
-            synchronized(internal) {
-                internal.clear()
-                internal.addAll(JsonParser().parse(lastData).asJsonArray.map { it.asString })
+            internal = ObservableArrayList<String>().apply {
+                synchronized(this) {
+                    clear()
+                    addAll(JsonParser().parse(lastData).asJsonArray.map { it.asString })
+                }
+            }
+        } else {
+            internal = ObservableArrayList<String>().apply {
+                addAll(defValue)
             }
         }
         internal.addOnListChangedCallback(object :
@@ -150,11 +154,9 @@ class ListDelegate<T>(val context: Context, val key: String, val defValue: List<
 }
 
 abstract class SerializableListDelegate<A_, T>(val context: Context, val key: String,
-                                               val defValue: List<T>) {
+                                               private val defValue: List<T>) {
 
-    private val internal = ObservableArrayList<T>().apply {
-        addAll(defValue)
-    }
+    private val internal: ObservableArrayList<T>
     private var lastData = StringDatabase.getInstance(context).dao().getSafe(key)
 
     abstract fun deserialize(s: String): T
@@ -162,10 +164,15 @@ abstract class SerializableListDelegate<A_, T>(val context: Context, val key: St
 
     init {
         if (lastData != null) {
-            synchronized(internal) {
-                internal.clear()
-                internal.addAll(JsonParser().parse(
-                        lastData).asJsonArray.map { it.asString }.map { deserialize(it) })
+            internal = ObservableArrayList<T>().apply {
+                synchronized(this) {
+                    addAll(JsonParser().parse(
+                            lastData).asJsonArray.map { it.asString }.map { deserialize(it) })
+                }
+            }
+        } else {
+            internal = ObservableArrayList<T>().apply {
+                addAll(defValue)
             }
         }
         internal.addOnListChangedCallback(object :
