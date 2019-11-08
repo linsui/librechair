@@ -23,22 +23,17 @@ package ch.deletescape.lawnchair.feed.chips.sunrisesunset;
 import android.content.Context;
 
 import com.android.launcher3.R;
-import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
-import com.luckycatlabs.sunrisesunset.dto.Location;
 
 import net.time4j.PlainDate;
 import net.time4j.calendar.astro.SolarTime;
 import net.time4j.calendar.astro.Twilight;
-import net.time4j.engine.CalendarDate;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;

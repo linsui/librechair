@@ -39,8 +39,6 @@ import com.android.launcher3.BuildConfig
 import net.time4j.PlainDate
 import net.time4j.calendar.astro.SolarTime
 import net.time4j.engine.CalendarDays
-import java.time.*
-import java.util.*
 
 @SuppressLint("MissingPermission")
 class TwilightManager(private val context: Context) : Handler.Callback, (Double, Double) -> Unit {
