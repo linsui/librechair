@@ -31,9 +31,13 @@ import org.jetbrains.annotations.NotNull;
 import org.xml.sax.InputSource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.Objects;
+
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
@@ -68,15 +72,15 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
     @NotNull
     @Override
     public SyndFeed getLocationAwareFeed(@NotNull String country) {
-        try {
-            String feed = IOUtils.toString(
-                    new URL(feeds.get(country)).openConnection()
-                            .getInputStream(), Charset
-                            .defaultCharset());
-            return new SyndFeedInput().build(new InputSource(
-                    new CharSequenceInputStream(feed, Charset.defaultCharset())));
-        } catch (FeedException | RuntimeException | IOException e) {
-            throw new RuntimeException(e);
+        InputStream is = FeedUtil.downloadDirect(Objects.requireNonNull(feeds.get(country)), getContext(), null);
+        if (is == null) {
+            throw new RuntimeException("no available feed");
+        } else {
+            try {
+                return new SyndFeedInput().build(new InputSource(is));
+            } catch (FeedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
