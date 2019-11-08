@@ -62,22 +62,10 @@ public class VolumeManager {
 
             AudioManager audio = (AudioManager) context.get().getSystemService(Context.AUDIO_SERVICE);
             assert audio != null;
-            int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-
-            int delta = previousVolume - currentVolume;
-
-            if (delta > 0) {
-                previousVolume = currentVolume;
-                volume = previousVolume;
-                synchronized (this) {
-                    listeners.forEach(it -> it.accept(volume));
-                }
-            } else if (delta < 0) {
-                previousVolume = currentVolume;
-                volume = previousVolume;
-                synchronized (this) {
-                    listeners.forEach(it -> it.accept(volume));
-                }
+            previousVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+            volume = previousVolume;
+            synchronized (this) {
+                listeners.forEach(it -> it.accept(volume));
             }
         }
     };
