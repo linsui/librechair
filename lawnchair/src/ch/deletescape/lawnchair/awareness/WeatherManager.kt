@@ -118,17 +118,14 @@ object WeatherManager {
     @MainThread
     fun attachToApplication(app: Application) {
         this.app = app
-        app.lawnchairLocationManager.addCallback { lat, lon ->
-            if (app.lawnchairPrefs.weatherCity == "##Auto") {
-                currentGeo = lat to lon
-            }
-        }
         val refresh = object : Runnable {
             override fun run() {
                 if (app.lawnchairPrefs.weatherProvider != BlankDataProvider::class.qualifiedName) {
                     try {
                         Log.d(javaClass.name, "run: refresh in progress")
-                        currentGeo = resolveGeolocation(app)
+                        if (app.lawnchairPrefs.weatherCity != "##Auto") {
+                            currentGeo = resolveGeolocation(app)
+                        }
                         val (lat, lon) = currentGeo ?: null to null
                         app.lawnchairApp.weatherLooper.post {
                             if (lat != null && lon != null) {
@@ -179,11 +176,15 @@ object WeatherManager {
                 app.lawnchairApp.weatherLooper.postDelayed(this, TimeUnit.MINUTES.toMillis(10))
             }
         }
+        app.lawnchairLocationManager.addCallback { lat, lon ->
+            if (app.lawnchairPrefs.weatherCity == "##Auto") {
+                currentGeo = lat to lon
+                app.lawnchairApp.weatherLooper.post(refresh)
+            }
+        }
         app.lawnchairApp.weatherLooper.post(refresh)
     }
 
     @WorkerThread
-    fun resolveGeolocation(ctx: Context) =
-            if (ctx.lawnchairPrefs.weatherCity != "##Auto") ctx.forecastProvider.getGeolocation(
-                    ctx.lawnchairPrefs.weatherCity) else ctx.lawnchairLocationManager.location
+    fun resolveGeolocation(ctx: Context) = ctx.forecastProvider.getGeolocation(ctx.lawnchairPrefs.weatherCity)
 }
