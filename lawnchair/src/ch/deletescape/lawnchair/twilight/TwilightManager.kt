@@ -38,8 +38,8 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
 import net.time4j.PlainDate
 import net.time4j.calendar.astro.SolarTime
-import net.time4j.calendar.astro.Twilight
-import net.time4j.engine.EpochDays
+import net.time4j.engine.CalendarDays
+import java.time.*
 import java.util.*
 
 @SuppressLint("MissingPermission")
@@ -204,10 +204,18 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
                 return null
             }
             val solarTime = SolarTime.ofLocation(latitude, longitude)
-            val sunrise = solarTime.sunrise(Twilight.ASTRONOMICAL)
-            val sunset = solarTime.sunset(Twilight.ASTRONOMICAL)
-            return TwilightState(PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunrise).inLocalView().toMoment().posixTime * 1000,
-                                 PlainDate.of(timeMillis / 1000 / 60 / 60 / 24, EpochDays.UNIX).get(sunset).inLocalView().toMoment().posixTime * 1000)
+            val sunrise = solarTime.sunrise()
+            val sunset = solarTime.sunset()
+            val sunriseMillis = PlainDate.nowInSystemTime().get(sunrise).inLocalView().toMoment().posixTime * 1000
+            val sunsetMillis = PlainDate.nowInSystemTime().get(sunset).inLocalView().toMoment().posixTime * 1000
+
+            val adjustedSunrise = if (sunriseMillis < timeMillis) PlainDate.nowInSystemTime().plus(
+                    CalendarDays.ONE).get(sunrise).inLocalView().posixTime * 1000 else sunriseMillis
+            // TODO kt-utils.el automated boolean negation
+            val adjustedSunset = if (!(sunriseMillis < timeMillis)) PlainDate.nowInSystemTime().plus(
+                    CalendarDays.ONE).get(sunset).inLocalView().posixTime * 1000 else sunsetMillis
+
+            return TwilightState(adjustedSunrise, adjustedSunset)
         }
     }
 }
