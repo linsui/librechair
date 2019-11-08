@@ -55,8 +55,9 @@ class OverlayService : Service(), () -> Unit {
     override fun onCreate() {
         super.onCreate()
         ThemeManager.getInstance(this).changeCallbacks += {
-            this()
-            stopSelf()
+            if (feed.background == null) {
+                feed.reinitState()
+            }
         }
     }
 

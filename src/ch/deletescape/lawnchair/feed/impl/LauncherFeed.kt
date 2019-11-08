@@ -99,6 +99,7 @@ class LauncherFeed(private val originalContext: Context,
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
     private val activityState = ActivityState()
+    var background: Bitmap? = null
     private lateinit var currentTab: TabController.Item
 
     private var lastScroll = 0f
@@ -265,28 +266,22 @@ class LauncherFeed(private val originalContext: Context,
                 searchWidgetView?.parent == toolbar) {
             toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout).removeView(searchWidgetView)
         }
+        background =
+                if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
+                        originalContext)
+        backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
+                ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
+                (LawnchairPreferences.getInstance(
+                        originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else androidx.palette.graphics.Palette.from(
+                backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
+
+        dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
+        context = ContextThemeWrapper(originalContext,
+                if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
+        for (i in 0 until providerScreens.size) {
+            popScreens()
+        }
         if (reinit) {
-            val background =
-                    if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
-                            originalContext)
-            providerScreens.iterator().let {
-                it.forEach { screen ->
-                    frame.removeView(screen.second.view)
-                    it.remove()
-                }
-            }
-
-            internalActions.clear()
-
-            backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
-                    ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
-                    (LawnchairPreferences.getInstance(
-                            originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else androidx.palette.graphics.Palette.from(
-                    backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
-
-            dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
-            context = ContextThemeWrapper(originalContext,
-                    if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
             feedAttached = false
             closeOverlay(0)
             verticalBackground = null
@@ -342,6 +337,10 @@ class LauncherFeed(private val originalContext: Context,
             chips = feedController.findViewById(R.id.chip_container) as RecyclerView
             chipAdapter = ChipAdapter(context, this)
         }
+
+        tabView.removeAllTabs()
+
+        adapter.backgroundColor = backgroundColor
 
         toolbar.visibility = if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
 
