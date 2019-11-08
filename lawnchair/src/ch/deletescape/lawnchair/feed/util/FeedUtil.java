@@ -31,23 +31,72 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.apache.commons.io.input.CharSequenceInputStream;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 @SuppressWarnings("WeakerAccess")
 public final class FeedUtil {
+    private static volatile OkHttpClient client;
+    private static final Object CLIENT_INSTANTIATION_LOCK = new Object();
+
     private FeedUtil() {
         throw new RuntimeException("putting your time on instantiating this class smh");
+    }
+
+    @AnyThread
+    public static void download(@Nonnull String url, @Nonnull Context context,
+                                @Nonnull Consumer<InputStream> consumer,
+                                @Nullable Consumer<IOException> error) {
+        synchronized (CLIENT_INSTANTIATION_LOCK) {
+            if (client == null) {
+                client = new OkHttpClientBuilder().build(context);
+            }
+        }
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        if (!request.isHttps()) {
+            throw new SecurityException("Mandatory HTTPS requirement not met");
+        }
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.body() == null) {
+                if (error != null) {
+                    error.accept(new IOException());
+                }
+            } else {
+                consumer.accept(Objects.requireNonNull(response.body()).byteStream());
+            }
+        } catch (IOException e) {
+            if (error != null) {
+                error.accept(e);
+            }
+        } catch (RuntimeException e) {
+            Log.e("FeedUtil", "download: fatal error", e);
+        }
     }
 
     @MainThread

@@ -32,6 +32,10 @@ import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
+import okhttp3.OkHttpClient;
+
 public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
 
     public TheVergeFeedProvider(Context c) {
@@ -48,16 +52,13 @@ public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
-            Executors.newSingleThreadExecutor().submit(() -> {
+            Executors.newSingleThreadExecutor().submit(() -> FeedUtil.download("https://www.theverge.com/rss/index.xml", getContext(), is -> {
                 try {
-                    callback.onBind(new SyndFeedInput().build(new InputSource(
-                            new URL("https://www.theverge.com/rss/index.xml")
-                                    .openConnection()
-                                    .getInputStream())));
-                } catch (FeedException | IOException e) {
+                    callback.onBind(new SyndFeedInput().build(new InputSource(is)));
+                } catch (FeedException e) {
                     e.printStackTrace();
                 }
-            });
+            }, null));
         });
     }
 }

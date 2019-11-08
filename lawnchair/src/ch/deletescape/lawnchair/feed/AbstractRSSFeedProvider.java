@@ -126,7 +126,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         articles = feed.getEntries().stream().map(entry -> {
                             NewsEntry newsEntry = new NewsEntry();
                             newsEntry.date = entry.getPublishedDate();
-                            newsEntry.content = entry.getDescription().getValue();
+                            if (entry.getDescription() != null) {
+                                newsEntry.content = entry.getDescription().getValue();
+                            }
                             newsEntry.url = entry.getLink();
                             newsEntry.title = entry.getTitle();
                             newsEntry.categories = entry.getCategories()
