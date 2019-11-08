@@ -99,6 +99,44 @@ public final class FeedUtil {
         }
     }
 
+    @AnyThread
+    @Nullable
+    public static InputStream downloadDirect(@Nonnull String url, @Nonnull Context context,
+                                @Nullable Consumer<IOException> error) {
+        synchronized (CLIENT_INSTANTIATION_LOCK) {
+            if (client == null) {
+                client = new OkHttpClientBuilder().build(context);
+            }
+        }
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        if (!request.isHttps()) {
+            throw new SecurityException("Mandatory HTTPS requirement not met");
+        }
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (response.body() == null) {
+                if (error != null) {
+                    error.accept(new IOException());
+                }
+                return null;
+            } else {
+                return Objects.requireNonNull(response.body()).byteStream();
+            }
+        } catch (IOException e) {
+            if (error != null) {
+                error.accept(e);
+            }
+        } catch (RuntimeException e) {
+            Log.e("FeedUtil", "download: fatal error", e);
+        }
+        return null;
+    }
+
     @MainThread
     public static void startActivity(@Nonnull Context context, @Nonnull Intent intent,
                                      @Nonnull View view) {

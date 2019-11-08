@@ -20,11 +20,13 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import org.apache.commons.io.IOUtils
 import org.apache.commons.io.input.CharSequenceInputStream
 import org.xml.sax.InputSource
+import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 
@@ -193,12 +195,9 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
     }
 
     override fun getLocationAwareFeed(country: String): SyndFeed {
-        val `is` = URL(feeds[country] + "/rss").openConnection().getInputStream()
-        val feed = IOUtils.toString(`is`,
-                Charset.defaultCharset())
-        `is`.close()
-        return SyndFeedInput()
-                .build(InputSource(CharSequenceInputStream(feed, Charset.defaultCharset())))
+        return FeedUtil.downloadDirect(feeds[country] + "/rss", context, null)?.let {
+            SyndFeedInput().build(InputSource(it))
+        } ?: throw IOException("no feed available")
     }
 
     override fun getFallbackFeed(): SyndFeed {
