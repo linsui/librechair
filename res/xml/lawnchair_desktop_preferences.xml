@@ -145,12 +145,6 @@
             android:persistent="true"
             android:summary="@string/full_width_widgets_pref_summary"
             android:title="@string/full_width_width_widgets_pref_title" />
-
-        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
-            android:defaultValue="true"
-            android:key="pref_use_integrated_browser"
-            android:persistent="true"
-            android:title="@string/title_pref_integrated_browser" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
