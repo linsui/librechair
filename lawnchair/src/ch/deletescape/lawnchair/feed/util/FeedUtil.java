@@ -38,8 +38,6 @@ import android.view.View;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.apache.commons.io.input.CharSequenceInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -65,6 +63,7 @@ public final class FeedUtil {
         throw new RuntimeException("putting your time on instantiating this class smh");
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @AnyThread
     public static void download(@Nonnull String url, @Nonnull Context context,
                                 @Nonnull Consumer<InputStream> consumer,

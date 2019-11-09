@@ -22,16 +22,9 @@ package ch.deletescape.lawnchair.feed.news
 
 import android.content.Context
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider
-import ch.deletescape.lawnchair.feed.FeedScope
-import com.rometools.rome.io.FeedException
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import com.rometools.rome.io.SyndFeedInput
-import kotlinx.coroutines.launch
-import org.apache.commons.io.IOUtils
-import org.apache.commons.io.input.CharSequenceInputStream
 import org.xml.sax.InputSource
-import java.io.IOException
-import java.net.URL
-import java.nio.charset.Charset
 import java.util.function.Consumer
 
 class CustomSyndicationProvider(c: Context, internal val arguments: Map<String, String>) :
@@ -41,27 +34,14 @@ class CustomSyndicationProvider(c: Context, internal val arguments: Map<String, 
     }
 
     override fun bindFeed(callback: BindCallback, token: String) {
-        FeedScope.launch {
-            val feed: String
-            try {
-                feed = IOUtils.toString(
-                        URL(arguments[URL])
-                                .openConnection()
-                                .getInputStream(), Charset
-                        .defaultCharset())
-                callback.onBind(SyndFeedInput().build(InputSource(
-                        CharSequenceInputStream(feed, Charset.defaultCharset()))))
-            } catch (e: FeedException) {
-                e.printStackTrace()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
+        FeedUtil.download(arguments[URL]!!, context, {
+            callback.onBind(SyndFeedInput().build(InputSource(it)))
+        }, null)
     }
 
     @Suppress("MapGetWithNotNullAssertionOperator")
     override fun getId(): String {
-        return arguments[URL]!!.hashCode().toString()
+        return (arguments[URL]!!.hashCode() + 1).toString()
     }
 
     companion object  {
