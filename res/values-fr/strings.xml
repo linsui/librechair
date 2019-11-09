@@ -45,10 +45,10 @@
     <!-- Message to tell the user to press and hold on a widget to add it [CHAR_LIMIT=50] -->
     <string name="long_press_widget_to_add" msgid="7699152356777458215">"App. de manière prolongée pour sélectionner widget."</string>
     <!-- Accessibility spoken hint message in widget picker, which allows user to add a widget. Custom action is the label for additional accessibility actions available in this mode [CHAR_LIMIT=100] -->
-    <string name="long_accessible_way_to_add" msgid="4289502106628154155">"Appuyez 2 fois et maintenez la pression pour sélectionner widget ou utilisez actions personnalisées."</string>
+    <string name="long_accessible_way_to_add" msgid="4289502106628154155">"Appuyez 2 fois et maintenez la pression pour sélectionner widget ou utilisez actions personnalisées."</string>
     <!-- The format string for the dimensions of a widget in the drawer -->
     <!-- There is a special version of this format string for Farsi -->
-    <string name="widget_dims_format" msgid="2370757736025621599">"%1$d x %2$d"</string>
+    <string name="widget_dims_format" msgid="2370757736025621599">"%1$d x %2$d"</string>
     <!-- Accessibility spoken message format for the dimensions of a widget in the drawer -->
     <string name="widget_accessible_dims_format" msgid="3640149169885301790">"%1$d de largeur et %2$d de hauteur"</string>
     <!-- Message to tell the user to press and hold a widget/icon to add it  -->
@@ -138,15 +138,15 @@
     <string name="disabled_app_label" msgid="6673129024321402780">"<xliff:g id="APP_NAME">%1$s</xliff:g> est désactivé."</string>
     <!-- The format string for when an app has a notification dot (meaning it has associated notifications). -->
     <plurals name="badged_app_label" formatted="false" msgid="7948068486082879291">
-      <item quantity="one"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notification</item>
-      <item quantity="other"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notifications</item>
+      <item quantity="one"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notification</item>
+      <item quantity="other"><xliff:g id="APP_NAME_2">%1$s</xliff:g> comporte <xliff:g id="NOTIFICATION_COUNT_3">%2$d</xliff:g> notifications</item>
     </plurals>
     <skip />
 
     <!-- The format string for default page scroll text [CHAR_LIMIT=none] -->
-    <string name="default_scroll_format" msgid="7475544710230993317">"Page %1$d sur %2$d"</string>
+    <string name="default_scroll_format" msgid="7475544710230993317">"Page %1$d sur %2$d"</string>
     <!-- The format string for Workspace page scroll text [CHAR_LIMIT=none] -->
-    <string name="workspace_scroll_format" msgid="8458889198184077399">"Écran d\'accueil %1$d sur %2$d"</string>
+    <string name="workspace_scroll_format" msgid="8458889198184077399">"Écran d\'accueil %1$d sur %2$d"</string>
     <!-- Description for a new page on homescreen[CHAR_LIMIT=none] -->
     <string name="workspace_new_page" msgid="257366611030256142">"Nouvelle page d\'écran d\'accueil"</string>
 
@@ -160,7 +160,7 @@
     <!-- Indication that folder closed -->
     <string name="folder_closed" msgid="4100806530910930934">"Dossier fermé"</string>
     <!-- Folder renamed format -->
-    <string name="folder_renamed" msgid="1794088362165669656">"Nouveau nom du dossier : <xliff:g id="NAME">%1$s</xliff:g>"</string>
+    <string name="folder_renamed" msgid="1794088362165669656">"Nouveau nom du dossier : <xliff:g id="NAME">%1$s</xliff:g>"</string>
     <!-- Folder name format -->
     <string name="folder_name_format" msgid="6629239338071103179">"Dossier \"<xliff:g id="NAME">%1$s</xliff:g>\""</string>
 
@@ -264,13 +264,13 @@
     <string name="action_move" msgid="4339390619886385032">"Déplacer l\'élément"</string>
 
     <!-- Accessibility description to move item to empty cell. -->
-    <string name="move_to_empty_cell" msgid="2833711483015685619">"Déplacer vers la ligne <xliff:g id="NUMBER_0">%1$s</xliff:g>, colonne <xliff:g id="NUMBER_1">%2$s</xliff:g>"</string>
+    <string name="move_to_empty_cell" msgid="2833711483015685619">"Déplacer vers la ligne <xliff:g id="NUMBER_0">%1$s</xliff:g>, colonne <xliff:g id="NUMBER_1">%2$s</xliff:g>"</string>
 
     <!-- Accessibility description to move item inside a folder. -->
-    <string name="move_to_position" msgid="6750008980455459790">"Déplacer vers la position <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
+    <string name="move_to_position" msgid="6750008980455459790">"Déplacer vers la position <xliff:g id="NUMBER">%1$s</xliff:g>"</string>
 
     <!-- Accessibility description to move item to the hotseat. -->
-    <string name="move_to_hotseat_position" msgid="6295412897075147808">"Déplacer vers la position <xliff:g id="NUMBER">%1$s</xliff:g> dans les favoris"</string>
+    <string name="move_to_hotseat_position" msgid="6295412897075147808">"Déplacer vers la position <xliff:g id="NUMBER">%1$s</xliff:g> dans les favoris"</string>
 
     <!-- Accessibility confirmation for item move. -->
     <string name="item_moved" msgid="4606538322571412879">"Élément déplacé"</string>
@@ -309,7 +309,7 @@
     <string name="action_decrease_height" msgid="282377193880900022">"Diminuer la hauteur"</string>
 
     <!-- Accessibility confirmation for widget resize. -->
-    <string name="widget_resized" msgid="9130327887929620">"Le widget a bien été redimensionné (largeur : <xliff:g id="NUMBER_0">%1$s</xliff:g>, hauteur : <xliff:g id="NUMBER_1">%2$s</xliff:g>)."</string>
+    <string name="widget_resized" msgid="9130327887929620">"Le widget a bien été redimensionné (largeur : <xliff:g id="NUMBER_0">%1$s</xliff:g>, hauteur : <xliff:g id="NUMBER_1">%2$s</xliff:g>)."</string>
 
     <!-- Accessibility action to show quick actions menu for an icon. [CHAR_LIMIT=30] -->
     <string name="action_deep_shortcut" msgid="2864038805849372848">"Raccourcis"</string>
@@ -363,14 +363,14 @@
 
 
         <!-- Weather helpful tips -->
-    <string name="helpful_tip_01_03">Penses à appliquer de la crème solaire et bois de l\'eau!</string>
+    <string name="helpful_tip_01_03">Très beau soleil en perspective, il peut être bon de se balader si il ne fait pas trop chaud.</string>
     <string name="helpful_tip_01n_03n">Penses à boire du café et ne conduis pas fatigué</string>
-    <string name="helpful_tip_04">Aujourd\'hui, ce sera nuageux</string> <!-- Quick! Think up a helpful tip for cloudy days -->
+    <string name="helpful_tip_04">Aujourd\'hui, sera nuageux</string> <!-- Quick! Think up a helpful tip for cloudy days -->
     <string name="helpful_tip_04n">Il est tôt et le ciel est nuageux!</string>
     <string name="helpful_tip_09_10">Prends un parapluie et conduis doucement sur route glissante!</string>
     <string name="helpful_tip_10n">Routes glissantes et peu de visibilité, attention!</string>
-    <string name="helpful_tip_11">Attention aux éclairs et dehors, ne t\'abrite pas sous un arbre</string>
-    <string name="helpful_tip_50">Attention à la faible visibilité, les personnes  fragiles dois rester à l\'intérieur.</string>
+    <string name="helpful_tip_11">Attention aux éclairs et ne t\'abrite pas sous un arbre</string>
+    <string name="helpful_tip_50">Attention à la faible visibilité, les personnes  fragiles doivent rester à l\'intérieur.</string>
     <string name="helpful_tip_13">La neige et la glace peuvent ruiner ta journée. Attention aux routes glissantes en voiture et à pied, et reste au chaud</string>
     <string name="helpful_tip_non_available">Aucun conseil disponible</string>
     <string name="activity_weather_next_three_hours">Aujourd\'hui</string>
@@ -473,7 +473,7 @@
     <string name="caption_text_feed_empty">Vous pouvez ajouter des flux d\'information ou  revenir plus tard</string>
     <string name="title_card_incoming_snow">Chute de neige à venir</string>
     <string name="title_card_incoming_thunder">Éclairs à venir</string>
-    <string name="title_card_upcoming_rain">Chute de pluie à venir</string>
+    <string name="title_card_upcoming_rain">Pluie à venir</string>
     <string name="title_smartspace_provider_forecast">Prévisions météo (heure)</string>
     <string name="placeholder_category_card_title"><![CDATA[Music & Entertainment]]></string>
     <string name="title_sorting_provider_categorized">Par catégories</string>
@@ -488,8 +488,8 @@
     <string name="placeholder_rss_item_categories">North Korea, DPRK, Miniluv, Minitrue, Miniplenty, Minipeace, Great Leader, Great Leader, Great Leader, Great Leader</string>
 
     <string name="title_pref_integrated_browser">Utiliser le navigateur intégré</string>
-    <string name="daily_briefing_current_conditions_prefix">En ce moment, c\'est </string>
-    <string name="daily_breifing_today_prefix">Aujourd\'hui sera </string>
+    <string name="daily_briefing_current_conditions_prefix">Météo du moment: </string>
+    <string name="daily_breifing_today_prefix">Météo du jour: </string>
 
     <string name="title_pref_daily_briefing_time">Heure du message quotidient</string>
     <string name="title_smartspace_provider_daily_briefing">Message du matin</string>
@@ -499,7 +499,7 @@
     <string name="title_feed_provider_device_state">État du  téléphone</string>
     <string name="title_card_airplane_mode_on">Mode avion actif</string>
     <string name="title_card_network_disconnected">Réseau déconnecté</string>
-    <string name="title_card_phone_muted">En mode silencieu</string>
+    <string name="title_card_phone_muted">En mode silencieux</string>
     <string name="title_card_phone_vibrate">En mode vibreur</string>
     <string name="title_feed_toolbar_add_widget">Ajouter un widget</string>
     <string name="title_feed_provider_widgets">Widgets</string>
@@ -530,7 +530,7 @@
     <string name="title_smartspace_provider_ongoing_events">Événements à venir (Agenda)</string>
     <string name="title_feed_refreshing">Rafraîchir la page d\'information</string>
     <string name="headline_card_feed_welcome">Bienvenue sur votre page d\'information</string>
-    <string name="headline2_card_welcome_feed">votre page d\'information vous informera tout au long de la journéee</string>
+    <string name="headline2_card_welcome_feed">votre page d\'information vous informera tout au long de la journée</string>
     <string name="body_card_welcome_feed">Votre page d\'information affichera les informations dont vous avez besoin quand vous en avez besoin. Elle affichera les événements à venir, les informations et plus ...</string>
     <string name="title_feed_provider_web_applications">Applications Web</string>
     <string name="negative_button_test_web_applications_preference">Nouveau</string>
@@ -639,7 +639,7 @@
     <string name="title_pref_elevate_weather_card">Elever la tuile météo</string>
     <string name="summary_pref_elevate_weather_card">La tuile météo sera affichée plus haut</string>
 
-    <string name="title_pref_display_feed_tabs_as_single_line">Afficher les éléments de la barre d\'onglet en une seule ligne</string>
+    <string name="title_pref_display_feed_tabs_as_single_line">Afficher les éléments de la barre d\'outil en une seule ligne</string>
     <string name="summary_pref_display_feed_tabs_as_single_line">Les onglets setont affichés avec les icones et le texte sur la même ligne</string>
 
     <string name="title_pref_feed_hide_tab_text">Cacher le titre des onglets</string>
@@ -647,7 +647,7 @@
 
     <string name="title_pref_remove_feed_widget">Supprimer l\'onglet Widget</string>
 
-    <string name="title_pref_feed_toolbar_widget_force_style">Forcer le theme du widget</string>
+    <string name="title_pref_feed_toolbar_widget_force_style">Forcer le thème du widget</string>
     <string name="summary_pref_feed_toolbar_widget_force_style">Librechair essaiera d\'appliquer le theme choisi aux widgets</string>
     <string name="title_card_feed_preview_header">Je suis votre flux de diffusion!</string>
     <string name="title_animation_delegate_default">Défaut</string>
@@ -657,6 +657,122 @@
     <string name="title_animation_delegate_fading">Disparition</string>
     <string name="title_animation_delegate_slide_top">Glisser vers le bas</string>
     <string name="title_animation_delegate_slide_up">Glisser vers le haut</string>
-    <string name="title_pref_title_bar_home_widget">Use home widget as toolbar widget</string>
-    <string name="summary_pref_title_bar_home_widget">The title bar widget will be replaced by the home widget</string>
+    <string name="title_pref_title_bar_home_widget">Utiliser le widget de l\'écran d\'accueil comme widget de la barre d\'outil</string>
+    <string name="summary_pref_title_bar_home_widget">Le widget de la barre d\'outil sera remplacé par le widget de l\'écran d\'accueil</string>
+    <string name="dbg_freeform">Forme libre</string>
+    <string name="title_feed_provider_feed_contacts">Contacts</string>
+    <string name="title_alignment_start">Début</string>
+    <string name="title_alignment_center">Milieu</string>
+    <string name="title_alignment_end">Fin</string>
+    <string name="title_pref_feed_card_title_alignment">Alignement du titre de la tuile</string>
+    <string name="title_pref_feed_header_only_card_title_alignment">Alignement du titre de la tuile (en-tête seulement)</string>
+    <string name="title_tab_indicator_dot">Point</string>
+    <string name="title_pref_feed_indicator_provider">Indicateur d\'onglet</string>
+    <string name="title_tab_indicator_legacy">Materiel</string>
+    <string name="title_pref_feed_color_provider">Configuration des onglets</string>
+    <string name="title_color_provider_customizable">Personnelle</string>
+    <string name="title_pref_feed_tab_colors">Couleurs personnalisées des onglets</string>
+    <string name="title_color_resolver_feed_background">Fond du flux de diffusion</string>
+    <string name="title_image_provider_wikipedia_featured">Wikipedia</string>
+    <string name="feed_empty">Il n\'y a rien ici</string>
+    <string name="subtitle_feed_empty">Vous devriez revenir plus tard</string>
+    <string name="title_pref_feed_hide_unused_tabs">Cacher les onglets inutilisés</string>
+    <string name="summary_pref_feed_hide_unused_tabs">Cache les onglets sans fournisseur de flux</string>
+    <string name="title_pref_feed_provider_package">Fournisseur de flux de diffusion</string>
+    <string name="title_animation_delegate_scale">Échelle</string>
+    <string name="title_animation_delegate_drawer">Tiroir</string>
+    <string name="title_animation_delegate_glide">Glissement</string>
+    <string name="summary_pref_feed_infobox">Cette option n\'est pas disponible avec tout les fournisseurs de fond</string>
+    <string name="title_pref_feed_infobox">Afficher la description de l\image de fond</string>
+    <string name="title_options_item_restart_feed">Redémarrer le flux de diffusion</string>
+    <string name="title_search_provider_overlay">Superposition</string>
+    <string name="pref_category_chips">Infopuce</string>
+    <string name="title_pref_feed_chips_dummy_key">Fournisseurs des Infopuces</string>
+    <string name="title_chip_provider_alarm">Alarme</string>
+    <string name="title_pref_feed_chip_opacity">Opacité des infopuces</string>
+    <string name="title_pref_feed_chips_on_top">Infopuces en haut</string>
+    <string name="summary_pref_feed_chips_on_top">Les infopuces apparaîtrons au-dessus de la barre de titre</string>
+    <string name="title_animation_delegate_gliding_drawer">Glissement (Tiroir)</string>
+    <string name="title_pref_feed_outline_chips">Afficher le contour des infopuces</string>
+    <string name="summary_pref_feed_outline_chips">Les infopuces seront affichées avec un contour</string>
+    <string name="title_chip_need_calendar_permissions">Permission du calendrier nécessaire</string>
+    <string name="title_pref_feed_chip_weather_item_count">Nombre des éléments météo</string>
+    <string name="title_more">Plus</string>
+    <string name="title_pref_feed_mix_chips">Mélanger les infopuces</string>
+    <string name="summary_pref_feed_mix_chips">Les infopuces seront mélangées avant l\'affichage</string>
+    <string name="title_chip_provider_current_location">Emplacement</string>
+    <string name="title_pref_feed_background_as_screen_background">Utiliser l\'image de fond comme fond des pages</string>
+    <string name="summary_pref_feed_background_as_screen_background">L\'image de fond du flux de diffusion sera utilisé comme fond des pages</string>
+    <string name="title_pref_feed_boxed_background_blur">Flouter le l\'image de fond</string>
+    <string name="summary_pref_feed_boxed_background_blur">Ne fonctionne que pour un fond provenant des fournisseurs d\'image</string>
+    <string name="title_animation_delegate_default_drawer">Disparition du tiroir</string>
+    <string name="title_action_new_calendar_event">Nouvel événement du calendrier</string>
+    <string name="title_pref_feed_javascript_in_search_screen">Utiliser Javascript comme outil de recherche</string>
+    <string name="summary_pref_feed_javascript_in_search_screen">JavaScript sera activé pour la recherche</string>
+    <string name="title_action_back">Retour</string>
+    <string name="title_pref_feed_actions_as_menu">Afficher les actions sous forme de menu</string>
+    <string name="summary_pref_feed_actions_as_menu">Les actions seront affichées dans un menu déroulant et non plus dans des icones séparée</string>
+    <string name="title_card_chips">Infopuces</string>
+    <string name="title_pref_feed_chip_elevation">Élevation</string>
+    <string name="title_map_provider_default">OpenStreetMap</string>
+    <string name="title_map_provider_google">Google</string>
+    <string name="title_map_provider_google_china">Google (Chine)</string>
+    <string name="title_pref_feed_map_provider">Fournisseur de carte</string>
+    <string name="title_action_open_externally">Ouvrir en dehors du launcheur</string>
+    <string name="title_chip_provider_memory_usage">RAM</string>
+    <string name="title_pref_feed_hosts_filtering">Bloquer les traqueurs et les publicités</string>
+    <string name="summary_pref_feed_hosts_filtering">Librechair bloquera les traqueurs et publicités des pages ouvertes dans le le flux de diffusion</string>
+    <string name="title_pref_feed_directly_open_links">Ouvrir les liens dans le navigateur externe</string>
+    <string name="summary_pref_feed_directly_open_links">Les liens s\'ouvriront dans un navigateur</string>
+    <string name="title_overlay_failure_loading_route">Échec lors du chargement du trajet</string>
+    <string name="title_pref_feed_conservative_refreshes">Rafraîchissements limités</string>
+    <string name="summary_pref_feed_conservative_refreshes">les rafraîchissements du flux se feront moins souvent</string>
+    <string name="title_pref_feed_pull_down_to_refresh">Glisser vers le bas pour rafraîchir</string>
+    <string name="summary_pref_feed_pull_down_to_refresh">Rafraîchir en glissant vers le bas</string>
+    <string name="title_pref_feed_gecko">Utiliser Gecko pour le rendu des pages internet</string>
+    <string name="summary_pref_feed_gecko">Gecko sera utiliser lors de l\'ouverture des pages dans le flux de diffusion</string>
+    <string name="title_pref_chip_max_predictions">Nombre maximum de prédictions</string>
+    <string name="title_pref_feed_notify_articles_on_first_run">Envoyer une notification lors du premier chargement de l\'article</string>
+    <string name="summary_pref_feed_notify_articles_on_first_run">Une notification sera envoyée lors du premier chargement de l\'article</string>
+    <string name="title_pref_feed_synd_notification_count">Nombre de notification provenant des articles</string>
+    <string name="title_pref_feed_rss_minicard">Utiliser la minituile pour les articles</string>
+    <string name="summary_pref_feed_rss_minicard">Un tuile minimalisée pour les articles</string>
+    <string name="title_pref_feed_toolbar_opacity">Opacité de la barre d\'outil</string>
+    <string name="title_pref_feed_hide_toolbar_actions">Cacher les actions</string>
+    <string name="summary_pref_feed_hide_toolbar_actions">Les actions seront cachées (Certaines fonctionnalitées seront affectées)</string>
+    <string name="title_pref_feed_flat_card_vertical_margin">Marge verticale des tuiles transparentes</string>
+    <string name="title_pref_feed_flat_card_horizontal_margin">Marge horizontale des tuiles transparentes</string>
+    <string name="summary_pref_feed_hide_title_bar">Cachera la barre de titre</string>
+    <string name="title_pref_feed_hide_title_bar">Cacher la barre d\'outil</string>
+    <string name="title_feed_provider_location_search">Recherche de position</string>
+    <string name="title_nothings_playing">Aucune musique en cours</string>
+    <string name="title_card_take_image">Prendre une photo</string>
+    <string name="title_action_rotate">Pivoter</string>
+    <string name="title_pref_feed_opening_animation_speed">Vitesse des animations</string>
+    <string name="title_weather_item_tomorrow">Demain</string>
+    <string name="title_share">Partager</string>
+    <string name="title_pref_feed_toolbar_elevation">Élévation de la barre d\'outil</string>
+    <string name="title_chip_style_round">Arrondi</string>
+    <string name="title_chip_style_cut">Coupé</string>
+    <string name="title_pref_feed_chip_corner_treatment">Coin des infopuces</string>
+    <string name="title_pref_feed_article_notifications">Notifications des articlesDisplay article notifications</string>
+    <string name="summary_pref_feed_article_notifications">Des notifications seront affichées lors de l'apparition de nouveaux aritcles</string>
+    <string name="title_pref_feed_world_clocks">Horloges mondiales</string>
+    <string name="title_card_dt_yesterday">Hier, %s</string>
+    <string name="title_card_dt_tomorrow">Demain, %s</string>
+    <string name="title_dt_yesterday">Hier</string>
+    <string name="title_dt_tomorrow">Demain</string>
+    <string name="title_pref_feed_use_analog_clock">Utiliser l\'horloge analogique</string>
+    <string name="summary_pref_feed_use_analog_clock">Une horloge analogique s\'affichera dans l\'onglet des horloges</string>
+    <string name="title_chip_style_triangular">Triangulaire</string>
+    <string name="title_pref_feed_card_corner_treatment">Coin des tuiles</string>
+    <string name="summary_pref_feed_card_corner_treatment">Le coin des tuiles utilisera le style choisi</string>
+    <string name="title_pref_feed_chip_corner_radius">Rayon des coins</string>
+    <string name="title_chip_provider_sunrise_sunset">Levé / Couché du soleil</string>
+    <string name="title_pref_feed_chip_provider_compact_card">Utiliser une tuile compacte pour la tuile des infopuces</string>
+    <string name="summary_pref_feed_chip_provider_compact_card">Les infopuces seront affichées horizontalement</string>
+    <string name="title_text_today">Aujourd\'hui</string>
+    <string name="title_pref_kill_location_manager">Désactiver la géolocalisation</string>
+    <string name="summary_pref_kill_location_manager">Nécessite un redémarrage</string>
+    <string name="title_feed_provider_npr">NPR</string>
 </resources>
