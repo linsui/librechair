@@ -281,15 +281,14 @@ class LauncherFeed(private val originalContext: Context,
         for (i in 0 until providerScreens.size) {
             popScreens()
         }
-        if (reinit) {
-            feedAttached = false
-            closeOverlay(0)
-            verticalBackground = null
-            horizontalBackground = null
-            feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
-                    false) as FeedController).also {
-                it.setLauncherFeed(this)
-                it.viewTreeObserver.addOnGlobalLayoutListener {
+        verticalBackground = null
+        horizontalBackground = null
+        feedController.also {
+            it.setLauncherFeed(this)
+            var done = false
+            it.viewTreeObserver.addOnPreDrawListener {
+                d("reinitState: onPreDraw called")
+                if (!done) {
                     if (horizontalBackground == null || verticalBackground == null) {
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                             verticalBackground = if (background == null) ColorDrawable(
@@ -322,20 +321,10 @@ class LauncherFeed(private val originalContext: Context,
                     lastOrientation = context.resources.configuration.orientation
                     it.background =
                             if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                    done = true
                 }
+                true
             }
-            tabView = feedController.findViewById(R.id.feed_tabs) as TabLayout
-            recyclerView = (feedController.findViewById(
-                    R.id.feed_recycler) as RecyclerView)
-            adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
-                    context.applicationContext, this)
-            toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
-            content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
-            frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
-            upButton = (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
-
-            chips = feedController.findViewById(R.id.chip_container) as RecyclerView
-            chipAdapter = ChipAdapter(context, this)
         }
 
         tabView.removeAllTabs()
