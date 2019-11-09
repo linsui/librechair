@@ -169,7 +169,10 @@ class LauncherFeed(private val originalContext: Context,
     private val toolbarParent
         get() = feedController.feed_title_parent
     private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
-    private var frame = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
+    // todo automated kt-utils.el getter conversion
+    //     * converted mutable variable to value
+    private val frame
+            get() = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
     private var tabColours = ColorProvider.Companion.inflate(
@@ -250,6 +253,7 @@ class LauncherFeed(private val originalContext: Context,
     @SuppressLint("RestrictedApi", "InflateParams", "ClickableViewAccessibility")
     fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) = handler.post {
         synchronized(this) {
+            val oldTheme = context.theme
             if (context.appWidgetManager
                             .getAppWidgetInfo(
                                     context.lawnchairPrefs.feedToolbarWidget) == null &&
@@ -280,7 +284,7 @@ class LauncherFeed(private val originalContext: Context,
             horizontalBackground = null
             feedController.also {
                 it.setLauncherFeed(this)
-                var done = false
+                val done = false
                 if (::gll.isInitialized) {
                     feedController.viewTreeObserver.removeOnGlobalLayoutListener(gll)
                 }
@@ -292,10 +296,10 @@ class LauncherFeed(private val originalContext: Context,
                             if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
                                 verticalBackground = if (background == null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
-                                Utilities.scaleToSize(
-                                        background,
-                                        it.measuredHeight,
-                                        it.measuredWidth))
+                                        Utilities.scaleToSize(
+                                                background,
+                                                it.measuredHeight,
+                                                it.measuredWidth))
                                 horizontalBackground = if (background == null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
                                         Utilities.scaleToSize(
@@ -322,6 +326,16 @@ class LauncherFeed(private val originalContext: Context,
                                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                     }
                     true
+                }
+                if (context.theme != oldTheme) {
+                    val mainFrameParams = feedController.feed_content.feed_main_frame.layoutParams
+                    val pos =
+                            feedController.feed_content.indexOfChild(feedController.feed_content.feed_main_frame)
+                    val newFrame = FrameLayout(context)
+                    newFrame.id = R.id.feed_main_frame
+                    newFrame.layoutParams = mainFrameParams
+                    feedController.feed_content.removeView(feedController.feed_content.feed_main_frame)
+                    feedController.feed_content.addView(newFrame, pos)
                 }
                 feedController.viewTreeObserver.addOnGlobalLayoutListener(gll)
             }
@@ -370,7 +384,7 @@ class LauncherFeed(private val originalContext: Context,
             var oldToolbarPaddingVertical: Pair<Int, Int>? = null
             var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
             var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
-            if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+            if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 0)) {
                 val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
                 var deleting = false
                 searchWidgetView = (context.applicationContext as LawnchairApp)
