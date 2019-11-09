@@ -56,7 +56,7 @@ class OverlayService : Service(), () -> Unit {
         super.onCreate()
         ThemeManager.getInstance(this).changeCallbacks += {
             if (imageProvider != null) {
-                feed.reinitState()
+                feed.reinitState(reinit = true)
             }
         }
     }
