@@ -695,169 +695,277 @@ class LauncherFeed(private val originalContext: Context,
                 }
                 updateActions()
             }
-            if (context.lawnchairPrefs.feedAutoHideToolbar) {
-                recyclerView.addOnScrollListener(object :
-                        RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView,
-                                            dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        if (dy > 0) {
-                            toolbarParent.animate().translationY(
-                                    if (!tabsOnBottom) -toolbarParent.measuredHeight.toFloat() else toolbarParent.measuredHeight.toFloat())
-                        } else if (dy < 0) {
-                            toolbarParent.animate().translationY(0f)
-                        }
-                    }
-                })
-            }
-            if (context.lawnchairPrefs.feedBackToTop) {
-                recyclerView.addOnScrollListener(object :
-                        RecyclerView.OnScrollListener() {
-                    override fun onScrolled(recyclerView: RecyclerView,
-                                            dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        if (dy > 0) {
-                            upButton.animate().translationY(0f).duration = 500
-                        } else if (dy < 0) {
-                            upButton.animate().translationY(
-                                    (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
-                                    .duration = 500
-                        }
-                    }
-                })
-            }
-            adapter.registerAdapterDataObserver(object :
-                    RecyclerView.AdapterDataObserver() {
-                override fun onChanged() {
-                    runOnMainThread {
-                        if (adapter.itemCount == 0) {
-                            toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
-                                            context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                    context))
-                        } else {
-                            toolbar.title = ""
-                        }
-                    }
-                }
-            })
-            if (adapter.itemCount == 0) {
-                toolbar.setTitleTextColor(
-                        if (useWhiteText(backgroundColor,
-                                        context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                context))
-            } else {
-                toolbar.title = ""
-            }
-            if (!FeatureFlags.GO_DISABLE_WIDGETS) {
-                toolbar.setOnLongClickListener {
-                    OverlayCallbacks.postWidgetRequest(context) {
-                        context.lawnchairPrefs.feedToolbarWidget = it
-                        if (context.lawnchairPrefs.feedToolbarWidget != -1) {
-                            val widgetContainer =
-                                    toolbar.findViewById<LinearLayout>(
-                                            R.id.feed_widget_layout)
-                            if (searchWidgetView != null) {
-                                widgetContainer.removeView(searchWidgetView)
-                            }
-                            var deleting = false
-                            searchWidgetView =
-                                    (context.applicationContext as LawnchairApp)
-                                            .overlayWidgetHost
-                                            .createView(context,
-                                                    context.lawnchairPrefs.feedToolbarWidget,
-                                                    context.appWidgetManager
-                                                            .getAppWidgetInfo(
-                                                                    context.lawnchairPrefs.feedToolbarWidget))
-                            searchWidgetView!!.layoutParams =
-                                    LinearLayout.LayoutParams(
-                                            ViewGroup.LayoutParams.MATCH_PARENT,
-                                            context.appWidgetManager
-                                                    .getAppWidgetInfo(
-                                                            context.lawnchairPrefs.feedToolbarWidget)?.minHeight
-                                                    ?: 32f.applyAsDip(
-                                                            context).toInt())
-                                            .apply {
-                                                marginStart = 8f.applyAsDip(
-                                                        context)
-                                                        .toInt()
-                                                marginEnd = 8f.applyAsDip(
-                                                        context)
-                                                        .toInt()
-                                                topMargin = 8f.applyAsDip(
-                                                        context)
-                                                        .toInt()
-                                                bottomMargin =
-                                                        4f.applyAsDip(
-                                                                context)
-                                                                .toInt()
-                                            }
-                            searchWidgetView!!.setOnLongClickListener {
-                                searchWidgetView!!.animate()
-                                        .scaleX(0.7f)
-                                        .scaleY(0.7f)
-                                        .setInterpolator(
-                                                Interpolators.ACCEL_1_5)
+
+            if (!reinit) {
+                if (context.lawnchairPrefs.feedBackToTop) {
+                    recyclerView.addOnScrollListener(object :
+                            RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView,
+                                                dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            if (dy > 0) {
+                                upButton.animate().translationY(0f).duration = 500
+                            } else if (dy < 0) {
+                                upButton.animate().translationY(
+                                        (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
                                         .duration = 500
-                                deleting = true
-                                true
                             }
-                            searchWidgetView!!.setOnTouchListener { v, event ->
-                                if (deleting && event.action == MotionEvent.ACTION_UP) {
-                                    searchWidgetView!!.animate()
-                                            .scaleX(0f)
-                                            .scaleY(0f)
-                                            .setDuration(500)
-                                            .setListener(object :
-                                                    Animator.AnimatorListener {
-                                                override fun onAnimationRepeat(
-                                                        animation: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationEnd(
-                                                        animation: Animator?) {
-                                                    context.lawnchairPrefs.feedToolbarWidget =
-                                                            -1
-                                                    reapplyInsetFlag = true
-                                                    widgetContainer.removeView(
-                                                            searchWidgetView)
-                                                    searchWidgetView = null
-                                                }
-
-                                                override fun onAnimationCancel(
-                                                        animation: Animator?) {
-
-                                                }
-
-                                                override fun onAnimationStart(
-                                                        animation: Animator?) {
-
-                                                }
-
-                                            })
-                                } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
-                                    deleting = false
-                                    searchWidgetView!!.animate().scaleX(1f)
-                                            .scaleY(1f).setDuration(250)
-                                }
-                                true
+                        }
+                    })
+                }
+                adapter.registerAdapterDataObserver(object :
+                        RecyclerView.AdapterDataObserver() {
+                    override fun onChanged() {
+                        runOnMainThread {
+                            if (adapter.itemCount == 0) {
+                                toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
+                                                context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                        context))
+                            } else {
+                                toolbar.title = ""
                             }
-                            reapplyInsetFlag = true
-                            widgetContainer.addView(searchWidgetView, 0)
                         }
                     }
-                    true
+                })
+                if (context.lawnchairPrefs.feedAutoHideToolbar) {
+                    recyclerView.addOnScrollListener(object :
+                            RecyclerView.OnScrollListener() {
+                        override fun onScrolled(recyclerView: RecyclerView,
+                                                dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            if (dy > 0) {
+                                toolbarParent.animate().translationY(
+                                        if (!tabsOnBottom) -toolbarParent.measuredHeight.toFloat() else toolbarParent.measuredHeight.toFloat())
+                            } else if (dy < 0) {
+                                toolbarParent.animate().translationY(0f)
+                            }
+                        }
+                    })
                 }
+                if (!FeatureFlags.GO_DISABLE_WIDGETS) {
+                    toolbar.setOnLongClickListener {
+                        OverlayCallbacks.postWidgetRequest(context) {
+                            context.lawnchairPrefs.feedToolbarWidget = it
+                            if (context.lawnchairPrefs.feedToolbarWidget != -1) {
+                                val widgetContainer =
+                                        toolbar.findViewById<LinearLayout>(
+                                                R.id.feed_widget_layout)
+                                if (searchWidgetView != null) {
+                                    widgetContainer.removeView(searchWidgetView)
+                                }
+                                var deleting = false
+                                searchWidgetView =
+                                        (context.applicationContext as LawnchairApp)
+                                                .overlayWidgetHost
+                                                .createView(context,
+                                                        context.lawnchairPrefs.feedToolbarWidget,
+                                                        context.appWidgetManager
+                                                                .getAppWidgetInfo(
+                                                                        context.lawnchairPrefs.feedToolbarWidget))
+                                searchWidgetView!!.layoutParams =
+                                        LinearLayout.LayoutParams(
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                context.appWidgetManager
+                                                        .getAppWidgetInfo(
+                                                                context.lawnchairPrefs.feedToolbarWidget)?.minHeight
+                                                        ?: 32f.applyAsDip(
+                                                                context).toInt())
+                                                .apply {
+                                                    marginStart = 8f.applyAsDip(
+                                                            context)
+                                                            .toInt()
+                                                    marginEnd = 8f.applyAsDip(
+                                                            context)
+                                                            .toInt()
+                                                    topMargin = 8f.applyAsDip(
+                                                            context)
+                                                            .toInt()
+                                                    bottomMargin =
+                                                            4f.applyAsDip(
+                                                                    context)
+                                                                    .toInt()
+                                                }
+                                searchWidgetView!!.setOnLongClickListener {
+                                    searchWidgetView!!.animate()
+                                            .scaleX(0.7f)
+                                            .scaleY(0.7f)
+                                            .setInterpolator(
+                                                    Interpolators.ACCEL_1_5)
+                                            .duration = 500
+                                    deleting = true
+                                    true
+                                }
+                                searchWidgetView!!.setOnTouchListener { v, event ->
+                                    if (deleting && event.action == MotionEvent.ACTION_UP) {
+                                        searchWidgetView!!.animate()
+                                                .scaleX(0f)
+                                                .scaleY(0f)
+                                                .setDuration(500)
+                                                .setListener(object :
+                                                        Animator.AnimatorListener {
+                                                    override fun onAnimationRepeat(
+                                                            animation: Animator?) {
 
-                upButton.supportImageTintList =
-                        ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
+                                                    }
+
+                                                    override fun onAnimationEnd(
+                                                            animation: Animator?) {
+                                                        context.lawnchairPrefs.feedToolbarWidget =
+                                                                -1
+                                                        reapplyInsetFlag = true
+                                                        widgetContainer.removeView(
+                                                                searchWidgetView)
+                                                        searchWidgetView = null
+                                                    }
+
+                                                    override fun onAnimationCancel(
+                                                            animation: Animator?) {
+
+                                                    }
+
+                                                    override fun onAnimationStart(
+                                                            animation: Animator?) {
+
+                                                    }
+
+                                                })
+                                    } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                                        deleting = false
+                                        searchWidgetView!!.animate().scaleX(1f)
+                                                .scaleY(1f).setDuration(250)
+                                    }
+                                    true
+                                }
+                                reapplyInsetFlag = true
+                                widgetContainer.addView(searchWidgetView, 0)
+                            }
+                        }
+                        true
+                    }
+                }
+                context.feedPrefs.feedProviders.addOnListChangedCallback(object :
+                        ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
+                    override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
+                        FeedScope.launch(Dispatchers.Main) {
+                            if (useTabbedMode) {
+                                tabs.clear()
+                                tabs.addAll(tabController.allTabs)
+                                tabbedProviders.clear()
+                                tabbedProviders.putAll(tabController.sortFeedProviders(
+                                        getFeedController(context).getProviders()))
+                                adapter.providers = tabbedProviders[currentTab]!!
+                                FeedScope.launch(Dispatchers.Main) {
+                                    processTabs()
+                                    refresh(0, clearCache = true)
+                                }
+                            } else {
+                                adapter.providers = getFeedController(context).getProviders()
+                                FeedScope.launch {
+                                    refresh(0, clearCache = true)
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
+                                                    positionStart: Int, itemCount: Int) {
+                        FeedScope.launch(Dispatchers.Main) {
+                            if (useTabbedMode) {
+                                tabs.clear()
+                                tabs.addAll(tabController.allTabs)
+                                tabbedProviders.clear()
+                                tabbedProviders.putAll(tabController.sortFeedProviders(
+                                        getFeedController(context).getProviders()))
+                                adapter.providers = tabbedProviders[currentTab]!!
+                                FeedScope.launch(Dispatchers.Main) {
+                                    processTabs()
+                                    refresh(0, clearCache = true)
+                                }
+                            } else {
+                                adapter.providers = getFeedController(context).getProviders()
+                                FeedScope.launch {
+                                    refresh(0, clearCache = true)
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onItemRangeMoved(sender: ObservableList<FeedProviderContainer>?,
+                                                  fromPosition: Int, toPosition: Int, itemCount: Int) {
+                        FeedScope.launch(Dispatchers.Main) {
+                            if (useTabbedMode) {
+                                tabs.clear()
+                                tabs.addAll(tabController.allTabs)
+                                tabbedProviders.clear()
+                                tabbedProviders.putAll(tabController.sortFeedProviders(
+                                        getFeedController(context).getProviders()))
+                                adapter.providers = tabbedProviders[currentTab]!!
+                                FeedScope.launch(Dispatchers.Main) {
+                                    processTabs()
+                                    refresh(0, clearCache = true)
+                                }
+                            } else {
+                                adapter.providers = getFeedController(context).getProviders()
+                                FeedScope.launch {
+                                    refresh(0, clearCache = true)
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onItemRangeInserted(sender: ObservableList<FeedProviderContainer>?,
+                                                     positionStart: Int, itemCount: Int) {
+                        FeedScope.launch(Dispatchers.Main) {
+                            if (useTabbedMode) {
+                                tabs.clear()
+                                tabs.addAll(tabController.allTabs)
+                                tabbedProviders.clear()
+                                tabbedProviders.putAll(tabController.sortFeedProviders(
+                                        getFeedController(context).getProviders()))
+                                adapter.providers = tabbedProviders[currentTab]!!
+                                FeedScope.launch(Dispatchers.Main) {
+                                    processTabs()
+                                    refresh(0, clearCache = true)
+                                }
+                            } else {
+                                adapter.providers = getFeedController(context).getProviders()
+                                FeedScope.launch {
+                                    refresh(0, clearCache = true)
+                                }
+                            }
+                        }
+                    }
+
+                    override fun onItemRangeChanged(sender: ObservableList<FeedProviderContainer>?,
+                                                    positionStart: Int, itemCount: Int) {
+                        FeedScope.launch(Dispatchers.Main) {
+                            if (useTabbedMode) {
+                                tabs.clear()
+                                tabs.addAll(tabController.allTabs)
+                                tabbedProviders.clear()
+                                tabbedProviders.putAll(tabController.sortFeedProviders(
+                                        getFeedController(context).getProviders()))
+                                adapter.providers = tabbedProviders[currentTab]!!
+                                FeedScope.launch(Dispatchers.Main) {
+                                    processTabs()
+                                    refresh(0, clearCache = true)
+                                }
+                            } else {
+                                adapter.providers = getFeedController(context).getProviders()
+                                FeedScope.launch {
+                                    refresh(0, clearCache = true)
+                                }
+                            }
+                        }
+                    }
+                })
             }
-            if (reinit && lastScroll != 0f) {
-                startScroll()
-                feedController.onScroll(lastScroll)
-                callback?.overlayScrollChanged(lastScroll)
-                feedAttached = true
-            }
+
+            upButton.supportImageTintList =
+                    ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
+
+            updateActions()
+
             tabView.isInlineLabel = context.lawnchairPrefs.feedHorizontalTabs
             if (context.lawnchairPrefs.feedHideTabText) {
                 for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
@@ -868,122 +976,6 @@ class LauncherFeed(private val originalContext: Context,
                     title.visibility = View.GONE
                 }
             }
-            context.feedPrefs.feedProviders.addOnListChangedCallback(object :
-                    ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
-                override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
-                    FeedScope.launch(Dispatchers.Main) {
-                        if (useTabbedMode) {
-                            tabs.clear()
-                            tabs.addAll(tabController.allTabs)
-                            tabbedProviders.clear()
-                            tabbedProviders.putAll(tabController.sortFeedProviders(
-                                    getFeedController(context).getProviders()))
-                            adapter.providers = tabbedProviders[currentTab]!!
-                            FeedScope.launch(Dispatchers.Main) {
-                                processTabs()
-                                refresh(0, clearCache = true)
-                            }
-                        } else {
-                            adapter.providers = getFeedController(context).getProviders()
-                            FeedScope.launch {
-                                refresh(0, clearCache = true)
-                            }
-                        }
-                    }
-                }
-
-                override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
-                                                positionStart: Int, itemCount: Int) {
-                    FeedScope.launch(Dispatchers.Main) {
-                        if (useTabbedMode) {
-                            tabs.clear()
-                            tabs.addAll(tabController.allTabs)
-                            tabbedProviders.clear()
-                            tabbedProviders.putAll(tabController.sortFeedProviders(
-                                    getFeedController(context).getProviders()))
-                            adapter.providers = tabbedProviders[currentTab]!!
-                            FeedScope.launch(Dispatchers.Main) {
-                                processTabs()
-                                refresh(0, clearCache = true)
-                            }
-                        } else {
-                            adapter.providers = getFeedController(context).getProviders()
-                            FeedScope.launch {
-                                refresh(0, clearCache = true)
-                            }
-                        }
-                    }
-                }
-
-                override fun onItemRangeMoved(sender: ObservableList<FeedProviderContainer>?,
-                                              fromPosition: Int, toPosition: Int, itemCount: Int) {
-                    FeedScope.launch(Dispatchers.Main) {
-                        if (useTabbedMode) {
-                            tabs.clear()
-                            tabs.addAll(tabController.allTabs)
-                            tabbedProviders.clear()
-                            tabbedProviders.putAll(tabController.sortFeedProviders(
-                                    getFeedController(context).getProviders()))
-                            adapter.providers = tabbedProviders[currentTab]!!
-                            FeedScope.launch(Dispatchers.Main) {
-                                processTabs()
-                                refresh(0, clearCache = true)
-                            }
-                        } else {
-                            adapter.providers = getFeedController(context).getProviders()
-                            FeedScope.launch {
-                                refresh(0, clearCache = true)
-                            }
-                        }
-                    }
-                }
-
-                override fun onItemRangeInserted(sender: ObservableList<FeedProviderContainer>?,
-                                                 positionStart: Int, itemCount: Int) {
-                    FeedScope.launch(Dispatchers.Main) {
-                        if (useTabbedMode) {
-                            tabs.clear()
-                            tabs.addAll(tabController.allTabs)
-                            tabbedProviders.clear()
-                            tabbedProviders.putAll(tabController.sortFeedProviders(
-                                    getFeedController(context).getProviders()))
-                            adapter.providers = tabbedProviders[currentTab]!!
-                            FeedScope.launch(Dispatchers.Main) {
-                                processTabs()
-                                refresh(0, clearCache = true)
-                            }
-                        } else {
-                            adapter.providers = getFeedController(context).getProviders()
-                            FeedScope.launch {
-                                refresh(0, clearCache = true)
-                            }
-                        }
-                    }
-                }
-
-                override fun onItemRangeChanged(sender: ObservableList<FeedProviderContainer>?,
-                                                positionStart: Int, itemCount: Int) {
-                    FeedScope.launch(Dispatchers.Main) {
-                        if (useTabbedMode) {
-                            tabs.clear()
-                            tabs.addAll(tabController.allTabs)
-                            tabbedProviders.clear()
-                            tabbedProviders.putAll(tabController.sortFeedProviders(
-                                    getFeedController(context).getProviders()))
-                            adapter.providers = tabbedProviders[currentTab]!!
-                            FeedScope.launch(Dispatchers.Main) {
-                                processTabs()
-                                refresh(0, clearCache = true)
-                            }
-                        } else {
-                            adapter.providers = getFeedController(context).getProviders()
-                            FeedScope.launch {
-                                refresh(0, clearCache = true)
-                            }
-                        }
-                    }
-                }
-            })
         }
     }
 
