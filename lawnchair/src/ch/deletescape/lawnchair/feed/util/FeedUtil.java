@@ -41,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import javax.annotation.Nonnull;
@@ -48,8 +49,6 @@ import javax.annotation.Nullable;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -63,11 +62,10 @@ public final class FeedUtil {
         throw new RuntimeException("putting your time on instantiating this class smh");
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @AnyThread
     public static void download(@Nonnull String url, @Nonnull Context context,
                                 @Nonnull Consumer<InputStream> consumer,
-                                @Nullable Consumer<Throwable> error) {
+                                @Nullable Consumer<IOException> error) {
         synchronized (CLIENT_INSTANTIATION_LOCK) {
             if (client == null) {
                 client = new OkHttpClientBuilder().build(context);
@@ -83,22 +81,22 @@ public final class FeedUtil {
         }
 
         try {
-            Flowable.fromCallable(() -> client.newCall(request).execute())
-                    .subscribeOn(Schedulers.io())
-                    .doOnError(throwable -> {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response.body() == null) {
                         if (error != null) {
-                            error.accept(throwable);
+                            error.accept(new IOException());
                         }
-                    })
-                    .subscribe(response -> {
-                        if (response.body() == null) {
-                            if (error != null) {
-                                error.accept(new IOException());
-                            }
-                        } else {
-                            consumer.accept(Objects.requireNonNull(response.body()).byteStream());
-                        }
-                    });
+                    } else {
+                        consumer.accept(Objects.requireNonNull(response.body()).byteStream());
+                    }
+                } catch (IOException e) {
+                    if (error != null) {
+                        error.accept(e);
+                    }
+                }
+            });
         } catch (RuntimeException e) {
             Log.e("FeedUtil", "download: fatal error", e);
         }
@@ -107,7 +105,7 @@ public final class FeedUtil {
     @AnyThread
     @Nullable
     public static InputStream downloadDirect(@Nonnull String url, @Nonnull Context context,
-                                             @Nullable Consumer<IOException> error) {
+                                @Nullable Consumer<IOException> error) {
         synchronized (CLIENT_INSTANTIATION_LOCK) {
             if (client == null) {
                 client = new OkHttpClientBuilder().build(context);
