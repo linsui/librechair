@@ -384,7 +384,7 @@ class LauncherFeed(private val originalContext: Context,
             var oldToolbarPaddingVertical: Pair<Int, Int>? = null
             var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
             var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
-            if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 0)) {
+            if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 1)) {
                 val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
                 var deleting = false
                 searchWidgetView = (context.applicationContext as LawnchairApp)
