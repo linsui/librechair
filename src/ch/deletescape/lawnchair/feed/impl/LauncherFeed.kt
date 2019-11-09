@@ -618,82 +618,85 @@ class LauncherFeed(private val originalContext: Context,
                     tabView.setOnTouchListener(null)
                 }
                 currentTab = tabs[0]
-                tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-                    override fun onTabReselected(tab: TabLayout.Tab) {
-                    }
-
-                    override fun onTabUnselected(tab: TabLayout.Tab) {
-                    }
-
-                    override fun onTabSelected(tab: TabLayout.Tab) {
-                        tabChanged = true
-                        currentTab = tabs[tab.position]!!
-                        if (backgroundColor.alpha > 35) {
-                            tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
-                            tabView.tabTextColors = ColorStateList(
-                                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                            arrayOf<Int>().toIntArray()),
-                                    arrayOf(getColorForIndex(tab.position),
-                                            tabView.tabIconTint!!.defaultColor).toIntArray())
-                            tabView.tabIconTint = ColorStateList(
-                                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                            arrayOf<Int>().toIntArray()),
-                                    arrayOf(getColorForIndex(tab.position),
-                                            tabView.tabIconTint!!.defaultColor).toIntArray())
-                            tabView.tabRippleColor = ColorStateList(
-                                    arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                            arrayOf<Int>().toIntArray()),
-                                    arrayOf(getColorForIndex(tab.position).setAlpha(50),
-                                            tabView.tabRippleColor!!.defaultColor.setAlpha(
-                                                    50)).toIntArray())
+                if (!reinit) {
+                    tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                        override fun onTabReselected(tab: TabLayout.Tab) {
                         }
-                        adapter.providers = tabbedProviders[tabs[tab.position]]!!
-                        if (context.lawnchairPrefs.feedHideTabText) {
-                            for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
-                                val tv = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
-                                val title =
-                                        tv::class.declaredMembers.first { it.name == "textView" }.apply {
-                                            isAccessible = true
-                                        }.call(tv) as TextView
-                                title.visibility = View.GONE
+
+                        override fun onTabUnselected(tab: TabLayout.Tab) {
+                        }
+
+                        override fun onTabSelected(tab: TabLayout.Tab) {
+                            tabChanged = true
+                            currentTab = tabs[tab.position]!!
+                            if (backgroundColor.alpha > 35) {
+                                tabView.setSelectedTabIndicatorColor(getColorForIndex(tab.position))
+                                tabView.tabTextColors = ColorStateList(
+                                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                                arrayOf<Int>().toIntArray()),
+                                        arrayOf(getColorForIndex(tab.position),
+                                                tabView.tabIconTint!!.defaultColor).toIntArray())
+                                tabView.tabIconTint = ColorStateList(
+                                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                                arrayOf<Int>().toIntArray()),
+                                        arrayOf(getColorForIndex(tab.position),
+                                                tabView.tabIconTint!!.defaultColor).toIntArray())
+                                tabView.tabRippleColor = ColorStateList(
+                                        arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                                arrayOf<Int>().toIntArray()),
+                                        arrayOf(getColorForIndex(tab.position).setAlpha(50),
+                                                tabView.tabRippleColor!!.defaultColor.setAlpha(
+                                                        50)).toIntArray())
                             }
-                        }
-                        (tabView.getChildAt(0) as ViewGroup).childs.forEach {
-                            val textView = it::class.java.getDeclaredField(
-                                    "textView").also { it.isAccessible = true }.get(it)
-                                    as? TextView // TODO figure out Kotlin reflection is being so slow
-                            if (textView != null) {
-                                CustomFontManager.getInstance(context)
-                                        .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
-                                                textView.typeface.style) {
-                                            textView.typeface = it
-                                        }
+                            adapter.providers = tabbedProviders[tabs[tab.position]]!!
+                            if (context.lawnchairPrefs.feedHideTabText) {
+                                for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
+                                    val tv = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
+                                    val title =
+                                            tv::class.declaredMembers.first { it.name == "textView" }.apply {
+                                                isAccessible = true
+                                            }.call(tv) as TextView
+                                    title.visibility = View.GONE
+                                }
                             }
+                            (tabView.getChildAt(0) as ViewGroup).childs.forEach {
+                                val textView = it::class.java.getDeclaredField(
+                                        "textView").also { it.isAccessible = true }.get(it)
+                                        as? TextView // TODO figure out Kotlin reflection is being so slow
+                                if (textView != null) {
+                                    CustomFontManager.getInstance(context)
+                                            .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                                    textView.typeface.style) {
+                                                textView.typeface = it
+                                            }
+                                }
+                            }
+                            updateActions()
+                            runOnNewThread { refresh(0, 0, true) }
                         }
-                        updateActions()
-                        runOnNewThread { refresh(0, 0, true) }
-                    }
-                })
+                    })
 
-                adapter.providers = tabbedProviders[tabs.first()]!!
-                if (backgroundColor.alpha > 35) {
-                    tabView.tabTextColors = ColorStateList(
-                            arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                    intArrayOf()),
-                            arrayOf(tabColours[0],
-                                    tabView.tabTextColors!!.defaultColor).toIntArray())
-                    tabView.setSelectedTabIndicatorColor(tabColours[0])
-                    tabView.tabIconTint = ColorStateList(
-                            arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                    arrayOf<Int>().toIntArray()), arrayOf(getColorForIndex(0),
-                            tabView.tabIconTint!!.defaultColor).toIntArray())
-                    tabView.tabRippleColor = ColorStateList(
-                            arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
-                                    arrayOf<Int>().toIntArray()),
-                            arrayOf(getColorForIndex(0).setAlpha(50),
-                                    tabView.tabIconTint!!.defaultColor.setAlpha(50)).toIntArray())
+                    adapter.providers = tabbedProviders[tabs.first()]!!
+                    if (backgroundColor.alpha > 35) {
+                        tabView.tabTextColors = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        intArrayOf()),
+                                arrayOf(tabColours[0],
+                                        tabView.tabTextColors!!.defaultColor).toIntArray())
+                        tabView.setSelectedTabIndicatorColor(tabColours[0])
+                        tabView.tabIconTint = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        arrayOf<Int>().toIntArray()), arrayOf(getColorForIndex(0),
+                                tabView.tabIconTint!!.defaultColor).toIntArray())
+                        tabView.tabRippleColor = ColorStateList(
+                                arrayOf(arrayOf(android.R.attr.state_selected).toIntArray(),
+                                        arrayOf<Int>().toIntArray()),
+                                arrayOf(getColorForIndex(0).setAlpha(50),
+                                        tabView.tabIconTint!!.defaultColor.setAlpha(
+                                                50)).toIntArray())
+                    }
+                    updateActions()
                 }
-                updateActions()
             }
 
             if (!reinit) {
