@@ -52,13 +52,13 @@ public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
-            Executors.newSingleThreadExecutor().submit(() -> FeedUtil.download("https://www.theverge.com/rss/index.xml", getContext(), is -> {
+            FeedUtil.download("https://www.theverge.com/rss/index.xml", getContext(), is -> {
                 try {
                     callback.onBind(new SyndFeedInput().build(new InputSource(is)));
                 } catch (FeedException e) {
                     e.printStackTrace();
                 }
-            }, null));
+            }, null);
         });
     }
 }
