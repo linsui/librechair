@@ -381,143 +381,147 @@ class LauncherFeed(private val originalContext: Context,
                 toolbarParent.setBackgroundColor(0)
             }
 
-            var oldToolbarPaddingVertical: Pair<Int, Int>? = null
-            var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
-            var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
-            if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 1)) {
-                val widgetContainer = toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
-                var deleting = false
-                searchWidgetView = (context.applicationContext as LawnchairApp)
-                        .overlayWidgetHost
-                        .createView(context, context.lawnchairPrefs.feedToolbarWidget,
-                                context.appWidgetManager
-                                        .getAppWidgetInfo(context.lawnchairPrefs.feedToolbarWidget))
-                searchWidgetView!!.layoutParams =
-                        LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                context.appWidgetManager
-                                        .getAppWidgetInfo(
-                                                context.lawnchairPrefs.feedToolbarWidget)?.minHeight
-                                        ?: 45f.applyAsDip(context).toInt())
-                                .apply {
-                                    marginStart = 8f.applyAsDip(context)
-                                            .toInt()
-                                    marginEnd = 8f.applyAsDip(context)
-                                            .toInt()
-                                    topMargin = 8f.applyAsDip(context)
-                                            .toInt()
-                                    bottomMargin = 4f.applyAsDip(context)
-                                            .toInt()
-                                }
-                searchWidgetView!!.setOnLongClickListener {
-                    searchWidgetView!!.animate()
-                            .scaleX(0.7f)
-                            .scaleY(0.7f)
-                            .setInterpolator(Interpolators.ACCEL_1_5).duration = 500
-                    deleting = true
-                    true
-                }
-                searchWidgetView!!.setOnTouchListener { v, event ->
-                    if (deleting && event.action == MotionEvent.ACTION_UP) {
+            if (!reinit) {
+                var oldToolbarPaddingVertical: Pair<Int, Int>? = null
+                var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
+                var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
+                if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 1)) {
+                    val widgetContainer =
+                            toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
+                    var deleting = false
+                    searchWidgetView = (context.applicationContext as LawnchairApp)
+                            .overlayWidgetHost
+                            .createView(context, context.lawnchairPrefs.feedToolbarWidget,
+                                    context.appWidgetManager
+                                            .getAppWidgetInfo(
+                                                    context.lawnchairPrefs.feedToolbarWidget))
+                    searchWidgetView!!.layoutParams =
+                            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                    context.appWidgetManager
+                                            .getAppWidgetInfo(
+                                                    context.lawnchairPrefs.feedToolbarWidget)?.minHeight
+                                            ?: 45f.applyAsDip(context).toInt())
+                                    .apply {
+                                        marginStart = 8f.applyAsDip(context)
+                                                .toInt()
+                                        marginEnd = 8f.applyAsDip(context)
+                                                .toInt()
+                                        topMargin = 8f.applyAsDip(context)
+                                                .toInt()
+                                        bottomMargin = 4f.applyAsDip(context)
+                                                .toInt()
+                                    }
+                    searchWidgetView!!.setOnLongClickListener {
                         searchWidgetView!!.animate()
-                                .scaleX(0f)
-                                .scaleY(0f)
-                                .setDuration(500)
-                                .setListener(object : Animator.AnimatorListener {
-                                    override fun onAnimationRepeat(animation: Animator?) {
-
-                                    }
-
-                                    override fun onAnimationEnd(animation: Animator?) {
-                                        context.lawnchairPrefs.feedToolbarWidget = -1
-                                        reapplyInsetFlag = true
-                                        widgetContainer.removeView(searchWidgetView)
-                                        searchWidgetView = null
-                                    }
-
-                                    override fun onAnimationCancel(animation: Animator?) {
-
-                                    }
-
-                                    override fun onAnimationStart(animation: Animator?) {
-
-                                    }
-
-                                })
-                    } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
-                        deleting = false
-                        searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                                .scaleX(0.7f)
+                                .scaleY(0.7f)
+                                .setInterpolator(Interpolators.ACCEL_1_5).duration = 500
+                        deleting = true
+                        true
                     }
-                    true
+                    searchWidgetView!!.setOnTouchListener { v, event ->
+                        if (deleting && event.action == MotionEvent.ACTION_UP) {
+                            searchWidgetView!!.animate()
+                                    .scaleX(0f)
+                                    .scaleY(0f)
+                                    .setDuration(500)
+                                    .setListener(object : Animator.AnimatorListener {
+                                        override fun onAnimationRepeat(animation: Animator?) {
+
+                                        }
+
+                                        override fun onAnimationEnd(animation: Animator?) {
+                                            context.lawnchairPrefs.feedToolbarWidget = -1
+                                            reapplyInsetFlag = true
+                                            widgetContainer.removeView(searchWidgetView)
+                                            searchWidgetView = null
+                                        }
+
+                                        override fun onAnimationCancel(animation: Animator?) {
+
+                                        }
+
+                                        override fun onAnimationStart(animation: Animator?) {
+
+                                        }
+
+                                    })
+                        } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                            deleting = false
+                            searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                        }
+                        true
+                    }
+                    widgetContainer.addView(searchWidgetView, 0)
                 }
-                widgetContainer.addView(searchWidgetView, 0)
-            }
-            swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
-            feedController
-                    .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-                        if (lastOrientation != context.resources.configuration.orientation) {
-                            lastOrientation = context.resources.configuration.orientation
-                            if (verticalBackground != null && horizontalBackground != null) {
-                                feedController.background =
-                                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
+                feedController
+                        .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                            if (lastOrientation != context.resources.configuration.orientation) {
+                                lastOrientation = context.resources.configuration.orientation
+                                if (verticalBackground != null && horizontalBackground != null) {
+                                    feedController.background =
+                                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                                }
+                            }
+                            if (reapplyInsetFlag) {
+                                feedController.requestApplyInsets()
                             }
                         }
-                        if (reapplyInsetFlag) {
-                            feedController.requestApplyInsets()
+                upButton.visibility =
+                        if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
+                swipeRefreshLayout.setOnRefreshListener {
+                    FeedScope.launch {
+                        refresh(100, 0, true, true)
+                    }
+                }
+                feedController.setOnApplyWindowInsetsListener { v, insets ->
+                    statusBarHeight = insets.stableInsetTop
+                    navigationBarHeight = insets.stableInsetBottom
+                    toolbarParent.apply {
+                        if (oldToolbarPaddingVertical == null) {
+                            oldToolbarPaddingVertical = paddingTop to paddingBottom
+                        }
+                        if (oldToolbarPaddingHorizontal == null) {
+                            oldToolbarPaddingHorizontal = paddingLeft to paddingRight
+                        }
+                        setPadding(oldToolbarPaddingHorizontal!!.first + insets.stableInsetLeft,
+                                if (!tabsOnBottom) oldToolbarPaddingVertical!!.first + statusBarHeight!! else paddingTop,
+                                oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
+                                if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
+                    }
+                    (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
+                        marginEnd =
+                                if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
+                        bottomMargin = insets.stableInsetBottom + 16f.applyAsDip(context).toInt()
+                    }
+                    upButton.animate().translationY(
+                            (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
+                            .duration = 500
+                    toolbarParent.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                        val height = abs(bottom - top)
+                        val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
+                        recyclerView.apply {
+                            if (oldRecyclerViewPaddingHorizontal == null) {
+                                oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
+                            }
+                            setPadding(
+                                    oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
+                                    if (tabsOnBottom) 8f.applyAsDip(
+                                            context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
+                                    oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
+                                    if (!tabsOnBottom) 8f.applyAsDip(
+                                            context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
+                        }
+                        swipeRefreshLayout.apply {
+                            if (!tabsOnBottom) {
+                                swipeRefreshLayout.setProgressViewOffset(false, 0,
+                                        rvPaddingTop + statusBarHeight!!)
+                            }
                         }
                     }
-            upButton.visibility =
-                    if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
-            swipeRefreshLayout.setOnRefreshListener {
-                FeedScope.launch {
-                    refresh(100, 0, true, true)
+                    insets
                 }
-            }
-            feedController.setOnApplyWindowInsetsListener { v, insets ->
-                statusBarHeight = insets.stableInsetTop
-                navigationBarHeight = insets.stableInsetBottom
-                toolbarParent.apply {
-                    if (oldToolbarPaddingVertical == null) {
-                        oldToolbarPaddingVertical = paddingTop to paddingBottom
-                    }
-                    if (oldToolbarPaddingHorizontal == null) {
-                        oldToolbarPaddingHorizontal = paddingLeft to paddingRight
-                    }
-                    setPadding(oldToolbarPaddingHorizontal!!.first + insets.stableInsetLeft,
-                            if (!tabsOnBottom) oldToolbarPaddingVertical!!.first + statusBarHeight!! else paddingTop,
-                            oldToolbarPaddingHorizontal!!.second + insets.stableInsetRight,
-                            if (tabsOnBottom) oldToolbarPaddingVertical!!.second + navigationBarHeight!! else paddingBottom)
-                }
-                (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
-                    marginEnd =
-                            if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
-                    bottomMargin = insets.stableInsetBottom + 16f.applyAsDip(context).toInt()
-                }
-                upButton.animate().translationY(
-                        (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
-                        .duration = 500
-                toolbarParent.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
-                    val height = abs(bottom - top)
-                    val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
-                    recyclerView.apply {
-                        if (oldRecyclerViewPaddingHorizontal == null) {
-                            oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
-                        }
-                        setPadding(
-                                oldRecyclerViewPaddingHorizontal!!.first + insets.stableInsetLeft,
-                                if (tabsOnBottom) 8f.applyAsDip(
-                                        context).toInt() + insets.stableInsetTop else rvPaddingTop + statusBarHeight!!,
-                                oldRecyclerViewPaddingHorizontal!!.second + insets.stableInsetRight,
-                                if (!tabsOnBottom) 8f.applyAsDip(
-                                        context).toInt() + insets.stableInsetBottom else rvPaddingTop + navigationBarHeight!!)
-                    }
-                    swipeRefreshLayout.apply {
-                        if (!tabsOnBottom) {
-                            swipeRefreshLayout.setProgressViewOffset(false, 0,
-                                    rvPaddingTop + statusBarHeight!!)
-                        }
-                    }
-                }
-                insets
             }
             feedController.mOpenedCallback = {
                 runOnNewThread {
