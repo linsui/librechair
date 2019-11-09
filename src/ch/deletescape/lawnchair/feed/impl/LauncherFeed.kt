@@ -88,6 +88,9 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
+
+// todo kt-utils.el warning sweep
+//     * nothing was done
 class LauncherFeed(private val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
         ILauncherOverlay.Stub() {
@@ -280,9 +283,10 @@ class LauncherFeed(private val originalContext: Context,
                                 originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt()) else androidx.palette.graphics.Palette.from(
                         backgroundToProcess!!).generate().getDominantColor(0).setAlpha(255)
 
-                dark = useWhiteText(backgroundColor.setAlpha(255), originalContext)
+                dark = useWhiteText(backgroundColor, originalContext)
                 context = ContextThemeWrapper(originalContext,
                         if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
+                adapter.context = context
                 for (i in 0 until providerScreens.size) {
                     popScreens()
                 }

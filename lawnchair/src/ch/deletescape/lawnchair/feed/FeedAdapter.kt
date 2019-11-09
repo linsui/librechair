@@ -63,7 +63,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
-                       private val context: Context, private val feed: LauncherFeed?) :
+                       var context: Context, private val feed: LauncherFeed?) :
         RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
@@ -128,6 +128,9 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         val changed = Vector<Pair<Int, FeedProvider>>()
         providers.forEach {
             d("refresh: refreshing $it")
+            if (it.context != context) {
+                it.context = context
+            }
             changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedScope.launch {
                 it.feed = feed
@@ -142,6 +145,9 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         val coroutines = mutableListOf<Job>()
         val changed = Vector<Pair<Int, FeedProvider>>()
         providers.filter { it.isVolatile }.forEach {
+            if (it.context != context) {
+                it.context = context
+            }
             changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedScope.launch {
                 it.feed = feed

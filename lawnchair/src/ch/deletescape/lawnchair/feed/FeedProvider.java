@@ -91,6 +91,10 @@ public abstract class FeedProvider {
         return feed;
     }
 
+    void setContext(Context context) {
+        this.context = context;
+    }
+
     public void setFeed(LauncherFeed feed) {
         this.feed = feed;
     }
