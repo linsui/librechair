@@ -28,11 +28,12 @@ import android.os.IBinder
 import android.os.Process
 import android.service.notification.StatusBarNotification
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
+import ch.deletescape.lawnchair.colorEngine
+import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.util.ParcelablePair
 import com.android.overlayclient.client.CustomOverscrollClient.ACTIONS_CALL
@@ -54,11 +55,6 @@ class OverlayService : Service(), () -> Unit {
 
     override fun onCreate() {
         super.onCreate()
-        ThemeManager.getInstance(this).changeCallbacks += {
-            if (imageProvider != null) {
-                feed.reinitState(reinit = true)
-            }
-        }
     }
 
     override fun onBind(intent: Intent): IBinder? {
@@ -75,6 +71,15 @@ class OverlayService : Service(), () -> Unit {
     override fun invoke() {
         if (imageProvider == null) {
             feed = LauncherFeed(this)
+            colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
+                override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
+                    if (feedInitialized) {
+                        if (imageProvider == null) {
+                            feed.reinitState(reinit = true)
+                        }
+                    }
+                }
+            }, ColorEngine.Resolvers.FEED_BACKGROUND)
         } else {
             feed = LauncherFeed(this@OverlayService) {
                 FeedScope.launch(Dispatchers.IO) {

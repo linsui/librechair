@@ -95,6 +95,11 @@ class LauncherFeed(private val originalContext: Context,
             ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
                     originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
+        set(value) {
+            field = value
+            d("set: setting background color to ${String.format("#%06X",
+                    0xFFFFFF and value)}", Throwable())
+        }
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val accessingPackages = mutableSetOf<String>()
     private val activityState = ActivityState()
@@ -291,7 +296,7 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     gll = ViewTreeObserver.OnGlobalLayoutListener {
                         val background = background
-                        d("reinitState: onPreDraw called, $background")
+                        d("reinitState: onGlobalLayout called, $background 2a")
                         if (!done) {
                             if (horizontalBackground == null || verticalBackground == null) {
                                 if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
