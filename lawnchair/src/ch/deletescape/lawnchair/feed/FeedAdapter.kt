@@ -26,6 +26,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.VectorDrawable
 import android.os.Vibrator
 import android.util.TypedValue
 import android.view.*
@@ -366,7 +367,15 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
         if (holder.itemViewType and Card.NO_HEADER != 1) {
             holder.description?.text = cards[holder.adapterPosition].title
-            holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon)
+            holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon.let {
+                if (it is VectorDrawable) {
+                    it.tint(if (holder.itemViewType and Card.RAISE != 0) getOverrideColor(
+                            holder.itemView.context) else if (useWhiteText(backgroundColor,
+                                    context)) R.color.qsb_background else R.color.qsb_background_dark)
+                } else {
+                    it
+                }
+            })
         }
         holder.viewHolder.removeAllViewsInLayout()
         try {
