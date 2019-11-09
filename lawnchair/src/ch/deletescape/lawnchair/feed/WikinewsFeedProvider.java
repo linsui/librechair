@@ -36,6 +36,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+
 public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
 
     public WikinewsFeedProvider(Context c) {
@@ -55,10 +57,13 @@ public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
             Executors.newSingleThreadExecutor().submit(() -> {
                 String feed;
                 try {
-                    InputStream is = new URL(
-                            "https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only")
-                            .openConnection()
-                            .getInputStream();
+                    InputStream is = FeedUtil.downloadDirect(
+                            "https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only",
+                            getContext(),
+                            null);
+                    if (is == null) {
+                        throw new IOException("failed to retrieve feed");
+                    }
                     feed = IOUtils.toString(is, Charset
                                     .defaultCharset());
                     callback.onBind(new SyndFeedInput().build(new InputSource(
