@@ -286,6 +286,13 @@ class LauncherFeed(private val originalContext: Context,
                 dark = useWhiteText(backgroundColor, originalContext)
                 context = ContextThemeWrapper(originalContext,
                         if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
+                tabColours = ColorProvider.Companion.inflate(
+                        Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
+                        .getColors(context).toMutableList().also {
+                            if (it.isEmpty()) {
+                                it += 0
+                            }
+                        }
                 adapter.context = context
                 for (i in 0 until providerScreens.size) {
                     popScreens()
