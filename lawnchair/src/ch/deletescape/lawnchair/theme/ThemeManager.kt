@@ -178,7 +178,8 @@ class ThemeManager(val context: Context) : WallpaperColorInfo.OnChangeListener, 
         if (newFlags == themeFlags) return
 
         if (newFlags != themeFlags) {
-            changeCallbacks.forEach { it() }
+            val imCC = mutableListOf(* changeCallbacks.toTypedArray())
+            imCC.forEach { it() }
         }
 
         themeFlags = newFlags

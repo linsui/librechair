@@ -28,8 +28,6 @@ import android.os.IBinder
 import android.os.Process
 import android.service.notification.StatusBarNotification
 import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
-import ch.deletescape.lawnchair.colorEngine
-import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
@@ -43,6 +41,7 @@ import com.android.overlayclient.client.CustomServiceClient
 import com.google.android.libraries.launcherclient.ILauncherInterface
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class OverlayService : Service(), () -> Unit {
@@ -94,18 +93,15 @@ class OverlayService : Service(), () -> Unit {
                 }
             }
         }
-        colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
-            override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
-                if (feedInitialized) {
-                    if (feed.background == null) {
-                        feed.reinitState(feed.background,
-                                reinit = true)
-                    }
-                }
-            }
-        }, ColorEngine.Resolvers.FEED_BACKGROUND)
         ThemeManager.getInstance(this).changeCallbacks += {
-            feed.reinitState(feed.background, reinit = true)
+            FeedScope.launch(Dispatchers.Main) {
+                delay(200)
+                /*
+                 *  todo: this is an ugly hack, but it works for now
+                 *  will fix later.
+                 */
+                feed.reinitState(feed.background, reinit = true)
+            }
         }
     }
 
