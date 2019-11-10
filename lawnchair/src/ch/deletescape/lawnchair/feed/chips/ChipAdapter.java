@@ -59,12 +59,14 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         Consumer<List<ChipProvider.Item>> {
     private FeedController controller;
     private List<ChipProvider.Item> items;
+    private final List<RecyclerView> attachedDecorations;
     private ChipDao dao;
     private Context context;
 
     public ChipAdapter(Context context, LauncherFeed feed) {
         items = new ArrayList<>();
         this.context = context;
+        this.attachedDecorations = new ArrayList<>();
         ChipController.getInstance(context, feed).subscribe(this);
 
     }
@@ -72,18 +74,21 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
-                                       @NonNull RecyclerView parent,
-                                       @NonNull RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                outRect.top = round(LawnchairUtilsKt.applyAsDip(4f, context));
-                outRect.bottom = round(LawnchairUtilsKt.applyAsDip(4f, context));
-                outRect.left = round(LawnchairUtilsKt.applyAsDip(8f, context));
-                outRect.right = round(LawnchairUtilsKt.applyAsDip(8f, context));
-            }
-        });
+        if (!attachedDecorations.contains(recyclerView)) {
+            attachedDecorations.add(recyclerView);
+            recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+                @Override
+                public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
+                                           @NonNull RecyclerView parent,
+                                           @NonNull RecyclerView.State state) {
+                    super.getItemOffsets(outRect, view, parent, state);
+                    outRect.top = round(LawnchairUtilsKt.applyAsDip(4f, context));
+                    outRect.bottom = round(LawnchairUtilsKt.applyAsDip(4f, context));
+                    outRect.left = round(LawnchairUtilsKt.applyAsDip(8f, context));
+                    outRect.right = round(LawnchairUtilsKt.applyAsDip(8f, context));
+                }
+            });
+        }
     }
 
     @NotNull
