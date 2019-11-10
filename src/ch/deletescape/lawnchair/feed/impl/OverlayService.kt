@@ -34,6 +34,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.util.ParcelablePair
 import com.android.overlayclient.client.CustomOverscrollClient.ACTIONS_CALL
@@ -69,16 +70,6 @@ class OverlayService : Service(), () -> Unit {
     }
 
     override fun invoke() {
-        colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
-            override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
-                if (feedInitialized) {
-                    if (imageProvider == null &&
-                            feed.background == null) {
-                        feed.reinitState(reinit = true)
-                    }
-                }
-            }
-        }, ColorEngine.Resolvers.FEED_BACKGROUND)
         if (imageProvider == null) {
             feed = LauncherFeed(this)
         } else {
@@ -102,6 +93,19 @@ class OverlayService : Service(), () -> Unit {
                     imageProvider?.registerOnChangeListener(refreshBitmap)
                 }
             }
+        }
+        colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
+            override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
+                if (feedInitialized) {
+                    if (feed.background == null) {
+                        feed.reinitState(feed.background,
+                                reinit = true)
+                    }
+                }
+            }
+        }, ColorEngine.Resolvers.FEED_BACKGROUND)
+        ThemeManager.getInstance(this).changeCallbacks += {
+            feed.reinitState(feed.background, reinit = true)
         }
     }
 

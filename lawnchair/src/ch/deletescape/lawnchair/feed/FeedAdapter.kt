@@ -51,6 +51,7 @@ import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
@@ -104,16 +105,29 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        super.onAttachedToRecyclerView(recyclerView)
-        recyclerView.addItemDecoration(Decoration(
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        recyclerView.context.lawnchairPrefs.cardDecorationMarginVertical,
-                        recyclerView.context.resources.displayMetrics).toInt(),
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                        recyclerView.context.lawnchairPrefs.cardDecorationMarginHorizontal,
-                        recyclerView.context.resources.displayMetrics).toInt()))
-        this.recyclerView = recyclerView
+    // TODO kt-utils2.el context+semantics-aware variable name refactor
+    //    * lifted invalid syntax
+    //    * enabled aggresive lexer syntax conversion table
+    override fun onAttachedToRecyclerView(rv: RecyclerView) {
+        super.onAttachedToRecyclerView(rv)
+        if (rv.itemDecorationCount == 0) {
+            rv.addItemDecoration(Decoration(
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            rv.context.lawnchairPrefs.cardDecorationMarginVertical,
+                            rv.context.resources.displayMetrics).toInt(),
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            rv.context.lawnchairPrefs.cardDecorationMarginHorizontal,
+                            rv.context.resources.displayMetrics).toInt()))
+        }
+        this.recyclerView = rv
+        ThemeManager.getInstance(context)
+                .changeCallbacks += {
+            if (::recyclerView.isInitialized) {
+                recyclerView.adapter = null
+                recyclerView.adapter = this
+                d("onAttachedToRecyclerView: theme changed")
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {

@@ -1316,7 +1316,11 @@ class LauncherFeed(private val originalContext: Context,
                         lastOrientation = context.resources.configuration.orientation
                     }
                     feedController.visibility = View.VISIBLE
-                    windowService.addView(feedController, layoutParams)
+                    try {
+                        windowService.addView(feedController, layoutParams)
+                    } catch (e: IllegalStateException) {
+                        e.printStackTrace()
+                    }
                     providerScreens.forEach { it.first.onResume() }
                 } else {
                     feedController.visibility = View.INVISIBLE
