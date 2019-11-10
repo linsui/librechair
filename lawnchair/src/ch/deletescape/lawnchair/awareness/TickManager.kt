@@ -24,7 +24,7 @@ import android.annotation.MainThread
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.ACTION_TIME_TICK
+import android.content.Intent.*
 import android.content.IntentFilter
 
 object TickManager {
@@ -42,6 +42,11 @@ object TickManager {
             override fun onReceive(context: Context, intent: Intent) {
                 tickHandlers.forEach { it() }
             }
-        }, IntentFilter(ACTION_TIME_TICK))
+        }, IntentFilter().apply {
+            addAction(ACTION_TIME_TICK)
+            addAction(ACTION_TIME_CHANGED)
+            addAction(ACTION_TIME_TICK)
+            addAction(ACTION_DATE_CHANGED)
+        })
     }
 }
