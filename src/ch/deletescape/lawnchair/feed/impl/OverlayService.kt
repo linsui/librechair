@@ -69,17 +69,18 @@ class OverlayService : Service(), () -> Unit {
     }
 
     override fun invoke() {
-        if (imageProvider == null) {
-            feed = LauncherFeed(this)
-            colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
-                override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
-                    if (feedInitialized) {
-                        if (imageProvider == null) {
-                            feed.reinitState(reinit = true)
-                        }
+        colorEngine.addColorChangeListeners(object : ColorEngine.OnColorChangeListener {
+            override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
+                if (feedInitialized) {
+                    if (imageProvider == null &&
+                            feed.background == null) {
+                        feed.reinitState(reinit = true)
                     }
                 }
-            }, ColorEngine.Resolvers.FEED_BACKGROUND)
+            }
+        }, ColorEngine.Resolvers.FEED_BACKGROUND)
+        if (imageProvider == null) {
+            feed = LauncherFeed(this)
         } else {
             feed = LauncherFeed(this@OverlayService) {
                 FeedScope.launch(Dispatchers.IO) {
