@@ -117,11 +117,11 @@ public class MediaNotificationProvider extends FeedProvider {
                     R.color.qsb_background_hotseat_white));
             seekbarContainer.setAlpha(0);
             seekbar.setProgressTintList(
-                    ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(getContext(),
-                            LawnchairUtilsKt.getColorEngineAccent(getContext()))));
+                    ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(parent.getContext(),
+                            LawnchairUtilsKt.getColorEngineAccent(parent.getContext()))));
             seekbar.setThumbTintList(ColorStateList.valueOf(
-                    FeedAdapter.Companion.getOverrideColor(getContext(),
-                            LawnchairUtilsKt.getColorEngineAccent(getContext()))));
+                    FeedAdapter.Companion.getOverrideColor(parent.getContext(),
+                            LawnchairUtilsKt.getColorEngineAccent(parent.getContext()))));
             AtomicLong hideDelay = new AtomicLong(System.currentTimeMillis());
             AtomicLong offsetDelay = new AtomicLong(100);
             AtomicBoolean trackingTouch = new AtomicBoolean(false);
@@ -290,11 +290,11 @@ public class MediaNotificationProvider extends FeedProvider {
                 }
             }
             pause.setImageTintList(ColorStateList.valueOf(
-                    FeedAdapter.Companion.getOverrideColor(getContext())));
+                    FeedAdapter.Companion.getOverrideColor(parent.getContext())));
             next.setImageTintList(ColorStateList.valueOf(
-                    FeedAdapter.Companion.getOverrideColor(getContext())));
+                    FeedAdapter.Companion.getOverrideColor(parent.getContext())));
             last.setImageTintList(ColorStateList.valueOf(
-                    FeedAdapter.Companion.getOverrideColor(getContext())));
+                    FeedAdapter.Companion.getOverrideColor(parent.getContext())));
             icon.setVisibility(
                     mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
             icon.setImageBitmap(mnc.get() != null ? mnc.get().getInfo().getBitmap() : null);
