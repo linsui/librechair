@@ -47,6 +47,7 @@ object TickManager {
             addAction(ACTION_TIME_CHANGED)
             addAction(ACTION_TIME_TICK)
             addAction(ACTION_DATE_CHANGED)
+            addAction(ACTION_TIMEZONE_CHANGED)
         })
     }
 }
