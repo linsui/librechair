@@ -372,9 +372,12 @@ class LauncherFeed(private val originalContext: Context,
                     chips.visibility = View.VISIBLE
                 }
 
-                chips.adapter = chipAdapter
-                chips.layoutManager =
-                        LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+                if (!reinit) {
+                    chips.adapter = chipAdapter
+                    chips.layoutManager =
+                            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                }
 
                 chipAdapter.setController(feedController)
 
