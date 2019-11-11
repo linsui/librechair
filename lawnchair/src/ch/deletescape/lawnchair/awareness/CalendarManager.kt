@@ -52,6 +52,9 @@ object CalendarManager : BroadcastReceiver() {
 
     @AnyThread
     fun subscribe(@WorkerThread listener: (events: List<CalendarEvent>) -> Unit) {
+        CalendarScope.launch {
+            listener(events)
+        }
         synchronized(eventChangeListeners) {
             eventChangeListeners += listener
         }

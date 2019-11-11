@@ -36,19 +36,19 @@
 package ch.deletescape.lawnchair.smartspace
 
 import android.app.PendingIntent
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.database.CursorIndexOutOfBoundsException
-import android.net.Uri
-import android.provider.CalendarContract
 import android.text.TextUtils
 import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.CalendarManager
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
+import ch.deletescape.lawnchair.runOnMainThread
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import java.util.*
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 @Keep
@@ -56,89 +56,53 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) : Lawnc
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
-
+    private val events = mutableListOf<CalendarManager.CalendarEvent>()
     init {
+        CalendarManager.subscribe {
+            events.clear()
+            events += it.filter {
+                it.startTime > LocalDateTime.now() &&
+                        it.startTime < LocalDateTime.now()
+                        .plusMinutes(256)
+            }
+            d("init: $events")
+            runOnMainThread {
+                updateInformation()
+            }
+        }
         TickManager.subscribe {
             updateInformation()
         }
     }
 
     private fun updateInformation() {
-        if (controller.context.checkSelfPermission(
-                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            updateData(null, null)
-            return;
-        }
-        val currentTime = GregorianCalendar();
-        val endTime = GregorianCalendar();
-        endTime.add(Calendar.MINUTE, 240);
-        val query =
-                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
-        val eventCursorNullable: Cursor? = contentResolver
-                .query(CalendarContract.Events.CONTENT_URI,
-                       arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
-                               CalendarContract.Instances.DTEND,
-                               CalendarContract.Instances.DESCRIPTION, CalendarContract.Events._ID,
-                               CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                               CalendarContract.Instances.EVENT_LOCATION), query, null,
-                       CalendarContract.Instances.DTSTART + " ASC")
-        if (eventCursorNullable == null) {
-            card = null
-            updateData(null, card = null);
-            return;
-        }
-        try {
-            val eventCursor = eventCursorNullable
-            eventCursor.moveToFirst();
-            val title = eventCursor.getString(0);
-            val startTime = GregorianCalendar()
-            startTime.timeInMillis = eventCursor.getLong(1);
-            val eventEndTime = GregorianCalendar()
-            eventEndTime.timeInMillis = eventCursor.getLong(2)
-            val description = eventCursor.getString(3);
-            val address = eventCursor.getString(6);
-            val diff = startTime.timeInMillis - currentTime.timeInMillis
-            val diffSeconds = TimeUnit.MILLISECONDS.toSeconds(diff)
+        if (events.isNotEmpty()) {
+            val event = events.first()
+            val diff = event.startTime.toEpochSecond(ZoneId.systemDefault().rules.getOffset(
+                    Instant.now())) * 1000 - System.currentTimeMillis()
             val diffMinutes = TimeUnit.MILLISECONDS.toMinutes(diff)
-            val diffHours = TimeUnit.MILLISECONDS.toHours(diff)
             val text = if (diffMinutes <= 0) controller.context.getString(
                     R.string.reusable_str_now) else controller.context.getString(
                     if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                     diffMinutes)
-            var intent = Intent(Intent.ACTION_VIEW)
-            if (eventCursor.getString(5) != null) {
-                if (controller.context.packageManager.getApplicationEnabledSetting(
-                                eventCursor.getString(
-                                        5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                    intent.`package` = eventCursor.getString(5)!!
-                }
-            }
-            intent.data = Uri.parse("content://com.android.calendar/events/" + eventCursor.getLong(
-                    4).toString())
             val lines = mutableListOf(LawnchairSmartspaceController.Line(
-                    if (title == null || title.trim().isEmpty()) controller.context.getString(
-                            R.string.placeholder_empty_title) else title,
+                    if (event.title.trim().isEmpty()) controller.context.getString(
+                            R.string.placeholder_empty_title) else event.title,
                     TextUtils.TruncateAt.MARQUEE),
-            LawnchairSmartspaceController.Line(
-                    text,
-                    TextUtils.TruncateAt.END),
-            LawnchairSmartspaceController.Line(
-                    formatTime(startTime,
-                            context)))
-            if (address?.trim()?.isEmpty() == false) {
-                lines += LawnchairSmartspaceController.Line(address, TextUtils.TruncateAt.END)
-                intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"))
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
+                    LawnchairSmartspaceController.Line(
+                            text,
+                            TextUtils.TruncateAt.END),
+                    LawnchairSmartspaceController.Line(
+                            formatTime(ZonedDateTime.of(event.startTime, ZoneId.systemDefault()),
+                                    context)))
             card = LawnchairSmartspaceController.CardData(drawableToBitmap(
                     controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!),
-                                                          lines,
-                                                          PendingIntent.getActivity(
-                                                                  controller.context, 0, intent, 0,
-                                                                  null))
-            eventCursor.close()
+                    lines,
+                    PendingIntent.getActivity(
+                            controller.context, 0, event.intent, 0,
+                            null))
             updateData(null, card)
-        } catch (e: CursorIndexOutOfBoundsException) {
+        } else {
             updateData(null, null)
         }
     }
