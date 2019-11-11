@@ -67,6 +67,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         it.startTime < LocalDateTime.now()
                         .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
             }
+            d("init: events are $events")
             ongoingEvents.clear()
             ongoingEvents += it.filter {
                 it.startTime <= LocalDateTime.now() &&
@@ -114,7 +115,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.text =
                                             (if (it.title.trim().isEmpty()) context.getString(
                                                     R.string.placeholder_empty_title) else it.title)
-                                    if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null) {
+                                    if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
                                         calendar_event_title.setTextColor(it.colour)
                                     }
                                     calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
