@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.database.CursorIndexOutOfBoundsException
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.CalendarContract
@@ -186,34 +185,13 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         "getCards: query is null, probably since there are no events that meet the specified criteria")
                 return cards
             }
-            try {
-                val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst()
-                while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0).take(25)
-                    Log.v(javaClass.name, "getCards: query found event")
-                    Log.v(javaClass.name, "getCards:     title: " + title)
-                    val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1)
-                    Log.v(javaClass.name, "getCards:     startTime: " + startTime)
-                    val eventEndTime = GregorianCalendar()
-                    eventEndTime.timeInMillis = eventCursor.getLong(2)
-                    Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
-                    val text = if (title == null || title.trim().isEmpty()) context.getString(
-                            R.string.placeholder_empty_title) else "$title • ${context.getString(
-                            if (eventCursor.getInt(
-                                            4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
-
-                    eventCursor.moveToNext()
-                    cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
-                        override fun inflate(parent: ViewGroup): View {
-                            return View(parent.context)
-                        }
-                    }, Card.TEXT_ONLY, "nosort,top"))
-                }
-                eventCursor.close()
-            } catch (e: CursorIndexOutOfBoundsException) {
-            }
+            cards.addAll(ongoingEvents.map {
+                Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
+                    override fun inflate(parent: ViewGroup): View {
+                        return View(parent.context)
+                    }
+                }, Card.TEXT_ONLY, "nosort,top")
+            })
         }
         return cards
     }
