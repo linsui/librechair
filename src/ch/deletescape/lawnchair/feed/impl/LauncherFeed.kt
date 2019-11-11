@@ -259,7 +259,8 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     @SuppressLint("RestrictedApi", "InflateParams", "ClickableViewAccessibility")
-    fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false) =
+    @JvmOverloads
+    fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false, blurBitmap: Boolean = false) =
             synchronized(this) {
                 val oldTheme = context.theme
                 if (context.appWidgetManager
@@ -274,7 +275,7 @@ class LauncherFeed(private val originalContext: Context,
                             .removeView(searchWidgetView)
                 }
                 background =
-                        if (!context.lawnchairPrefs.feedBlur) backgroundToProcess else backgroundToProcess?.blur(
+                        if (!context.lawnchairPrefs.feedBlur && blurBitmap) backgroundToProcess else backgroundToProcess?.blur(
                                 originalContext)
                 backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
                         ColorEngine.getInstance(

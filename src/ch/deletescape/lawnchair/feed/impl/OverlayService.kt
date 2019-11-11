@@ -95,12 +95,14 @@ class OverlayService : Service(), () -> Unit {
         }
         ThemeManager.getInstance(this).changeCallbacks += {
             FeedScope.launch(Dispatchers.Main) {
-                delay(200)
+                delay(400)
                 /*
                  *  todo: this is an ugly hack, but it works for now
                  *  will fix later.
                  */
-                feed.reinitState(feed.background, reinit = true)
+                feed.reinitState(feed.background,
+                                 reinit = true,
+                                 blurBitmap = false)
             }
         }
     }
