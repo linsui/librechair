@@ -44,6 +44,7 @@ import android.net.Uri
 import android.provider.CalendarContract
 import android.text.TextUtils
 import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.formatTime
 import com.android.launcher3.R
@@ -51,12 +52,16 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Keep
-class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
-        LawnchairSmartspaceController.PeriodicDataProvider(controller) {
+class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) : LawnchairSmartspaceController.DataProvider(controller) {
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
-    override val timeout = TimeUnit.SECONDS.toMillis(5)
+
+    init {
+        TickManager.subscribe {
+            updateInformation()
+        }
+    }
 
     private fun updateInformation() {
         if (controller.context.checkSelfPermission(
@@ -136,10 +141,6 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         } catch (e: CursorIndexOutOfBoundsException) {
             updateData(null, null)
         }
-    }
-
-    override fun updateData() {
-        updateInformation()
     }
 
     override fun forceUpdate() {
