@@ -89,7 +89,7 @@ class OverlayService : Service(), () -> Unit {
                         Unit
                     }
                     refreshBitmap()
-                    imageProvider?.registerOnChangeListener(refreshBitmap)
+
                 }
             }
         }

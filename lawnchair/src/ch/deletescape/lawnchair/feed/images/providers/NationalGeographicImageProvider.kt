@@ -23,19 +23,15 @@ package ch.deletescape.lawnchair.feed.images.providers
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Handler
-import android.os.SystemClock
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicRetrofitServiceFactory
-import ch.deletescape.lawnchair.tomorrow
 import kotlinx.coroutines.async
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class NationalGeographicImageProvider(val c: Context) : ImageProvider {
@@ -74,13 +70,6 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     }.await()
 
     override fun registerOnChangeListener(listener: () -> Unit) {
-        Handler(c.mainLooper).postAtTime(object : Function0<Unit> {
-            override fun invoke() {
-                listener()
-                Handler(c.mainLooper).postAtTime(this, SystemClock.uptimeMillis() + tomorrow(
-                        Date()).time - System.currentTimeMillis())
-            }
-        }, SystemClock.uptimeMillis() + tomorrow(
-                Date()).time - System.currentTimeMillis())
+
     }
 }

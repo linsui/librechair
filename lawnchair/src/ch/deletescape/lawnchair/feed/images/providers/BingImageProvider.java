@@ -100,6 +100,7 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     private Bitmap internalGetBitmap(Context context) {
         try {
+            Log.d(getClass().getSimpleName(), "internalGetBitmap: call stack is ", new Throwable());
             Response<BingPictureResponse> response = BingRetrofitServiceFactory.INSTANCE
                     .getApi(context)
                     .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
