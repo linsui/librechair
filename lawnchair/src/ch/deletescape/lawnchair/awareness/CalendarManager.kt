@@ -31,6 +31,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.CalendarContract
 import ch.deletescape.lawnchair.feed.CalendarScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
@@ -66,6 +67,7 @@ object CalendarManager : BroadcastReceiver() {
         })
 
         CalendarScope.launch {
+            delay(1500)
             if (context.checkSelfPermission(
                             android.Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
                 val cursor = context.contentResolver.query(CalendarContract.Events.CONTENT_URI,

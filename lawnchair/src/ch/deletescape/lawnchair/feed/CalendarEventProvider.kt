@@ -119,8 +119,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     }
                                     calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
                                     TickManager.subscribe {
-                                        val diff = it.startTime.toEpochSecond(ZoneOffset.ofHours(
-                                                0)) * 1000 - System.currentTimeMillis()
+                                        val diff = it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) * 1000 - System.currentTimeMillis()
                                         val diffSeconds = diff / 1000
                                         val diffMinutes = diff / (60 * 1000)
                                         val diffHours = diff / (60 * 60 * 1000)
@@ -157,8 +156,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         },
                         if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
                                 Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
-                        if ((it.startTime.toEpochSecond(ZoneOffset.ofHours(
-                                        0)) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
+                        if ((it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
                     globalClickListener = { v ->
                         FeedUtil.startActivity(context, it.intent, v)
                     }
