@@ -30,9 +30,6 @@ import android.os.HandlerThread
 import android.provider.Settings
 import android.webkit.WebView
 import androidx.annotation.Keep
-import ch.deletescape.lawnchair.awareness.TickManager
-import ch.deletescape.lawnchair.awareness.VolumeManager
-import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
@@ -41,10 +38,7 @@ import ch.deletescape.lawnchair.clipart.FancyClipartResolver
 import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.adblock.WebSafety
-import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
-import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.getFeedController
-import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -65,7 +59,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.HashSet
 
-class LawnchairApp : Application() {
+open class LawnchairApp : Application() {
     val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also { it.start() }.looper)
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
@@ -142,13 +136,6 @@ class LawnchairApp : Application() {
                 }
             }
         }
-        DynamicProviderController.attachContext(this)
-        ChipStyleRegistry.populateWithContext(this)
-        WeatherManager.attachToApplication(this)
-        TickManager.bindToContext(this)
-        CardStyleRegistry.populateWithContext(this)
-        VolumeManager.attachToContext(this)
-        VolumeManager.subscribe { d("onCreate: volume changed to $it") }
     }
 
     fun onLauncherAppStateCreated() {

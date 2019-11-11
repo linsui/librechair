@@ -19,18 +19,20 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.CursorIndexOutOfBoundsException
 import android.graphics.Color
 import android.graphics.Typeface
-import android.net.Uri
 import android.provider.CalendarContract
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.awareness.CalendarManager
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.util.extensions.d
@@ -38,6 +40,8 @@ import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import kotlinx.android.synthetic.main.calendar_event.view.*
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -52,20 +56,23 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!
                 .tint(FeedAdapter.getOverrideColor(context))
     }
-    private val broadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (feed != null) {
-                feed.refresh(0, 0, true)
-            }
-        }
-    }
+    private val events = mutableListOf<CalendarManager.CalendarEvent>()
+    private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
 
     init {
-        context.registerReceiver(broadcastReceiver,
-                IntentFilter(Intent.ACTION_PROVIDER_CHANGED).apply {
-                    addDataScheme("content")
-                    addDataAuthority("com.android.calendar", null)
-                })
+        CalendarManager.subscribe {
+            events.clear()
+            events += it.filter {
+                it.startTime > LocalDateTime.now() &&
+                        it.startTime < LocalDateTime.now()
+                        .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+            }
+            ongoingEvents.clear()
+            ongoingEvents += it.filter {
+                it.startTime <= LocalDateTime.now() &&
+                        it.endTime > LocalDateTime.now()
+            }
+        }
     }
 
     override fun isVolatile(): Boolean {
@@ -96,124 +103,67 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         }
         val cards = ArrayList<Card>()
         run {
-            val currentTime = GregorianCalendar()
-            val endTime = GregorianCalendar()
-            endTime.add(Calendar.DAY_OF_MONTH,
-                    context.lawnchairPrefs.feedCalendarEventThreshold)
-            Log.v(javaClass.name,
-                    "getCards: searching for events between " + currentTime + " and " + endTime.toString())
-            val query =
-                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
-            val eventCursorNullable: Cursor? = context.contentResolver
-                    .query(CalendarContract.Events.CONTENT_URI,
-                            arrayOf(CalendarContract.Instances.TITLE,
-                                    CalendarContract.Instances.DTSTART,
-                                    CalendarContract.Instances.DTEND,
-                                    CalendarContract.Instances.DESCRIPTION,
-                                    CalendarContract.Events._ID,
-                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                    CalendarContract.Events.EVENT_LOCATION,
-                                    CalendarContract.Calendars.CALENDAR_COLOR), query, null,
-                            CalendarContract.Instances.DTSTART + " ASC")
-            if (eventCursorNullable == null) {
-                Log.v(javaClass.name,
-                        "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return emptyList()
-            }
-            try {
-                val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst()
-                while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0).take(25)
-                    Log.v(javaClass.name, "getCards: query found event")
-                    Log.v(javaClass.name, "getCards:     title: " + title)
-                    val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1)
-                    Log.v(javaClass.name, "getCards:     startTime: " + startTime)
-                    val eventEndTime = GregorianCalendar()
-                    eventEndTime.timeInMillis = eventCursor.getLong(2)
-                    Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
-                    val description = eventCursor.getString(3)
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri
-                            .parse("content://com.android.calendar/events/" + eventCursor.getLong(
-                                    4).toString())
-                    if (eventCursor.getString(5) != null) {
-                        if (context.packageManager.getApplicationEnabledSetting(
-                                        eventCursor.getString(
-                                                5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                            intent.`package` = eventCursor.getString(5)!!
-                        }
+            cards.addAll(events.map {
+                Card(
+                        null, null,
+                        object : Card.Companion.InflateHelper {
+                            override fun inflate(parent: ViewGroup): View {
+                                return if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) getCalendarFeedView(
+                                        it.description, it.address, parent.context, parent,
+                                        this@CalendarEventProvider).apply {
+                                    calendar_event_title.text =
+                                            (if (it.title.trim().isEmpty()) context.getString(
+                                                    R.string.placeholder_empty_title) else it.title)
+                                    if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null) {
+                                        calendar_event_title.setTextColor(it.colour)
+                                    }
+                                    calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
+                                    TickManager.subscribe {
+                                        val diff = it.startTime.toEpochSecond(ZoneOffset.ofHours(
+                                                0)) * 1000 - System.currentTimeMillis()
+                                        val diffSeconds = diff / 1000
+                                        val diffMinutes = diff / (60 * 1000)
+                                        val diffHours = diff / (60 * 60 * 1000)
+                                        val diffDays = diff / (24 * 60 * 60 * 1000)
+                                        val text: String
+                                        if (diffDays > 20) {
+                                            text = IcuDateTextView.getDateFormat(context, true,
+                                                    null, false)
+                                                    .format(Date.from(Instant.ofEpochMilli(
+                                                            it.startTime.toEpochSecond(
+                                                                    ZoneOffset.ofHours(0)) * 1000)))
+                                        } else if (diffDays >= 1) {
+                                            text =
+                                                    if (diffDays < 1 || diffDays > 1) context.getString(
+                                                            R.string.title_text_calendar_feed_provider_in_d_days,
+                                                            diffDays) else context.getString(
+                                                            R.string.tomorrow)
+                                        } else if (diffHours > 4) {
+                                            text = context
+                                                    .getString(
+                                                            R.string.title_text_calendar_feed_in_d_hours,
+                                                            diffHours)
+                                        } else {
+                                            text = if (diffMinutes <= 0) context.getString(
+                                                    R.string.reusable_str_now) else context.getString(
+                                                    if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                                                    diffMinutes)
+                                        }
+                                        calendar_event_time_remaining.text = text
+                                    }
+                                } else View(
+                                        parent.getContext())
+                            }
+                        },
+                        if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
+                                Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
+                        if ((it.startTime.toEpochSecond(ZoneOffset.ofHours(
+                                        0)) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
+                    globalClickListener = { v ->
+                        FeedUtil.startActivity(context, it.intent, v)
                     }
-                    intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
-                    val address = eventCursor.getString(6)
-                    val color = eventCursor.getInt(7)
-                    val diff = startTime.timeInMillis - currentTime.timeInMillis
-                    Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
-                    val diffSeconds = diff / 1000
-                    val diffMinutes = diff / (60 * 1000)
-                    val diffHours = diff / (60 * 60 * 1000)
-                    val diffDays = diff / (24 * 60 * 60 * 1000)
-                    cards.add(Card(
-                            if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
-                                    eventCursor.getInt(7).setAlpha(
-                                            255)) else calendarDrawableColoured,
-                            (if (title.trim().isEmpty()) context.getString(
-                                    R.string.placeholder_empty_title) else title),
-                            object : Card.Companion.InflateHelper {
-                                override fun inflate(parent: ViewGroup): View {
-                                    return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
-                                            description, address, parent.context, parent,
-                                            this@CalendarEventProvider).apply {
-                                        calendar_event_title.text =
-                                                (if (title.trim().isEmpty()) context.getString(
-                                                        R.string.placeholder_empty_title) else title)
-                                        if (context.lawnchairPrefs.feedShowCalendarColour) {
-                                            calendar_event_title.setTextColor(color)
-                                        }
-                                        calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
-                                        TickManager.subscribe {
-                                            val diff = startTime.timeInMillis - currentTime.timeInMillis
-                                            Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
-                                            val diffSeconds = diff / 1000
-                                            val diffMinutes = diff / (60 * 1000)
-                                            val diffHours = diff / (60 * 60 * 1000)
-                                            val diffDays = diff / (24 * 60 * 60 * 1000)
-                                            val text: String
-                                                    if (diffDays > 20) {
-                                                        text = IcuDateTextView.getDateFormat(context, true, null, false)
-                                                                .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
-                                                    } else if (diffDays >= 1) {
-                                                        text = if (diffDays < 1 || diffDays > 1) context.getString(
-                                                                R.string.title_text_calendar_feed_provider_in_d_days,
-                                                                diffDays) else context.getString(R.string.tomorrow)
-                                                    } else if (diffHours > 4) {
-                                                        text = context
-                                                                .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                                                    } else {
-                                                        text = if (diffMinutes <= 0) context.getString(
-                                                                R.string.reusable_str_now) else context.getString(
-                                                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                                                                diffMinutes)
-                                                    }
-                                            calendar_event_time_remaining.text = text
-                                        }
-                                    } else View(
-                                            parent.getContext())
-                                }
-                            },
-                            if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE or
-                                    Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
-                            if (diffMinutes < 120) "nosort,top" else "").apply {
-                        globalClickListener = {
-                            FeedUtil.startActivity(context, intent, it)
-                        }
-                    })
-                    eventCursor.moveToNext()
                 }
-                eventCursor.close()
-            } catch (e: Throwable) {
-            }
+            })
         }
         run {
             val currentTime = GregorianCalendar()
