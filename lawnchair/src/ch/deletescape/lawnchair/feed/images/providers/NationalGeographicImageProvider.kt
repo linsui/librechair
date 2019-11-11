@@ -25,6 +25,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.SystemClock
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicRetrofitServiceFactory
 import ch.deletescape.lawnchair.tomorrow
@@ -41,8 +42,13 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     override val expiryTime: Long
         get() = TimeUnit.DAYS.toMillis(1)
 
-    val cache: File
-        get() = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+    var cache: File = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+
+    init {
+        TickManager.subscribe {
+            cache = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+        }
+    }
 
     override suspend fun getBitmap(context: Context): Bitmap? = FeedScope.async {
         if (cache.exists()) {

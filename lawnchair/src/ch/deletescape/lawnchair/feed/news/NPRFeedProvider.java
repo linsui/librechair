@@ -46,8 +46,8 @@ public class NPRFeedProvider extends AbstractRSSFeedProvider {
     @Override
     protected void bindFeed(BindCallback callback, String token) {
         Flowable.fromCallable(() -> new SyndFeedInput().build(new InputStreamReader(new URL("https://www.npr.org/rss/rss.php").openStream())))
-                .doOnError(Throwable::printStackTrace)
                 .subscribeOn(Schedulers.io())
+                .doOnError(Throwable::printStackTrace)
                 .subscribe(callback::onBind);
     }
 }
