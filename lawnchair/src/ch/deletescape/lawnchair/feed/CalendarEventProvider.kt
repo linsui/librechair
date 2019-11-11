@@ -31,6 +31,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -41,7 +42,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
 class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val calendarDrawable by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!.tint(
@@ -133,29 +134,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     eventEndTime.timeInMillis = eventCursor.getLong(2)
                     Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
                     val description = eventCursor.getString(3)
-                    val diff = startTime.timeInMillis - currentTime.timeInMillis
-                    Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
-                    val diffSeconds = diff / 1000
-                    val diffMinutes = diff / (60 * 1000)
-                    val diffHours = diff / (60 * 60 * 1000)
-                    val diffDays = diff / (24 * 60 * 60 * 1000)
-                    var text: String
-                    if (diffDays > 20) {
-                        text = IcuDateTextView.getDateFormat(context, true, null, false)
-                                .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
-                    } else if (diffDays >= 1) {
-                        text = if (diffDays < 1 || diffDays > 1) context.getString(
-                                R.string.title_text_calendar_feed_provider_in_d_days,
-                                diffDays) else context.getString(R.string.tomorrow)
-                    } else if (diffHours > 4) {
-                        text = context
-                                .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                    } else {
-                        text = if (diffMinutes <= 0) context.getString(
-                                R.string.reusable_str_now) else context.getString(
-                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                                diffMinutes)
-                    }
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri
                             .parse("content://com.android.calendar/events/" + eventCursor.getLong(
@@ -170,12 +148,14 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
                     val address = eventCursor.getString(6)
                     val color = eventCursor.getInt(7)
+                    val diff = startTime.timeInMillis - currentTime.timeInMillis
+                    Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
                     cards.add(Card(
                             if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
                                     eventCursor.getInt(7).setAlpha(
                                             255)) else calendarDrawableColoured,
                             (if (title.trim().isEmpty()) context.getString(
-                                    R.string.placeholder_empty_title) else "$title • ") + text,
+                                    R.string.placeholder_empty_title) else title),
                             object : Card.Companion.InflateHelper {
                                 override fun inflate(parent: ViewGroup): View {
                                     return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
@@ -188,7 +168,32 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                             calendar_event_title.setTextColor(color)
                                         }
                                         calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
-                                        calendar_event_time_remaining.text = text
+                                        TickManager.subscribe {
+                                            val diff = startTime.timeInMillis - currentTime.timeInMillis
+                                            Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
+                                            val diffSeconds = diff / 1000
+                                            val diffMinutes = diff / (60 * 1000)
+                                            val diffHours = diff / (60 * 60 * 1000)
+                                            val diffDays = diff / (24 * 60 * 60 * 1000)
+                                            val text: String
+                                                    if (diffDays > 20) {
+                                                        text = IcuDateTextView.getDateFormat(context, true, null, false)
+                                                                .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
+                                                    } else if (diffDays >= 1) {
+                                                        text = if (diffDays < 1 || diffDays > 1) context.getString(
+                                                                R.string.title_text_calendar_feed_provider_in_d_days,
+                                                                diffDays) else context.getString(R.string.tomorrow)
+                                                    } else if (diffHours > 4) {
+                                                        text = context
+                                                                .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
+                                                    } else {
+                                                        text = if (diffMinutes <= 0) context.getString(
+                                                                R.string.reusable_str_now) else context.getString(
+                                                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                                                                diffMinutes)
+                                                    }
+                                            calendar_event_time_remaining.text = text
+                                        }
                                     } else View(
                                             parent.getContext())
                                 }
