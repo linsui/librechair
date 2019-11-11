@@ -150,6 +150,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     val color = eventCursor.getInt(7)
                     val diff = startTime.timeInMillis - currentTime.timeInMillis
                     Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
+                    val diffSeconds = diff / 1000
+                    val diffMinutes = diff / (60 * 1000)
+                    val diffHours = diff / (60 * 60 * 1000)
+                    val diffDays = diff / (24 * 60 * 60 * 1000)
                     cards.add(Card(
                             if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
                                     eventCursor.getInt(7).setAlpha(
