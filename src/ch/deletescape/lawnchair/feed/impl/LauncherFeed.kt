@@ -260,7 +260,8 @@ class LauncherFeed(private val originalContext: Context,
 
     @SuppressLint("RestrictedApi", "InflateParams", "ClickableViewAccessibility")
     @JvmOverloads
-    fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false, blurBitmap: Boolean = false) =
+    fun reinitState(backgroundToProcess: Bitmap? = null, reinit: Boolean = false,
+                    blurBitmap: Boolean = false) =
             synchronized(this) {
                 val oldTheme = context.theme
                 if (context.appWidgetManager
@@ -288,7 +289,8 @@ class LauncherFeed(private val originalContext: Context,
                 context = ContextThemeWrapper(originalContext,
                         if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
                 tabColours = ColorProvider.Companion.inflate(
-                        Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
+                        Class.forName(
+                                context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
                         .getColors(context).toMutableList().also {
                             if (it.isEmpty()) {
                                 it += 0
@@ -302,48 +304,44 @@ class LauncherFeed(private val originalContext: Context,
                 horizontalBackground = null
                 feedController.also {
                     it.setLauncherFeed(this)
-                    val done = false
                     if (::gll.isInitialized) {
                         feedController.viewTreeObserver.removeOnGlobalLayoutListener(gll)
                     }
                     gll = ViewTreeObserver.OnGlobalLayoutListener {
                         val background = background
                         d("reinitState: onGlobalLayout called, $background 2a")
-                        if (!done) {
-                            if (horizontalBackground == null || verticalBackground == null) {
-                                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                                    verticalBackground = if (background == null) ColorDrawable(
-                                            backgroundColor) else BitmapDrawable(context.resources,
-                                            Utilities.scaleToSize(
-                                                    background,
-                                                    it.measuredHeight,
-                                                    it.measuredWidth))
-                                    horizontalBackground = if (background == null) ColorDrawable(
-                                            backgroundColor) else BitmapDrawable(context.resources,
-                                            Utilities.scaleToSize(
-                                                    background,
-                                                    it.measuredWidth,
-                                                    it.measuredHeight))
-                                } else {
-                                    horizontalBackground = if (background == null) ColorDrawable(
-                                            backgroundColor) else BitmapDrawable(context.resources,
-                                            Utilities.scaleToSize(
-                                                    background,
-                                                    it.measuredHeight,
-                                                    it.measuredWidth))
-                                    verticalBackground = if (background == null) ColorDrawable(
-                                            backgroundColor) else BitmapDrawable(context.resources,
-                                            Utilities.scaleToSize(
-                                                    background,
-                                                    it.measuredWidth,
-                                                    it.measuredHeight))
-                                }
+                        if (horizontalBackground == null || verticalBackground == null) {
+                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                                verticalBackground = if (background == null) ColorDrawable(
+                                        backgroundColor) else BitmapDrawable(context.resources,
+                                        Utilities.scaleToSize(
+                                                background,
+                                                it.measuredHeight,
+                                                it.measuredWidth))
+                                horizontalBackground = if (background == null) ColorDrawable(
+                                        backgroundColor) else BitmapDrawable(context.resources,
+                                        Utilities.scaleToSize(
+                                                background,
+                                                it.measuredWidth,
+                                                it.measuredHeight))
+                            } else {
+                                horizontalBackground = if (background == null) ColorDrawable(
+                                        backgroundColor) else BitmapDrawable(context.resources,
+                                        Utilities.scaleToSize(
+                                                background,
+                                                it.measuredHeight,
+                                                it.measuredWidth))
+                                verticalBackground = if (background == null) ColorDrawable(
+                                        backgroundColor) else BitmapDrawable(context.resources,
+                                        Utilities.scaleToSize(
+                                                background,
+                                                it.measuredWidth,
+                                                it.measuredHeight))
                             }
-                            lastOrientation = context.resources.configuration.orientation
-                            it.background =
-                                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                         }
-                        true
+                        lastOrientation = context.resources.configuration.orientation
+                        it.background =
+                                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                     }
                     if (context.theme != oldTheme) {
                         val mainFrameParams =
@@ -1593,7 +1591,6 @@ class LauncherFeed(private val originalContext: Context,
                     }
                 }
             }
-            val cards = adapter.immutableCards
             if (quick) {
                 d("refresh: beginning refresh 3")
                 if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
