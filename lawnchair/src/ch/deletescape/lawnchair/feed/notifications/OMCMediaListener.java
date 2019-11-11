@@ -69,8 +69,10 @@ public class OMCMediaListener extends MediaController.Callback
         mManager = (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
         mOnChange = onChange;
         OverlayNotificationManager.addListener(list -> {
-            notifications.clear();
-            notifications.addAll(list);
+            synchronized (notifications) {
+                notifications.clear();
+                notifications.addAll(list);
+            }
             onActiveSessionsChanged(null);
         });
         HandlerThread handlerThread = new HandlerThread("");
@@ -179,11 +181,14 @@ public class OMCMediaListener extends MediaController.Callback
     private StatusBarNotification findNotification(@Nullable MediaController mc) {
         if (mc == null) return null;
         MediaSession.Token controllerToken = mc.getSessionToken();
-        for (StatusBarNotification notif : notifications) {
-            Bundle extras = notif.getNotification().extras;
-            MediaSession.Token notifToken = extras.getParcelable(Notification.EXTRA_MEDIA_SESSION);
-            if (controllerToken.equals(notifToken)) {
-                return notif;
+        synchronized (notifications) {
+            for (StatusBarNotification notif : notifications) {
+                Bundle extras = notif.getNotification().extras;
+                MediaSession.Token notifToken = extras.getParcelable(
+                        Notification.EXTRA_MEDIA_SESSION);
+                if (controllerToken.equals(notifToken)) {
+                    return notif;
+                }
             }
         }
         return null;
