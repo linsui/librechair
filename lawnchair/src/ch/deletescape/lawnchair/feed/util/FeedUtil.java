@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed.util;
 
 import android.annotation.AnyThread;
 import android.annotation.MainThread;
+import android.annotation.WorkerThread;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ActivityNotFoundException;
@@ -31,6 +32,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
@@ -64,8 +67,8 @@ public final class FeedUtil {
 
     @AnyThread
     public static void download(@Nonnull String url, @Nonnull Context context,
-                                @Nonnull Consumer<InputStream> consumer,
-                                @Nullable Consumer<IOException> error) {
+                                @Nonnull @WorkerThread Consumer<InputStream> consumer,
+                                @Nullable @WorkerThread Consumer<IOException> error) {
         synchronized (CLIENT_INSTANTIATION_LOCK) {
             if (client == null) {
                 client = new OkHttpClientBuilder().build(context);
@@ -105,7 +108,7 @@ public final class FeedUtil {
     @AnyThread
     @Nullable
     public static InputStream downloadDirect(@Nonnull String url, @Nonnull Context context,
-                                @Nullable Consumer<IOException> error) {
+                                             @Nullable @WorkerThread Consumer<IOException> error) {
         synchronized (CLIENT_INSTANTIATION_LOCK) {
             if (client == null) {
                 client = new OkHttpClientBuilder().build(context);
@@ -193,8 +196,13 @@ public final class FeedUtil {
 
     @AnyThread
     public static <T> T apply(@Nullable T object,
-                              @Nonnull Consumer<T> consumer) {
+                              @Nonnull @AnyThread Consumer<T> consumer) {
         consumer.accept(object);
         return object;
+    }
+
+    @AnyThread
+    public static void runOnMainThread(@Nonnull @MainThread Runnable toRun) {
+        new Handler(Looper.getMainLooper()).post(toRun);
     }
 }

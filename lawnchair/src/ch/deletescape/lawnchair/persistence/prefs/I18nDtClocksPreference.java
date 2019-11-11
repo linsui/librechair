@@ -37,6 +37,7 @@ import java.time.format.TextStyle;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.preferences.FragmentInitializer;
 
@@ -52,56 +53,56 @@ public class I18nDtClocksPreference extends DialogPreference implements Fragment
                 new ObservableList.OnListChangedCallback<ObservableList<String>>() {
                     @Override
                     public void onChanged(ObservableList<String> sender) {
-                        setSummary(FeedPersistence.Companion.getInstance(
+                        FeedUtil.runOnMainThread(() -> setSummary(FeedPersistence.Companion.getInstance(
                                 context).getClockTimeZones().stream().map(
                                 it -> ZoneId.of(it).getDisplayName(
                                         TextStyle.SHORT,
                                         LawnchairUtilsKt.getLocale(context))).collect(
-                                Collectors.joining(", ")));
+                                Collectors.joining(", "))));
                     }
 
                     @Override
                     public void onItemRangeChanged(ObservableList<String> sender, int positionStart,
                                                    int itemCount) {
-                        setSummary(FeedPersistence.Companion.getInstance(
+                        FeedUtil.runOnMainThread(() -> setSummary(FeedPersistence.Companion.getInstance(
                                 context).getClockTimeZones().stream().map(
                                 it -> ZoneId.of(it).getDisplayName(
                                         TextStyle.SHORT,
                                         LawnchairUtilsKt.getLocale(context))).collect(
-                                Collectors.joining(", ")));
+                                Collectors.joining(", "))));
                     }
 
                     @Override
                     public void onItemRangeInserted(ObservableList<String> sender,
                                                     int positionStart, int itemCount) {
-                        setSummary(FeedPersistence.Companion.getInstance(
+                        FeedUtil.runOnMainThread(() -> setSummary(FeedPersistence.Companion.getInstance(
                                 context).getClockTimeZones().stream().map(
                                 it -> ZoneId.of(it).getDisplayName(
                                         TextStyle.SHORT,
                                         LawnchairUtilsKt.getLocale(context))).collect(
-                                Collectors.joining(", ")));
+                                Collectors.joining(", "))));
                     }
 
                     @Override
                     public void onItemRangeMoved(ObservableList<String> sender, int fromPosition,
                                                  int toPosition, int itemCount) {
-                        setSummary(FeedPersistence.Companion.getInstance(
+                        FeedUtil.runOnMainThread(() -> setSummary(FeedPersistence.Companion.getInstance(
                                 context).getClockTimeZones().stream().map(
                                 it -> ZoneId.of(it).getDisplayName(
                                         TextStyle.SHORT,
                                         LawnchairUtilsKt.getLocale(context))).collect(
-                                Collectors.joining(", ")));
+                                Collectors.joining(", "))));
                     }
 
                     @Override
                     public void onItemRangeRemoved(ObservableList<String> sender, int positionStart,
                                                    int itemCount) {
-                        setSummary(FeedPersistence.Companion.getInstance(
+                        FeedUtil.runOnMainThread(() -> setSummary(FeedPersistence.Companion.getInstance(
                                 context).getClockTimeZones().stream().map(
                                 it -> ZoneId.of(it).getDisplayName(
                                         TextStyle.SHORT,
                                         LawnchairUtilsKt.getLocale(context))).collect(
-                                Collectors.joining(", ")));
+                                Collectors.joining(", "))));
                     }
                 });
         setTitle(R.string.title_pref_feed_world_clocks);
