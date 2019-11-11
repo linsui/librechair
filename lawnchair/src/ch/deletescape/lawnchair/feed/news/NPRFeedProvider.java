@@ -22,15 +22,15 @@ package ch.deletescape.lawnchair.feed.news;
 
 import android.content.Context;
 
+import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 
-import java.io.InputStreamReader;
-import java.net.URL;
+import org.xml.sax.InputSource;
+
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 public class NPRFeedProvider extends AbstractRSSFeedProvider {
     public NPRFeedProvider(Context c) {
@@ -45,9 +45,12 @@ public class NPRFeedProvider extends AbstractRSSFeedProvider {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void bindFeed(BindCallback callback, String token) {
-        Flowable.fromCallable(() -> new SyndFeedInput().build(new InputStreamReader(new URL("https://www.npr.org/rss/rss.php").openStream())))
-                .subscribeOn(Schedulers.io())
-                .doOnError(Throwable::printStackTrace)
-                .subscribe(callback::onBind);
+        FeedUtil.download("https://www.npr.org/rss/rss.php", getContext(), is -> {
+            try {
+                callback.onBind(new SyndFeedInput().build(new InputSource(is)));
+            } catch (FeedException e) {
+                e.printStackTrace();
+            }
+        }, null);
     }
 }
