@@ -73,6 +73,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 it.startTime <= LocalDateTime.now() &&
                         it.endTime >= LocalDateTime.now()
             }
+            d("init: ongoing events are $ongoingEvents")
         }
 
         TickManager.subscribe {
@@ -89,6 +90,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     it.startTime <= LocalDateTime.now() &&
                             it.endTime >= LocalDateTime.now()
                 }
+                d("init: ongoing events are $ongoingEvents")
             }
         }
     }
