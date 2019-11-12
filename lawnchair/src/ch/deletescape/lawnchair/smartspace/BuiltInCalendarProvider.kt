@@ -41,10 +41,12 @@ import androidx.annotation.Keep
 import ch.deletescape.lawnchair.awareness.CalendarManager
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.drawableToBitmap
+import ch.deletescape.lawnchair.feed.CalendarScope
 import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -52,11 +54,13 @@ import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 @Keep
-class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) : LawnchairSmartspaceController.DataProvider(controller) {
+class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
+        LawnchairSmartspaceController.DataProvider(controller) {
     private var card: LawnchairSmartspaceController.CardData? = null
     private val contentResolver
         get() = context.contentResolver
     private val events = mutableListOf<CalendarManager.CalendarEvent>()
+
     init {
         CalendarManager.subscribe {
             events.clear()
@@ -71,7 +75,17 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) : Lawnc
             }
         }
         TickManager.subscribe {
-            updateInformation()
+            CalendarScope.launch {
+                events.clear()
+                events += events.filter {
+                    it.startTime > LocalDateTime.now() &&
+                            it.startTime < LocalDateTime.now()
+                            .plusMinutes(256)
+                }
+                runOnMainThread {
+                    updateInformation()
+                }
+            }
         }
     }
 
