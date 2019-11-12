@@ -386,7 +386,9 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                 if (it is VectorDrawable) {
                     it.tint(if (holder.itemViewType and Card.RAISE != 0) getOverrideColor(
                             holder.itemView.context) else if (useWhiteText(backgroundColor,
-                                    context)) R.color.qsb_background else R.color.qsb_background_dark)
+                                    context)) R.color.qsb_background.fromColorRes(context).setAlpha(
+                            255) else R.color.qsb_background_dark.fromColorRes(context).setAlpha(
+                            255))
                 } else {
                     it
                 }
