@@ -21,18 +21,12 @@
 package ch.deletescape.lawnchair.awareness
 
 import ch.deletescape.lawnchair.LawnchairApp
-import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
-import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
-import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 
 class AwareApp : LawnchairApp() {
     override fun onCreate() {
         super.onCreate()
-        DynamicProviderController.attachContext(this)
-        ChipStyleRegistry.populateWithContext(this)
         WeatherManager.attachToApplication(this)
         TickManager.bindToContext(this)
-        CardStyleRegistry.populateWithContext(this)
         VolumeManager.attachToContext(this)
         CalendarManager.attachToContext(this)
     }
