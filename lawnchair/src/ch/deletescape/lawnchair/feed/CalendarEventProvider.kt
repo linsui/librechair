@@ -38,6 +38,7 @@ import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import kotlinx.android.synthetic.main.calendar_event.view.*
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -71,6 +72,23 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             ongoingEvents += it.filter {
                 it.startTime <= LocalDateTime.now() &&
                         it.endTime > LocalDateTime.now()
+            }
+        }
+
+        TickManager.subscribe {
+            CalendarScope.launch {
+                events.clear()
+                events += events.filter {
+                    it.startTime > LocalDateTime.now() &&
+                            it.startTime < LocalDateTime.now()
+                            .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+                }
+                d("init: events are $events")
+                ongoingEvents.clear()
+                ongoingEvents += ongoingEvents.filter {
+                    it.startTime <= LocalDateTime.now() &&
+                            it.endTime > LocalDateTime.now()
+                }
             }
         }
     }
