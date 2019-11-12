@@ -63,15 +63,15 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         CalendarManager.subscribe {
             events.clear()
             events += it.filter {
-                it.startTime > LocalDateTime.now() &&
-                        it.startTime < LocalDateTime.now()
+                it.startTime >= LocalDateTime.now() &&
+                        it.startTime <= LocalDateTime.now()
                         .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
             }
             d("init: events are $events")
             ongoingEvents.clear()
             ongoingEvents += it.filter {
                 it.startTime <= LocalDateTime.now() &&
-                        it.endTime > LocalDateTime.now()
+                        it.endTime >= LocalDateTime.now()
             }
         }
 
@@ -79,15 +79,15 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             CalendarScope.launch {
                 events.clear()
                 events += events.filter {
-                    it.startTime > LocalDateTime.now() &&
-                            it.startTime < LocalDateTime.now()
+                    it.startTime >= LocalDateTime.now() &&
+                            it.startTime <= LocalDateTime.now()
                             .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
                 }
                 d("init: events are $events")
                 ongoingEvents.clear()
                 ongoingEvents += ongoingEvents.filter {
                     it.startTime <= LocalDateTime.now() &&
-                            it.endTime > LocalDateTime.now()
+                            it.endTime >= LocalDateTime.now()
                 }
             }
         }
