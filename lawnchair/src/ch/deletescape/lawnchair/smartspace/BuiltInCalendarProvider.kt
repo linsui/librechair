@@ -65,9 +65,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         CalendarManager.subscribe {
             events.clear()
             events += it.filter {
-                it.startTime > LocalDateTime.now() &&
-                        it.startTime < LocalDateTime.now()
-                        .plusMinutes(256)
+                it.startTime >= LocalDateTime.now() &&
+                        it.startTime <= LocalDateTime.now()
+                        .plusHours(2)
             }
             d("init: $events")
             runOnMainThread {
@@ -78,9 +78,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
             CalendarScope.launch {
                 events.clear()
                 events += events.filter {
-                    it.startTime > LocalDateTime.now() &&
-                            it.startTime < LocalDateTime.now()
-                            .plusMinutes(256)
+                    it.startTime >= LocalDateTime.now() &&
+                            it.startTime <= LocalDateTime.now()
+                            .plusHours(2)
                 }
                 runOnMainThread {
                     updateInformation()
