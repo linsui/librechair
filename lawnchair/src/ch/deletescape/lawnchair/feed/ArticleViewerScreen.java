@@ -36,13 +36,10 @@ import com.android.launcher3.Utilities;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import io.github.cdimascio.essence.Essence;
 
@@ -105,19 +102,10 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
-        Executors.newSingleThreadExecutor().submit(() -> {
+        FeedUtil.download(url, this, is -> {
             try {
-                URLConnection urlConnection = new URL(
-                        url.replace("http://", "https://"))
-                        .openConnection();
-                if (urlConnection instanceof HttpURLConnection) {
-                    ((HttpURLConnection) urlConnection)
-                            .setInstanceFollowRedirects(true);
-                }
                 CharSequence text = Essence
-                        .extract(IOUtils.toString(urlConnection
-                                .getInputStream(), Charset
-                                .defaultCharset())).getText();
+                        .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
                 if (text.toString().trim().isEmpty()) {
                     text = Html
                             .fromHtml(desc, 0);
@@ -127,7 +115,7 @@ public class ArticleViewerScreen extends ProviderScreen {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
+        }, null);
     }
 
     @Override
