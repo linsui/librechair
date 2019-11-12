@@ -23,26 +23,31 @@ package ch.deletescape.lawnchair.feed.images.providers
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.SystemClock
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicRetrofitServiceFactory
+import ch.deletescape.lawnchair.mainHandler
 import kotlinx.coroutines.async
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     override val expiryTime: Long
         get() = TimeUnit.DAYS.toMillis(1)
 
-    var cache: File = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+    var cache: File = File(c.cacheDir,
+            "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
 
     init {
         TickManager.subscribe {
-            cache = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+            cache = File(c.cacheDir,
+                    "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
         }
     }
 
@@ -57,7 +62,8 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
                     return@async null
                 } else {
                     return@async BitmapFactory
-                            .decodeStream(URL(response.body()!!.items[0].image.originalUrl).openStream())
+                            .decodeStream(
+                                    URL(response.body()!!.items[0].image.originalUrl).openStream())
                             .also {
                                 it.compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(cache))
                             }
@@ -70,6 +76,24 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     }.await()
 
     override fun registerOnChangeListener(listener: () -> Unit) {
-
+        val runnable = object : Runnable {
+            override fun run() {
+                mainHandler.postAtTime(this, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                        .plusDays(1)
+                        .withHour(0)
+                        .withSecond(0)
+                        .withMinute(0)
+                        .withNano(0)
+                        .toEpochSecond() * 1000 - System.currentTimeMillis()))
+                listener.invoke()
+            }
+        }
+        mainHandler.postAtTime(runnable, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                .plusDays(1)
+                .withHour(0)
+                .withSecond(0)
+                .withMinute(0)
+                .withNano(0)
+                .toEpochSecond() * 1000 - System.currentTimeMillis()))
     }
 }

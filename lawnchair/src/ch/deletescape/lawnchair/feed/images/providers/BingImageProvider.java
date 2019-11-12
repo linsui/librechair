@@ -27,7 +27,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -39,7 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -145,19 +144,26 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
     @Override
     public void registerOnChangeListener(@NotNull Function0<Unit> listener) {
-        new Handler(context.getMainLooper()).postAtTime(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                cache.delete();
-                                                                listener.invoke();
-                                                                new Handler(context.getMainLooper()).postAtTime(this,
-                                                                        SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date())
-                                                                                .toInstant()
-                                                                                .toEpochMilli() - System.currentTimeMillis());
-                                                            }
-                                                        },
-                SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date()).toInstant()
-                        .toEpochMilli() - System.currentTimeMillis());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                LawnchairUtilsKt.getMainHandler().postAtTime(this,SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                        .plusDays(1)
+                        .withHour(0)
+                        .withSecond(0)
+                        .withMinute(0)
+                        .withNano(0)
+                        .toEpochSecond() * 1000 - System.currentTimeMillis()));
+                listener.invoke();
+            }
+        };
+        LawnchairUtilsKt.getMainHandler().postAtTime(runnable, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                .plusDays(1)
+                .withHour(0)
+                .withSecond(0)
+                .withMinute(0)
+                .withNano(0)
+                .toEpochSecond() * 1000 - System.currentTimeMillis()));
     }
 
     @Nullable

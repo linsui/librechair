@@ -30,6 +30,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class WikipediaFeaturedImageProvider(val context: Context) : ImageProvider {
@@ -47,8 +48,25 @@ class WikipediaFeaturedImageProvider(val context: Context) : ImageProvider {
         null
     }
 
-    override fun registerOnChangeListener(listener: () -> Unit) {
-        mainHandler.postAtTime(listener, SystemClock.uptimeMillis())
+    override fun registerOnChangeListener(listener: Function0<Unit>) {
+        val runnable = object : Runnable {
+            override fun run() {
+                mainHandler.postAtTime(this, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                        .plusDays(1)
+                        .withHour(0)
+                        .withSecond(0)
+                        .withMinute(0)
+                        .withNano(0)
+                        .toEpochSecond() * 1000 - System.currentTimeMillis()))
+                listener.invoke()
+            }
+        }
+        mainHandler.postAtTime(runnable, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                .plusDays(1)
+                .withHour(0)
+                .withSecond(0)
+                .withMinute(0)
+                .withNano(0)
+                .toEpochSecond() * 1000 - System.currentTimeMillis()))
     }
-
 }
