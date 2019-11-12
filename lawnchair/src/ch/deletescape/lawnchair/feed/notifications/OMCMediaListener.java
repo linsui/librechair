@@ -154,21 +154,16 @@ public class OMCMediaListener extends MediaController.Callback
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void toggle(boolean finalClick) {
-        if (!finalClick) {
-            Log.d(TAG, "Toggle");
-            pressButton(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
-        }
+    public void toggle() {
+        pressButton(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
     }
 
     public void next() {
-        Log.d(TAG, "Next");
         pressButton(KeyEvent.KEYCODE_MEDIA_NEXT);
         pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
     }
 
     public void previous() {
-        Log.d(TAG, "Previous");
         pressButton(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
         pressButton(KeyEvent.KEYCODE_MEDIA_PLAY);
     }

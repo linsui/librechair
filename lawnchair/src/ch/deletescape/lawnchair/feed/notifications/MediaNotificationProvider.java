@@ -305,7 +305,7 @@ public class MediaNotificationProvider extends FeedProvider {
             } else {
                 duration.setText(null);
             }
-            pause.setOnClickListener(cause -> mediaListener.toggle(false));
+            pause.setOnClickListener(cause -> mediaListener.toggle());
             next.setOnClickListener(cause -> mediaListener.next());
             last.setOnClickListener(cause -> mediaListener.previous());
 
