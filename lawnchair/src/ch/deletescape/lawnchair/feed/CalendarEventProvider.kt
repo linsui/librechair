@@ -78,19 +78,20 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
 
         TickManager.subscribe {
             CalendarScope.launch {
+                val backup = listOf(* events.toTypedArray())
                 events.clear()
-                events += events.filter {
+                events += backup.filter {
                     it.startTime >= LocalDateTime.now() &&
                             it.startTime <= LocalDateTime.now()
                             .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
                 }
-                d("init: events are $events")
-                ongoingEvents.clear()
-                ongoingEvents += ongoingEvents.filter {
-                    it.startTime <= LocalDateTime.now() &&
-                            it.endTime >= LocalDateTime.now()
+                val ongoingBackup = listOf(* ongoingEvents.toTypedArray())
+                ongoingEvents += ongoingBackup.filter {
+                    d("init: (tick) ongoing event: $it currentTime: ${LocalDateTime.now()}")
+                    it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) <= System.currentTimeMillis() / 1000 &&
+                            it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) >= System.currentTimeMillis() / 1000
                 }
-                d("init: ongoing events are $ongoingEvents")
+                d("init: (tick) ongoing events are $ongoingEvents")
             }
         }
     }

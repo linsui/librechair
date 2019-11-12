@@ -76,8 +76,9 @@ class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         }
         TickManager.subscribe {
             CalendarScope.launch {
+                val backup = listOf(* events.toTypedArray())
                 events.clear()
-                events += events.filter {
+                events += backup.filter {
                     it.startTime >= LocalDateTime.now() &&
                             it.startTime <= LocalDateTime.now()
                             .plusHours(2)
