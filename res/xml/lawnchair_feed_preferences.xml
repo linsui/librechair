@@ -320,6 +320,10 @@
             android:key="feed_animation_interpolator"
             android:title="@string/title_pref_feed_animation_interpolator"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_disable_rv_springs"
+            android:title="@string/title_pref_feed_disable_rv_springs"
+            android:summary="@string/summary_pref_feed_disable_rv_springs" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory

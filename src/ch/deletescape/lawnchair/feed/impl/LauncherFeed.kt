@@ -67,6 +67,7 @@ import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.views.SpringRecyclerView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
@@ -1484,6 +1485,13 @@ class LauncherFeed(private val originalContext: Context,
             swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
             swipeRefreshLayout.setColorSchemeColors(* tabColours.toIntArray())
             swipeRefreshLayout.isRefreshing = true
+        }
+        recyclerView.post {
+            recyclerView.apply {
+                if (this is SpringRecyclerView) {
+                    this.springEnabled = !context.feedPrefs.disableSpringAnimation
+                }
+            }
         }
         runOnMainThread {
             updateActions()

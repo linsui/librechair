@@ -100,6 +100,8 @@ class FeedPersistence private constructor(val context: Context) {
                     FeedWidgetsProvider::class.qualifiedName).map {
                 FeedProviderContainer(it, null)
             })
+    val disableSpringAnimation
+            by BooleanDelegate(context, "feed_disable_rv_springs", false)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
