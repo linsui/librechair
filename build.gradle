@@ -65,9 +65,13 @@ configurations.all {
 
 def getGitHash = { ->
     def stdout = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'rev-parse', '--short', 'HEAD'
-        standardOutput = stdout
+    try {
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+    } catch (Exception e) {
+        e.printStackTrace()
     }
     return stdout.toString().trim()
 }
