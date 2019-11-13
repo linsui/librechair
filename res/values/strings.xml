@@ -790,4 +790,5 @@
     <string name="summary_pref_feed_enable_gsb">Google Safe Browsing allows for a more secure web browsing experience by marking and blocking malicious websites. Your browsing history is not sent to Google.</string>
     <string name="title_pref_feed_disable_rv_springs">Disable spring scroll effect</string>
     <string name="summary_pref_feed_disable_rv_springs">The spring effect will be disabled</string>
+    <string name="hint_search_feed">Search for keywords, titles, ...</string>
 </resources>

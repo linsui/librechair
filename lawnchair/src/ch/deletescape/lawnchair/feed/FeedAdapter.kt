@@ -65,7 +65,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
-                       var context: Context, private val feed: LauncherFeed?) :
+                       var context: Context, val feed: LauncherFeed?) :
         RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
@@ -87,7 +87,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    val cardCache = mutableMapOf<FeedProvider, List<Card>>()
+    open val cardCache = mutableMapOf<FeedProvider, List<Card>>()
     open val cards
         get() = run {
             val algorithm = ReflectionUtils.inflateSortingAlgorithm(

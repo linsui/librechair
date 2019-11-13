@@ -114,12 +114,12 @@ class LauncherFeed(private val originalContext: Context,
 
     private var internalActions = mutableMapOf<Int, FeedProvider.Action>()
 
-    private var context = ContextThemeWrapper(originalContext,
+    internal var context = ContextThemeWrapper(originalContext,
             if (dark) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)
 
     var chipAdapter: ChipAdapter = ChipAdapter(context, this)
     private var lastOrientation = context.resources.configuration.orientation
-    private var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
+    internal var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
     private val windowService = context.getSystemService(WindowManager::class.java)
