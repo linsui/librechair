@@ -254,7 +254,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                     getContext()).getUseRSSMinicard();
             for (NewsEntry entry : articles) {
                 Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
-                @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, null,
+                @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, entry.title,
                         parent -> {
                             Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                             View v = LayoutInflater.from(parent.getContext())
