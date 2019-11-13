@@ -30,6 +30,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -37,12 +38,17 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import com.android.launcher3.Utilities;
+import com.android.launcher3.util.Preconditions;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -204,5 +210,82 @@ public final class FeedUtil {
     @AnyThread
     public static void runOnMainThread(@Nonnull @MainThread Runnable toRun) {
         new Handler(Looper.getMainLooper()).post(toRun);
+    }
+
+    @MainThread
+    public static void colorHandles(@Nonnull TextView view, int color) {
+        Preconditions.assertUIThread();
+        if (Utilities.HIDDEN_APIS_ALLOWED) {
+            try {
+                @SuppressWarnings("JavaReflectionMemberAccess")
+                Field editorField = TextView.class.getDeclaredField("mEditor");
+                if (!editorField.isAccessible()) {
+                    editorField.setAccessible(true);
+                }
+
+                Object editor = editorField.get(view);
+                Class<?> editorClass = Objects.requireNonNull(editor).getClass();
+
+                String[] handleNames = {"mSelectHandleLeft", "mSelectHandleRight", "mSelectHandleCenter"};
+                String[] resNames = {"mTextSelectHandleLeftRes", "mTextSelectHandleRightRes", "mTextSelectHandleRes"};
+
+                for (int i = 0; i < handleNames.length; i++) {
+                    Field handleField = editorClass.getDeclaredField(handleNames[i]);
+                    if (!handleField.isAccessible()) {
+                        handleField.setAccessible(true);
+                    }
+
+                    Drawable handleDrawable = (Drawable) handleField.get(editor);
+
+                    if (handleDrawable == null) {
+                        Field resField = TextView.class.getDeclaredField(resNames[i]);
+                        if (!resField.isAccessible()) {
+                            resField.setAccessible(true);
+                        }
+                        int resId = resField.getInt(view);
+                        handleDrawable = view.getContext().getDrawable(resId);
+                    }
+
+                    if (handleDrawable != null) {
+                        Drawable drawable = handleDrawable.mutate();
+                        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                        handleField.set(editor, drawable);
+                    }
+                }
+                if (view instanceof EditText) {
+                    setCursorDrawableColor((EditText) view, color);
+                }
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    @MainThread
+    public static void setCursorDrawableColor(@Nonnull EditText editText, int color) {
+        if (Utilities.HIDDEN_APIS_ALLOWED) {
+            try {
+                Field fCursorDrawableRes =
+                        TextView.class.getDeclaredField("mCursorDrawableRes");
+                fCursorDrawableRes.setAccessible(true);
+                int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
+                Field fEditor = TextView.class.getDeclaredField("mEditor");
+                fEditor.setAccessible(true);
+                Object editor = fEditor.get(editText);
+                Class<?> clazz = Objects.requireNonNull(editor).getClass();
+                Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
+                fCursorDrawable.setAccessible(true);
+
+                Drawable[] drawables = new Drawable[2];
+                drawables[0] = editText.getContext().getDrawable(mCursorDrawableRes);
+                drawables[1] = editText.getContext().getDrawable(mCursorDrawableRes);
+                Objects.requireNonNull(drawables[0]).setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                Objects.requireNonNull(drawables[1]).setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                fCursorDrawable.set(editor, drawables);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

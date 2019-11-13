@@ -31,6 +31,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.search_screen.view.*
@@ -93,6 +94,8 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                 }
             }
         }
+
+        FeedUtil.colorHandles(editText, editText.textColors.defaultColor)
 
         view.search_input_field.apply {
             boxStrokeColor = this@SearchScreen.editText.textColors.defaultColor
