@@ -160,6 +160,11 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
         }));
     }
 
+    @Override
+    public boolean isSearchable() {
+        return true;
+    }
+
     private void showNotifications(List<NewsEntry> original) {
         if (FeedPersistence.Companion.getInstance(getContext()).getArticleNotifications()) {
             if (!articles.isEmpty()) {

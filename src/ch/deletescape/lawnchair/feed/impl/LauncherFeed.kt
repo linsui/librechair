@@ -58,6 +58,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipAdapter
 import ch.deletescape.lawnchair.feed.chips.ChipController
 import ch.deletescape.lawnchair.feed.chips.ChipDatabase
 import ch.deletescape.lawnchair.feed.images.screen.ImageDataScreen
+import ch.deletescape.lawnchair.feed.search.SearchScreen
 import ch.deletescape.lawnchair.feed.tabs.TabController
 import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
@@ -207,6 +208,10 @@ class LauncherFeed(private val originalContext: Context,
                 }
             }
         }
+    private val searchAction = FeedProvider.Action(R.drawable.ic_search.fromDrawableRes(context),
+            R.string.search.fromStringRes(context)) {
+        SearchScreen(this).display(this, null, null)
+    }
     var infobox = feedController.findViewById(R.id.info_box_text) as TextView
     private var reapplyInsetFlag = false
     private var conservativeRefreshTimes =
@@ -1494,6 +1499,11 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         runOnMainThread {
+            if (adapter.providers.any { it.isSearchable }) {
+                internalActions.put("search".hashCode(), searchAction)
+            } else {
+                internalActions.remove("search".hashCode())
+            }
             updateActions()
             if (context.lawnchairPrefs.feedHighContrastToolbar) {
                 toolbarParent.setBackgroundColor(backgroundColor.setAlpha(
