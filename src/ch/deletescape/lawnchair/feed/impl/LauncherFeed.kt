@@ -185,7 +185,7 @@ class LauncherFeed(private val originalContext: Context,
         get() = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
             (feedController.findViewById(R.id.feed_back_to_top) as FloatingActionButton)
-    private var tabColours = ColorProvider.Companion.inflate(
+    internal var tabColours = ColorProvider.Companion.inflate(
             Class.forName(context.lawnchairPrefs.feedColorProvider) as Class<out ColorProvider>)
             .getColors(context).toMutableList().also {
                 if (it.isEmpty()) {

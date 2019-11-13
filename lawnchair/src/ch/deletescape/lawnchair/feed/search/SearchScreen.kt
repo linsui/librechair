@@ -33,20 +33,19 @@ import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.search_screen.view.*
-import kotlinx.coroutines.Job
 
 class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context) {
     private lateinit var recyclerView: RecyclerView
     private lateinit var editText: EditText
     private lateinit var adapter: SearchAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var currentJob: Job
 
     override fun bindView(view: View) {
         recyclerView = view.feed_search_rv
         editText = view.search_edit_text
         adapter = SearchAdapter(feed.adapter, null)
         swipeRefreshLayout = view.feed_search_swipe_layout
+        swipeRefreshLayout.setColorSchemeColors(* feed.tabColours.toTypedArray().toIntArray())
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -63,9 +62,14 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                 adapter.notifyDataSetChanged()
+                swipeRefreshLayout.isRefreshing = false
             }
-
         })
+
+        swipeRefreshLayout.setOnRefreshListener {
+            adapter.notifyDataSetChanged()
+            swipeRefreshLayout.isRefreshing = false
+        }
     }
 
     override fun getView(parent: ViewGroup): View {
