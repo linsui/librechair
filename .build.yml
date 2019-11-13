@@ -10,8 +10,8 @@ environment:
   FLAVOUR:             "release"
   FLAVOUR_CAP:         "Release"
   CHAT_ID:             "librechair"
-  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-release-unsigned"
-  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-release-unsigned"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 secrets:
