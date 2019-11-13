@@ -32,8 +32,8 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
         get() = parent.cards.let {
             if (searchQuery != null) it.filter {
                 it.categories?.any {
-                    it.contains(searchQuery!!)
-                } == true || it.title?.contains(searchQuery!!) == true
+                    it.contains(searchQuery!!, true)
+                } == true || it.title?.contains(searchQuery!!, true) == true
             } else emptyList()
         }
 }
