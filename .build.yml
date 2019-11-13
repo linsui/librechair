@@ -7,11 +7,11 @@ environment:
   VARIANT_CAP:         "QuickstepLawnchairL3riDevWithWebView"
   VARIANTGO:           "quickstepLawnchairL3goDevWithWebView"
   VARIANTGO_CAP:       "QuickstepLawnchairL3goDevWithWebView"
-  FLAVOUR:             "release"
-  FLAVOUR_CAP:         "Release"
+  FLAVOUR:             "debug"
+  FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
-  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-release"
-  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-release"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 secrets:
