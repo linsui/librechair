@@ -70,6 +70,8 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
             adapter.notifyDataSetChanged()
             swipeRefreshLayout.isRefreshing = false
         }
+
+        view.search_input_field.boxStrokeColor = editText.textColors.defaultColor
     }
 
     override fun getView(parent: ViewGroup): View {
