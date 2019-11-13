@@ -343,7 +343,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 }
                             }
                             return v;
-                        }, Card.RAISE | Card.TEXT_ONLY, null,
+                        }, Card.RAISE | Card.NO_HEADER, null,
                         entry.hashCode(), true,
                         entry.categories != null ? entry.categories : Collections.emptyList());
                 cards.add(card);
