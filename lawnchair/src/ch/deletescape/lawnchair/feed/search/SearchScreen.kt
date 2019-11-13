@@ -28,17 +28,22 @@ import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.ProviderScreen
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.inflate
 import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.search_screen.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context) {
     private lateinit var recyclerView: RecyclerView
     private lateinit var editText: EditText
     private lateinit var adapter: SearchAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var job: Job
 
     override fun bindView(view: View) {
         recyclerView = view.feed_search_rv
@@ -60,15 +65,33 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
-                adapter.notifyDataSetChanged()
-                swipeRefreshLayout.isRefreshing = false
+                if (::job.isInitialized) {
+                    job.cancel()
+                }
+                swipeRefreshLayout.isRefreshing = true
+                job = FeedScope.launch {
+                    adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
+                    adapter.refreshSearch()
+                    FeedScope.launch(Dispatchers.Main) {
+                        adapter.notifyDataSetChanged()
+                        swipeRefreshLayout.isRefreshing = false
+                    }
+                }
             }
         })
 
         swipeRefreshLayout.setOnRefreshListener {
-            adapter.notifyDataSetChanged()
-            swipeRefreshLayout.isRefreshing = false
+            if (::job.isInitialized) {
+                job.cancel()
+            }
+            swipeRefreshLayout.isRefreshing = true
+            job = FeedScope.launch {
+                adapter.refreshSearch()
+                FeedScope.launch(Dispatchers.Main) {
+                    adapter.notifyDataSetChanged()
+                    swipeRefreshLayout.isRefreshing = false
+                }
+            }
         }
 
         view.search_input_field.apply {

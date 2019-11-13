@@ -26,14 +26,19 @@ import ch.deletescape.lawnchair.feed.FeedProvider
 
 class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
         FeedAdapter(parent.providers, parent.backgroundColor, parent.context, parent.feed) {
+    private lateinit var cache: List<Card>
     override val cardCache: MutableMap<FeedProvider, List<Card>>
         get() = parent.cardCache
     override val cards
-        get() = parent.cards.let {
+        get() = if (::cache.isInitialized) cache else emptyList()
+
+    internal fun refreshSearch() {
+        cache = parent.cards.let {
             if (searchQuery != null) it.filter {
                 it.categories?.any {
                     it.contains(searchQuery!!, true)
                 } == true || it.title?.contains(searchQuery!!, true) == true
             } else emptyList()
         }
+    }
 }
