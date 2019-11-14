@@ -30,7 +30,7 @@ import android.view.ViewGroup
  * which will ensure that the card appears on the top of the screen, in user-defined order
  */
 
-data class Card(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper,
+data class Card constructor(val icon: Drawable?, val title: String?, val inflateHelper: InflateHelper,
                 val type: Int, val algoFlags: String? = null,
                 val identifier: Int = title.hashCode()) {
     var canHide = false
@@ -38,6 +38,7 @@ data class Card(val icon: Drawable?, val title: String?, val inflateHelper: Infl
     var actionName: String? = null
     var actionListener: ((view: View) -> Unit)? = null
     var onRemoveListener: (() -> Unit)? = null
+    var indexData: String? = null
 
     @ValueRange(min = 0.0, max = 1.0)
     var overrideOpacity: Float? = null

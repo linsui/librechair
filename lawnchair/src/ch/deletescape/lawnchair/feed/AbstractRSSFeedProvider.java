@@ -346,6 +346,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                         }, Card.RAISE | Card.NO_HEADER, null,
                         entry.hashCode(), true,
                         entry.categories != null ? entry.categories : Collections.emptyList());
+                card.setIndexData(entry.content);
                 cards.add(card);
                 card.setActionName(getContext().getString(getContext().getResources()
                         .getIdentifier("whichSendApplicationLabel", "string", "android")));

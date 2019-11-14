@@ -41,7 +41,9 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
             if (searchQuery != null) it.filter {
                 it.categories?.any {
                     matches(searchQuery, it)
-                } == true || it.title?.let { matches(searchQuery, it) } == true
+                } == true || it.title?.let {
+                    matches(searchQuery, it)
+                } == true || it.indexData?.let { matches(searchQuery, it) } == true
             } else emptyList()
         }
     }
