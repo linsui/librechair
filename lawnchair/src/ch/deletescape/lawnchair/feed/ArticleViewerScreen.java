@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.text.Html;
@@ -34,6 +35,7 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -75,26 +77,31 @@ public class ArticleViewerScreen extends ProviderScreen {
         return LawnchairUtilsKt.inflate(parent, R.layout.overlay_article);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void bindView(View articleView) {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
         sv = (ScrollView) contentView.getParent();
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
-        GestureDetector detector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                try {
-                    WebViewScreen screen = WebViewScreen.obtain(ArticleViewerScreen.this, url);
-                    screen.display(ArticleViewerScreen.this,
-                            StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getFirst() + e.getX()),
-                            StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(openInBrowser).getSecond() + e.getY()));
-                } catch (IllegalStateException e2) {
-                    Utilities.openURLinBrowser(ArticleViewerScreen.this, url);
-                }
-                return super.onSingleTapUp(e);
-            }
-        });
+        GestureDetector detector = new GestureDetector(this,
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        try {
+                            WebViewScreen screen = WebViewScreen.obtain(ArticleViewerScreen.this,
+                                    url);
+                            screen.display(ArticleViewerScreen.this,
+                                    StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(
+                                            openInBrowser).getFirst() + e.getX()),
+                                    StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(
+                                            openInBrowser).getSecond() + e.getY()));
+                        } catch (IllegalStateException e2) {
+                            Utilities.openURLinBrowser(ArticleViewerScreen.this, url);
+                        }
+                        return super.onSingleTapUp(e);
+                    }
+                });
         openInBrowser.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
         openInBrowser.setTextColor(FeedAdapter.Companion.getOverrideColor(articleView.getContext(),
                 LawnchairUtilsKt.getColorEngineAccent(this)));
@@ -107,15 +114,14 @@ public class ArticleViewerScreen extends ProviderScreen {
                 CharSequence text = Essence
                         .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
                 if (text.toString().trim().isEmpty()) {
-                    text = Html
-                            .fromHtml(desc, 0);
+                    text = Html.fromHtml(desc, 0);
                 }
                 CharSequence finalText = text;
                 contentView.post(() -> contentView.setText(finalText));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, null);
+        }, throwable -> contentView.setText(ExceptionUtils.getMessage(throwable)));
     }
 
     @Override
