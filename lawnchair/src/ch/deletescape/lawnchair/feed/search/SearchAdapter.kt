@@ -18,6 +18,8 @@
  *     along with Librechair.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NestedLambdaShadowedImplicitParameter")
+
 package ch.deletescape.lawnchair.feed.search
 
 import ch.deletescape.lawnchair.feed.Card
@@ -34,11 +36,26 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
 
     internal fun refreshSearch() {
         cache = parent.cards.let {
+            val searchQuery = this.searchQuery
             if (searchQuery != null) it.filter {
                 it.categories?.any {
-                    it.contains(searchQuery!!, true)
-                } == true || it.title?.contains(searchQuery!!, true) == true
+                    matches(searchQuery, it)
+                } == true || it.title?.let { matches(searchQuery, it) } == true
             } else emptyList()
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun matches(query: String, content: String): Boolean {
+            if (content.contains(query, true)) {
+                return true
+            }
+            val tokens = query.split(Regex("[ ,]+"))
+            if (tokens.any { content.contains(it) }) {
+                return true
+            }
+            return false
         }
     }
 }
