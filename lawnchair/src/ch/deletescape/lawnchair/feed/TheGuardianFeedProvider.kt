@@ -23,12 +23,8 @@ import android.content.Context
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
-import org.apache.commons.io.IOUtils
-import org.apache.commons.io.input.CharSequenceInputStream
 import org.xml.sax.InputSource
 import java.io.IOException
-import java.net.URL
-import java.nio.charset.Charset
 
 class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) {
     companion object {
@@ -142,7 +138,7 @@ class TheGuardianFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) 
                 "" to "https://www.theguardian.com/world/samoa",
                 "" to "https://www.theguardian.com/world/san-marino",
                 "" to "https://www.theguardian.com/world/sao-tome-and-principe",
-                "" to "https://www.theguardian.com/world/saudiarabia",
+                "SAU" to "https://www.theguardian.com/world/saudiarabia",
                 "" to "https://www.theguardian.com/world/senegal",
                 "" to "https://www.theguardian.com/world/serbia",
                 "" to "https://www.theguardian.com/world/seychelles",
