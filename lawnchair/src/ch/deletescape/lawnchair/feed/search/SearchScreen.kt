@@ -37,6 +37,7 @@ import com.android.launcher3.R
 import kotlinx.android.synthetic.lawnchair.search_screen.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context) {
@@ -74,6 +75,7 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                     adapter.refreshSearch()
                     FeedScope.launch(Dispatchers.Main) {
+                        delay(300)
                         if (!recyclerView.isComputingLayout) {
                             adapter.notifyDataSetChanged()
                         }
@@ -91,6 +93,7 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
             job = FeedScope.launch {
                 adapter.refreshSearch()
                 FeedScope.launch(Dispatchers.Main) {
+                    delay(100)
                     adapter.notifyDataSetChanged()
                     swipeRefreshLayout.isRefreshing = false
                 }
