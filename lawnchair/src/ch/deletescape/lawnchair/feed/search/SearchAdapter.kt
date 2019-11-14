@@ -52,7 +52,7 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
                 return true
             }
             val tokens = query.split(Regex("[ ,]+"))
-            if (tokens.any { content.contains(it) }) {
+            if (tokens.all { content.contains(it.trim(), true) }) {
                 return true
             }
             return false
