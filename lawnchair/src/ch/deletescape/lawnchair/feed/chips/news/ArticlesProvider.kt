@@ -47,7 +47,9 @@ abstract class ArticlesProvider(val context: Context) : ChipProvider() {
             } catch (e: IOException) {
                 e.printStackTrace()
             } catch (e: FeedException) {
-                e.printStackTrace();
+                e.printStackTrace()
+            } catch (e: RuntimeException) {
+                e.printStackTrace()
             }
         }
     }

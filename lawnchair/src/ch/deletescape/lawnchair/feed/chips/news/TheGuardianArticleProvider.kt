@@ -21,13 +21,13 @@
 package ch.deletescape.lawnchair.feed.chips.news
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import java.io.InputStreamReader
-import java.net.URL
 
 class TheGuardianArticleProvider(context: Context) : ArticlesProvider(context) {
     override fun getFeed(): SyndFeed = SyndFeedInput().build(
-            InputStreamReader(URL("https://www.theguardian.com/world/rss").openStream()))
+            InputStreamReader(FeedUtil.downloadDirect("https://www.theguardian.com/world/rss", context, null)!!))
 
 }
