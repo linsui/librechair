@@ -70,7 +70,9 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                 if (::job.isInitialized) {
                     job.cancel()
                 }
-                swipeRefreshLayout.isRefreshing = true
+                if (!swipeRefreshLayout.isRefreshing) {
+                    swipeRefreshLayout.isRefreshing = true
+                }
                 job = FeedScope.launch {
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                     adapter.refreshSearch()
