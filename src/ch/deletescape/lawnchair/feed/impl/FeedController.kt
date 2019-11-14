@@ -143,7 +143,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
+        try {
+            super.onLayout(changed, left, top, right, bottom)
+        } catch (e: IndexOutOfBoundsException) {
+            e.printStackTrace()
+        }
         setProgress(mCurrentState!!.progress, false)
     }
 

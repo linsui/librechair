@@ -74,7 +74,9 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                     adapter.refreshSearch()
                     FeedScope.launch(Dispatchers.Main) {
-                        adapter.notifyDataSetChanged()
+                        if (!recyclerView.isComputingLayout) {
+                            adapter.notifyDataSetChanged()
+                        }
                         swipeRefreshLayout.isRefreshing = false
                     }
                 }
