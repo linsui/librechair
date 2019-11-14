@@ -147,6 +147,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             super.onLayout(changed, left, top, right, bottom)
         } catch (e: IndexOutOfBoundsException) {
             e.printStackTrace()
+        } catch (e: IllegalStateException) {
+            e.printStackTrace()
         }
         setProgress(mCurrentState!!.progress, false)
     }

@@ -48,14 +48,23 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
     companion object {
         @JvmStatic
         fun matches(query: String, content: String): Boolean {
-            if (content.contains(query, true)) {
-                return true
+            if (query.startsWith(".re ")) {
+                try {
+                    return content.matches(Regex(query.substring(3)))
+                } catch (e: RuntimeException) {
+                    e.printStackTrace()
+                    return false
+                }
+            } else {
+                if (content.contains(query, true)) {
+                    return true
+                }
+                val tokens = query.split(Regex("[ ,]+"))
+                if (tokens.all { content.contains(it.trim(), true) }) {
+                    return true
+                }
+                return false
             }
-            val tokens = query.split(Regex("[ ,]+"))
-            if (tokens.all { content.contains(it.trim(), true) }) {
-                return true
-            }
-            return false
         }
     }
 }
