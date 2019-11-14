@@ -75,7 +75,7 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                     adapter.refreshSearch()
                     FeedScope.launch(Dispatchers.Main) {
-                        delay(300)
+                        delay(600)
                         if (!recyclerView.isComputingLayout) {
                             adapter.notifyDataSetChanged()
                         }
