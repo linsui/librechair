@@ -25,6 +25,7 @@ package ch.deletescape.lawnchair.feed.search
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.util.extensions.d
 
 class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
         FeedAdapter(parent.providers, parent.backgroundColor, parent.context, parent.feed) {
@@ -50,7 +51,8 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
         fun matches(query: String, content: String): Boolean {
             if (query.startsWith(".re ")) {
                 try {
-                    return content.matches(Regex(query.substring(3)))
+                    d("matches: regex query is ${query.substring(4)}")
+                    return content.matches(Regex(query.substring(4)))
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
                     return false
