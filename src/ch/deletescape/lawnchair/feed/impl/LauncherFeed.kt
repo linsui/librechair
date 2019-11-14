@@ -1033,6 +1033,7 @@ class LauncherFeed(private val originalContext: Context,
         displayView({
             inflater(it).also { view = it }
         }, x, y, clipBounds)
+        internalActions.remove("search".hashCode())
         providerScreens.add(screen to ScreenData(x, y, view!!, clipBounds))
         synchronized(internalActions) {
             if (!internalActions.containsKey(R.id.cancel)) {
@@ -1076,6 +1077,14 @@ class LauncherFeed(private val originalContext: Context,
         providerScreens.last().first.onDestroy()
         providerScreens.remove(providerScreens.last())
         updateActions()
+        if (providerScreens.isEmpty()) {
+            if (adapter.providers.any { it.isSearchable }) {
+                internalActions.put("search".hashCode(), searchAction)
+            } else {
+                internalActions.remove("search".hashCode())
+            }
+        }
+        updateActions()
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -1091,6 +1100,11 @@ class LauncherFeed(private val originalContext: Context,
         screenActions.remove(providerScreens.first { it.first == screen }.first)
         providerScreens.first { it.first == screen }.first.onDestroy()
         providerScreens.remove(providerScreens.first { it.first == screen })
+        if (adapter.providers.any { it.isSearchable }) {
+            internalActions.put("search".hashCode(), searchAction)
+        } else {
+            internalActions.remove("search".hashCode())
+        }
         updateActions()
     }
 
