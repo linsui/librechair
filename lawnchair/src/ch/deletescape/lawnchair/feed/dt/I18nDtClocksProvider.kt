@@ -25,6 +25,7 @@ import android.content.Context
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.Card
+import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.fromStringRes
@@ -115,7 +116,8 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             context.feedPrefs.clockTimeZones.clear()
                             context.feedPrefs.clockTimeZones.addAll(backup)
                             feed?.refresh(0)
-                        }.show()
+                        }
+                        .setActionTextColor(FeedAdapter.getOverrideColor(v.context)).show()
                 Unit
             }
             card
