@@ -114,7 +114,6 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
-        swipeRefreshLayout.setEnabled(false);
         FeedUtil.download(url, this, is -> {
             try {
                 CharSequence text = Essence
