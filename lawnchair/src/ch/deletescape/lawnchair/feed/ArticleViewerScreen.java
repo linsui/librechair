@@ -122,6 +122,25 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
+        FeedUtil.download(url, this, is -> {
+            try {
+                CharSequence text = Essence
+                        .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
+                if (text.toString().trim().isEmpty()) {
+                    text = Html.fromHtml(desc, 0);
+                }
+                CharSequence finalText = text;
+                contentView.post(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    contentView.setText(finalText);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, throwable -> {
+            articleView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+        });
         swipeRefreshLayout.setOnRefreshListener(() -> FeedUtil.download(url, this, is -> {
             try {
                 CharSequence text = Essence
