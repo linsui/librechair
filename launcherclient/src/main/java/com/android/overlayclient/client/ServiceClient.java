@@ -389,7 +389,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
 
     /**
      * This function <em>must</em> be called when a scroll interaction begins.
-     * @see #endScroll
+     * @see #stopScroll
      * @see #onScroll
      */
     @Override
