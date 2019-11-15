@@ -23,14 +23,11 @@ package ch.deletescape.lawnchair.feed.dt
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
-import ch.deletescape.lawnchair.formatTime
-import ch.deletescape.lawnchair.fromStringRes
-import ch.deletescape.lawnchair.inflate
-import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 import com.google.android.material.snackbar.Snackbar
@@ -117,6 +114,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             context.feedPrefs.clockTimeZones.addAll(backup)
                             feed?.refresh(0)
                         }
+                        .setBackgroundTint(v.context.getColorAttr(R.attr.backgroundColor))
                         .setActionTextColor(FeedAdapter.getOverrideColor(v.context)).show()
                 Unit
             }
