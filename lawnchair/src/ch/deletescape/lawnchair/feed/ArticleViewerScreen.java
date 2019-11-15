@@ -35,7 +35,6 @@ import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -121,7 +120,7 @@ public class ArticleViewerScreen extends ProviderScreen {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, throwable -> contentView.setText(ExceptionUtils.getMessage(throwable)));
+        }, throwable -> contentView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE));
     }
 
     @Override

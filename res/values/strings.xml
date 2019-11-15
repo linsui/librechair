@@ -791,4 +791,5 @@
     <string name="title_pref_feed_disable_rv_springs">Disable spring scroll effect</string>
     <string name="summary_pref_feed_disable_rv_springs">The spring effect will be disabled</string>
     <string name="hint_search_feed">Search for keywords, titles, ...</string>
+    <string name="title_article_load_error">The article could not be loaded due to a network error</string>
 </resources>
