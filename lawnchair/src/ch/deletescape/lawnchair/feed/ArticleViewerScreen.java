@@ -88,6 +88,13 @@ public class ArticleViewerScreen extends ProviderScreen {
         sv = (ScrollView) contentView.getParent();
         SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(
                 R.id.article_refresh_layout);
+        if (getBoundFeed() != null) {
+            swipeRefreshLayout.setColorSchemeColors(getBoundFeed()
+                    .getTabColours()
+                    .stream()
+                    .mapToInt(it -> it)
+                    .toArray());
+        }
         swipeRefreshLayout.setRefreshing(true);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
         GestureDetector detector = new GestureDetector(this,

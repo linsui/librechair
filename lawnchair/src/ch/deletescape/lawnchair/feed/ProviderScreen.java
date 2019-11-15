@@ -96,6 +96,16 @@ public abstract class ProviderScreen extends ContextWrapper
         }
     }
 
+    @Nullable
+    protected FeedProvider getBoundProvider() {
+        return provider;
+    }
+
+    @Nullable
+    protected LauncherFeed getBoundFeed() {
+        return feed;
+    }
+
     public void onPause() {
         lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_PAUSE);
     }
