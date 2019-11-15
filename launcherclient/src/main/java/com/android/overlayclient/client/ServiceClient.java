@@ -41,6 +41,16 @@ import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+/**
+ * {@link ServiceClient} is an implementation of all
+ * inheritors of {@link WorkspaceOverscrollClient}, which is compatible with 
+ * the Google app, the overlay implementation used by Librechair, and in the
+ * ory should be compatible with other third-party overlay providers, such a
+ * s HomeFeeder.
+ * @since the beginning of time
+ * @author Po Lu
+ * @license GPLv3 or later
+ */
 @SuppressWarnings("unchecked")
 public class ServiceClient extends ILauncherOverlayCallback.Stub
         implements DisconnectableOverscrollClient,
@@ -72,6 +82,19 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
     private final ServiceMode mode;
     private final ServiceState serviceState;
 
+    /**
+     * Creates a ServiceClient from an activity.
+     * @see ServiceClient
+     * @see ServiceFactory
+     * @see OverlayCallback
+     * @see ServiceMode
+     * @param boundActivity the activity that will display the overlay
+     * @param factory the factory that will provide the overlay service
+     * @param callback the overlay callback
+     * @param disconnectCallback the callback that will be executed when the overlay disconnects
+     * @param connectCallback the callback that will be exectuted when the overlay connects
+     * @param mode the mode this client should be attached in
+     */
     public ServiceClient(Activity boundActivity,
                          ServiceFactory factory, OverlayCallback callback,
                          Runnable disconnectCallback, Runnable connectCallback, ServiceMode mode) {
@@ -104,6 +127,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         mUIHandler = new Handler(Looper.getMainLooper(), this);
     }
 
+    /**
+     * Opens the overlay, with the default animation speed if necessary
+     * @see #closeOverlay
+     * @param animate whether the overlay should animate the opening
+     */
     @Override
     public void openOverlay(boolean animate) {
         if (overlay != null) {
@@ -115,6 +143,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Closes the overlay, with the default animation speed if necessary
+     * @see #openOverlay
+     * @param animate whether the overlay should animate the closing 
+     */
     @Override
     public void closeOverlay(boolean animate) {
         if (overlay != null) {
@@ -126,38 +159,55 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Opens the overlay in {@param duration} milliseconds
+     * @param duration the length of the animation, in milliseconds, or 0 if no animation should be used
+     */
     @Override
     public void openOverlay(int duration) {
         if (overlay != null) {
             try {
-                overlay.openOverlay(getAnimationFlags(true, duration));
+                overlay.openOverlay(getAnimationFlags(duration != 0, duration));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * Closes the overlay in {@param duration} milliseconds
+     * @param duration the length of the animation, in milliseconds, or 0 if no animation should be used
+     */
     @Override
     public void closeOverlay(int duration) {
         if (overlay != null) {
             try {
-                overlay.closeOverlay(getAnimationFlags(true, duration));
+                overlay.closeOverlay(getAnimationFlags(duration != 0, duration));
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    /**
+     * This function should be called whenever {@link android.app.Activity#onAttachedToWindow()} is called in the attached activity
+     */
     @Override
     public void onAttachedToWindow() {
         acceptLayoutParams(boundActivity.getWindow().getAttributes());
     }
 
+   /**
+    * This function should be called whenever {@link android.app.Activity#onDetachedFromWindow()} is called in the attached activity
+    */
     @Override
     public void onDetachedFromWindow() {
         acceptLayoutParams(null);
     }
 
+    /**
+     * This function should be called whenever {@link android.app.Activity#onResume()} is called in the attached activity
+     */
     @Override
     public void onResume() {
         if (overlay != null) {
@@ -193,6 +243,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * This function should be called whenever {@link android.app.Activity#onPause()} is called in the attached activity.
+     */
     @Override
     public void onPause() {
         if (overlay != null) {
@@ -228,6 +281,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * This function should be called whenever {@link android.app.Activity#onStart()} is called in the attached activity.
+     */
     @Override
     public void onStart() {
         if (overlay != null) {
@@ -259,6 +315,9 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+   /**
+    * This function should be called whenever {@link android.app.Activity#onStop()} is called in the attached activity.
+    */
     @Override
     public void onStop() {
         if (overlay != null) {
@@ -290,6 +349,15 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * This function sends {@param ogParams} to the overlay.
+     * <em> 
+     * The common programmer has no use for this function; the lifecycle callbacks should be used instead.
+     * </em>
+     * @see #onAttachedToWindow
+     * @see #onDetachedFromWindow
+     * @param ogParams the layout params to be sent
+     */
     @Override
     public void acceptLayoutParams(WindowManager.LayoutParams ogParams) {
         if (ogParams == null) {
@@ -319,6 +387,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * This function <em>must</em> be called when a scroll interaction begins.
+     * @see #endScroll
+     * @see #onScroll
+     */
     @Override
     public void startScroll() {
         if (overlay != null) {
@@ -330,6 +403,15 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Scrolls the overlay to {@param percentage}
+     * Note: it is generally <em>bad practice</em> to try to close
+     * an overlay by calling this function with {@param percentage}
+     * as 0.
+     * Use {@link #closeOverlay} and {@link #openOverlay} instead.
+     * @see #openOverlay
+     * @see #closeOverlay
+     */
     @Override
     public void onScroll(float percentage) {
         if (overlay != null) {
