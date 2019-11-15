@@ -49,7 +49,6 @@ import java.util.function.Consumer;
  * s HomeFeeder.
  *
  * @author Po Lu
- * @license GPLv3 or later
  * @since the beginning of time
  */
 @SuppressWarnings("unchecked")
