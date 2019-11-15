@@ -178,7 +178,6 @@ class LauncherFeed(private val originalContext: Context,
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private val toolbarParent
         get() = feedController.feed_title_parent
-    private var content = (feedController.findViewById(R.id.feed_content) as ViewGroup)
     // todo automated kt-utils.el getter conversion
     //     * converted mutable variable to value
     private val frame
