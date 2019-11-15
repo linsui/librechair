@@ -89,7 +89,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      * @param factory            the factory that will provide the overlay service
      * @param callback           the overlay callback
      * @param disconnectCallback the callback that will be executed when the overlay disconnects
-     * @param connectCallback    the callback that will be exectuted when the overlay connects
+     * @param connectCallback    the callback that will be executed when the overlay connects
      * @param mode               the mode this client should be attached in
      * @see ServiceClient
      * @see ServiceFactory
