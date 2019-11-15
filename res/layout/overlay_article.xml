@@ -49,22 +49,28 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:textAllCaps="false" />
     <FrameLayout
-        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
         android:layout_width="match_parent">
-        <ScrollView
-            android:layout_marginTop="16dp"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/article_refresh_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:textIsSelectable="true"
-                android:id="@+id/content"
+            <ScrollView
+                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="normal"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-                android:fontFamily="serif"
-                tools:text="@string/placeholder_rss_card_description" />
-        </ScrollView>
+                android:layout_height="match_parent">
+                <TextView
+                    android:textIsSelectable="true"
+                    android:id="@+id/content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textStyle="normal"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+                    android:fontFamily="serif"
+                    tools:text="@string/placeholder_rss_card_description" />
+            </ScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         <LinearLayout
             android:orientation="vertical"
             android:padding="16dp"

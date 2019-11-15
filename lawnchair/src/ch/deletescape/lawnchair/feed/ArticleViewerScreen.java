@@ -33,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
@@ -84,6 +86,8 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
         sv = (ScrollView) contentView.getParent();
+        SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(R.id.article_refresh_layout);
+        swipeRefreshLayout.setRefreshing(true);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
         GestureDetector detector = new GestureDetector(this,
                 new GestureDetector.SimpleOnGestureListener() {
@@ -110,6 +114,7 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
+        swipeRefreshLayout.setEnabled(false);
         FeedUtil.download(url, this, is -> {
             try {
                 CharSequence text = Essence
@@ -118,11 +123,17 @@ public class ArticleViewerScreen extends ProviderScreen {
                     text = Html.fromHtml(desc, 0);
                 }
                 CharSequence finalText = text;
-                contentView.post(() -> contentView.setText(finalText));
+                contentView.post(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    contentView.setText(finalText);
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, throwable -> contentView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE));
+        }, throwable -> {
+            contentView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+        });
         ((ImageView) contentView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
                 ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(this)));
     }
