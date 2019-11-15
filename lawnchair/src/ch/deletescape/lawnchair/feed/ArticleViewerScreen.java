@@ -86,7 +86,8 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
         sv = (ScrollView) contentView.getParent();
-        SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(R.id.article_refresh_layout);
+        SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(
+                R.id.article_refresh_layout);
         swipeRefreshLayout.setRefreshing(true);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
         GestureDetector detector = new GestureDetector(this,
@@ -114,7 +115,7 @@ public class ArticleViewerScreen extends ProviderScreen {
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
-        FeedUtil.download(url, this, is -> {
+        swipeRefreshLayout.setOnRefreshListener(() -> FeedUtil.download(url, this, is -> {
             try {
                 CharSequence text = Essence
                         .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
@@ -132,7 +133,7 @@ public class ArticleViewerScreen extends ProviderScreen {
         }, throwable -> {
             articleView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
             swipeRefreshLayout.setRefreshing(false);
-        });
+        }));
         ((ImageView) articleView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
                 ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(this)));
     }
