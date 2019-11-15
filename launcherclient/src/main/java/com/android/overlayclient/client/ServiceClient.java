@@ -411,6 +411,7 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      * Use {@link #closeOverlay} and {@link #openOverlay} instead.
      * @see #openOverlay
      * @see #closeOverlay
+     * @param percentage the percentage the overlay has scrolled
      */
     @Override
     public void onScroll(float percentage) {
@@ -423,6 +424,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * This function <em>must</em> be called when a scroll interaction ends.
+     * @see #startScroll
+     * @see #onScroll
+     */
     @Override
     public void stopScroll() {
         if (overlay != null) {
@@ -434,11 +440,18 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Forces the client to reconnect.
+     * This function may have unintended consequences. Use with care.
+     */
     @Override
     public void reconnect() {
         factory.connect();
     }
 
+    /**
+     * Forcibly disconnects from the overlay.
+     */
     @Override
     public void disconnect() {
         serviceState.setSearchAttached(false);
@@ -446,6 +459,14 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         factory.disconnect();
     }
 
+    /**
+     * Puts additional parameters to the overlay configuration bundle.
+     * This is only available for overlays using overlay API version 7 or later.
+     * This function shouldn't be used normally. Use the configuration delegate system instead.
+     * @see com.android.overlayclient.compat.ConfigurationDelegate
+     * @see #addConfigurationDelegate
+     * @param params the additional parameters
+     */
     public void putAdditionalParams(Bundle params) {
         if (additionalParams == null) {
             additionalParams = params;
@@ -457,6 +478,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Sends required configuration information to the overlay, along with custom parameters defined 
+     * by {@link #putAdditionalParams} and defined configuration delegates.
+     * This function shouldn't be called manually, since configuration is automatically handled by this client.
+     * @see #putAdditionalParams
+     * @see #addConfigurationDelegate
+     */
     public void configure() {
         if (overlay != null) {
             try {
@@ -495,6 +523,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         }
     }
 
+    /**
+     * Starts search. Requires the overlay be attached in search mode, 
+     * or that the overlay supports a unified connection.
+     * @param options unknown protobuf blob
+     * @param parameters undocumented parameter bundle.
+     * @see ServiceMode
+     */
     @Override
     public boolean startSearch(byte[] options, Bundle parameters) {
         if (overlay != null && apiVersion >= 6 && (factory.supportsUnifiedConnection() ||
@@ -510,6 +545,13 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
         return false;
     }
 
+    /**
+     * Starts voice search. Requires the overlay be attached in search mode,
+     * or that the overlay supports a unified connection.
+     * @param start whether voice detection should be started
+     * @see #startSearch
+     * @see ServiceMode
+     */
     @Override
     public void requestVoiceDetection(boolean start) {
         if ((factory.supportsUnifiedConnection() || mode == ServiceMode.SEARCH)
