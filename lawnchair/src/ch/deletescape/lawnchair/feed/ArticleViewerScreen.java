@@ -131,10 +131,10 @@ public class ArticleViewerScreen extends ProviderScreen {
                 e.printStackTrace();
             }
         }, throwable -> {
-            contentView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
+            articleView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
             swipeRefreshLayout.setRefreshing(false);
         });
-        ((ImageView) contentView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
+        ((ImageView) articleView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
                 ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(this)));
     }
 
