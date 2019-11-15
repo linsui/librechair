@@ -22,12 +22,14 @@ package ch.deletescape.lawnchair.feed;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.text.Html;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -121,6 +123,8 @@ public class ArticleViewerScreen extends ProviderScreen {
                 e.printStackTrace();
             }
         }, throwable -> contentView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE));
+        ((ImageView) contentView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
+                ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(this)));
     }
 
     @Override

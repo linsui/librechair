@@ -75,6 +75,7 @@
             android:layout_gravity="center"
             android:id="@+id/article_viewer_error">
             <ImageView
+                android:id="@+id/article_viewer_error_icon"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:src="@drawable/ic_warning"
