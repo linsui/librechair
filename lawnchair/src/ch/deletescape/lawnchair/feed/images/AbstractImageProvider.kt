@@ -61,7 +61,7 @@ abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
                 }
             }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
                 canHide = true
-                onRemoveListener = {
+                onRemoveListener = {_ ->
                     d("onRemoveListener: removing image ${images[it]}")
                     onRemoveListener(images[it]!!)
                     images.remove(it)

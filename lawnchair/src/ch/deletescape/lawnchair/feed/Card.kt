@@ -37,7 +37,7 @@ data class Card constructor(val icon: Drawable?, val title: String?, val inflate
     var categories: List<String>? = null
     var actionName: String? = null
     var actionListener: ((view: View) -> Unit)? = null
-    var onRemoveListener: (() -> Unit)? = null
+    var onRemoveListener: ((view: View) -> Unit)? = null
     var indexData: String? = null
 
     @ValueRange(min = 0.0, max = 1.0)

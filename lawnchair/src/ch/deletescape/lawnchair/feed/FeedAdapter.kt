@@ -312,7 +312,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                 holder.itemView.context.lawnchairPrefs.feedDisabledCards
                                         .add(cards[holder.adapterPosition].identifier)
                                 if (backupCards[holder.adapterPosition].onRemoveListener != null) {
-                                    backupCards[holder.adapterPosition].onRemoveListener!!()
+                                    backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                                 }
                                 FeedScope.launch {
                                     cardCache.keys.forEach {
@@ -351,7 +351,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     holder.itemView.context.lawnchairPrefs.feedDisabledCards
                             .add(cards[holder.adapterPosition].identifier)
                     if (backupCards[holder.adapterPosition].onRemoveListener != null) {
-                        backupCards[holder.adapterPosition].onRemoveListener!!()
+                        backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                     }
                     FeedScope.launch {
                         cardCache.keys.forEach {

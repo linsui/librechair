@@ -32,11 +32,13 @@ import ch.deletescape.lawnchair.inflate
 import ch.deletescape.lawnchair.locale
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.world_clock.view.*
 import kotlinx.android.synthetic.main.world_clock.view.zid_name
 import kotlinx.android.synthetic.main.world_clock.view.zid_offset
 import kotlinx.android.synthetic.main.world_clock_analog.view.*
 import kotlinx.android.synthetic.main.world_clock_analog.view.zid_direction
+import okhttp3.internal.toImmutableList
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -81,19 +83,17 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                     else -> context.resources.getQuantityText(R.plurals.title_dt_time_sooner, offset.toInt()).toString().format(offset)
                 }
                 TickManager.subscribe {
-                    if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                    ZoneId.of(it)).toLocalDate() < LocalDate.now()) {
-                        view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
-                    } else if (ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                    ZoneId.of(it)).toLocalDate() > LocalDate.now()) {
-                        view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
-                    } else {
-                        view.zid_direction.text = ""
+                    when {
+                        ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                ZoneId.of(it)).toLocalDate() < LocalDate.now() -> view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
+                        ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
+                                ZoneId.of(it)).toLocalDate() > LocalDate.now() -> view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
+                        else -> view.zid_direction.text = ""
                     }
                     if (analog) {
                         view.zid_time_analog.updateTime(
                                 ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                        ZoneId.of(it)).toLocalTime());
+                                        ZoneId.of(it)).toLocalTime())
                         view.zid_time_analog.setTint(view.zid_direction.textColors.defaultColor)
                     }
                     if (!analog) {
@@ -107,8 +107,15 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
             }, Card.RAISE or Card.NO_HEADER, "",
                     ("dtc" + it + UUID.randomUUID().toString()).hashCode())
             card.canHide = true
-            card.onRemoveListener = {
+            card.onRemoveListener = { v ->
+                val backup = context.feedPrefs.clockTimeZones.toImmutableList()
                 context.feedPrefs.clockTimeZones.remove(it)
+                Snackbar.make(v, R.string.item_removed.fromStringRes(context), Snackbar.LENGTH_LONG)
+                        .setAction(R.string.undo.fromStringRes(context)) {
+                            context.feedPrefs.clockTimeZones.clear()
+                            context.feedPrefs.clockTimeZones.addAll(backup)
+                            feed?.refresh(0)
+                        }.show()
                 Unit
             }
             card
