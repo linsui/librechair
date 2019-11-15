@@ -51,7 +51,7 @@ import java.util.function.Consumer;
  * @author Po Lu
  * @since the beginning of time
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "JavadocReference"})
 public class ServiceClient extends ILauncherOverlayCallback.Stub
         implements DisconnectableOverscrollClient,
         SearchClient, DurationOpenableOverscrollClient, Handler.Callback {
