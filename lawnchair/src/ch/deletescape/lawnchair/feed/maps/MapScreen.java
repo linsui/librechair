@@ -71,6 +71,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function2;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class MapScreen extends ProviderScreen {
     private final LauncherFeed feed;
     private final double originalLat;
