@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.search
 
 import android.text.Editable
+import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
@@ -53,6 +54,8 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
         adapter = SearchAdapter(feed.adapter, null)
         swipeRefreshLayout = view.feed_search_swipe_layout
         swipeRefreshLayout.setColorSchemeColors(* feed.tabColours.toTypedArray().toIntArray())
+
+        editText.inputType = editText.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE.inv()
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
