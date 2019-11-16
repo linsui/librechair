@@ -113,7 +113,7 @@ abstract class SafeBrowsingApiBase {
      */
     Request makeRequest(String httpMethod, String endpoint, Object payload) {
         Request.Builder builder = new Request.Builder()
-            .url(Gsb4j.API_BASE_URL + endpoint + "?api_key=" + apiKey)
+            .url(Gsb4j.API_BASE_URL + endpoint + "?key=" + apiKey)
             .addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
         if (payload != null) {
