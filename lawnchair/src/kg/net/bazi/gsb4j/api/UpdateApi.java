@@ -21,7 +21,6 @@ import com.google.inject.Inject;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,10 +211,9 @@ class UpdateApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
         payload.put("threatInfo", threatInfo);
 
         ApiResponse apiResponse = null;
-        HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "fullHashes:find", payload);
+        Request req = makeRequest(HttpPost.METHOD_NAME, "fullHashes:find", payload);
         try {
-            try (Response response = httpClient.newCall(
-                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+            try (Response response = httpClient.newCall(req).execute();
                  Reader reader = Objects.requireNonNull(response.body()).charStream()) {
                 // TODO: back-off on status codes other than 200
                 apiResponse = gson.fromJson(reader, ApiResponse.class);

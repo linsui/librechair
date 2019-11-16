@@ -19,7 +19,6 @@ package kg.net.bazi.gsb4j.api;
 import com.google.inject.Inject;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,10 +65,9 @@ class LookupApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
         threatInfo.getThreatEntries().add(makeThreatEntry(url));
 
         Map<String, Object> body = wrapPayload("threatInfo", threatInfo);
-        HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "threatMatches:find", body);
+        Request req = makeRequest(HttpPost.METHOD_NAME, "threatMatches:find", body);
         try {
-            Response response = httpClient.newCall(
-                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+            Response response = httpClient.newCall(req).execute();
             ApiResponse apiResponse = gson.fromJson(Objects.requireNonNull(response.body()).charStream(),
                     ApiResponse.class);
             if (apiResponse.matches != null && !apiResponse.matches.isEmpty()) {

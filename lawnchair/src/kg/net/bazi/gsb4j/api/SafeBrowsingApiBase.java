@@ -23,9 +23,7 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.entity.StringEntity;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -43,7 +41,11 @@ import kg.net.bazi.gsb4j.data.PlatformType;
 import kg.net.bazi.gsb4j.data.ThreatMatch;
 import kg.net.bazi.gsb4j.properties.Gsb4jClientInfoProvider;
 import kg.net.bazi.gsb4j.properties.Gsb4jProperties;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okio.BufferedSink;
 
 /**
  * Abstract base class for Safe Browsing API implementation classes.
@@ -109,14 +111,24 @@ abstract class SafeBrowsingApiBase {
      * @param payload payload to include in request; maybe {@code null}
      * @return HTTP request
      */
-    HttpUriRequest makeRequest(String httpMethod, String endpoint, Object payload) {
-        RequestBuilder builder = RequestBuilder.create(httpMethod)
-            .setUri(Gsb4j.API_BASE_URL + endpoint)
-            .addParameter("key", apiKey)
-            .setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    Request makeRequest(String httpMethod, String endpoint, Object payload) {
+        Request.Builder builder = new Request.Builder()
+            .url(Gsb4j.API_BASE_URL + endpoint + "?api_key=" + apiKey)
+            .addHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
         if (payload != null) {
-            builder.setEntity(new StringEntity(gson.toJson(payload), StandardCharsets.UTF_8));
+            builder.post(new RequestBody() {
+                @NotNull
+                @Override
+                public MediaType contentType() {
+                    return MediaType.get("application/json");
+                }
+
+                @Override
+                public void writeTo(@NotNull BufferedSink bufferedSink) throws IOException {
+                    bufferedSink.write(gson.toJson(payload).getBytes());
+                }
+            });
         }
         return builder.build();
     }

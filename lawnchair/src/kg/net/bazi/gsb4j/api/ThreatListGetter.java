@@ -17,7 +17,6 @@
 package kg.net.bazi.gsb4j.api;
 
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +46,10 @@ public class ThreatListGetter extends SafeBrowsingApiBase {
      */
     public List<ThreatListDescriptor> getLists() {
         List<ThreatListDescriptor> threatLists;
-        HttpUriRequest req = makeRequest(HttpGet.METHOD_NAME, "threatLists", null);
+       Request req = makeRequest(HttpGet.METHOD_NAME, "threatLists", null);
         try {
             Response response = httpClient
-                    .newCall(new Request.Builder().url(req.getURI().toURL()).build()).execute();
+                    .newCall(req).execute();
             ThreatListsResponse apiResp = gson
                     .fromJson(Objects.requireNonNull(response.body()).charStream(), ThreatListsResponse.class);
             threatLists = apiResp.threatLists;

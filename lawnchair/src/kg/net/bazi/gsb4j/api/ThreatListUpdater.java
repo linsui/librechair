@@ -19,7 +19,6 @@ package kg.net.bazi.gsb4j.api;
 import com.google.inject.Inject;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,12 +81,11 @@ class ThreatListUpdater extends SafeBrowsingApiBase {
 
         List<ListUpdateRequest> updateRequests = makeListUpdateRequests(descriptors);
         Map<String, Object> payload = wrapPayload("listUpdateRequests", updateRequests);
-        HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "threatListUpdates:fetch", payload);
+        Request req = makeRequest(HttpPost.METHOD_NAME, "threatListUpdates:fetch", payload);
 
         ApiResponse apiResp;
         try {
-            try (Response resp = httpClient.newCall(
-                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+            try (Response resp = httpClient.newCall(req).execute();
                  Reader reader = Objects.requireNonNull(resp.body()).charStream()) {
                 apiResp = gson.fromJson(reader, ApiResponse.class);
             }
