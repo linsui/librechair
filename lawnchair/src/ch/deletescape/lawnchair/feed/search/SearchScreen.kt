@@ -75,7 +75,9 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                 }
                 job = FeedScope.launch {
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
-                    adapter.refreshSearch()
+                    synchronized(adapter) {
+                        adapter.refreshSearch()
+                    }
                     FeedScope.launch(Dispatchers.Main) {
                         delay(600)
                         if (!recyclerView.isComputingLayout) {
@@ -93,7 +95,9 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
             }
             swipeRefreshLayout.isRefreshing = true
             job = FeedScope.launch {
-                adapter.refreshSearch()
+                synchronized(adapter) {
+                    adapter.refreshSearch()
+                }
                 FeedScope.launch(Dispatchers.Main) {
                     delay(100)
                     adapter.notifyDataSetChanged()

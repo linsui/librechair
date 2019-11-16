@@ -35,7 +35,7 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
     override val cards
         get() = if (::cache.isInitialized) cache else emptyList()
 
-    internal fun refreshSearch() {
+    internal fun refreshSearch() = synchronized(this) {
         cache = parent.cards.let {
             val searchQuery = this.searchQuery
             if (searchQuery != null) it.filter {
@@ -47,6 +47,8 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
             } else emptyList()
         }
     }
+
+    override fun getItemCount() = if (::cache.isInitialized) cache.size else 0
 
     companion object {
         @JvmStatic
