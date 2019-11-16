@@ -38,6 +38,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     var onRemoveListener: OnRemoveListener? = null
     var globalClickListener: IRunnable? = null
     var overrideOpacity: Float? = null
+    var indexData: String? = null
 
     constructor(parcel: Parcel) : this(parcel.readParcelable(Bitmap::class.java.classLoader),
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
@@ -50,6 +51,7 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         onRemoveListener = OnRemoveListener.Stub.asInterface(parcel.readStrongBinder())
         globalClickListener = IRunnable.Stub.asInterface(parcel.readStrongBinder())
         overrideOpacity = parcel.readString()?.toFloatOrNull()
+        indexData = parcel.readString()
     }
 
     constructor(icon: Bitmap?, title: String?, inflateHelper: RemoteInflateHelper, type: Int,
@@ -87,9 +89,8 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
         parcel.writeStrongBinder(onRemoveListener?.asBinder())
         parcel.writeStrongBinder(globalClickListener?.asBinder())
-        if (overrideOpacity != null) {
-            parcel.writeString(overrideOpacity.toString())
-        }
+        parcel.writeString(overrideOpacity?.toString())
+        parcel.writeString(indexData)
     }
 
     override fun describeContents(): Int {
