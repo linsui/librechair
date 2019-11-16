@@ -116,7 +116,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             feed?.refresh(0)
                         }
                         .setBackgroundTint(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
-                        .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
+                        .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.computeForegroundColor())
                         .setActionTextColor(FeedAdapter.getOverrideColor(v.context)).show()
                 Unit
             }
