@@ -26,7 +26,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -44,6 +43,7 @@ import kg.net.bazi.gsb4j.data.PlatformType;
 import kg.net.bazi.gsb4j.data.ThreatMatch;
 import kg.net.bazi.gsb4j.properties.Gsb4jClientInfoProvider;
 import kg.net.bazi.gsb4j.properties.Gsb4jProperties;
+import okhttp3.OkHttpClient;
 
 /**
  * Abstract base class for Safe Browsing API implementation classes.
@@ -54,7 +54,7 @@ abstract class SafeBrowsingApiBase {
 
     @Inject
     @Gsb4jBinding
-    CloseableHttpClient httpClient;
+    OkHttpClient httpClient;
 
     @Inject
     Gsb4jClientInfoProvider clientInfoProvider;

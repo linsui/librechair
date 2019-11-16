@@ -24,13 +24,14 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Guice module to initialize common bindings used in Gsb4j.
@@ -44,7 +45,7 @@ public class Gsb4jModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(CloseableHttpClient.class)
+        bind(OkHttpClient.class)
             .annotatedWith(Gsb4jBinding.class)
             .toProvider(HttpClientProvider.class)
             .asEagerSingleton();

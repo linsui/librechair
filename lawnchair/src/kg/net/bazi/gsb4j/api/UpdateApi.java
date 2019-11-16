@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
@@ -49,6 +48,8 @@ import kg.net.bazi.gsb4j.db.LocalDatabase;
 import kg.net.bazi.gsb4j.url.Canonicalization;
 import kg.net.bazi.gsb4j.url.Hashing;
 import kg.net.bazi.gsb4j.url.SuffixPrefixExpressions;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Interface to Update API.
@@ -212,15 +213,20 @@ class UpdateApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
 
         ApiResponse apiResponse = null;
         HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "fullHashes:find", payload);
-        try ( CloseableHttpResponse resp = httpClient.execute(req);
-             Reader reader = getResponseReader(resp)) {
-            // TODO: back-off on status codes other than 200
-            apiResponse = gson.fromJson(reader, ApiResponse.class);
-        } finally {
-            if (apiResponse != null && apiResponse.minimumWaitDuration != null) {
-                long duration = Gsb4j.durationToMillis(apiResponse.minimumWaitDuration);
-                stateHolder.setMinWaitDurationForFinds(duration);
+        try {
+            try (Response response = httpClient.newCall(
+                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+                 Reader reader = Objects.requireNonNull(response.body()).charStream()) {
+                // TODO: back-off on status codes other than 200
+                apiResponse = gson.fromJson(reader, ApiResponse.class);
+            } finally {
+                if (apiResponse != null && apiResponse.minimumWaitDuration != null) {
+                    long duration = Gsb4j.durationToMillis(apiResponse.minimumWaitDuration);
+                    stateHolder.setMinWaitDurationForFinds(duration);
+                }
             }
+        } catch (NullPointerException e) {
+            throw new IOException("failed to retrieve payload", e);
         }
         if (apiResponse == null) {
             throw new IllegalStateException("Invalid payload from API");

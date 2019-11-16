@@ -18,20 +18,21 @@ package kg.net.bazi.gsb4j.api;
 
 import com.google.inject.Inject;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import kg.net.bazi.gsb4j.data.ThreatEntry;
 import kg.net.bazi.gsb4j.data.ThreatInfo;
 import kg.net.bazi.gsb4j.data.ThreatMatch;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Lookup API interface.
@@ -66,10 +67,11 @@ class LookupApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
 
         Map<String, Object> body = wrapPayload("threatInfo", threatInfo);
         HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "threatMatches:find", body);
-
-        try ( CloseableHttpResponse resp = httpClient.execute(req);
-             Reader reader = getResponseReader(resp)) {
-            ApiResponse apiResponse = gson.fromJson(reader, ApiResponse.class);
+        try {
+            Response response = httpClient.newCall(
+                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+            ApiResponse apiResponse = gson.fromJson(Objects.requireNonNull(response.body()).charStream(),
+                    ApiResponse.class);
             if (apiResponse.matches != null && !apiResponse.matches.isEmpty()) {
                 ThreatMatch match = selectMatch(url, apiResponse.matches);
                 if (match != null) {
@@ -77,8 +79,8 @@ class LookupApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
                     return match;
                 }
             }
-        } catch (IOException ex) {
-            LOGGER.error("Failed to query Lookup API", ex);
+        } catch (IOException | NullPointerException e) {
+            LOGGER.error("couldn't retrieve data", e);
         }
         return null;
     }
@@ -92,7 +94,7 @@ class LookupApi extends SafeBrowsingApiBase implements SafeBrowsingApi {
     /**
      * Selects a threat match for the URL.
      *
-     * @param url URL to select a match for
+     * @param url     URL to select a match for
      * @param matches list of threat matches
      * @return threat match for the supplied URL if there is such a match; {@code null} otherwise
      */

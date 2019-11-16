@@ -16,19 +16,20 @@
 
 package kg.net.bazi.gsb4j.api;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import kg.net.bazi.gsb4j.data.ThreatListDescriptor;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Retrieves names of the Safe Browsing threat lists.
@@ -47,11 +48,13 @@ public class ThreatListGetter extends SafeBrowsingApiBase {
     public List<ThreatListDescriptor> getLists() {
         List<ThreatListDescriptor> threatLists;
         HttpUriRequest req = makeRequest(HttpGet.METHOD_NAME, "threatLists", null);
-        try (CloseableHttpResponse resp = httpClient.execute(req);
-            Reader reader = getResponseReader(resp)) {
-            ThreatListsResponse apiResp = gson.fromJson(reader, ThreatListsResponse.class);
+        try {
+            Response response = httpClient
+                    .newCall(new Request.Builder().url(req.getURI().toURL()).build()).execute();
+            ThreatListsResponse apiResp = gson
+                    .fromJson(Objects.requireNonNull(response.body()).charStream(), ThreatListsResponse.class);
             threatLists = apiResp.threatLists;
-        } catch (IOException ex) {
+        } catch (IOException | NullPointerException ex) {
             LOGGER.error("Failed to get threat lists", ex);
             return Collections.emptyList();
         }

@@ -18,7 +18,6 @@ package kg.net.bazi.gsb4j.api;
 
 import com.google.inject.Inject;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
@@ -31,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import kg.net.bazi.gsb4j.Gsb4j;
 import kg.net.bazi.gsb4j.cache.ThreatListDescriptorsCache;
@@ -40,6 +40,8 @@ import kg.net.bazi.gsb4j.data.updates.CompressionType;
 import kg.net.bazi.gsb4j.data.updates.Constraints;
 import kg.net.bazi.gsb4j.data.updates.ListUpdateRequest;
 import kg.net.bazi.gsb4j.data.updates.ListUpdateResponse;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * This class updates Safe Browsing lists in the local database.
@@ -83,9 +85,14 @@ class ThreatListUpdater extends SafeBrowsingApiBase {
         HttpUriRequest req = makeRequest(HttpPost.METHOD_NAME, "threatListUpdates:fetch", payload);
 
         ApiResponse apiResp;
-        try ( CloseableHttpResponse resp = httpClient.execute(req);
-             Reader reader = getResponseReader(resp)) {
-            apiResp = gson.fromJson(reader, ApiResponse.class);
+        try {
+            try (Response resp = httpClient.newCall(
+                    new Request.Builder().url(req.getURI().toURL()).build()).execute();
+                 Reader reader = Objects.requireNonNull(resp.body()).charStream()) {
+                apiResp = gson.fromJson(reader, ApiResponse.class);
+            }
+        } catch (NullPointerException e) {
+            throw new IOException("failed to update local database", e);
         }
         // no null check here - parser returns null only when input is at EOF which is really an exceptional case
         if (apiResp.listUpdateResponses != null) {

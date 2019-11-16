@@ -29,7 +29,6 @@ import com.google.inject.Stage;
 import com.google.inject.name.Names;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,11 +165,6 @@ public class Gsb4j {
         Key<ScheduledExecutorService> scedulerKey = Key.get(ScheduledExecutorService.class, Gsb4jBinding.class);
         ScheduledExecutorService scheduler = injector.getInstance(scedulerKey);
         scheduler.shutdown();
-
-        // cleanup HTTP client resources
-        Key<CloseableHttpClient> httpClientKey = Key.get(CloseableHttpClient.class, Gsb4jBinding.class);
-        CloseableHttpClient httpClient = injector.getInstance(httpClientKey);
-        close(httpClient, "HTTP client");
 
         // close db connections
         Key<DataSource> dataSourceKey = Key.get(DataSource.class, Gsb4jBinding.class);
