@@ -265,26 +265,50 @@ public final class FeedUtil {
     @MainThread
     public static void setCursorDrawableColor(@Nonnull EditText editText, int color) {
         if (Utilities.HIDDEN_APIS_ALLOWED) {
-            try {
-                Field fCursorDrawableRes =
-                        TextView.class.getDeclaredField("mCursorDrawableRes");
-                fCursorDrawableRes.setAccessible(true);
-                int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
-                Field fEditor = TextView.class.getDeclaredField("mEditor");
-                fEditor.setAccessible(true);
-                Object editor = fEditor.get(editText);
-                Class<?> clazz = Objects.requireNonNull(editor).getClass();
-                Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
-                fCursorDrawable.setAccessible(true);
+            if (Utilities.ATLEAST_P) {
+                try {
+                    Field fCursorDrawableRes =
+                            TextView.class.getDeclaredField("mCursorDrawableRes");
+                    fCursorDrawableRes.setAccessible(true);
+                    int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
+                    Field fEditor = TextView.class.getDeclaredField("mEditor");
+                    fEditor.setAccessible(true);
+                    Object editor = fEditor.get(editText);
+                    Class<?> clazz = Objects.requireNonNull(editor).getClass();
+                    Field fCursorDrawable = clazz.getDeclaredField("mDrawableForCursor");
+                    fCursorDrawable.setAccessible(true);
 
-                Drawable[] drawables = new Drawable[2];
-                drawables[0] = editText.getContext().getDrawable(mCursorDrawableRes);
-                drawables[1] = editText.getContext().getDrawable(mCursorDrawableRes);
-                Objects.requireNonNull(drawables[0]).setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                Objects.requireNonNull(drawables[1]).setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                fCursorDrawable.set(editor, drawables);
-            } catch (IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();
+                    Drawable drawable = editText.getContext().getDrawable(mCursorDrawableRes);
+                    Objects.requireNonNull(drawable).setColorFilter(color,
+                            PorterDuff.Mode.SRC_IN);
+                    fCursorDrawable.set(editor, drawable);
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Field fCursorDrawableRes =
+                            TextView.class.getDeclaredField("mCursorDrawableRes");
+                    fCursorDrawableRes.setAccessible(true);
+                    int mCursorDrawableRes = fCursorDrawableRes.getInt(editText);
+                    Field fEditor = TextView.class.getDeclaredField("mEditor");
+                    fEditor.setAccessible(true);
+                    Object editor = fEditor.get(editText);
+                    Class<?> clazz = Objects.requireNonNull(editor).getClass();
+                    Field fCursorDrawable = clazz.getDeclaredField("mCursorDrawable");
+                    fCursorDrawable.setAccessible(true);
+
+                    Drawable[] drawables = new Drawable[2];
+                    drawables[0] = editText.getContext().getDrawable(mCursorDrawableRes);
+                    drawables[1] = editText.getContext().getDrawable(mCursorDrawableRes);
+                    Objects.requireNonNull(drawables[0]).setColorFilter(color,
+                            PorterDuff.Mode.SRC_IN);
+                    Objects.requireNonNull(drawables[1]).setColorFilter(color,
+                            PorterDuff.Mode.SRC_IN);
+                    fCursorDrawable.set(editor, drawables);
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
