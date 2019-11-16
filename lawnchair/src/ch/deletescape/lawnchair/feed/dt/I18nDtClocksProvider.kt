@@ -25,6 +25,7 @@ import android.content.Context
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
@@ -114,7 +115,8 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             context.feedPrefs.clockTimeZones.addAll(backup)
                             feed?.refresh(0)
                         }
-                        .setBackgroundTint(v.context.getColorAttr(R.attr.backgroundColor))
+                        .setBackgroundTint(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
+                        .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
                         .setActionTextColor(FeedAdapter.getOverrideColor(v.context)).show()
                 Unit
             }
