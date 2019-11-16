@@ -1099,7 +1099,7 @@ class LauncherFeed(private val originalContext: Context,
         screenActions.remove(providerScreens.first { it.first == screen }.first)
         providerScreens.first { it.first == screen }.first.onDestroy()
         providerScreens.remove(providerScreens.first { it.first == screen })
-        if (adapter.providers.any { it.isSearchable }) {
+        if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
             internalActions.put("search".hashCode(), searchAction)
         } else {
             internalActions.remove("search".hashCode())
@@ -1512,7 +1512,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         runOnMainThread {
-            if (adapter.providers.any { it.isSearchable }) {
+            if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
                 internalActions.put("search".hashCode(), searchAction)
             } else {
                 internalActions.remove("search".hashCode())
