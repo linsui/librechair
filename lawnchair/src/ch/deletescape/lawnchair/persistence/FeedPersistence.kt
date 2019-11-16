@@ -86,7 +86,7 @@ class FeedPersistence private constructor(val context: Context) {
     val feedAnimationInterpolator
             by DefValueStringDelegate(context, "feed_animation_interpolator", "linear")
     val enableGsb
-            by BooleanDelegate(context, "feed_enable_gsb", true)
+            by BooleanDelegate(context, "feed_enable_gsb", false)
     val feedProviders
             by ContainerListDelegate(context,
                     "feed_providers", listOf(
