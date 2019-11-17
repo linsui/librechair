@@ -158,6 +158,33 @@ abstract class SerializableListDelegate<A_, T>(val context: Context, val key: St
 
     private val internal: ObservableArrayList<T>
     private var lastData = StringDatabase.getInstance(context).dao().getSafe(key)
+    private val onListChangedCallback = object :
+            ObservableList.OnListChangedCallback<ObservableList<String>>() {
+        override fun onChanged(sender: ObservableList<String>?) {
+            save()
+        }
+
+        override fun onItemRangeRemoved(sender: ObservableList<String>?, positionStart: Int,
+                                        itemCount: Int) {
+            save()
+        }
+
+        override fun onItemRangeMoved(sender: ObservableList<String>?, fromPosition: Int,
+                                      toPosition: Int, itemCount: Int) {
+            save()
+        }
+
+        override fun onItemRangeInserted(sender: ObservableList<String>?,
+                                         positionStart: Int, itemCount: Int) {
+            save()
+        }
+
+        override fun onItemRangeChanged(sender: ObservableList<String>?, positionStart: Int,
+                                        itemCount: Int) {
+            save()
+        }
+
+    }
 
     abstract fun deserialize(s: String): T
     abstract fun serialize(t: T): String
@@ -175,33 +202,7 @@ abstract class SerializableListDelegate<A_, T>(val context: Context, val key: St
                 addAll(defValue)
             }
         }
-        internal.addOnListChangedCallback(object :
-                ObservableList.OnListChangedCallback<ObservableList<String>>() {
-            override fun onChanged(sender: ObservableList<String>?) {
-                save()
-            }
-
-            override fun onItemRangeRemoved(sender: ObservableList<String>?, positionStart: Int,
-                                            itemCount: Int) {
-                save()
-            }
-
-            override fun onItemRangeMoved(sender: ObservableList<String>?, fromPosition: Int,
-                                          toPosition: Int, itemCount: Int) {
-                save()
-            }
-
-            override fun onItemRangeInserted(sender: ObservableList<String>?,
-                                             positionStart: Int, itemCount: Int) {
-                save()
-            }
-
-            override fun onItemRangeChanged(sender: ObservableList<String>?, positionStart: Int,
-                                            itemCount: Int) {
-                save()
-            }
-
-        })
+        internal.addOnListChangedCallback(onListChangedCallback)
         StringDatabase.getInstance(context).invalidationTracker.addObserver(object :
                 InvalidationTracker.Observer("stringentry") {
             override fun onInvalidated(tables: MutableSet<String>) {
@@ -209,8 +210,14 @@ abstract class SerializableListDelegate<A_, T>(val context: Context, val key: St
                 if (lastData != currentData) {
                     val ja = JsonParser().parse(currentData).asJsonArray
                     synchronized(internal) {
-                        internal.clear()
-                        internal.addAll(ja.map { it.asString }.map { deserialize(it) })
+                        if (ja.size() > 0) {
+                            internal.removeOnListChangedCallback(onListChangedCallback)
+                            internal.clear()
+                            internal.addOnListChangedCallback(onListChangedCallback)
+                            internal.addAll(ja.map { it.asString }.map { deserialize(it) })
+                        } else {
+                            internal.clear()
+                        }
                     }
                     synchronized(lastData) {
                         lastData = ja.toString()
