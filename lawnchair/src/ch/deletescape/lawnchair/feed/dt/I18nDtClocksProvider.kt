@@ -22,6 +22,7 @@ package ch.deletescape.lawnchair.feed.dt
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.TickManager
@@ -117,7 +118,10 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         }
                         .setBackgroundTint(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
                         .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.computeForegroundColor())
-                        .setActionTextColor(FeedAdapter.getOverrideColor(v.context)).show()
+                        .setActionTextColor(FeedAdapter.getOverrideColor(v.context))
+                        .also { sb ->
+                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).background = null
+                        }.show()
                 Unit
             }
             card
