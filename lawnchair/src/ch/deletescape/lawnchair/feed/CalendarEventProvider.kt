@@ -52,10 +52,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!.tint(
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
-    private val calendarDrawableColoured by lazy {
-        context.getDrawable(R.drawable.ic_event_black_24dp)!!
-                .tint(FeedAdapter.getOverrideColor(context))
-    }
     private val events = mutableListOf<CalendarManager.CalendarEvent>()
     private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
 
