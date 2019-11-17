@@ -135,6 +135,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.marqueeRepeatLimit = -1
                                     calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
                                     calendar_event_title.isSelected = true
+                                    calendar_event_title.maxLines = 1
 
                                     if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
                                         calendar_event_title.setTextColor(it.colour)
