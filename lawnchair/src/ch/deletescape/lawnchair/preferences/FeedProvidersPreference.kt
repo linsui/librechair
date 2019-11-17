@@ -68,12 +68,14 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
     }
 
     private fun updateSummary() {
-        val providerNames = context.feedPrefs.feedProviders
-                .map { MainFeedController.getDisplayName(it, context) }
-        if (providerNames.isNotEmpty()) {
-            summary = TextUtils.join(", ", providerNames)
-        } else {
-            setSummary(R.string.weather_provider_disabled)
+        runOnMainThread {
+            val providerNames = context.feedPrefs.feedProviders
+                    .map { MainFeedController.getDisplayName(it, context) }
+            if (providerNames.isNotEmpty()) {
+                summary = TextUtils.join(", ", providerNames)
+            } else {
+                setSummary(R.string.weather_provider_disabled)
+            }
         }
     }
 
