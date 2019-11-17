@@ -151,10 +151,12 @@ class ListDelegate<T>(val context: Context, val key: String, private val defValu
     }
 
     private fun save() {
-        val jsonArray = JsonArray(internal.size)
-        internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
-        lastData = jsonArray.toString()
-        StringDatabase.getInstance(context).dao().put(key, jsonArray.toString())
+        synchronized(internal) {
+            val jsonArray = JsonArray(internal.size)
+            internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
+            lastData = jsonArray.toString()
+            StringDatabase.getInstance(context).dao().put(key, jsonArray.toString())
+        }
     }
 
     operator fun getValue(t: T?, property: KProperty<*>?): ObservableList<String> = internal
