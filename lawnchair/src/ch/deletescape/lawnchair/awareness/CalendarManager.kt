@@ -80,6 +80,7 @@ object CalendarManager : BroadcastReceiver() {
                                 CalendarContract.Events.DTSTART,
                                 CalendarContract.Events.DTEND,
                                 CalendarContract.Events.EVENT_COLOR,
+                                CalendarContract.Events.ALL_DAY,
                                 CalendarContract.Events._ID), null, null,
                         CalendarContract.Instances.DTSTART + " ASC")!!
                 val events = mutableListOf<CalendarEvent>()
@@ -91,8 +92,8 @@ object CalendarManager : BroadcastReceiver() {
                                     ZoneId.systemDefault()),
                             cursor.getInt(5), Intent(Intent.ACTION_VIEW).apply {
                         data = Uri.parse("content://com.android.calendar/events/" + cursor.getLong(
-                                6))
-                    }))
+                                7))
+                    }, cursor.getInt(6) != 0))
                 }
                 this@CalendarManager.events = events
                 cursor.close()
@@ -111,6 +112,7 @@ object CalendarManager : BroadcastReceiver() {
                                 CalendarContract.Events.DTSTART,
                                 CalendarContract.Events.DTEND,
                                 CalendarContract.Events.EVENT_COLOR,
+                                CalendarContract.Events.ALL_DAY,
                                 CalendarContract.Events._ID), null, null,
                         CalendarContract.Instances.DTSTART + " ASC")!!
                 val events = mutableListOf<CalendarEvent>()
@@ -122,8 +124,8 @@ object CalendarManager : BroadcastReceiver() {
                                     ZoneId.systemDefault()),
                             cursor.getInt(5), Intent(Intent.ACTION_VIEW).apply {
                         data = Uri.parse("content://com.android.calendar/events/" + cursor.getLong(
-                                6))
-                    }))
+                                7))
+                    }, cursor.getInt(6) != 0))
                 }
                 this@CalendarManager.events = events
                 cursor.close()
@@ -133,5 +135,5 @@ object CalendarManager : BroadcastReceiver() {
 
     data class CalendarEvent(val title: String, val address: String?, val description: String?,
                              val startTime: LocalDateTime, val endTime: LocalDateTime,
-                             val colour: Int?, val intent: Intent)
+                             val colour: Int?, val intent: Intent, val isAllDay: Boolean)
 }
