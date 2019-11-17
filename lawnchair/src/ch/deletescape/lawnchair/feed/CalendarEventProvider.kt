@@ -136,11 +136,12 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
                                     calendar_event_title.isSelected = true
                                     calendar_event_title.maxLines = 1
+                                    calendar_event_title.focusable = View.FOCUSABLE
 
                                     if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
                                         calendar_event_title.setTextColor(it.colour)
                                     }
-                                    calendar_event_title.setTypeface(Typeface.DEFAULT_BOLD)
+                                    calendar_event_title.typeface = Typeface.DEFAULT_BOLD
                                     TickManager.subscribe {
                                         val diff = it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) * 1000 - System.currentTimeMillis()
                                         val diffSeconds = diff / 1000
