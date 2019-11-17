@@ -27,6 +27,7 @@ import android.database.Cursor
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.CalendarContract
+import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -131,6 +132,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.text =
                                             (if (it.title.trim().isEmpty()) context.getString(
                                                     R.string.placeholder_empty_title) else it.title)
+                                    calendar_event_title.marqueeRepeatLimit = -1
+                                    calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
+                                    calendar_event_title.isSelected = true
+
                                     if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
                                         calendar_event_title.setTextColor(it.colour)
                                     }
