@@ -70,6 +70,7 @@ class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
                         it.endTime >= LocalDateTime.now()
             }
             d("init: ongoing events are $ongoingEvents")
+            updateInformation()
         }
 
         TickManager.subscribe {
@@ -89,6 +90,7 @@ class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
                                     ZoneOffset.systemDefault().rules.getOffset(Instant.now())) >= System.currentTimeMillis() / 1000
                 }
                 d("init: (tick) ongoing events are $ongoingEvents")
+                updateInformation()
             }
         }
     }
