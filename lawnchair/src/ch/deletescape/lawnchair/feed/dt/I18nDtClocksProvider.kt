@@ -32,6 +32,8 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
+import com.google.android.material.ripple.RippleDrawableCompat
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.world_clock.view.*
 import kotlinx.android.synthetic.main.world_clock.view.zid_name
@@ -65,7 +67,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
 
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun getCards(): List<Card> {
         val analog = context.feedPrefs.displayAnalogClock
         return context.feedPrefs.clockTimeZones.map {
@@ -120,7 +122,10 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.computeForegroundColor())
                         .setActionTextColor(FeedAdapter.getOverrideColor(v.context))
                         .also { sb ->
-                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).background = null
+                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).background = RippleDrawableCompat(
+                                    ShapeAppearanceModel().withCornerSize(context.eightF)).also {
+                                it.setTint(FeedAdapter.getOverrideColor(v.context))
+                            }
                         }.show()
                 Unit
             }
