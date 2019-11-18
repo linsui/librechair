@@ -22,7 +22,6 @@ package ch.deletescape.lawnchair.feed
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.CalendarContract
@@ -212,22 +211,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             val currentTime = GregorianCalendar()
             Log.v(javaClass.name,
                     "getCards: searching for events that are active at ${currentTime}")
-            val query =
-                    "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
-            val eventCursorNullable: Cursor? = context.contentResolver
-                    .query(CalendarContract.Events.CONTENT_URI,
-                            arrayOf(CalendarContract.Instances.TITLE,
-                                    CalendarContract.Instances.DTSTART,
-                                    CalendarContract.Instances.DTEND,
-                                    CalendarContract.Instances.DESCRIPTION,
-                                    CalendarContract.Instances.ALL_DAY,
-                                    CalendarContract.Events._ID),
-                            query, null, CalendarContract.Instances.DTSTART + " ASC")
-            if (eventCursorNullable == null) {
-                Log.v(javaClass.name,
-                        "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return cards
-            }
             cards.addAll(ongoingEvents.map {
                 Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
                     override fun inflate(parent: ViewGroup): View {
