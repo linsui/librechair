@@ -24,6 +24,7 @@ package ch.deletescape.lawnchair.feed
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.CalendarContract
@@ -225,7 +226,15 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         context.getString(
                                 R.string.title_action_new_calendar_event), Runnable {
                     val intent = Intent(Intent.ACTION_INSERT)
-                    intent.setPackage("com.android.calendar")
+                    val pkg = calendarApps.firstOrNull {
+                        try {
+                            context.packageManager.getPackageInfo(it, 0);
+                            true
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            false
+                        }
+                    } ?: return@Runnable
+                    intent.setPackage(pkg)
                     intent.data = CalendarContract.Events.CONTENT_URI
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     try {
@@ -242,5 +251,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         }
                     }
                 }))
+    }
+
+    companion object {
+        val calendarApps = listOf("com.android.calendar", "ws.xsoh.etar")
     }
 }
