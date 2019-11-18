@@ -23,7 +23,6 @@ package ch.deletescape.lawnchair.feed.adblock
 import android.annotation.SuppressLint
 import android.content.Context
 import ch.deletescape.lawnchair.lawnchairApp
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.Utilities
 import kg.net.bazi.gsb4j.api.SafeBrowsingApi
 import java.io.File
@@ -61,7 +60,6 @@ object WebSafety {
     }
 
     fun shouldBlock(dom: String, url: String): Boolean {
-        d("shouldBlock: scanning doman $dom (url $url)")
         if (blocklist.exists().not()) {
             return false
         } else {
@@ -69,7 +67,6 @@ object WebSafety {
                 return blockCache[dom]!!
             }
             var block = false
-            d("shouldBlock: matching $dom against blacklist")
             InputStreamReader(FileInputStream(blocklist)).forEachLine {
                 if (it.isNotEmpty() && it.split(" ")[1] == dom) {
                     block = true
@@ -77,12 +74,10 @@ object WebSafety {
                 }
             }
             if (block) {
-                d("shouldBlock: $url will be blocked: $block")
                 blockCache += dom to block
                 return block;
             }
             if (Utilities.ATLEAST_P && context.lawnchairApp.isGsb4jAvailable()) {
-                d("shouldBlock: matching $url against google")
                 try {
                     val client = context.lawnchairApp.gsb4j
                             .getApiClient(SafeBrowsingApi.Type.UPDATE_API)
@@ -93,7 +88,6 @@ object WebSafety {
                     e.printStackTrace()
                 }
             }
-            d("shouldBlock: $url will be blocked: $block")
             blockCache += dom to block
             return block
         }
