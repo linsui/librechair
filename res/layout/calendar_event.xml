@@ -28,7 +28,7 @@
         android:orientation="vertical"
         android:layout_weight=".7"
         android:layout_width="0dp"
-        android:layout_height="128dp">
+        android:layout_height="wrap_content">
         <TextView
             android:textSize="18sp"
             android:fontFamily="sans-serif-medium"
