@@ -97,8 +97,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 val ongoingBackup = listOf(* ongoingEvents.toTypedArray())
                 ongoingEvents += ongoingBackup.filter {
                     d("init: (tick) ongoing event: $it currentTime: ${LocalDateTime.now()}")
-                    it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) <= System.currentTimeMillis() / 1000 &&
-                            it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) >= System.currentTimeMillis() / 1000
+                    it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                            Instant.now())) <= System.currentTimeMillis() / 1000 &&
+                            it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                                    Instant.now())) >= System.currentTimeMillis() / 1000
                 }
                 d("init: (tick) ongoing events are $ongoingEvents")
                 if (ongoingEvents != lastOngoing ||
@@ -135,84 +137,84 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
 
     override fun getCards(): List<Card> {
         val cards = ArrayList<Card>()
-        run {
-            cards.addAll(events.map {
-                Card(
-                        null, null,
-                        object : Card.Companion.InflateHelper {
-                            override fun inflate(parent: ViewGroup): View {
-                                return if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) getCalendarFeedView(
-                                        it.description, it.address, parent.context, parent,
-                                        this@CalendarEventProvider).apply {
-                                    calendar_event_title.text =
-                                            (if (it.title.trim().isEmpty()) context.getString(
-                                                    R.string.placeholder_empty_title) else it.title)
-                                    calendar_event_title.marqueeRepeatLimit = -1
-                                    calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
-                                    calendar_event_title.isSelected = true
-                                    calendar_event_title.maxLines = 1
-                                    calendar_event_title.focusable = View.FOCUSABLE
+        cards.addAll(events.map {
+            Card(null, null,
+                    object : Card.Companion.InflateHelper {
+                        override fun inflate(parent: ViewGroup): View {
+                            return if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) getCalendarFeedView(
+                                    it.description, it.address, parent.context, parent,
+                                    this@CalendarEventProvider).apply {
+                                calendar_event_title.text =
+                                        (if (it.title.trim().isEmpty()) context.getString(
+                                                R.string.placeholder_empty_title) else it.title)
+                                calendar_event_title.marqueeRepeatLimit = -1
+                                calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
+                                calendar_event_title.isSelected = true
+                                calendar_event_title.maxLines = 1
+                                calendar_event_title.focusable = View.FOCUSABLE
 
-                                    if (it.address == null) {
-                                        viewTreeObserver.addOnGlobalLayoutListener {
-                                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                                        }
+                                if (it.address == null) {
+                                    viewTreeObserver.addOnGlobalLayoutListener {
+                                        layoutParams.height =
+                                                ViewGroup.LayoutParams.WRAP_CONTENT
                                     }
+                                }
 
-                                    if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
-                                        calendar_event_title.setTextColor(it.colour)
+                                if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
+                                    calendar_event_title.setTextColor(it.colour)
+                                }
+                                calendar_event_title.typeface = Typeface.DEFAULT_BOLD
+                                TickManager.subscribe {
+                                    val diff = it.startTime.toEpochSecond(
+                                            ZoneOffset.systemDefault().rules.getOffset(
+                                                    Instant.now())) * 1000 - System.currentTimeMillis()
+                                    val diffMinutes = diff / (60 * 1000)
+                                    val diffHours = diff / (60 * 60 * 1000)
+                                    val diffDays = diff / (24 * 60 * 60 * 1000)
+                                    val text: String
+                                    when {
+                                        diffDays > 20 -> text =
+                                                IcuDateTextView.getDateFormat(context, true,
+                                                        null, false)
+                                                        .format(Date.from(Instant.ofEpochMilli(
+                                                                it.startTime.toEpochSecond(
+                                                                        ZoneOffset.ofHours(
+                                                                                0)) * 1000)))
+                                        diffDays >= 1 -> text =
+                                                if (diffDays < 1 || diffDays > 1) context.getString(
+                                                        R.string.title_text_calendar_feed_provider_in_d_days,
+                                                        diffDays) else context.getString(
+                                                        R.string.tomorrow)
+                                        diffHours > 4 -> text = context
+                                                .getString(
+                                                        R.string.title_text_calendar_feed_in_d_hours,
+                                                        diffHours)
+                                        else -> text = if (diffMinutes <= 0) context.getString(
+                                                R.string.reusable_str_now) else context.getString(
+                                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                                                diffMinutes)
                                     }
-                                    calendar_event_title.typeface = Typeface.DEFAULT_BOLD
-                                    TickManager.subscribe {
-                                        val diff = it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) * 1000 - System.currentTimeMillis()
-                                        val diffMinutes = diff / (60 * 1000)
-                                        val diffHours = diff / (60 * 60 * 1000)
-                                        val diffDays = diff / (24 * 60 * 60 * 1000)
-                                        val text: String
-                                        when {
-                                            diffDays > 20 -> text = IcuDateTextView.getDateFormat(context, true,
-                                                    null, false)
-                                                    .format(Date.from(Instant.ofEpochMilli(
-                                                            it.startTime.toEpochSecond(
-                                                                    ZoneOffset.ofHours(0)) * 1000)))
-                                            diffDays >= 1 -> text =
-                                                    if (diffDays < 1 || diffDays > 1) context.getString(
-                                                            R.string.title_text_calendar_feed_provider_in_d_days,
-                                                            diffDays) else context.getString(
-                                                            R.string.tomorrow)
-                                            diffHours > 4 -> text = context
-                                                    .getString(
-                                                            R.string.title_text_calendar_feed_in_d_hours,
-                                                            diffHours)
-                                            else -> text = if (diffMinutes <= 0) context.getString(
-                                                    R.string.reusable_str_now) else context.getString(
-                                                    if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                                                    diffMinutes)
-                                        }
-                                        calendar_event_time_remaining.text = text
-                                    }
-                                } else View(parent.context)
-                            }
-                        },
-                        if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
-                                Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
-                        if ((it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
-                    globalClickListener = { v ->
-                        FeedUtil.startActivity(context, it.intent, v)
-                    }
+                                    calendar_event_time_remaining.text = text
+                                }
+                            } else View(parent.context)
+                        }
+                    },
+                    if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
+                            Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
+                    if ((it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                                    Instant.now())) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
+                globalClickListener = { v ->
+                    FeedUtil.startActivity(context, it.intent, v)
                 }
-            })
-        }
-        run {
-            val currentTime = GregorianCalendar()
-            cards.addAll(ongoingEvents.map {
-                Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
-                    override fun inflate(parent: ViewGroup): View {
-                        return View(parent.context)
-                    }
-                }, Card.TEXT_ONLY, "nosort,top")
-            })
-        }
+            }
+        })
+        cards.addAll(ongoingEvents.map {
+            Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
+                override fun inflate(parent: ViewGroup): View {
+                    return View(parent.context)
+                }
+            }, Card.TEXT_ONLY, "nosort,top")
+        })
         return cards
     }
 
