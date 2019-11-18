@@ -138,6 +138,12 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.maxLines = 1
                                     calendar_event_title.focusable = View.FOCUSABLE
 
+                                    if (it.address == null) {
+                                        viewTreeObserver.addOnGlobalLayoutListener {
+                                            layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                                        }
+                                    }
+
                                     if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
                                         calendar_event_title.setTextColor(it.colour)
                                     }
