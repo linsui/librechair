@@ -17,6 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NestedLambdaShadowedImplicitParameter")
+
 package ch.deletescape.lawnchair.feed
 
 import android.content.ActivityNotFoundException
@@ -26,7 +28,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.provider.CalendarContract
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
@@ -164,38 +165,33 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                                     calendar_event_title.typeface = Typeface.DEFAULT_BOLD
                                     TickManager.subscribe {
                                         val diff = it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) * 1000 - System.currentTimeMillis()
-                                        val diffSeconds = diff / 1000
                                         val diffMinutes = diff / (60 * 1000)
                                         val diffHours = diff / (60 * 60 * 1000)
                                         val diffDays = diff / (24 * 60 * 60 * 1000)
                                         val text: String
-                                        if (diffDays > 20) {
-                                            text = IcuDateTextView.getDateFormat(context, true,
+                                        when {
+                                            diffDays > 20 -> text = IcuDateTextView.getDateFormat(context, true,
                                                     null, false)
                                                     .format(Date.from(Instant.ofEpochMilli(
                                                             it.startTime.toEpochSecond(
                                                                     ZoneOffset.ofHours(0)) * 1000)))
-                                        } else if (diffDays >= 1) {
-                                            text =
+                                            diffDays >= 1 -> text =
                                                     if (diffDays < 1 || diffDays > 1) context.getString(
                                                             R.string.title_text_calendar_feed_provider_in_d_days,
                                                             diffDays) else context.getString(
                                                             R.string.tomorrow)
-                                        } else if (diffHours > 4) {
-                                            text = context
+                                            diffHours > 4 -> text = context
                                                     .getString(
                                                             R.string.title_text_calendar_feed_in_d_hours,
                                                             diffHours)
-                                        } else {
-                                            text = if (diffMinutes <= 0) context.getString(
+                                            else -> text = if (diffMinutes <= 0) context.getString(
                                                     R.string.reusable_str_now) else context.getString(
                                                     if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                                                     diffMinutes)
                                         }
                                         calendar_event_time_remaining.text = text
                                     }
-                                } else View(
-                                        parent.getContext())
+                                } else View(parent.context)
                             }
                         },
                         if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
@@ -209,8 +205,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         }
         run {
             val currentTime = GregorianCalendar()
-            Log.v(javaClass.name,
-                    "getCards: searching for events that are active at ${currentTime}")
             cards.addAll(ongoingEvents.map {
                 Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
                     override fun inflate(parent: ViewGroup): View {
