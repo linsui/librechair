@@ -76,7 +76,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
             if (ongoingEvents != lastOngoing ||
                     events != lastEvents) {
                 FeedScope.launch {
-                    feed?.refresh(0)
+                    if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
+                        feed?.refresh(0)
+                    }
                 }
             }
         }
@@ -102,7 +104,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 if (ongoingEvents != lastOngoing ||
                         events != lastEvents) {
                     FeedScope.launch {
-                        feed?.refresh(0)
+                        if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
+                            feed?.refresh(0)
+                        }
                     }
                 }
             }

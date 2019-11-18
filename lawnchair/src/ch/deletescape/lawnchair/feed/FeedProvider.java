@@ -69,6 +69,10 @@ public abstract class FeedProvider {
         return false;
     }
 
+    public FeedAdapter getAdapter() {
+        return adapter;
+    }
+
     public abstract void onFeedShown();
 
 
