@@ -22,7 +22,6 @@ package ch.deletescape.lawnchair.feed
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Color
 import android.graphics.Typeface
@@ -131,11 +130,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     }
 
     override fun getCards(): List<Card> {
-        d("getCards: retrieving calendar cards...")
-        if (context.checkSelfPermission(
-                        android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            return emptyList()
-        }
         val cards = ArrayList<Card>()
         run {
             cards.addAll(events.map {
