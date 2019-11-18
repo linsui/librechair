@@ -254,6 +254,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     }
 
     companion object {
-        val calendarApps = listOf("com.android.calendar", "ws.xsoh.etar")
+        val calendarApps = listOf("com.android.calendar", "ws.xsoh.etar", "com.google.android.apps.calendar")
     }
 }
