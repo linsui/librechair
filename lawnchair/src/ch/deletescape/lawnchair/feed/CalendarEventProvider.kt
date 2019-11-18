@@ -40,6 +40,7 @@ import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import kotlinx.android.synthetic.main.calendar_event.view.*
 import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -58,6 +59,8 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
 
     init {
         CalendarManager.subscribe {
+            val lastEvents = events.toImmutableList()
+            val lastOngoing = ongoingEvents.toImmutableList()
             events.clear()
             events += it.filter {
                 it.startTime >= LocalDateTime.now() &&
@@ -71,10 +74,18 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         it.endTime >= LocalDateTime.now()
             }
             d("init: ongoing events are $ongoingEvents")
+            if (ongoingEvents != lastOngoing ||
+                    events != lastEvents) {
+                FeedScope.launch {
+                    feed?.refresh(0)
+                }
+            }
         }
 
         TickManager.subscribe {
             CalendarScope.launch {
+                val lastEvents = events.toImmutableList()
+                val lastOngoing = ongoingEvents.toImmutableList()
                 val backup = listOf(* events.toTypedArray())
                 events.clear()
                 events += backup.filter {
@@ -89,6 +100,12 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) >= System.currentTimeMillis() / 1000
                 }
                 d("init: (tick) ongoing events are $ongoingEvents")
+                if (ongoingEvents != lastOngoing ||
+                        events != lastEvents) {
+                    FeedScope.launch {
+                        feed?.refresh(0)
+                    }
+                }
             }
         }
     }
