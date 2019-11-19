@@ -50,6 +50,8 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     override fun onDestroy() {
     }
 
+    override fun isVolatile() = true
+
     @SuppressLint("SetJavaScriptEnabled")
     override fun getCards(): List<Card> {
         return context.lawnchairPrefs.feedWebApplications.map {
