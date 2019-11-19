@@ -82,11 +82,11 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
             }, Card.RAISE, if (it.sort) "" else "nosort,top", it.url.hashCode()).apply {
                 vhBindListener = {
                     (it.itemView as ViewGroup)
-                            .findViewById<WebView>("webtf".hashCode())?.also { wv ->
+                            .findViewById<WebView>("webtf".hashCode())!!.also { wv ->
                                 wv.webChromeClient = object : WebChromeClient() {
                                     override fun onReceivedIcon(view: WebView, icon: Bitmap) {
                                         super.onReceivedIcon(view, icon)
-                                        it.icon?.setImageBitmap(icon)
+                                        it.icon!!.setImageBitmap(icon)
                                     }
                                 }
                             }
