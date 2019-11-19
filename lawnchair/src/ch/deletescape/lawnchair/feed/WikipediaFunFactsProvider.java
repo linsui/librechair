@@ -36,6 +36,7 @@ import com.android.launcher3.R;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 import fastily.jwiki.core.Wiki;
@@ -49,7 +50,8 @@ public class WikipediaFunFactsProvider extends FeedProvider {
 
     public WikipediaFunFactsProvider(Context c) {
         super(c);
-        this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
+        this.newsIcon = Objects.requireNonNull(Objects.requireNonNull(
+                c.getDrawable(R.drawable.ic_assessment_black_24dp)).getConstantState())
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
         Executors.newSingleThreadExecutor().submit(() -> {
