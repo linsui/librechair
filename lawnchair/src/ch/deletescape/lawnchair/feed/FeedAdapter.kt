@@ -418,6 +418,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        cards[position].vhBindListener?.invoke(holder)
         if (holder.itemView is MaterialCardView) {
             if (!context.lawnchairPrefs.feedCardBlur && context.colorEngine.getResolver(
                             FEED_CARD) !is FeedBackgroundResolver) {

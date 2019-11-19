@@ -21,9 +21,13 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.widget.TextView
+import ch.deletescape.lawnchair.findViewsByClass
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.runOnNewThread
 import io.github.cdimascio.essence.Essence
@@ -33,17 +37,14 @@ import java.net.URL
 import java.nio.charset.Charset
 
 class WebApplicationsProvider(context: Context) : FeedProvider(context) {
-    val viewCache = mutableMapOf<URL, WebView>()
+    private val viewCache = mutableMapOf<URL, WebView>()
     override fun onFeedShown() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onFeedHidden() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onCreate() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     override fun onDestroy() {
@@ -56,6 +57,7 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
                 if (!it.isArticle) {
                     if (viewCache.containsKey(it.url)) viewCache[it.url]!! else WebView(
                             context).apply {
+                        id = "webtf".hashCode()
                         settings.javaScriptEnabled = true
                         loadUrl(Uri.decode(it.url.toURI().toASCIIString()))
                         viewCache += it.url to this
@@ -76,7 +78,19 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
                         }
                     }
                 }
-            }, Card.RAISE, if (it.sort) "" else "nosort,top", it.url.hashCode())
+            }, Card.RAISE, if (it.sort) "" else "nosort,top", it.url.hashCode()).apply {
+                vhBindListener = {
+                    (it.itemView as ViewGroup)
+                            .findViewsByClass(WebView::class.java, false).forEach { wv ->
+                                (wv as WebView).webChromeClient = object : WebChromeClient() {
+                                    override fun onReceivedIcon(view: WebView, icon: Bitmap) {
+                                        super.onReceivedIcon(view, icon)
+                                        it.icon?.setImageBitmap(icon)
+                                    }
+                                }
+                            }
+                }
+            }
         }
     }
 }
