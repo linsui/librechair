@@ -54,11 +54,13 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!.tint(
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
+    private var ec = true
     private val events = mutableListOf<CalendarManager.CalendarEvent>()
     private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
 
     init {
         CalendarManager.subscribe {
+            ec = true
             val lastEvents = events.toImmutableList()
             val lastOngoing = ongoingEvents.toImmutableList()
             events.clear()
@@ -111,13 +113,15 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                             feed?.refresh(0)
                         }
                     }
+
+                    ec = true
                 }
             }
         }
     }
 
     override fun isVolatile(): Boolean {
-        return true
+        return ec
     }
 
     override fun onFeedShown() {
@@ -138,6 +142,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
 
     override fun getCards(): List<Card> {
         val cards = ArrayList<Card>()
+        ec = false
         cards.addAll(events.map {
             Card(null, null,
                     object : Card.Companion.InflateHelper {
@@ -228,7 +233,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     val intent = Intent(Intent.ACTION_INSERT)
                     val pkg = calendarApps.firstOrNull {
                         try {
-                            context.packageManager.getPackageInfo(it, 0);
+                            context.packageManager.getPackageInfo(it, 0)
                             true
                         } catch (e: PackageManager.NameNotFoundException) {
                             false
