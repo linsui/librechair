@@ -132,7 +132,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             sb.view.findViewById<Button>(
                                     com.google.android.material.R.id.snackbar_action)
                                     .backgroundTintList = ColorStateList.valueOf(
-                                    FeedAdapter.getOverrideColor(v.context).setAlpha(40))
+                                    FeedAdapter.getOverrideColor(v.context).setAlpha(0))
                         }.show()
                 Unit
             }
