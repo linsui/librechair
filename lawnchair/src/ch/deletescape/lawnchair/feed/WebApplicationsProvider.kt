@@ -23,6 +23,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import android.view.ViewGroup
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -86,6 +87,7 @@ class WebApplicationsProvider(context: Context) : FeedProvider(context) {
                                 wv.webChromeClient = object : WebChromeClient() {
                                     override fun onReceivedIcon(view: WebView, icon: Bitmap) {
                                         super.onReceivedIcon(view, icon)
+                                        Log.d(this@WebApplicationsProvider::class.qualifiedName!!, "onReceivedIcon: icon retrieved")
                                         it.icon!!.setImageBitmap(icon)
                                     }
                                 }
