@@ -124,7 +124,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         .also { sb ->
                             sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).background = RippleDrawableCompat(
                                     ShapeAppearanceModel().withCornerSize(context.eightF)).also {
-                                it.setTint(FeedAdapter.getOverrideColor(v.context))
+                                it.setTint(FeedAdapter.getOverrideColor(v.context).setAlpha(20))
                             }
                         }.show()
                 Unit
