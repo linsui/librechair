@@ -22,8 +22,9 @@ package ch.deletescape.lawnchair.feed.dt
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.View
+import android.content.res.ColorStateList
 import android.view.ViewGroup
+import android.widget.Button
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.colors.ColorEngine
@@ -32,8 +33,6 @@ import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
-import com.google.android.material.ripple.RippleDrawableCompat
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.world_clock.view.*
 import kotlinx.android.synthetic.main.world_clock.view.zid_name
@@ -80,16 +79,22 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         (TimeZone.getDefault().rawOffset / 1000 - ZoneId.of(it).rules.getOffset(
                                 Instant.now()).totalSeconds.toLong()))
                 view.zid_offset.text = when {
-                    offset > 0 -> context.resources.getQuantityText(R.plurals.title_dt_time_later, offset.toInt()).toString().format(offset)
+                    offset > 0 -> context.resources.getQuantityText(R.plurals.title_dt_time_later,
+                            offset.toInt()).toString().format(offset)
                     offset == 0L -> R.string.reusable_str_now.fromStringRes(context)
-                    else -> context.resources.getQuantityText(R.plurals.title_dt_time_sooner, offset.toInt()).toString().format(offset)
+                    else -> context.resources.getQuantityText(R.plurals.title_dt_time_sooner,
+                            offset.toInt()).toString().format(offset)
                 }
                 TickManager.subscribe {
                     when {
                         ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                ZoneId.of(it)).toLocalDate() < LocalDate.now() -> view.zid_direction.text = context.getString(R.string.title_dt_yesterday)
+                                ZoneId.of(
+                                        it)).toLocalDate() < LocalDate.now() -> view.zid_direction.text =
+                                context.getString(R.string.title_dt_yesterday)
                         ZonedDateTime.now(ZoneId.systemDefault()).withZoneSameInstant(
-                                ZoneId.of(it)).toLocalDate() > LocalDate.now() -> view.zid_direction.text = context.getString(R.string.title_dt_tomorrow)
+                                ZoneId.of(
+                                        it)).toLocalDate() > LocalDate.now() -> view.zid_direction.text =
+                                context.getString(R.string.title_dt_tomorrow)
                         else -> view.zid_direction.text = ""
                     }
                     if (analog) {
@@ -118,14 +123,16 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                             context.feedPrefs.clockTimeZones.addAll(backup)
                             feed?.refresh(0)
                         }
-                        .setBackgroundTint(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
-                        .setTextColor(context.colorEngine.getResolverCache(ColorEngine.Resolvers.FEED_CARD).value.computeForegroundColor())
+                        .setBackgroundTint(context.colorEngine.getResolverCache(
+                                ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
+                        .setTextColor(context.colorEngine.getResolverCache(
+                                ColorEngine.Resolvers.FEED_CARD).value.computeForegroundColor())
                         .setActionTextColor(FeedAdapter.getOverrideColor(v.context))
                         .also { sb ->
-                            sb.view.findViewById<View>(com.google.android.material.R.id.snackbar_action).background = RippleDrawableCompat(
-                                    ShapeAppearanceModel().withCornerSize(context.eightF)).also {
-                                it.setTint(FeedAdapter.getOverrideColor(v.context).setAlpha(40))
-                            }
+                            sb.view.findViewById<Button>(
+                                    com.google.android.material.R.id.snackbar_action)
+                                    .backgroundTintList = ColorStateList.valueOf(
+                                    FeedAdapter.getOverrideColor(v.context).setAlpha(40))
                         }.show()
                 Unit
             }
