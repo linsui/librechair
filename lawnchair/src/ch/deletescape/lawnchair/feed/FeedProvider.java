@@ -73,17 +73,6 @@ public abstract class FeedProvider {
         return adapter;
     }
 
-    public abstract void onFeedShown();
-
-
-    public abstract void onFeedHidden();
-
-
-    public abstract void onCreate();
-
-
-    public abstract void onDestroy();
-
     public abstract List<Card> getCards();
 
     protected void onAttachedToAdapter(FeedAdapter adapter) {

@@ -49,23 +49,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
-
-    override fun onFeedShown() {
-
-    }
-
-    override fun onFeedHidden() {
-
-    }
-
-    override fun onCreate() {
-
-    }
-
-    override fun onDestroy() {
-
-    }
-
     @SuppressLint("SetTextI18n", "RestrictedApi")
     override fun getCards(): List<Card> {
         val analog = context.feedPrefs.displayAnalogClock

@@ -29,21 +29,6 @@ import ch.deletescape.lawnchair.*
 import com.android.launcher3.R
 
 class DeviceStateProvider(c: Context) : FeedProvider(c) {
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
 
     @SuppressLint("MissingPermission")
     override fun getCards(): MutableList<Card> {

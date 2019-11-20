@@ -85,18 +85,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
         }
     }
 
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
-
     @Suppress("ClickableViewAccessibility")
     override fun getCards(): List<Card> {
         return if (weatherData != null) listOf(

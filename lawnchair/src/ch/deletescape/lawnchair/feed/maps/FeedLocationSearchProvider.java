@@ -50,26 +50,6 @@ public class FeedLocationSearchProvider extends FeedProvider {
     }
 
     @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
     public List<Card> getCards() {
         Log.d(getClass().getName(), "getCards: retrieving cards");
         return ImmutableList.of(new Card(

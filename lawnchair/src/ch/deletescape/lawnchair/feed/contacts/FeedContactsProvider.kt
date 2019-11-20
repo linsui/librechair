@@ -31,22 +31,6 @@ import java.util.*
 import kotlin.math.max
 
 class FeedContactsProvider(c: Context?) : FeedProvider(c) {
-    override fun onFeedShown() {
-
-    }
-
-    override fun onFeedHidden() {
-
-    }
-
-    override fun onCreate() {
-
-    }
-
-    override fun onDestroy() {
-
-    }
-
     override fun isVolatile() = true
 
     override fun getCards(): List<Card> {

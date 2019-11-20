@@ -28,17 +28,6 @@ import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import com.android.launcher3.R
 
 class OnboardingProvider(c: Context) : FeedProvider(c) {
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
 
     override fun getCards(): List<Card> {
         return listOf(Card(null, null, { v, _ ->

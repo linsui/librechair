@@ -62,17 +62,6 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
 
     override fun isVolatile() = true
 
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
 
     override fun getCards(): List<Card> {
         refreshPredictions()

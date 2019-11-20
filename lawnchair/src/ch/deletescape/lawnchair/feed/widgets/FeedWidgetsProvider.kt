@@ -41,19 +41,6 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
     val appWidgetManager by lazy {
         context.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
     }
-
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
-
     override fun getCards(): List<Card> {
         return WidgetDatabase.getInstance(context).dao().all
                 .filter { appWidgetManager.getAppWidgetInfo(it.id) != null }.map { widget ->

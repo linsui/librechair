@@ -93,26 +93,6 @@ public class DailySummaryFeedProvider extends FeedProvider {
     }
 
     @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
     public List<Card> getCards() {
         if (sunriseSunsetExpiry < System.currentTimeMillis()) {
             Pair<Double, Double> location = LawnchairUtilsKt

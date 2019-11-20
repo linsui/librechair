@@ -182,9 +182,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     override fun onDetachedFromRecyclerView(
             recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
-        providers.iterator().forEachRemaining {
-            it.onDestroy()
-        }
     }
 
     @SuppressLint("MissingPermission", "RestrictedApi")

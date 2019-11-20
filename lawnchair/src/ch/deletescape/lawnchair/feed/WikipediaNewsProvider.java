@@ -64,25 +64,6 @@ public class WikipediaNewsProvider extends FeedProvider {
         }
     }
 
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override

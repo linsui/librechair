@@ -39,22 +39,6 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c) {
         WeatherManager.subscribeDaily { forecast = it }
     }
 
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
-
     override fun getCards(): List<Card> {
         return if (forecast == null) emptyList() else listOf(
                 Card(null,

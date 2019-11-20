@@ -54,26 +54,6 @@ public class FeedSearchboxProvider extends FeedProvider {
         super(c);
     }
 
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Card> getCards() {

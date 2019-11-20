@@ -46,27 +46,6 @@ public class WeatherBarFeedProvider extends FeedProvider {
             return Unit.INSTANCE;
         });
     }
-
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
     @Override
     public List<Card> getCards() {
         return weather == null ? Collections.emptyList() : Collections.singletonList(

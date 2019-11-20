@@ -109,26 +109,6 @@ public class RemoteFeedProvider extends FeedProvider {
     }
 
     @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
     public List<Card> getCards() {
         List<List<Card>> toSort = new ArrayList<>();
         Log.d(getClass().getName(), "getCards: retrieving cards");

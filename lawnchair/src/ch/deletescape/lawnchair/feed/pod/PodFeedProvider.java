@@ -47,27 +47,6 @@ public abstract class PodFeedProvider extends FeedProvider {
     public void setPod(Supplier<FeedPod> pod) {
         this.pod = pod;
     }
-
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
     @Override
     public final List<Card> getCards() {
         if (activePod == null) {

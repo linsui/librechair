@@ -34,18 +34,6 @@ abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     abstract val headerCard: List<Card>?
     abstract val onRemoveListener: (id: Id) -> Unit
 
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
-
     override fun isVolatile() = true
 
     override fun getCards(): List<Card> {

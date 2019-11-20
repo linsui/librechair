@@ -38,18 +38,6 @@ import java.nio.charset.Charset
 
 class WebApplicationsProvider(context: Context) : FeedProvider(context) {
     private val viewCache = mutableMapOf<URL, WebView>()
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
-
     override fun isVolatile() = true
 
     @SuppressLint("SetJavaScriptEnabled")

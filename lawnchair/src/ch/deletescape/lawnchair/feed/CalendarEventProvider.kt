@@ -124,22 +124,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         return ec
     }
 
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
-
     override fun getCards(): List<Card> {
         val cards = ArrayList<Card>()
         ec = false

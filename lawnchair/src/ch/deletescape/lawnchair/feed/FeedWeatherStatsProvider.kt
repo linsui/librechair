@@ -68,22 +68,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
         }
     }
 
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
-
     override fun getCards(): List<Card> {
         return if (weatherData != null && forecastHigh != null && forecastLow != null && weatherTypeResource != null) listOf(
                 Card(null, null,

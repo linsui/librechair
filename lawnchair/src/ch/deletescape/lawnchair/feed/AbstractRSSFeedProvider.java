@@ -210,27 +210,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             }
         }
     }
-
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
     @Override
     public boolean isVolatile() {
         return articles == null || articles.isEmpty() || minicard != FeedPersistenceKt.getFeedPrefs(
