@@ -1694,7 +1694,7 @@ class LauncherFeed(private val originalContext: Context,
 
     fun updateActions() {
         toolbar.menu.clear()
-        if (!context.feedPrefs.hideActions) {
+        if (!context.feedPrefs.hideActions && providerScreens.isEmpty()) {
             if (adapter.providers.filter { !it.isActionFree }.size == 1) {
                 (adapter.providers.first { !it.isActionFree }.getActions(true)).sortedBy { it.name }
                         .forEach {
@@ -1732,39 +1732,39 @@ class LauncherFeed(private val originalContext: Context,
                     }
                 }
             }
-            if (providerScreens.isNotEmpty() && screenActions.containsKey(
-                            providerScreens.last().first)) {
-                (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
-                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
-                            .apply {
-                                if (!context.feedPrefs.displayActionsAsMenu) {
-                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                                }
-                                icon = it.icon.tint(
-                                        if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                                context))
-                                setOnMenuItemClickListener { _ ->
-                                    it.onClick.run()
-                                    true
-                                }
+        }
+        if (providerScreens.isNotEmpty() && screenActions.containsKey(
+                        providerScreens.last().first)) {
+            (screenActions[providerScreens.last().first]!! + internalActions.values).forEach {
+                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                        .apply {
+                            if (!context.feedPrefs.displayActionsAsMenu) {
+                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                             }
-                }
-            } else {
-                internalActions.values.forEach {
-                    toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
-                            .apply {
-                                if (!context.feedPrefs.displayActionsAsMenu) {
-                                    setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-                                }
-                                icon = it.icon.tint(
-                                        if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
-                                                context))
-                                setOnMenuItemClickListener { _ ->
-                                    it.onClick.run()
-                                    true
-                                }
+                            icon = it.icon.tint(
+                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                            context))
+                            setOnMenuItemClickListener { _ ->
+                                it.onClick.run()
+                                true
                             }
-                }
+                        }
+            }
+        } else {
+            internalActions.values.forEach {
+                toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
+                        .apply {
+                            if (!context.feedPrefs.displayActionsAsMenu) {
+                                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                            }
+                            icon = it.icon.tint(
+                                    if (dark) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
+                                            context))
+                            setOnMenuItemClickListener { _ ->
+                                it.onClick.run()
+                                true
+                            }
+                        }
             }
         }
         toolbar.visibility =
