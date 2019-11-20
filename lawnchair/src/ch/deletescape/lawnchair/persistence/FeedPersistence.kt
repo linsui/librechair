@@ -43,8 +43,6 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_hosts_filtering", true)
     val directlyOpenLinksInBrowser
             by BooleanDelegate(context, "feed_directly_open_links", false)
-    val conservativeRefreshes
-            by BooleanDelegate(context, "feed_conservative_refreshes", true)
     val pullDownToRefresh
             by BooleanDelegate(context, "feed_pull_down_to_refresh", true)
     val useGecko
@@ -102,6 +100,9 @@ class FeedPersistence private constructor(val context: Context) {
             })
     val disableSpringAnimation
             by BooleanDelegate(context, "feed_disable_rv_springs", false)
+
+    /* Constants */
+    val conservativeRefreshes = true
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
