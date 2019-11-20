@@ -85,7 +85,7 @@ object CalendarManager : BroadcastReceiver() {
                         CalendarContract.Instances.DTSTART + " ASC")!!
                 val events = mutableListOf<CalendarEvent>()
                 while (cursor.moveToNext()) {
-                    events.add(CalendarEvent(cursor.getString(0), cursor.getString(1),
+                    events.add(CalendarEvent(cursor.getString(0) ?: "", cursor.getString(1),
                             cursor.getString(2), LocalDateTime.ofInstant(
                             Instant.ofEpochMilli(cursor.getLong(3)), ZoneId.systemDefault()),
                             LocalDateTime.ofInstant(Instant.ofEpochMilli(cursor.getLong(4)),
@@ -117,7 +117,7 @@ object CalendarManager : BroadcastReceiver() {
                         CalendarContract.Instances.DTSTART + " ASC")!!
                 val events = mutableListOf<CalendarEvent>()
                 while (cursor.moveToNext()) {
-                    events.add(CalendarEvent(cursor.getString(0), cursor.getString(1),
+                    events.add(CalendarEvent(cursor.getString(0) ?: "", cursor.getString(1),
                             cursor.getString(2), LocalDateTime.ofInstant(
                             Instant.ofEpochMilli(cursor.getLong(3)), ZoneId.systemDefault()),
                             LocalDateTime.ofInstant(Instant.ofEpochMilli(cursor.getLong(4)),
