@@ -332,7 +332,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 card.setActionListener(view -> {
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_TEXT, entry.url);
+                    i.putExtra(Intent.EXTRA_TEXT, entry.title + "\n--------\n" + entry.url);
                     FeedUtil.startActivity(view.getContext(), Intent.createChooser(i,
                             getContext().getString(getContext().getResources()
                                     .getIdentifier("whichSendApplicationLabel", "string",
