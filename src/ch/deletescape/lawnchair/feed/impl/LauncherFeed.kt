@@ -123,7 +123,7 @@ class LauncherFeed(private val originalContext: Context,
     internal var adapter = FeedAdapter(getFeedController(context).getProviders(), backgroundColor,
             context.applicationContext, this)
     private val handler = Handler(Looper.getMainLooper())
-    private val windowService = context.getSystemService(WindowManager::class.java)
+    private val windowService = context.getSystemService(WindowManager::class.java)!!
     private var verticalBackground: Drawable? = null
     private var horizontalBackground: Drawable? = null
     val screenActions = mutableMapOf<ProviderScreen, List<FeedProvider.Action>>()
