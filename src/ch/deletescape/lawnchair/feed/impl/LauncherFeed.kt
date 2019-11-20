@@ -93,6 +93,7 @@ import kotlin.reflect.jvm.isAccessible
 
 // todo kt-utils.el warning sweep
 //     * nothing was done
+@Suppress("NestedLambdaShadowedImplicitParameter")
 class LauncherFeed(private val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
         ILauncherOverlay.Stub() {
