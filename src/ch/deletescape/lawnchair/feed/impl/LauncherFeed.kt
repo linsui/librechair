@@ -1568,9 +1568,9 @@ class LauncherFeed(private val originalContext: Context,
             if (!quick) {
                 if (clearCache || !context.feedPrefs.conservativeRefreshes ||
                         ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
-                                5)) ||
+                                15)) ||
                                 (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
-                                        5)))) {
+                                        15)))) {
                     if (!adapter.cards.isEmpty()) {
                         lastRefresh = System.currentTimeMillis()
                         if (::currentTab.isInitialized) {
@@ -1626,9 +1626,9 @@ class LauncherFeed(private val originalContext: Context,
                 d("refresh: beginning refresh 3")
                 if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
                                 ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
-                                        5)) ||
+                                        15)) ||
                                         (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
-                                                5)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
+                                                15)))) && adapter.providers.none { it.isVolatile } && !tabChanged) {
                     recyclerView.post {
                         adapter.notifyDataSetChanged()
                         recyclerView.suppressLayout(false)
@@ -1648,9 +1648,9 @@ class LauncherFeed(private val originalContext: Context,
                                         FeedScope.launch {
                                             if (clearCache || !context.feedPrefs.conservativeRefreshes ||
                                                     ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
-                                                            5)) ||
+                                                            15)) ||
                                                             (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
-                                                                    5)))) {
+                                                                    15)))) {
                                                 adapter.refresh()
                                                 if (!adapter.cards.isEmpty()) {
                                                     lastRefresh = System.currentTimeMillis()
