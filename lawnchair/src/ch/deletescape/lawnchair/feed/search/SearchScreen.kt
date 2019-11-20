@@ -29,8 +29,8 @@ import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.ProviderScreen
+import ch.deletescape.lawnchair.feed.SearchScope
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.inflate
@@ -76,12 +76,12 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                 if (!swipeRefreshLayout.isRefreshing) {
                     swipeRefreshLayout.isRefreshing = true
                 }
-                job = FeedScope.launch {
+                job = SearchScope.launch {
                     adapter.searchQuery = if (s.toString().trim().isNotEmpty()) s.toString() else null
                     synchronized(adapter) {
                         adapter.refreshSearch()
                     }
-                    FeedScope.launch(Dispatchers.Main) {
+                    SearchScope.launch(Dispatchers.Main) {
                         delay(600)
                         if (!recyclerView.isComputingLayout) {
                             adapter.notifyDataSetChanged()
@@ -97,11 +97,11 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                 job.cancel()
             }
             swipeRefreshLayout.isRefreshing = true
-            job = FeedScope.launch {
+            job = SearchScope.launch {
                 synchronized(adapter) {
                     adapter.refreshSearch()
                 }
-                FeedScope.launch(Dispatchers.Main) {
+                SearchScope.launch(Dispatchers.Main) {
                     delay(100)
                     adapter.notifyDataSetChanged()
                     swipeRefreshLayout.isRefreshing = false

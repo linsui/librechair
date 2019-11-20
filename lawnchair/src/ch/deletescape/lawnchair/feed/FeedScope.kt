@@ -63,6 +63,13 @@ object JobScope : CoroutineScope {
 object CalendarScope : CoroutineScope {
     @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =
-            newFixedThreadPoolContext(1, "overlay_jobs")
-
+            newFixedThreadPoolContext(1, "calendar_jobs")
 }
+
+
+object SearchScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(1, "search_jobs")
+}
+
