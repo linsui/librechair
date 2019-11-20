@@ -241,6 +241,7 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
+    @Suppress("USELESS_CAST")
     @SuppressLint("SetTextI18n")
     fun initBitmapInfo(url: String, desc: String, bkg: Bitmap) {
         if (context.lawnchairPrefs.feedShowInfobox) {
@@ -527,7 +528,7 @@ class LauncherFeed(private val originalContext: Context,
                         upButton.animate().translationY(
                                 (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
                                 .duration = 500
-                        toolbarParent.addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                        toolbarParent.addOnLayoutChangeListener { _, _, top, _, bottom, _, _, _, _ ->
                             val height = abs(bottom - top)
                             val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
                             recyclerView.apply {
@@ -1047,7 +1048,7 @@ class LauncherFeed(private val originalContext: Context,
         }
         feedController.isFocusableInTouchMode = true
         feedController.requestFocus()
-        feedController.setOnKeyListener { v, keyCode, event ->
+        feedController.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_UP &&
                     keyCode == KeyEvent.KEYCODE_BACK && !providerScreens.isEmpty()) {
                 if (providerScreens.last().first.onBackPressed()) {
@@ -1222,7 +1223,7 @@ class LauncherFeed(private val originalContext: Context,
             })
         })
         for (i in 0 until toolbar.menu.size()) {
-            toolbar.menu.getItem(i).icon?.setTint(tabView.tabTextColors?.defaultColor ?: 0);
+            toolbar.menu.getItem(i).icon?.setTint(tabView.tabTextColors?.defaultColor ?: 0)
         }
     }
 
