@@ -217,15 +217,15 @@ class LauncherFeed(private val originalContext: Context,
     private var conservativeRefreshTimes =
             mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
     private var lastRefresh = 0L
-    var statusBarHeight: Int? = null
-    var navigationBarHeight: Int? = null
+    private var statusBarHeight: Int? = null
+    private var navigationBarHeight: Int? = null
 
     var chips: RecyclerView = feedController.findViewById(R.id.chip_container)
 
     lateinit var gll: ViewTreeObserver.OnGlobalLayoutListener
 
     val swipeRefreshLayout
-        get() = feedController.findViewById<SwipeRefreshLayout>(R.id.feed_refresh_indicator)
+        get() = feedController.findViewById<SwipeRefreshLayout>(R.id.feed_refresh_indicator)!!
 
     init {
         reinitState()
