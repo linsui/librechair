@@ -212,7 +212,7 @@ class LauncherFeed(private val originalContext: Context,
             R.string.search.fromStringRes(context)) {
         SearchScreen(this).display(this, null, null)
     }
-    var infobox = feedController.findViewById(R.id.info_box_text) as TextView
+    private var infobox = feedController.findViewById(R.id.info_box_text) as TextView
     private var reapplyInsetFlag = false
     private var conservativeRefreshTimes =
             mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
@@ -222,7 +222,7 @@ class LauncherFeed(private val originalContext: Context,
 
     var chips: RecyclerView = feedController.findViewById(R.id.chip_container)
 
-    lateinit var gll: ViewTreeObserver.OnGlobalLayoutListener
+    private lateinit var gll: ViewTreeObserver.OnGlobalLayoutListener
 
     val swipeRefreshLayout
         get() = feedController.findViewById<SwipeRefreshLayout>(R.id.feed_refresh_indicator)!!
@@ -414,7 +414,7 @@ class LauncherFeed(private val originalContext: Context,
                     var oldToolbarPaddingVertical: Pair<Int, Int>? = null
                     var oldToolbarPaddingHorizontal: Pair<Int, Int>? = null
                     var oldRecyclerViewPaddingHorizontal: Pair<Int, Int>? = null
-                    if (context.lawnchairPrefs.feedToolbarWidget != -1 && !(toolbar.feed_widget_layout.childCount > 1)) {
+                    if (context.lawnchairPrefs.feedToolbarWidget != -1 && toolbar.feed_widget_layout.childCount <= 1) {
                         val widgetContainer =
                                 toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
                         var deleting = false
@@ -477,7 +477,7 @@ class LauncherFeed(private val originalContext: Context,
                                         })
                             } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
                                 deleting = false
-                                searchWidgetView!!.animate().scaleX(1f).scaleY(1f).setDuration(250)
+                                searchWidgetView!!.animate().scaleX(1f).scaleY(1f).duration = 250
                             }
                             true
                         }
@@ -1114,10 +1114,14 @@ class LauncherFeed(private val originalContext: Context,
         if (useTabbedMode) {
             tabView.tabsEnabled = false
             oldIconTint = tabView.tabIconTint!!
-            oldIndicatorTint = if (backgroundColor.alpha > 35) getColorForIndex(
-                    tabView.selectedTabPosition) else if (useWhiteText(backgroundColor,
-                            context)) R.color.textColorPrimary.fromColorRes(
-                    context) else R.color.textColorPrimaryInverse.fromColorRes(context)
+            oldIndicatorTint = when {
+                backgroundColor.alpha > 35 -> getColorForIndex(
+                        tabView.selectedTabPosition)
+                useWhiteText(backgroundColor,
+                        context) -> R.color.textColorPrimary.fromColorRes(
+                        context)
+                else -> R.color.textColorPrimaryInverse.fromColorRes(context)
+            }
             oldTextColor = tabView.tabTextColors!!
             if (useWhiteText(backgroundColor, context) && !dark) {
                 tabView.tabIconTint = ColorStateList(
@@ -1184,7 +1188,7 @@ class LauncherFeed(private val originalContext: Context,
                         } else {
                             val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
                                     getX().roundToInt() + measuredWidth,
-                                    getY().roundToInt() + measuredHeight);
+                                    getY().roundToInt() + measuredHeight)
                             val evaluator = RectS2DEvaluator()
                             animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
                                     clipBounds, endRect)
@@ -1211,7 +1215,7 @@ class LauncherFeed(private val originalContext: Context,
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     }
-                    return true;
+                    return true
                 }
             })
             viewTreeObserver.addOnGlobalLayoutListener(object :
