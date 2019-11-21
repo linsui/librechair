@@ -1050,7 +1050,7 @@ class LauncherFeed(private val originalContext: Context,
         feedController.requestFocus()
         feedController.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_UP &&
-                    keyCode == KeyEvent.KEYCODE_BACK && !providerScreens.isEmpty()) {
+                    keyCode == KeyEvent.KEYCODE_BACK && providerScreens.isNotEmpty()) {
                 if (providerScreens.last().first.onBackPressed()) {
                     return@setOnKeyListener true
                 }
@@ -1165,12 +1165,10 @@ class LauncherFeed(private val originalContext: Context,
                             originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
                             originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + statusBarHeight!! else statusBarHeight!!)
                 }
-                if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
-                    background =
-                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
+                background = if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
+                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
                 } else {
-                    background =
-                            ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
+                    ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
                 }
                 windowInsets
             }
