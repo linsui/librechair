@@ -62,7 +62,6 @@ class ProviderProviderDelegate(context: Context) : DynamicProviderDelegate(conte
             TheGuardianFeedProvider::class.qualifiedName,
             BBCFeedProvider::class.qualifiedName,
             TheVergeFeedProvider::class.qualifiedName,
-            CustomizableRSSProvider::class.qualifiedName,
             GSyndicationFeedProvider::class.qualifiedName,
             DeviceStateProvider::class.qualifiedName,
             FeedWidgetsProvider::class.qualifiedName,
