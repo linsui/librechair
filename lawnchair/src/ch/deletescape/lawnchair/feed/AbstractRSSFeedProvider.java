@@ -223,19 +223,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @Override
     public List<Card> getCards() {
         if (articles == null) {
-            Log.d(getClass().getName(), "getCards: feed is null; returning empty list");
             return Collections.emptyList();
         } else {
             List<Card> cards = LawnchairUtilsKt.newList();
-            Log.d(getClass().getName(),
-                    "getCards: iterating through entries: " + articles.toString());
             minicard = FeedPersistenceKt.getFeedPrefs(
                     getContext()).getUseRSSMinicard();
             for (NewsEntry entry : articles) {
-                Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
                 @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, entry.title,
                         parent -> {
-                            Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
                             View v = LayoutInflater.from(parent.getContext())
                                     .inflate(minicard ? R.layout.rss_miniitem : R.layout.rss_item,
                                             parent, false);
