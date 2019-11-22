@@ -57,11 +57,11 @@ import org.osmdroid.views.overlay.Overlay;
 
 public class TextOverlay extends Overlay {
     private Paint paint;
-    int xOffset = 10;
-    int yOffset = 10;
-    protected boolean alignBottom = true;
-    protected boolean alignRight = false;
-    final DisplayMetrics dm;
+    private int xOffset = 10;
+    private int yOffset = 10;
+    private boolean alignBottom = true;
+    private boolean alignRight = false;
+    private final DisplayMetrics dm;
     private String text;
     // Constructor
 
@@ -126,8 +126,8 @@ public class TextOverlay extends Overlay {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        float x = 0;
-        float y = 0;
+        float x;
+        float y;
 
         if (alignRight) {
             x = width - xOffset;
