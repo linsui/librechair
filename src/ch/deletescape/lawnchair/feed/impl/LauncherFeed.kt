@@ -17,7 +17,7 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("UNCHECKED_CAST")
+@file:Suppress("UNCHECKED_CAST", "MapGetWithNotNullAssertionOperator")
 
 package ch.deletescape.lawnchair.feed.impl
 
@@ -1226,7 +1226,7 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
-    fun removeDisplayedView(v: View, x: Float?, y: Float?, clipBounds: Rect? = null) {
+    private fun removeDisplayedView(v: View, x: Float?, y: Float?, clipBounds: Rect? = null) {
         if (useTabbedMode) {
             tabView.tabIconTint = oldIconTint
             tabView.tabTextColors = oldTextColor
@@ -1481,12 +1481,12 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     fun getColorForIndex(index: Int): Int {
-        if (index < tabColours.size) {
-            return tabColours[index]
+        return if (index < tabColours.size) {
+            tabColours[index]
         } else {
             val first = tabColours[index % tabColours.size]
             val second = tabColours[tabColours.size - 1 - index % tabColours.size]
-            return {
+            {
                 val result =
                         if (index % 2 > 0) (first and 0x00F0FF) or (second and 0xFF0F00) else (first and 0xFF00F0) or (second and 0x00FF0F)
                 val opacity = first shr 24
