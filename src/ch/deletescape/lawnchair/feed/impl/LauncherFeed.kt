@@ -395,7 +395,7 @@ class LauncherFeed(private val originalContext: Context,
                 }
 
                 chips.isNestedScrollingEnabled = true
-                chips.setOnTouchListener { v, event ->
+                chips.setOnTouchListener { _, _ ->
                     feedController.disallowInterceptCurrentTouchEvent = true
                     false
                 }
@@ -445,7 +445,7 @@ class LauncherFeed(private val originalContext: Context,
                             deleting = true
                             true
                         }
-                        searchWidgetView!!.setOnTouchListener { v, event ->
+                        searchWidgetView!!.setOnTouchListener { _, event ->
                             if (deleting && event.action == MotionEvent.ACTION_UP) {
                                 searchWidgetView!!.animate()
                                         .scaleX(0f)
@@ -482,7 +482,7 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
                     feedController
-                            .addOnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+                            .addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                                 if (lastOrientation != context.resources.configuration.orientation) {
                                     lastOrientation = context.resources.configuration.orientation
                                     if (verticalBackground != null && horizontalBackground != null) {
@@ -498,10 +498,10 @@ class LauncherFeed(private val originalContext: Context,
                             if (context.lawnchairPrefs.feedBackToTop) View.VISIBLE else View.GONE
                     swipeRefreshLayout.setOnRefreshListener {
                         FeedScope.launch {
-                            refresh(100, 0, true, true)
+                            refresh(100, 0, quick = true, clearCache = true)
                         }
                     }
-                    feedController.setOnApplyWindowInsetsListener { v, insets ->
+                    feedController.setOnApplyWindowInsetsListener { _, insets ->
                         statusBarHeight = insets.stableInsetTop
                         navigationBarHeight = insets.stableInsetBottom
                         toolbarParent.apply {
@@ -563,7 +563,7 @@ class LauncherFeed(private val originalContext: Context,
                 }
                 tabView.tabMode = TabLayout.MODE_SCROLLABLE
                 tabView.tabGravity = TabLayout.GRAVITY_FILL
-                tabView.setOnTouchListener { view, _ ->
+                tabView.setOnTouchListener { _, _ ->
                     feedController.disallowInterceptCurrentTouchEvent = true
                     true
                 }
