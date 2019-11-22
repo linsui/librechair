@@ -64,7 +64,7 @@ public class NotificationFeedProvider extends FeedProvider {
             return Collections.EMPTY_LIST;
         }
         synchronized (lockRef) {
-            List<Card> cards = notifs.stream().filter(
+            return notifs.stream().filter(
                     Objects::nonNull).map(it -> {
                 NotificationInfo info = new NotificationInfo(getContext(), it);
                 String title;
@@ -92,7 +92,6 @@ public class NotificationFeedProvider extends FeedProvider {
                 };
                 return card;
             }).collect(Collectors.toCollection(Vector::new));
-            return cards;
         }
     }
 
