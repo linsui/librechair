@@ -39,7 +39,6 @@ import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
 import ch.deletescape.lawnchair.feed.web.WebViewScreen
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.dI
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
@@ -440,9 +439,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         }
 
                         information.text = weatherTypeResource?.let { context.getString(it) }
-                        dI("inflate: backgroundColor is ${String.format("#%08X",
-                                0xFFFFFF and backgroundColor)} and uwt is ${useWhiteText(
-                                backgroundColor, parent.context)}")
                         if (!context.lawnchairPrefs.elevateWeatherCard) {
                             if (useWhiteText(backgroundColor, parent.context)) {
                                 highLow.setTextColor(
