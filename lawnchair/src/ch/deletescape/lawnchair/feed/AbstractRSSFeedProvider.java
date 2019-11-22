@@ -30,7 +30,6 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.text.Html;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -103,24 +102,15 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
     @AnyThread
     @Contract("null, null, _ -> fail")
     protected void refresh(Context c, Runnable finished, boolean diff) {
-        Log.d(getClass().getName(), "refresh: back trace is", new Throwable());
         Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
-            Log.d(getClass().getName(), "refresh: " + token);
             synchronized (AbstractRSSFeedProvider.class) {
                 List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
                 articles = entries.stream().distinct().collect(Collectors.toList());
-                Log.d(getClass().getName(),
-                        "refresh: last update times are " + articles.stream().map(
-                                it -> it.lastUpdate).collect(Collectors.toList()));
                 if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
                         || (entries.stream().anyMatch(
                         it -> it.lastUpdate == null || System.currentTimeMillis() - it.lastUpdate.getTime() >= TimeUnit.HOURS.toMillis(
                                 2)))) {
-                    Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                            "refresh: binding to feed");
                     bindFeed(feed -> {
-                        Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                                "constructor: bound to feed");
                         lastUpdate = System.currentTimeMillis();
                         List<NewsEntry> old = articles;
                         articles = feed.getEntries().stream().map(entry -> {
