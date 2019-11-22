@@ -111,9 +111,6 @@ class LauncherFeed(private val originalContext: Context,
     private val activityState = ActivityState()
     var background: Bitmap? = null
     private lateinit var currentTab: TabController.Item
-
-    private var lastScroll = 0f
-
     private var internalActions = mutableMapOf<Int, FeedProvider.Action>()
 
     internal var context = ContextThemeWrapper(originalContext,
@@ -1390,7 +1387,6 @@ class LauncherFeed(private val originalContext: Context,
 
     override fun onScroll(progress: Float) {
         handler.post {
-            lastScroll = progress
             feedController.onScroll(progress)
         }
     }
