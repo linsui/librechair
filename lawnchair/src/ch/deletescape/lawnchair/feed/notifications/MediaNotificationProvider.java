@@ -381,9 +381,4 @@ public class MediaNotificationProvider extends FeedProvider {
         });
         return cards;
     }
-
-    @Override
-    public boolean isVolatile() {
-        return true;
-    }
 }
