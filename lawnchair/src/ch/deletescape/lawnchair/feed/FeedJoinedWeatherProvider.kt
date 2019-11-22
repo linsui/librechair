@@ -56,10 +56,12 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
     private var dailyForecast: ForecastProvider.DailyForecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
+    private var handled = false
 
     init {
         WeatherManager.subscribeWeather {
             weatherData = it
+            handled = false
         }
         WeatherManager.subscribeHourly {
             hourlyWeatherForecast = it
@@ -79,14 +81,17 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
             val type = WeatherTypes
                     .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
             weatherTypeResource = WeatherTypes.getStringResource(type)
+            handled = false
         }
         WeatherManager.subscribeDaily {
             dailyForecast = it
+            handled = false
         }
     }
 
     @Suppress("ClickableViewAccessibility")
     override fun getCards(): List<Card> {
+        handled = true
         return if (weatherData != null) listOf(
                 Card(null, null, object : Card.Companion.InflateHelper {
                     @SuppressLint("SetTextI18n")
@@ -463,5 +468,5 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
         else mutableListOf()
     }
 
-    override fun isVolatile() = true
+    override fun isVolatile() = !handled
 }
