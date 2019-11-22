@@ -41,12 +41,14 @@ import kotlin.Unit;
 
 public class NotificationFeedProvider extends FeedProvider {
     private final Object lockRef = new Object();
+    private boolean handled = false;
     private List<StatusBarNotification> notifs = new Vector<>();
 
     public NotificationFeedProvider(Context c) {
         super(c);
         OverlayNotificationManager.addListener(sbns -> {
             synchronized (lockRef) {
+                handled = false;
                 notifs.clear();
                 notifs.addAll(sbns);
             }
@@ -57,6 +59,7 @@ public class NotificationFeedProvider extends FeedProvider {
     @Override
     @SuppressWarnings("unchecked")
     public List<Card> getCards() {
+        handled = true;
         if (notifs == null || notifs.isEmpty()) {
             return Collections.EMPTY_LIST;
         }
@@ -95,6 +98,6 @@ public class NotificationFeedProvider extends FeedProvider {
 
     @Override
     public boolean isVolatile() {
-        return true;
+        return !handled;
     }
 }
