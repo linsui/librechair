@@ -23,11 +23,15 @@ package ch.deletescape.lawnchair.feed.maps;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.bing.BingMapTileSource;
 
+import ch.deletescape.lawnchair.LawnchairApp;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 public class BingMapsProvider extends MapProvider {
     public static final String API_KEY = "Ahk4NhNNnzqWuNHOVS_nnUCK6b2iCT8GBIS-p0JEwewI0LWPVRJIgRuEwiXaMQDp";
 
     public ITileSource getTileSource() {
-        BingMapTileSource bingMapTileSource = new BingMapTileSource(null);
+        BingMapTileSource bingMapTileSource = new BingMapTileSource(LawnchairUtilsKt.getLocale(
+                LawnchairApp.localizationContext).getLanguage());
         BingMapTileSource.setBingKey(API_KEY);
         return bingMapTileSource;
     }
