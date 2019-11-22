@@ -33,35 +33,15 @@ import com.android.launcher3.*
 import com.android.launcher3.graphics.LauncherIcons
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.PackageManagerHelper
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.allapps.Action
 import com.google.android.apps.nexuslauncher.allapps.ActionView
-import com.google.android.apps.nexuslauncher.allapps.ActionsController
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
 import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.collections.MutableList
-import kotlin.collections.Set
-import kotlin.collections.count
-import kotlin.collections.distinct
-import kotlin.collections.drop
-import kotlin.collections.filterNot
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapIndexedNotNull
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableListOf
-import kotlin.collections.removeAll
-import kotlin.collections.reversed
-import kotlin.collections.sortedBy
-import kotlin.collections.take
-import kotlin.collections.toMutableList
-import kotlin.collections.toSet
 
 // TODO: Fix action icons being loaded too early, leading to f*cked icons when using sesame
 /**
@@ -86,8 +66,6 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     open val isActionsEnabled get() = prefs.showActions
 
     private var actionsCache = listOf<String>()
-
-    private val sesameComponent = ComponentName.unflattenFromString("ninja.sesame.app.edge/.activities.MainActivity")
 
     /**
      * Time at which headphones have been plugged in / connected. 0 if disconnected, -1 before initialized
