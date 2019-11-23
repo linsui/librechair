@@ -76,10 +76,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         get() {
             val fromState = mCurrentState
             var swipeDirection = 0
-            if (getTargetState(fromState!!, true) !== fromState) {
+            if (getTargetState(fromState!!) !== fromState) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_POSITIVE
             }
-            if (getTargetState(fromState!!, false) !== fromState) {
+            if (getTargetState(fromState!!) !== fromState) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_NEGATIVE
             }
             return swipeDirection
@@ -234,7 +234,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
      * Returns the state to go to from fromState given the drag direction. If there is no state in
      * that direction, returns fromState.
      */
-    protected fun getTargetState(fromState: FeedState, isDragTowardPositive: Boolean): FeedState {
+    protected fun getTargetState(fromState: FeedState): FeedState {
         return if (fromState === FeedState.CLOSED) FeedState.OPEN else FeedState.CLOSED
     }
 
@@ -280,7 +280,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                                        isDragTowardPositive: Boolean): Boolean {
         val newFromState = if (mFromState == null) mCurrentState
         else if (reachedToState) mToState else mFromState
-        val newToState = getTargetState(newFromState!!, isDragTowardPositive)
+        val newToState = getTargetState(newFromState!!)
 
         if (newFromState === mFromState && newToState === mToState || newFromState === newToState) {
             return false
