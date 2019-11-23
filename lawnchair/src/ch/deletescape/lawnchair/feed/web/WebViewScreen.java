@@ -53,7 +53,7 @@ public class WebViewScreen extends ProviderScreen {
         this.uri = uri;
         addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_open_in_browser_black_24dp),
                 getString(R.string.title_button_open_externally),
-                () -> Utilities.openURLinBrowser(this, uri)));
+                () -> Utilities.openURLinBrowser(this, view.getUrl())));
     }
 
     public static WebViewScreen obtain(Context base, String uri) {
