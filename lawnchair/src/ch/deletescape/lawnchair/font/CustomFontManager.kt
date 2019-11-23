@@ -52,7 +52,7 @@ class CustomFontManager(private val context: Context) {
     var enableGlobalFont by prefs.BooleanPref("enable_global_font", false, prefs.recreate)
     private val globalFont = FontPref("pref_font_global", launcherRegular)
     private val feedFont = FontPref("pref_font_feed", launcherRegular)
-    private val feedTitleFont = FontPref("pref_font_feed_titles", launcherRegular)
+    private val feedTitleFont = FontPref("pref_font_feed_titles", uiMedium)
 
     private val workspaceFont = FontPref("pref_font_workspace", launcherCondensed)
     private val folderFont = workspaceFont
