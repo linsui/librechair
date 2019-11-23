@@ -792,4 +792,6 @@
     <string name="summary_pref_feed_disable_rv_springs">The spring effect will be disabled</string>
     <string name="hint_search_feed">Search for keywords, titles, ...</string>
     <string name="title_article_load_error">The article could not be loaded due to a network error</string>
+    <string name="title_pref_font_feed">Feed font</string>
+    <string name="title_pref_font_feed_titles">Feed title font</string>
 </resources>

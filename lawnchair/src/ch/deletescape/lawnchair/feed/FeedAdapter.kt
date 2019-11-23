@@ -193,7 +193,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
 
         if (holder.description != null) {
             CustomFontManager.getInstance(context)
-                    .setCustomFont(holder.description!!, CustomFontManager.FONT_CATEGORY_TITLE,
+                    .setCustomFont(holder.description!!, CustomFontManager.FONT_FEED_TITLES,
                             holder.description!!.typeface.style)
         }
 
@@ -399,7 +399,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     this.allChildren.forEach { view ->
                         if (view is TextView && view.tag != "font_ignore") {
                             CustomFontManager.getInstance(context)
-                                    .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
+                                    .loadFont(CustomFontManager.FONT_FEED, view.typeface.style,
                                             into = {
                                                 view.typeface =
                                                         Typeface.create(it, view.typeface.style)
@@ -408,7 +408,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     }
                 } else if (this is TextView) {
                     CustomFontManager.getInstance(context)
-                            .loadFont(CustomFontManager.FONT_TEXT, typeface.style,
+                            .loadFont(CustomFontManager.FONT_FEED, typeface.style,
                                     into = { typeface = Typeface.create(it, typeface.style) })
                 }
             }.also { (it.parent as ViewGroup?)?.removeView(it) })

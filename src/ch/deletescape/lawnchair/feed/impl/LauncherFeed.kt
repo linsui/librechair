@@ -145,7 +145,7 @@ class LauncherFeed(private val originalContext: Context,
                         as? TextView // TODO figure out Kotlin reflection is being so slow
                 if (textView != null) {
                     CustomFontManager.getInstance(context)
-                            .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                            .loadFont(CustomFontManager.FONT_FEED_TITLES,
                                     textView.typeface.style) {
                                 textView.typeface = it
                             }
@@ -162,7 +162,7 @@ class LauncherFeed(private val originalContext: Context,
                                 as? TextView // TODO figure out Kotlin reflection is being so slow
                         if (textView != null) {
                             CustomFontManager.getInstance(context)
-                                    .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                    .loadFont(CustomFontManager.FONT_FEED_TITLES,
                                             textView.typeface.style) {
                                         textView.typeface = it
                                     }
@@ -702,7 +702,7 @@ class LauncherFeed(private val originalContext: Context,
                                             as? TextView // TODO figure out Kotlin reflection is being so slow
                                     if (textView != null) {
                                         CustomFontManager.getInstance(context)
-                                                .loadFont(CustomFontManager.FONT_CATEGORY_TITLE,
+                                                .loadFont(CustomFontManager.FONT_FEED_TITLES,
                                                         textView.typeface.style) {
                                                     textView.typeface = it
                                                 }
