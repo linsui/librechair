@@ -17,6 +17,7 @@ package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.*
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.util.AttributeSet
 import android.util.Property
@@ -95,6 +96,18 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         super.onFinishInflate()
         mFeedContent = findViewById(R.id.feed_content)
         mFeedBackground = findViewById(R.id.overlay_feed)
+    }
+
+    override fun setBackground(background: Drawable?) {
+        super.setBackground(background)
+        if (mProgress >= 0.5) {
+            if (!useWhiteText(mLauncherFeed!!.backgroundColor, context)) {
+                mLauncherFeed!!.feedController.systemUiVisibility =
+                        View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+        } else {
+            systemUiVisibility = 0
+        }
     }
 
     fun closeOverlay(animated: Boolean, duration: Int) {
