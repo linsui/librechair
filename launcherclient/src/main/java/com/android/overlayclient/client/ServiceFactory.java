@@ -32,6 +32,7 @@ import com.google.android.libraries.launcherclient.ILauncherOverlay;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("WeakerAccess")
 public abstract class ServiceFactory implements ServiceConnection {
     private ILauncherOverlay overlay;
     private Consumer<ILauncherOverlay> changeListener;
