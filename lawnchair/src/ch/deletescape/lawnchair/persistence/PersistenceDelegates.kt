@@ -150,7 +150,7 @@ class ListDelegate<T>(val context: Context, val key: String, private val defValu
         })
     }
 
-    private fun save() {
+    private fun save() = synchronized(this) {
         synchronized(internal) {
             val jsonArray = JsonArray(internal.size)
             internal.map { JsonPrimitive(it) }.forEach { jsonArray.add(it) }
@@ -236,7 +236,7 @@ abstract class SerializableListDelegate<A_, T>(val context: Context, val key: St
         })
     }
 
-    private fun save() {
+    private fun save() = synchronized(internal) {
         val jsonArray = JsonArray(internal.size)
         internal.map { JsonPrimitive(serialize(it)) }.forEach { jsonArray.add(it) }
         lastData = jsonArray.toString()
