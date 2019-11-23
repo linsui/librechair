@@ -31,6 +31,7 @@ import android.os.IBinder;
 import com.android.overlayclient.util.OverlayUtil;
 import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class CompanionServiceFactory extends ServiceFactory {
@@ -46,8 +47,10 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
         ResolveInfo info = context.getPackageManager().resolveService(getService(),
                 PackageManager.GET_META_DATA);
         try {
-            companionApiVersion = info.serviceInfo.metaData.getInt("service.api.companionVersion",
-                    -1);
+            companionApiVersion = Objects.requireNonNull(info)
+                                         .serviceInfo
+                                         .metaData
+                                         .getInt("service.api.companionVersion", -1);
         } catch (NullPointerException e) {
             companionApiVersion = -1;
         }
@@ -93,6 +96,7 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
         }
     }
 
+    @SuppressWarnings("WeakerAccess")
     public int getCompanionApiVersion() {
         return companionApiVersion;
     }
@@ -101,6 +105,7 @@ public abstract class CompanionServiceFactory extends ServiceFactory {
         return companion;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public void setCompanionChangeListener(
             Consumer<ILauncherOverlayCompanion> companionChangeListener) {
         this.companionChangeListener = companionChangeListener;
