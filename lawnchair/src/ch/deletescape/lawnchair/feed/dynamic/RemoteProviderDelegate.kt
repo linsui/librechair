@@ -26,7 +26,7 @@ import ch.deletescape.lawnchair.feed.FeedProviderContainer
 import ch.deletescape.lawnchair.feed.METADATA_CONTROLLER_PACKAGE
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider
 
-class RemoteFeedsDelegate(context: Context) : DynamicProviderDelegate(context) {
+class RemoteProviderDelegate(context: Context) : DynamicProviderDelegate(context) {
     override fun getAvailableContainers(): List<FeedProviderContainer> {
         return RemoteFeedProvider.allProviders(context).map {
             FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
