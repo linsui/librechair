@@ -73,6 +73,11 @@ public class GeckoScreen extends WebViewScreen {
     }
 
     @Override
+    protected String getCurrentUrl() {
+        return uri;
+    }
+
+    @Override
     protected void bindView(View viewO) {
         view = viewO.findViewById(android.R.id.content);
         session.getSettings().setUseTrackingProtection(
