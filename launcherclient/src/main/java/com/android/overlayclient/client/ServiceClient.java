@@ -121,6 +121,11 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
                         TimeUnit.SECONDS.toMillis(2));
             } else {
                 connectCallback.run();
+                try {
+                    l3overlay.setActivityState(activityState.toMask());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
         });
         activityState = new ActivityState();
@@ -218,36 +223,17 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      */
     @Override
     public void onResume() {
-        if (overlay != null) {
-            try {
+        try {
+            int state = activityState.onResume();
+            if (overlay != null) {
                 if (apiVersion >= 4) {
-                    overlay.setActivityState(activityState.onResume());
+                    overlay.setActivityState(state);
                 } else {
                     overlay.onResume();
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
-        } else {
-            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
-                @Override
-                public void accept(ILauncherOverlay iLauncherOverlay) {
-                    if (iLauncherOverlay != null) {
-                        try {
-                            if (apiVersion >= 4) {
-                                iLauncherOverlay.setActivityState(activityState.onResume());
-                            } else {
-                                iLauncherOverlay.onResume();
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    synchronized (ServiceClient.this) {
-                        overlayChangeListeners.remove(this);
-                    }
-                }
-            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -257,36 +243,17 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      */
     @Override
     public void onPause() {
-        if (overlay != null) {
-            try {
+        try {
+            int state = activityState.onPause();
+            if (overlay != null) {
                 if (apiVersion >= 4) {
-                    overlay.setActivityState(activityState.onPause());
+                    overlay.setActivityState(state);
                 } else {
                     overlay.onPause();
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
-        } else {
-            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
-                @Override
-                public void accept(ILauncherOverlay iLauncherOverlay) {
-                    if (iLauncherOverlay != null) {
-                        try {
-                            if (apiVersion >= 4) {
-                                iLauncherOverlay.setActivityState(activityState.onPause());
-                            } else {
-                                iLauncherOverlay.onPause();
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    synchronized (ServiceClient.this) {
-                        overlayChangeListeners.remove(this);
-                    }
-                }
-            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -296,32 +263,15 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      */
     @Override
     public void onStart() {
-        if (overlay != null) {
-            try {
+        try {
+            int state = activityState.onPause();
+            if (overlay != null) {
                 if (apiVersion >= 4) {
-                    overlay.setActivityState(activityState.onStart());
+                    overlay.setActivityState(state);
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
-        } else {
-            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
-                @Override
-                public void accept(ILauncherOverlay iLauncherOverlay) {
-                    if (iLauncherOverlay != null) {
-                        if (apiVersion >= 4) {
-                            try {
-                                iLauncherOverlay.setActivityState(activityState.onStart());
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                    synchronized (ServiceClient.this) {
-                        overlayChangeListeners.remove(this);
-                    }
-                }
-            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -330,32 +280,15 @@ public class ServiceClient extends ILauncherOverlayCallback.Stub
      */
     @Override
     public void onStop() {
-        if (overlay != null) {
-            try {
+        try {
+            int state = activityState.onStop();
+            if (overlay != null) {
                 if (apiVersion >= 4) {
-                    overlay.setActivityState(activityState.onStop());
+                    overlay.setActivityState(state);
                 }
-            } catch (RemoteException e) {
-                e.printStackTrace();
             }
-        } else {
-            overlayChangeListeners.add(new Consumer<ILauncherOverlay>() {
-                @Override
-                public void accept(ILauncherOverlay iLauncherOverlay) {
-                    if (iLauncherOverlay != null) {
-                        try {
-                            if (apiVersion >= 4) {
-                                iLauncherOverlay.setActivityState(activityState.onStop());
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    synchronized (ServiceClient.this) {
-                        overlayChangeListeners.remove(this);
-                    }
-                }
-            });
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
