@@ -24,7 +24,6 @@ import android.content.Context
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.extensions.e
 import ch.deletescape.lawnchair.util.extensions.w
 import com.rometools.rome.feed.synd.SyndFeed
@@ -40,7 +39,6 @@ abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedPro
     final override fun bindFeed(callback: BindCallback, token: String) {
         ArticleJobsScope.launch {
             val locale = token.split("@")[1]
-            d("bindFeed: binding to locale $locale")
             if (locale != "?") {
                 try {
                     callback.onBind(getLocationAwareFeed(Locale("", locale).isO3Country))
