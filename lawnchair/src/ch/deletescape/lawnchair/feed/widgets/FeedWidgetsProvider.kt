@@ -29,7 +29,6 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.DbScope
 import ch.deletescape.lawnchair.feed.FeedProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.launch
 import java.util.*
@@ -45,10 +44,9 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
         return WidgetDatabase.getInstance(context).dao().all
                 .filter { appWidgetManager.getAppWidgetInfo(it.id) != null }.map { widget ->
                     val it = widget.id
-                    val metadata = widget
-                    Card(if (!metadata.showCardTitle) null else appWidgetManager.getAppWidgetInfo(
+                    Card(if (!widget.showCardTitle) null else appWidgetManager.getAppWidgetInfo(
                             it).loadIcon(context, context.resources.displayMetrics.densityDpi),
-                            if (!metadata.showCardTitle) null else metadata.customCardTitle
+                            if (!widget.showCardTitle) null else widget.customCardTitle
                                     ?: appWidgetManager.getAppWidgetInfo(
                                             it).loadLabel(
                                             context.packageManager),
@@ -65,28 +63,28 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                                         setExecutor(inflateExecutor)
                                         layoutParams = ViewGroup
                                                 .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                        if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
+                                                        if (widget.height != -1) widget.height else appWidgetInfo.minHeight)
                                         updateAppWidgetOptions(Bundle().apply {
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH,
                                                     width)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT,
-                                                    if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
+                                                    if (widget.height != -1) widget.height else appWidgetInfo.minHeight)
                                             putInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT,
-                                                    if (metadata.height != -1) metadata.height else appWidgetInfo.minHeight)
+                                                    if (widget.height != -1) widget.height else appWidgetInfo.minHeight)
                                         })
                                         invalidate()
                                     }.also { it2 ->
                                         hostViewCache += it to it2; it2.invalidate()
                                     }
                                 }
-                            }, if ((metadata ?: Widget.DEFAULT).raiseCard) if (!(metadata
+                            }, if ((widget ?: Widget.DEFAULT).raiseCard) if (!(widget
                                     ?: Widget.DEFAULT).showCardTitle) Card.NO_HEADER or Card.RAISE
                     else Card.RAISE
-                    else if (!(metadata
+                    else if (!(widget
                                     ?: Widget.DEFAULT).showCardTitle) Card.NO_HEADER
-                    else Card.DEFAULT, if (metadata?.sortable == true) "" else "nosort, top",
+                    else Card.DEFAULT, if (widget?.sortable == true) "" else "nosort, top",
                             it shl 2 + UUID.randomUUID().hashCode()).apply {
                         canHide = true
                         onRemoveListener = {
@@ -119,7 +117,6 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                         context) else R.color.textColorPrimaryInverse.fromColorRes(context)),
                 R.string.title_feed_toolbar_add_widget.fromStringRes(context), Runnable {
             feed?.pickWidget {
-                d("getActions: got widget $it")
                 if (it != -1) {
                     DbScope.launch {
                         try {
