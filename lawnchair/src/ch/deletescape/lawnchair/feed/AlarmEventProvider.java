@@ -30,6 +30,7 @@ import com.android.launcher3.R;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
@@ -53,12 +54,12 @@ public class AlarmEventProvider extends FeedProvider {
     public List<Card> getCards() {
         AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         if (manager == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         AlarmClockInfo info = manager.getNextAlarmClock();
         if (info != null) {
             Drawable alarm = getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp);
-            alarm = LawnchairUtilsKt.tint(alarm,
+            alarm = LawnchairUtilsKt.tint(Objects.requireNonNull(alarm),
                     FeedAdapter.Companion.getOverrideColor(getContext()));
             return Collections.singletonList(new Card(alarm,
                     LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), getContext()),
