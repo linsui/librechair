@@ -82,7 +82,7 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
                         adapter.refreshSearch()
                     }
                     SearchScope.launch(Dispatchers.Main) {
-                        delay(600)
+                        delay(1000)
                         if (!recyclerView.isComputingLayout) {
                             adapter.notifyDataSetChanged()
                         }
