@@ -55,11 +55,9 @@
         android:title="@string/pref_category_theme">
         <ch.deletescape.lawnchair.font.settingsui.FontPreference
             android:key="pref_font_feed"
-            android:icon="@android:color/transparent"
             android:title="@string/title_pref_font_feed" />
         <ch.deletescape.lawnchair.font.settingsui.FontPreference
             android:key="pref_font_feed_titles"
-            android:icon="@android:color/transparent"
             android:title="@string/title_pref_font_feed_titles" />
         <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
             android:key="pref_feedBackgroundColorResolver"
