@@ -369,11 +369,17 @@ class LauncherFeed(private val originalContext: Context,
 
                 toolbar.visibility = if (context.feedPrefs.hideToolbar) View.GONE else View.VISIBLE
 
-                if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
-                    chips.visibility = View.GONE
-                } else {
-                    chips.visibility = View.VISIBLE
-                }
+                chipAdapter.registerAdapterDataObserver(object :
+                        RecyclerView.AdapterDataObserver() {
+                    override fun onChanged() {
+                        super.onChanged()
+                        if (chipAdapter.itemCount == 0) {
+                            chips.visibility = View.GONE
+                        } else {
+                            chips.visibility = View.VISIBLE
+                        }
+                    }
+                })
 
 
                 if (!reinit) {
