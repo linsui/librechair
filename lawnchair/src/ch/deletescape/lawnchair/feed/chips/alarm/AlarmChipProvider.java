@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.chips.alarm;
 
 import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 
 import com.android.launcher3.R;
@@ -47,6 +48,13 @@ public class AlarmChipProvider extends ChipProvider {
                 Item item = new Item();
                 item.icon = context.getDrawable(R.drawable.ic_alarm_on_black_24dp);
                 item.title = LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), context);
+                item.click = () -> {
+                    try {
+                        info.getShowIntent().send();
+                    } catch (PendingIntent.CanceledException e) {
+                        e.printStackTrace();
+                    }
+                };
                 return Collections.singletonList(item);
             }
         }
