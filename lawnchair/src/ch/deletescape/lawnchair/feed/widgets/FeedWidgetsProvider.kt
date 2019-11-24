@@ -36,9 +36,9 @@ import java.util.*
 import java.util.concurrent.Executors
 
 class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
-    val hostViewCache = mutableMapOf<Int, AppWidgetHostView>()
-    val inflateExecutor = Executors.newFixedThreadPool(5)
-    val appWidgetManager by lazy {
+    private val hostViewCache = mutableMapOf<Int, AppWidgetHostView>()
+    private val inflateExecutor = Executors.newFixedThreadPool(5)!!
+    private val appWidgetManager by lazy {
         context.getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager
     }
     override fun getCards(): List<Card> {
@@ -109,7 +109,7 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
     }
 
     override fun isVolatile(): Boolean {
-        return true;
+        return true
     }
 
     override fun getActions(exclusive: Boolean): List<Action> {
