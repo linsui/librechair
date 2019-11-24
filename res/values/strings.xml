@@ -794,4 +794,5 @@
     <string name="title_article_load_error">The article could not be loaded due to a network error</string>
     <string name="title_pref_font_feed">Feed font</string>
     <string name="title_pref_font_feed_titles">Feed title font</string>
+    <string name="title_pref_font_feed_chips">Chip font</string>
 </resources>

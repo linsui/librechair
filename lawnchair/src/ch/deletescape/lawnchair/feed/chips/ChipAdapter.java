@@ -148,7 +148,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
             return false;
         });
         CustomFontManager.Companion.getInstance(context)
-                .loadFont(CustomFontManager.FONT_BUTTON, -1, typeface -> {
+                .loadFont(CustomFontManager.FONT_FEED_CHIPS, -1, typeface -> {
                     chipViewHolder.itemView.setTypeface(typeface);
                     return Unit.INSTANCE;
                 });

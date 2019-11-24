@@ -59,6 +59,9 @@
         <ch.deletescape.lawnchair.font.settingsui.FontPreference
             android:key="pref_font_feed_titles"
             android:title="@string/title_pref_font_feed_titles" />
+        <ch.deletescape.lawnchair.font.settingsui.FontPreference
+            android:key="pref_font_feed_chips"
+            android:title="@string/title_pref_font_feed_chips" />
         <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
             android:key="pref_feedBackgroundColorResolver"
             android:title="@string/background_color"
