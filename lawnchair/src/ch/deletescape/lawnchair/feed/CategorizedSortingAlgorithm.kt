@@ -25,35 +25,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import ch.deletescape.lawnchair.newList
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
-    init {
-        d("init: sorting algorithm initializer called")
-    }
     @SuppressLint("DefaultLocale")
     override fun sort(vararg ts: List<Card>): List<Card> {
-        d("sort: sorting $ts")
         val map: MutableMap<String, MutableList<Card>> = mutableMapOf()
         ts.forEach {
-            d("sort: categories for card provider $it")
             it.forEach { card ->
-                d("sort: locating categories for card $card")
-                val cardRef = card
                 if (card.categories.isNullOrEmpty()) {
-                    d("sort: no categories for card $card! classifying card as uncategorized (categories: ${card.categories}")
-                    if (map.get(CATEGORY_NONE) == null) {
+                    if (map[CATEGORY_NONE] == null) {
                         map += CATEGORY_NONE to mutableListOf()
                     }
-                    map.get(CATEGORY_NONE)!!.add(card)
+                    map[CATEGORY_NONE]!!.add(card)
                 } else {
                     card.categories!!.forEach { cards ->
-                        d("sort: card $cardRef can be assigned to category $cards")
-                        if (map.get(cards.toLowerCase()) == null) {
+                        if (map[cards.toLowerCase()] == null) {
                             map += cards.toLowerCase() to mutableListOf()
                         }
-                        map.get(cards.toLowerCase())!!.add(cardRef)
+                        map[cards.toLowerCase()]!!.add(card)
                     }
                 }
             }
@@ -64,7 +54,6 @@ class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
         keys.forEach {
             result.add(Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
-                    d("inflate: inflating category header view")
                     return LayoutInflater.from(parent.context)
                             .inflate(R.layout.category_header, parent, false).also { it2 ->
                         it2.findViewById<TextView>(R.id.category_header_category_name).text = it
@@ -79,7 +68,7 @@ class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
     }
 
     companion object {
-        val CATEGORY_NONE = "Uncategorized"
+        const val CATEGORY_NONE = "Uncategorized"
     }
 
 }
