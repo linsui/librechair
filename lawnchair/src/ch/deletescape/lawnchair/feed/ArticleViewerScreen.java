@@ -69,7 +69,7 @@ public class ArticleViewerScreen extends ProviderScreen {
                         .getIdentifier("whichSendApplicationLabel", "string", "android")), () -> {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
-            i.putExtra(Intent.EXTRA_TEXT, url);
+            i.putExtra(Intent.EXTRA_TEXT, title + (char) 10 + url);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         }));
