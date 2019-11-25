@@ -795,4 +795,6 @@
     <string name="title_pref_font_feed">Feed font</string>
     <string name="title_pref_font_feed_titles">Feed title font</string>
     <string name="title_pref_font_feed_chips">Chip font</string>
+    <string name="title_pref_feed_show_title_in_shared_articles">Show article title when sharing articles</string>
+    <string name="summary_pref_feed_show_title_in_shared_articles">The article title will be prepended to the URL</string>
 </resources>

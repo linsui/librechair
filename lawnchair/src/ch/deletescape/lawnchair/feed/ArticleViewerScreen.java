@@ -46,6 +46,7 @@ import java.nio.charset.Charset;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.web.WebViewScreen;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import io.github.cdimascio.essence.Essence;
 
 public class ArticleViewerScreen extends ProviderScreen {
@@ -69,7 +70,8 @@ public class ArticleViewerScreen extends ProviderScreen {
                         .getIdentifier("whichSendApplicationLabel", "string", "android")), () -> {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
-            i.putExtra(Intent.EXTRA_TEXT, title + (char) 10 + url);
+            i.putExtra(Intent.EXTRA_TEXT,
+                    (FeedPersistence.Companion.getInstance(this).getShowTitleInSharedArticles() ? title + (char) 10 : "") + url);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         }));

@@ -336,6 +336,7 @@
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:dependency="pref_swipe_feed"
         android:title="@string/pref_category_chips">
         <ch.deletescape.lawnchair.preferences.ChipProvidersPreference
             android:key="pref_feed_chips_dummy_key"
@@ -552,5 +553,10 @@
             android:defaultValue="true"
             android:title="@string/title_pref_feed_enable_gsb"
             android:summary="@string/summary_pref_feed_enable_gsb"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_show_title_in_shared_articles"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_show_title_in_shared_articles"
+            android:summary="@string/summary_pref_feed_show_title_in_shared_articles"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

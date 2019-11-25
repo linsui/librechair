@@ -173,7 +173,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                 0);
                         Intent share = new Intent(Intent.ACTION_SEND);
                         share.setType("text/plain");
-                        share.putExtra(Intent.EXTRA_TEXT, notif.title + "\n" + notif.url);
+                        share.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
+                                getContext()).getShowTitleInSharedArticles() ? notif.title + (char) 10 : "") + notif.url);
                         Intent choose = Intent.createChooser(share,
                                 getContext().getString(R.string.title_share));
                         List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(
@@ -200,6 +201,7 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
             }
         }
     }
+
     @Override
     public boolean isVolatile() {
         return articles == null || articles.isEmpty() || minicard != FeedPersistenceKt.getFeedPrefs(
@@ -317,7 +319,8 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 card.setActionListener(view -> {
                     Intent i = new Intent(Intent.ACTION_SEND);
                     i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_TEXT, entry.title + "\n" + entry.url);
+                    i.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
+                            getContext()).getShowTitleInSharedArticles() ? entry.title + (char) 10 : "") + entry.url);
                     FeedUtil.startActivity(view.getContext(), Intent.createChooser(i,
                             getContext().getString(getContext().getResources()
                                     .getIdentifier("whichSendApplicationLabel", "string",

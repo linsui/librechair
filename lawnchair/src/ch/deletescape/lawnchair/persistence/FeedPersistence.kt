@@ -100,6 +100,8 @@ class FeedPersistence private constructor(val context: Context) {
             })
     val disableSpringAnimation
             by BooleanDelegate(context, "feed_disable_rv_springs", false)
+    val showTitleInSharedArticles
+            by BooleanDelegate(context, "feed_show_title_in_shared_articles", false)
 
     /* Constants */
     val conservativeRefreshes = true
