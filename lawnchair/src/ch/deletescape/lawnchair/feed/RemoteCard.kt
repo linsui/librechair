@@ -17,6 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
@@ -28,6 +30,7 @@ import android.view.ViewGroup
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.IRunnable
 
+@Suppress("unused")
 data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: RemoteInflateHelper,
                       val type: Int, val algoFlags: String? = null,
                       val identifier: Int = title.hashCode()) : Parcelable {
@@ -69,17 +72,17 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     }
 
     object Types {
-        val DEFAULT = 0
-        val RAISE = 1 shl 1
-        val NARROW = 1 shl 2
-        val TEXT_ONLY = 1 shl 3
-        val NO_HEADER = 1 shl 4;
+        const val DEFAULT = 0
+        const val RAISE = 1 shl 1
+        const val NARROW = 1 shl 2
+        const val TEXT_ONLY = 1 shl 3
+        const val NO_HEADER = 1 shl 4
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(icon, flags)
         parcel.writeString(title)
-        parcel.writeStrongBinder(inflateHelper.asBinder());
+        parcel.writeStrongBinder(inflateHelper.asBinder())
         parcel.writeInt(type)
         parcel.writeString(algoFlags)
         parcel.writeInt(identifier)

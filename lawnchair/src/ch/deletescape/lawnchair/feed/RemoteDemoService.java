@@ -59,7 +59,7 @@ public class RemoteDemoService extends Service {
                                         "This is a demonstration feed provider that you should not pay attention to. It serves to demonstrate the remote feed provider API.");
                                 return views;
                             }
-                        }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode());
+                        }, Types.RAISE, "nosort,top", "remoteFeedDemo".hashCode());
                 demoCard.setActionOnCardActionSelectedListener(
                         new RemoteOnCardActionSelectedListener.Stub() {
                             @Override
