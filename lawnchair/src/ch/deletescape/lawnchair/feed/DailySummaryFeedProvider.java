@@ -59,6 +59,7 @@ import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.CalendarManager;
+import ch.deletescape.lawnchair.font.CustomFontManager;
 import kotlin.Pair;
 import kotlin.Unit;
 
@@ -222,6 +223,12 @@ public class DailySummaryFeedProvider extends FeedProvider {
             ImageView imageView = holder.itemView.findViewById(R.id.daily_summary_icon);
             TextView title = holder.itemView.findViewById(R.id.daily_summary_information);
             imageView.setImageDrawable(item.icon);
+            CustomFontManager.Companion.getInstance(context).loadFont(
+                    CustomFontManager.FONT_FEED_CHIPS, title.getTypeface().getStyle(),
+                    tf -> {
+                        title.setTypeface(tf);
+                        return Unit.INSTANCE;
+                    });
             title.setText(item.text);
         }
 
