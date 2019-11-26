@@ -63,8 +63,8 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                               View(context)
                           }, Card.TEXT_ONLY, "nosort,top", "feedAirplaneModeIndicator".hashCode())
         }
-        if (!((context.getSystemService(
-                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected == true)) {
+        if (((context.getSystemService(
+                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected == true).not()) {
             cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
                                   .tint(
                                           (if (useWhiteText(backgroundColor, context))
