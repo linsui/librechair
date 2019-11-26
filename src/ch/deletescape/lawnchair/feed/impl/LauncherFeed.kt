@@ -127,7 +127,7 @@ class LauncherFeed(private val originalContext: Context,
     private var horizontalBackground: Drawable? = null
     val screenActions = mutableMapOf<ProviderScreen, List<FeedProvider.Action>>()
 
-    var readMoreUrl: String? = null
+    private var readMoreUrl: String? = null
     @SuppressLint("InflateParams")
     var feedController = (LayoutInflater.from(context).inflate(R.layout.overlay_feed, null,
             false) as FeedController)
@@ -843,7 +843,7 @@ class LauncherFeed(private val originalContext: Context,
                                         deleting = true
                                         true
                                     }
-                                    searchWidgetView!!.setOnTouchListener { v, event ->
+                                    searchWidgetView!!.setOnTouchListener { _, event ->
                                         if (deleting && event.action == MotionEvent.ACTION_UP) {
                                             searchWidgetView!!.animate()
                                                     .scaleX(0f)
