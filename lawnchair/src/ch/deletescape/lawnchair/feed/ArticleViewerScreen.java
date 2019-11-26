@@ -87,7 +87,9 @@ public class ArticleViewerScreen extends ProviderScreen {
     protected void bindView(View articleView) {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
+        contentView.setFocusable(View.NOT_FOCUSABLE);
         sv = (ScrollView) contentView.getParent();
+        sv.setFocusable(View.NOT_FOCUSABLE);
         SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(
                 R.id.article_refresh_layout);
         if (getBoundFeed() != null) {
