@@ -22,7 +22,6 @@ package ch.deletescape.lawnchair.feed.dt
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.view.ViewGroup
 import android.widget.Button
 import ch.deletescape.lawnchair.*
@@ -114,8 +113,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         .also { sb ->
                             sb.view.findViewById<Button>(
                                     com.google.android.material.R.id.snackbar_action)
-                                    .backgroundTintList = ColorStateList.valueOf(
-                                    FeedAdapter.getOverrideColor(v.context).setAlpha(0))
+                                    .background = null
                         }.show()
                 Unit
             }
