@@ -226,6 +226,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
             CustomFontManager.Companion.getInstance(context).loadFont(
                     CustomFontManager.FONT_FEED_CHIPS, title.getTypeface().getStyle(),
                     tf -> {
+                        title.setTag("font_ignore");
                         title.setTypeface(tf);
                         return Unit.INSTANCE;
                     });
