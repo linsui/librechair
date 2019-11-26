@@ -39,7 +39,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.launcher3.R;
-import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
 import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
@@ -65,9 +64,7 @@ import kotlin.Pair;
 import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
-
-    @Thunk
-    Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
     private long sunriseSunsetExpiry;
 
     @SuppressLint("MissingPermission")
@@ -177,7 +174,8 @@ public class DailySummaryFeedProvider extends FeedProvider {
                                         CalendarContract.Instances.CUSTOM_APP_PACKAGE,
                                         CalendarContract.Events.EVENT_LOCATION}, query, null,
                                 CalendarContract.Instances.DTSTART + " ASC");
-                if (calendarEvents.getCount() > 0) {
+                if (calendarEvents != null &&
+                        calendarEvents.getCount() > 0) {
                     items.add(new DailySummaryItem(LawnchairUtilsKt
                             .tint(
                                     Objects.requireNonNull(
@@ -187,10 +185,10 @@ public class DailySummaryFeedProvider extends FeedProvider {
                                     .getQuantityString(
                                             R.plurals.title_daily_briefing_calendar_events,
                                             calendarEvents.getCount(), calendarEvents.getCount())));
+                    calendarEvents.close();
                 }
             }
-            Log.d(getClass().getName(),
-                    "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
+
             if (feedProvider.sunriseSunset != null) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
@@ -238,7 +236,7 @@ class DailySummaryItem {
     public Drawable icon;
     public String text;
 
-    public DailySummaryItem(Drawable icon, String text) {
+    DailySummaryItem(Drawable icon, String text) {
         this.icon = icon;
         this.text = text;
     }
