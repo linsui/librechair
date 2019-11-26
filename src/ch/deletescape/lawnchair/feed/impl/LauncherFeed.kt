@@ -17,7 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("UNCHECKED_CAST", "MapGetWithNotNullAssertionOperator")
+@file:Suppress("UNCHECKED_CAST", "MapGetWithNotNullAssertionOperator", "ConstantConditionIf",
+        "ConstantConditionIf")
 
 package ch.deletescape.lawnchair.feed.impl
 
@@ -1041,11 +1042,11 @@ class LauncherFeed(private val originalContext: Context,
         providerScreens.add(screen to ScreenData(x, y, view!!, clipBounds))
         synchronized(internalActions) {
             if (!internalActions.containsKey(R.id.cancel)) {
-                internalActions.put(R.id.cancel, FeedProvider.Action(
+                internalActions[R.id.cancel] = FeedProvider.Action(
                         R.drawable.ic_close.fromDrawableRes(context), context.getString(
                         R.string.title_action_back), Runnable {
                     popScreens()
-                }))
+                })
             }
             updateActions()
         }
@@ -1479,7 +1480,7 @@ class LauncherFeed(private val originalContext: Context,
 
     fun onProgress(progress: Float, isDragging: Boolean) {
         callback?.overlayScrollChanged(progress)
-        val touchable = Math.signum(progress).compareTo(sign(0f)) != 0
+        val touchable = sign(progress).compareTo(sign(0f)) != 0
         if (!touchable && !isDragging) {
             feedController.systemUiVisibility = 0
             feedAttached = false
@@ -1590,17 +1591,19 @@ class LauncherFeed(private val originalContext: Context,
                             val objectsBefore = adapter.fcache.values.toList()
                                     .subList(0, adapter.fcache.keys.indexOf(it.second)).flatten()
                             val sizeBefore = objectsBefore.size
-                            if (lastSize < currentSize) {
-                                val diffSize = currentSize - lastSize
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                                adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
-                            } else if (lastSize == currentSize) {
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                            } else if (currentSize < lastSize) {
-                                val diffSize = lastSize - currentSize
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
-                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
-                                        diffSize)
+                            when {
+                                lastSize < currentSize -> {
+                                    val diffSize = currentSize - lastSize
+                                    adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                                }
+                                lastSize == currentSize -> adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                currentSize < lastSize -> {
+                                    val diffSize = lastSize - currentSize
+                                    adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
+                                    adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
+                                            diffSize)
+                                }
                             }
                         }
                     }
@@ -1658,7 +1661,7 @@ class LauncherFeed(private val originalContext: Context,
                                                             (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
                                                                     15)))) {
                                                 adapter.refresh()
-                                                if (!adapter.cards.isEmpty()) {
+                                                if (adapter.cards.isNotEmpty()) {
                                                     lastRefresh = System.currentTimeMillis()
                                                     if (::currentTab.isInitialized) {
                                                         conservativeRefreshTimes[currentTab] =
