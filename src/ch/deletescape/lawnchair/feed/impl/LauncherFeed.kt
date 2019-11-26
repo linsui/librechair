@@ -143,7 +143,7 @@ class LauncherFeed(private val originalContext: Context,
             (it.getChildAt(0) as ViewGroup).childs.forEach {
                 val textView = it::class.java.getDeclaredField(
                         "textView").also { it.isAccessible = true }.get(it)
-                        as? TextView // TODO figure out Kotlin reflection is being so slow
+                        as? TextView
                 if (textView != null) {
                     CustomFontManager.getInstance(context)
                             .loadFont(CustomFontManager.FONT_FEED_TITLES,
@@ -880,7 +880,7 @@ class LauncherFeed(private val originalContext: Context,
                                         } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
                                             deleting = false
                                             searchWidgetView!!.animate().scaleX(1f)
-                                                    .scaleY(1f).setDuration(250)
+                                                    .scaleY(1f).duration = 250
                                         }
                                         true
                                     }
@@ -1084,7 +1084,7 @@ class LauncherFeed(private val originalContext: Context,
         updateActions()
         if (providerScreens.isEmpty()) {
             if (adapter.providers.any { it.isSearchable }) {
-                internalActions.put("search".hashCode(), searchAction)
+                internalActions["search".hashCode()] = searchAction
             } else {
                 internalActions.remove("search".hashCode())
             }
@@ -1106,7 +1106,7 @@ class LauncherFeed(private val originalContext: Context,
         providerScreens.first { it.first == screen }.first.onDestroy()
         providerScreens.remove(providerScreens.first { it.first == screen })
         if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
-            internalActions.put("search".hashCode(), searchAction)
+            internalActions["search".hashCode()] = searchAction
         } else {
             internalActions.remove("search".hashCode())
         }
@@ -1520,7 +1520,7 @@ class LauncherFeed(private val originalContext: Context,
         }
         runOnMainThread {
             if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
-                internalActions.put("search".hashCode(), searchAction)
+                internalActions["search".hashCode()] = searchAction
             } else {
                 internalActions.remove("search".hashCode())
             }
@@ -1578,7 +1578,7 @@ class LauncherFeed(private val originalContext: Context,
                                 15)) ||
                                 (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
                                         15)))) {
-                    if (!adapter.cards.isEmpty()) {
+                    if (adapter.cards.isNotEmpty()) {
                         lastRefresh = System.currentTimeMillis()
                         if (::currentTab.isInitialized) {
                             conservativeRefreshTimes[currentTab] = System.currentTimeMillis()
@@ -1615,17 +1615,19 @@ class LauncherFeed(private val originalContext: Context,
                             val objectsBefore = adapter.cardCache.values.toList()
                                     .subList(0, adapter.cardCache.keys.indexOf(it.second))
                             val sizeBefore = objectsBefore.size
-                            if (lastSize < currentSize) {
-                                val diffSize = currentSize - lastSize
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                                adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
-                            } else if (lastSize == currentSize) {
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                            } else if (currentSize < lastSize) {
-                                val diffSize = lastSize - currentSize
-                                adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
-                                adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
-                                        diffSize)
+                            when {
+                                lastSize < currentSize -> {
+                                    val diffSize = currentSize - lastSize
+                                    adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                                }
+                                lastSize == currentSize -> adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                currentSize < lastSize -> {
+                                    val diffSize = lastSize - currentSize
+                                    adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
+                                    adapter.notifyItemRangeRemoved(sizeBefore - 1 + currentSize,
+                                            diffSize)
+                                }
                             }
                         }
                     }
