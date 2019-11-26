@@ -19,11 +19,8 @@
 
 package ch.deletescape.lawnchair.feed;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract;
 import android.util.Log;
@@ -51,6 +48,7 @@ import net.time4j.calendar.astro.SolarTime;
 import net.time4j.calendar.astro.Twilight;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -60,16 +58,32 @@ import java.util.List;
 import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.awareness.CalendarManager;
 import kotlin.Pair;
 import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
     private Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private int calEvCount = 0;
     private long sunriseSunsetExpiry;
 
     @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
+        CalendarManager.INSTANCE.subscribe(lst -> {
+            calEvCount = (int) lst.stream().filter(
+                    it -> it.getStartTime().isAfter(LocalDateTime.now()
+                            .withHour(0)
+                            .withMinute(0)
+                            .withSecond(0)
+                            .withNano(0)) && it.getEndTime().isBefore(LocalDateTime.now()
+                            .plusDays(1)
+                            .withNano(0)
+                            .withMinute(0)
+                            .withHour(0)
+                            .withSecond(0))).count();
+            return Unit.INSTANCE;
+        });
         LawnchairUtilsKt.getLawnchairLocationManager(c).addCallback((lat, lon) -> {
             SolarTime solarTime = SolarTime.ofLocation(lat, lon);
             ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
@@ -95,14 +109,17 @@ public class DailySummaryFeedProvider extends FeedProvider {
             Pair<Double, Double> location = LawnchairUtilsKt
                     .getLawnchairLocationManager(getContext()).getLocation();
             if (location != null) {
-                SolarTime solarTime = SolarTime.ofLocation(location.getFirst(), location.getSecond());
+                SolarTime solarTime = SolarTime.ofLocation(location.getFirst(),
+                        location.getSecond());
                 ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
                         PlainDate.nowInSystemTime().get(
-                                solarTime.sunrise(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                                solarTime.sunrise(
+                                        Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
                         ZoneId.systemDefault());
                 ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
                         PlainDate.nowInSystemTime().get(
-                                solarTime.sunset(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
+                                solarTime.sunset(
+                                        Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
                         ZoneId.systemDefault());
                 Log.d(getClass().getName(),
                         "init: sunrise and sunset times retrieved: " + sunrise + ", "
@@ -162,31 +179,16 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             + " ) AND ( " + CalendarContract.Events.DTSTART + " <= "
                             + LawnchairUtilsKt
                             .tomorrow(currentTime).getTime() + " ))";
-            if (context.checkSelfPermission(
-                    Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
-                Cursor calendarEvents = context.getContentResolver()
-                        .query(CalendarContract.Events.CONTENT_URI,
-                                new String[]{CalendarContract.Instances.TITLE,
-                                        CalendarContract.Instances.DTSTART,
-                                        CalendarContract.Instances.DTEND,
-                                        CalendarContract.Instances.DESCRIPTION,
-                                        CalendarContract.Events._ID,
-                                        CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                        CalendarContract.Events.EVENT_LOCATION}, query, null,
-                                CalendarContract.Instances.DTSTART + " ASC");
-                if (calendarEvents != null &&
-                        calendarEvents.getCount() > 0) {
-                    items.add(new DailySummaryItem(LawnchairUtilsKt
-                            .tint(
-                                    Objects.requireNonNull(
-                                            context.getDrawable(R.drawable.ic_event_black_24dp)),
-                                    FeedAdapter.Companion.getOverrideColor(context)),
-                            context.getResources()
-                                    .getQuantityString(
-                                            R.plurals.title_daily_briefing_calendar_events,
-                                            calendarEvents.getCount(), calendarEvents.getCount())));
-                    calendarEvents.close();
-                }
+            if (feedProvider.calEvCount > 0) {
+                items.add(new DailySummaryItem(LawnchairUtilsKt
+                        .tint(
+                                Objects.requireNonNull(
+                                        context.getDrawable(R.drawable.ic_event_black_24dp)),
+                                FeedAdapter.Companion.getOverrideColor(context)),
+                        context.getResources()
+                                .getQuantityString(
+                                        R.plurals.title_daily_briefing_calendar_events,
+                                        feedProvider.calEvCount, feedProvider.calEvCount)));
             }
 
             if (feedProvider.sunriseSunset != null) {
