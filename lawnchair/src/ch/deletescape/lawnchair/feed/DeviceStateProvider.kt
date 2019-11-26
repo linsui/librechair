@@ -30,6 +30,7 @@ import com.android.launcher3.R
 
 class DeviceStateProvider(c: Context) : FeedProvider(c) {
 
+    @Suppress("DEPRECATION")
     @SuppressLint("MissingPermission")
     override fun getCards(): MutableList<Card> {
         val cards = mutableListOf<Card>()
@@ -62,8 +63,8 @@ class DeviceStateProvider(c: Context) : FeedProvider(c) {
                               View(context)
                           }, Card.TEXT_ONLY, "nosort,top", "feedAirplaneModeIndicator".hashCode())
         }
-        if (!(context.getSystemService(
-                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo.isConnected) {
+        if (!((context.getSystemService(
+                        Context.CONNECTIVITY_SERVICE) as ConnectivityManager).activeNetworkInfo?.isConnected == true)) {
             cards += Card(R.drawable.ic_round_wifi_off_24dp.fromDrawableRes(context)
                                   .tint(
                                           (if (useWhiteText(backgroundColor, context))
