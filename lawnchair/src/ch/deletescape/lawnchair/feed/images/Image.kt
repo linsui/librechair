@@ -24,10 +24,4 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Image(@PrimaryKey val id: String, @ColumnInfo(name = "image_display_style") val style: String) {
-    companion object {
-        val STYLE_NORMAL = "normal"
-        val STYLE_CROP = "crop"
-        val STYLE_FIT = "fit"
-    }
-}
+data class Image(@PrimaryKey val id: String, @ColumnInfo(name = "image_display_style") val style: String)
