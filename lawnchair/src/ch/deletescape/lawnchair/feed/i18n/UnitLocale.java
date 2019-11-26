@@ -20,16 +20,19 @@
 
 package ch.deletescape.lawnchair.feed.i18n;
 
+import android.annotation.SuppressLint;
+
 import java.util.Locale;
 
 public class UnitLocale {
-    public static UnitLocale IMPERIAL = new UnitLocale();
-    public static UnitLocale METRIC = new UnitLocale();
+    private static UnitLocale IMPERIAL = new UnitLocale();
+    private static UnitLocale METRIC = new UnitLocale();
 
     public static UnitLocale getDefault() {
         return getFrom(Locale.getDefault());
     }
 
+    @SuppressLint("DefaultLocale")
     public String formatDistanceKm(long km) {
         return this == IMPERIAL ? String.format("%d mi", Math.round(0.621371 * km)) : String.format(
                 "%d km", km);
@@ -37,12 +40,11 @@ public class UnitLocale {
 
     public static UnitLocale getFrom(Locale locale) {
         String countryCode = locale.getCountry();
-        if ("US".equals(countryCode)) {
-            return IMPERIAL;
-        } else if ("LR".equals(countryCode)) {
-            return IMPERIAL;
-        } else if ("MM".equals(countryCode)) {
-            return IMPERIAL;
+        switch (countryCode) {
+            case "US":
+            case "LR":
+            case "MM":
+                return IMPERIAL;
         }
         return METRIC;
     }
