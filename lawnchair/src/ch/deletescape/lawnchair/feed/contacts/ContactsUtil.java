@@ -85,12 +85,13 @@ public class ContactsUtil {
         return new LinkedList<>(contacts);
     }
 
-    public static Bitmap getAvatar(String address, Context context) {
+    private static Bitmap getAvatar(String address, Context context) {
         Bitmap contactAvatar = BitmapFactory.decodeResource(context.getResources(),
                 R.drawable.work_tab_user_education);
         Cursor phones = context.getContentResolver().query(Uri.parse(address),
                 null, null, null, null);
         try {
+            assert phones != null;
             while (phones.moveToNext()) {
                 String imageUri = phones.getString(phones.getColumnIndex(
                         ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
@@ -104,6 +105,7 @@ public class ContactsUtil {
                     }
                 }
             }
+            phones.close();
         } catch (RuntimeException e) {
             e.printStackTrace();
         }
