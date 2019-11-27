@@ -63,6 +63,9 @@ class LawnchairBugReporter(private val context: Context, private val crashHandle
     }
 
     fun writeReport(error: String, throwable: Throwable?) {
+        if (throwable != null) {
+            e("writeReport: fatal exception", throwable)
+        }
         Report(error, throwable).apply {
             send(save())
         }

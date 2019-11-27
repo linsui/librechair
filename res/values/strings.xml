@@ -798,4 +798,5 @@
     <string name="title_pref_feed_show_title_in_shared_articles">Show article title when sharing articles</string>
     <string name="summary_pref_feed_show_title_in_shared_articles">The article title will be prepended to the URL</string>
     <string name="title_pref_feed_chip_color_resolver">Chip background</string>
+    <string name="title_err_chip_unsupported">Chip unsupported</string>
 </resources>

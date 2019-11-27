@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.feed.chips.calendar.UpcomingEventsProvider;
 import ch.deletescape.lawnchair.feed.chips.contacts.ContactsChipProvider;
 import ch.deletescape.lawnchair.feed.chips.location.CurrentLocationChipProvider;
 import ch.deletescape.lawnchair.feed.chips.memory.MemoryUsageChipProvider;
+import ch.deletescape.lawnchair.feed.chips.mn.MediaNotificationProvider;
 import ch.deletescape.lawnchair.feed.chips.news.BBCArticleProvider;
 import ch.deletescape.lawnchair.feed.chips.news.TheGuardianArticleProvider;
 import ch.deletescape.lawnchair.feed.chips.notifications.UnreadNotificationsProvider;
@@ -111,6 +112,9 @@ public abstract class ChipProvider {
         public Runnable click;
         public Consumer<View> viewClickListener;
         public Drawable icon;
+
+        public void bindVoodo(ChipItemBridge bridge) {
+        }
     }
 
     public static class Names {
@@ -158,6 +162,8 @@ public abstract class ChipProvider {
             names.put(buildEmptyContainer(SunriseSunsetChipProvider.class),
                     LawnchairApp.localizationContext.getString(
                             R.string.title_chip_provider_sunrise_sunset));
+            names.put(buildEmptyContainer(MediaNotificationProvider.class),
+                    LawnchairApp.localizationContext.getString(R.string.event_provider_now_playing));
             for (ComponentName name : RemoteChipProviderUtilities.getRemoteChipProviders(
                     LawnchairApp.localizationContext)) {
                 ChipProviderContainer container = new ChipProviderContainer();

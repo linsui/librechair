@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -101,6 +103,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
     @Override
     public void onBindViewHolder(@NotNull ChipViewHolder chipViewHolder, int i) {
         ChipProvider.Item item = items.get(i);
+        chipViewHolder.bindId = UUID.randomUUID();
         if (item.icon instanceof VectorDrawable) {
             chipViewHolder.itemView.setChipIconTint(
                     ColorStateList.valueOf(ColorEngine.getInstance(context).getResolverCache(
@@ -175,6 +178,10 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         } else {
             chipViewHolder.itemView.setOnClickListener(null);
         }
+        item.bindVoodo(new ChipItemBridge(new ViewHolderVoodo(chipViewHolder, ColorEngine.getInstance(context)
+                                                                                             .getResolverCache(ColorEngine.Resolvers.FEED_CHIP)
+                                                                                             .getValue()
+                                                                                             .computeForegroundColor()), chipViewHolder.bindId));
     }
 
     @Override
@@ -194,15 +201,47 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         }
         notifyDataSetChanged();
     }
+
+    private class ViewHolderVoodo implements ChipItemBridge.Voodo {
+
+        private ChipViewHolder vh;
+        private int icc;
+
+        ViewHolderVoodo(ChipViewHolder vh, int icc) {
+            this.vh = vh;
+            this.icc = icc;
+        }
+
+        @Override
+        public UUID getUUID() {
+            return vh.bindId;
+        }
+
+        @Override
+        public void setOnClickListener(View.OnClickListener vocl) {
+            vh.itemView.setOnClickListener(vocl);
+        }
+
+        @Override
+        public void setIcon(Drawable icns) {
+            vh.itemView.setChipIcon(icns instanceof VectorDrawable ?
+                                        LawnchairUtilsKt.tint(icns, icc) : icns);
+        }
+
+        @Override
+        public void setTitle(String title) {
+            vh.itemView.setText(title);
+        }
+    }
 }
 
 @SuppressWarnings("WeakerAccess")
 class ChipViewHolder extends RecyclerView.ViewHolder {
     public Chip itemView;
+    public UUID bindId;
 
     public ChipViewHolder(View itemView) {
         super(itemView);
         this.itemView = (Chip) itemView;
     }
 }
-
