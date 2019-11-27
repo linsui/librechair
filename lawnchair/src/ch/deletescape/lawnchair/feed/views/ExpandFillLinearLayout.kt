@@ -48,7 +48,7 @@ import ch.deletescape.lawnchair.forEachChildIndexed
 class ExpandFillLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayout(context, attrs) {
 
     var childWidth = 0
-    var childHeight = 0
+    private var childHeight = 0
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         when (orientation) {
