@@ -54,7 +54,11 @@ public class MediaNotificationProvider extends ChipProvider {
                     } else {
                         bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
                     }
-                    bridge.setTitle(currentState.getInfo().getTitle().toString());
+                    if (currentState.getInfo().getTitle() != null) {
+                        bridge.setTitle(currentState.getInfo().getTitle().toString());
+                    } else {
+                        bridge.setTitle("");
+                    }
                 } else {
                     bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
                     bridge.setTitle(context.getString(R.string.title_nothings_playing));
@@ -66,7 +70,11 @@ public class MediaNotificationProvider extends ChipProvider {
                         } else {
                             bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
                         }
-                        bridge.setTitle(tracking.getInfo().getTitle().toString());
+                        if (tracking.getInfo().getTitle() != null) {
+                            bridge.setTitle(tracking.getInfo().getTitle().toString());
+                        } else {
+                            bridge.setTitle("");
+                        }
                     } else {
                         bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
                         bridge.setTitle(context.getString(R.string.title_nothings_playing));
