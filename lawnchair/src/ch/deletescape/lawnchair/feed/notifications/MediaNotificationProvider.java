@@ -330,7 +330,7 @@ public class MediaNotificationProvider extends FeedProvider {
                     mnc.set(mn);
                     mnv.post(() -> {
                         pause.setImageTintList(ColorStateList.valueOf(
-                                FeedAdapter.Companion.getOverrideColor(getContext())));
+                                FeedAdapter.Companion.getOverrideColor(parent.getContext())));
                         title.setText(mnc.get().getInfo().getTitle());
                         author.setText(
                                 mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist());
@@ -350,7 +350,7 @@ public class MediaNotificationProvider extends FeedProvider {
                             }
                         }
                         pause.setImageTintList(ColorStateList.valueOf(
-                                FeedAdapter.Companion.getOverrideColor(getContext())));
+                                FeedAdapter.Companion.getOverrideColor(parent.getContext())));
                         icon.setVisibility(
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);
                         icon.setImageBitmap(
