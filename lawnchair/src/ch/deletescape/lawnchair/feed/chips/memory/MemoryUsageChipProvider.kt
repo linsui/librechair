@@ -26,7 +26,7 @@ import android.content.Context.ACTIVITY_SERVICE
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.fromDrawableRes
 import com.android.launcher3.R
-import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
@@ -38,6 +38,6 @@ class MemoryUsageChipProvider(val context: Context) : ChipProvider() {
         val availableMegs = mi.availMem / 0x100000L
         val totalMegs = mi.totalMem / 0x100000L
         title =
-                "$availableMegs MB / ${if (totalMegs < 0x400) totalMegs else (totalMegs.toDouble() / 0x400).roundToInt()} ${if (totalMegs < 0x400) "MB" else "GB"}"
+                "$availableMegs MB / ${if (totalMegs < 0x400) totalMegs else (totalMegs.toDouble() / 0x400).roundToLong()} ${if (totalMegs < 0x400) "MB" else "GB"}"
     })
 }
