@@ -70,6 +70,10 @@
             android:key="pref_feedCardColorResolver"
             android:title="@string/title_pref_card_background"
             app:resolvers="@array/resolvers_feed_card_background" />
+        <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
+            android:key="pref_feedChipColorResolver"
+            android:title="@string/title_pref_feed_chip_color_resolver"
+            app:resolvers="@array/resolvers_feed_card_background" />
         <ch.deletescape.lawnchair.preferences.ImageProviderPreference
             android:key="pref_feed_background"
             android:title="@string/title_pref_feed_background"
