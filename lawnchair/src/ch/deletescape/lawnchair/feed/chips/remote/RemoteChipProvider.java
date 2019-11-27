@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.remote;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -36,6 +37,7 @@ import com.android.launcher3.Utilities;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -58,14 +60,14 @@ public class RemoteChipProvider extends ChipProvider {
             if (connection == null) {
                 tryConnect();
             }
-            return connection == null ? Collections.EMPTY_LIST :
+            return connection == null ? Collections.emptyList() :
                     connection.getChips(
                             ColorEngine.getInstance(context).getResolverCache(
                                     ColorEngine.Resolvers.FEED_CHIP).getValue().computeForegroundColor()).stream().map(
                             remoteItem -> remoteItem.toItem(context)).collect(
                             Collectors.toList());
         } catch (RemoteException e) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -94,6 +96,7 @@ public class RemoteChipProvider extends ChipProvider {
         }
     }
 
+    @SuppressLint("Registered")
     public static class Demo extends Service {
 
         @Nullable
@@ -101,11 +104,12 @@ public class RemoteChipProvider extends ChipProvider {
         public IBinder onBind(Intent intent) {
             return new IChipProvider.Stub() {
                 @Override
-                public List<RemoteItem> getChips(int loa) throws RemoteException {
+                public List<RemoteItem> getChips(int loa) {
                     Log.d(Demo.class.getName(), "getChips: retrieving demo chip");
                     RemoteItem item = new RemoteItem();
                     item.icon = Utilities.drawableToBitmap(
-                            LawnchairUtilsKt.tint(getDrawable(R.drawable.ic_smartspace_preferences),
+                            LawnchairUtilsKt.tint(Objects.requireNonNull(
+                                    getDrawable(R.drawable.ic_smartspace_preferences)),
                                     loa));
                     item.title = "DE MO";
                     return Collections.singletonList(item);
