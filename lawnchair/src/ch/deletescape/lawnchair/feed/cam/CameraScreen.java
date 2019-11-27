@@ -58,14 +58,7 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
 
 public class CameraScreen extends ProviderScreen {
-    private static final Handler cameraHandler;
-
-    static {
-        HandlerThread thread = new HandlerThread("camera-1");
-        thread.start();
-        cameraHandler = new Handler(thread.getLooper());
-    }
-
+    private final Handler cameraHandler;
     private final Consumer<Bitmap> listener;
     private final CameraManager cameraManager;
     private String cameraId;
@@ -78,6 +71,9 @@ public class CameraScreen extends ProviderScreen {
         super(base);
         this.listener = listener;
         this.cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+        HandlerThread thread = new HandlerThread("camera-1");
+        thread.start();
+        cameraHandler = new Handler(thread.getLooper());
     }
 
     @Override
@@ -182,6 +178,7 @@ public class CameraScreen extends ProviderScreen {
             dev.close();
             session.close();
         }
+        cameraHandler.getLooper().quit();
     }
 
     private void createPreviewSession(TextureView textureView) {
