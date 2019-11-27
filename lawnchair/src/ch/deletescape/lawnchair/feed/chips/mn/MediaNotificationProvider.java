@@ -24,6 +24,7 @@ import android.content.Context;
 
 import com.android.launcher3.R;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.function.Consumer;
@@ -78,6 +79,6 @@ public class MediaNotificationProvider extends ChipProvider {
 
     @Override
     public List<Item> getItems(Context context) {
-        return null;
+        return Collections.singletonList(item);
     }
 }
