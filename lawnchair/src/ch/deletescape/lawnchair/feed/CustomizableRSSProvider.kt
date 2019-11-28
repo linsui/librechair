@@ -21,8 +21,6 @@ package ch.deletescape.lawnchair.feed
 
 import android.content.Context
 
-class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(c) {
-    override fun bindFeeds(handler: OnBindHandler) {
-    }
+class CustomizableRSSProvider(c: Context) : FeedProvider(c) {
     override fun getCards() = emptyList<Card>()
 }
