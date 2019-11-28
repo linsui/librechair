@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 public class ChipItemBridge {
     private final Voodo vh;
     private final UUID bindId;
+    public Runnable onDetach;
 
     ChipItemBridge(Voodo vh, UUID bindId) {
         this.vh = vh;
@@ -38,18 +39,24 @@ public class ChipItemBridge {
     public void setIcon(Drawable icns) {
         if (vh.getUUID().equals(bindId)) {
             vh.setIcon(icns);
+        } else if (onDetach != null) {
+            onDetach.run();
         }
     }
 
     public void setTitle(String title) {
         if (vh.getUUID().equals(bindId)) {
             vh.setTitle(title);
+        } else if (onDetach != null) {
+            onDetach.run();
         }
     }
 
     public void setOnClickListener(Consumer<View> onClickListener) {
         if (vh.getUUID().equals(bindId)) {
             vh.setOnClickListener(onClickListener::accept);
+        } else if (onDetach != null) {
+            onDetach.run();
         }
     }
 

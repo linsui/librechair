@@ -90,7 +90,8 @@ public class MediaNotificationProvider extends ChipProvider {
                     }
                     bridge.setTitle(context.getString(R.string.title_nothings_playing));
                 }
-                onMediaNotifChange.add(tracking -> {
+                Consumer<OMCMediaListener.MediaNotificationController> tc;
+                onMediaNotifChange.add((tc = (tracking -> {
                     if (tracking != null) {
                         if (tracking.isPlaying()) {
                             drawable.start();
@@ -124,7 +125,8 @@ public class MediaNotificationProvider extends ChipProvider {
                         }
                         bridge.setTitle(context.getString(R.string.title_nothings_playing));
                     }
-                });
+                })));
+                bridge.onDetach = () -> onMediaNotifChange.remove(tc);
             }
         };
         this.item.title = context.getString(R.string.title_err_chip_unsupported);
