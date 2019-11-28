@@ -80,7 +80,7 @@
     <fraction name="battery_subpixel_smoothing_left">0%</fraction>
     <fraction name="battery_subpixel_smoothing_right">0%</fraction>
 
-    <dimen name="battery_height">14.5dp</dimen>
+    <dimen name="battery_height">12.5dp</dimen>
     <dimen name="battery_width">9.5dp</dimen>
     <dimen name="battery_powersave_outline_thickness">1dp</dimen>
 </resources>
