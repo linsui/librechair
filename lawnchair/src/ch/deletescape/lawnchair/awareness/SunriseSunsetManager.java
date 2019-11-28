@@ -41,8 +41,11 @@ import kotlin.Unit;
 
 public final class SunriseSunsetManager {
     private static final List<Consumer<Pairs.Pair<ZonedDateTime, ZonedDateTime>>> listeners;
+    private static final Object CLOCK_LOCK = new Object();
+
     private static Pairs.Pair<ZonedDateTime, ZonedDateTime> currentSs;
     private static Pairs.Pair<Double, Double> location;
+    private static SolarTime clock;
 
     private SunriseSunsetManager() {
         throw new RuntimeException("This class cannot be instantiated");
@@ -51,52 +54,59 @@ public final class SunriseSunsetManager {
     static {
         listeners = new Vector<>();
         LocationManager.INSTANCE.addCallback((lat, lon) -> {
-            SolarTime st = SolarTime.ofLocation(lat, lon);
-            location = Pairs.cons(lat, lon);
-            ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
-                            ZoneId.systemDefault().getId()).getPosixTime()),
-                    ZoneId.systemDefault());
-            ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
-                            ZoneId.systemDefault().getId()).getPosixTime()),
-                    ZoneId.systemDefault());
-            Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
-            currentSs = current = Pairs.cons(sunrise, sunset);
-            synchronized (listeners) {
-                listeners.forEach(listener -> listener.accept(current));
+            synchronized (CLOCK_LOCK) {
+                clock = SolarTime.ofLocation(lat, lon);
+                location = Pairs.cons(lat, lon);
+                ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                        PlainDate.nowInSystemTime().get(
+                                clock.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
+                                ZoneId.systemDefault().getId()).getPosixTime()),
+                        ZoneId.systemDefault());
+                ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                        PlainDate.nowInSystemTime().get(
+                                clock.sunset(Twilight.ASTRONOMICAL)).inZonalView(
+                                ZoneId.systemDefault().getId()).getPosixTime()),
+                        ZoneId.systemDefault());
+                Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
+                currentSs = current = Pairs.cons(sunrise, sunset);
+                synchronized (listeners) {
+                    listeners.forEach(listener -> listener.accept(current));
+                }
+                return Unit.INSTANCE;
             }
-            return Unit.INSTANCE;
         });
         TickManager.INSTANCE.subscribe(() -> {
-            if (ZonedDateTime.now().getHour() == 0 && ZonedDateTime.now().getMinute() == 0) {
-                Pairs.Pair<Double, Double> currentLocation;
-                if ((currentLocation = location) != null) {
-                    SolarTime st = SolarTime.ofLocation(currentLocation.car(),
-                            currentLocation.cdr());
-                    ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                            PlainDate.nowInSystemTime().get(
-                                    st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
-                                    ZoneId.systemDefault().getId()).getPosixTime()),
-                            ZoneId.systemDefault());
-                    ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                            PlainDate.nowInSystemTime().get(
-                                    st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
-                                    ZoneId.systemDefault().getId()).getPosixTime()),
-                            ZoneId.systemDefault());
-                    Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
-                    currentSs = current = Pairs.cons(sunrise, sunset);
-                    synchronized (listeners) {
-                        listeners.forEach(listener -> listener.accept(current));
+            synchronized (CLOCK_LOCK) {
+                if (ZonedDateTime.now().getHour() == 0 && ZonedDateTime.now().getMinute() == 0) {
+                    Pairs.Pair<Double, Double> currentLocation;
+                    if ((currentLocation = location) != null) {
+                        clock = SolarTime.ofLocation(currentLocation.car(),
+                                currentLocation.cdr());
+                        ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                                PlainDate.nowInSystemTime().get(
+                                        clock.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
+                                        ZoneId.systemDefault().getId()).getPosixTime()),
+                                ZoneId.systemDefault());
+                        ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                                PlainDate.nowInSystemTime().get(
+                                        clock.sunset(Twilight.ASTRONOMICAL)).inZonalView(
+                                        ZoneId.systemDefault().getId()).getPosixTime()),
+                                ZoneId.systemDefault());
+                        Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
+                        currentSs = current = Pairs.cons(sunrise, sunset);
+                        synchronized (listeners) {
+                            listeners.forEach(listener -> listener.accept(current));
+                        }
                     }
                 }
+                return Unit.INSTANCE;
             }
-            return Unit.INSTANCE;
         });
     }
 
     @AnyThread
-    public static void subscribe(@MainThread Consumer<Pairs.Pair<ZonedDateTime, ZonedDateTime>> listener) {
+    public static void subscribe(
+            @MainThread Consumer<Pairs.Pair<ZonedDateTime, ZonedDateTime>> listener) {
         synchronized (listeners) {
             listeners.add(listener);
             Pairs.Pair<ZonedDateTime, ZonedDateTime> css = currentSs;
@@ -104,5 +114,10 @@ public final class SunriseSunsetManager {
                 FeedUtil.runOnMainThread(() -> listener.accept(css));
             }
         }
+    }
+
+
+    public static SolarTime getClock() {
+        return clock;
     }
 }
