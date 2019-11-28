@@ -24,47 +24,34 @@ import android.content.Context;
 
 import com.android.launcher3.R;
 
-import net.time4j.PlainDate;
-import net.time4j.calendar.astro.SolarTime;
-import net.time4j.calendar.astro.Twilight;
-
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.awareness.SunriseSunsetManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
-import ch.deletescape.lawnchair.location.LocationManager;
-import kotlin.Pair;
+import ch.deletescape.lawnchair.feed.util.Pairs;
 
 public class SunriseSunsetChipProvider extends ChipProvider {
+    private Pairs.Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+
     public SunriseSunsetChipProvider(Context ignored) {
+        SunriseSunsetManager.subscribe(ss -> sunriseSunset = ss);
     }
 
     @Override
     public List<Item> getItems(Context context) {
-        Pair<Double, Double> location;
-        if ((location = LocationManager.INSTANCE.getLocation()) != null) {
-            SolarTime st = SolarTime.ofLocation(location.getFirst(), location.getSecond());
-            ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
-                            ZoneId.systemDefault().getId()).getPosixTime()),
-                    ZoneId.systemDefault());
-            ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
-                            ZoneId.systemDefault().getId()).getPosixTime()),
-                    ZoneId.systemDefault());
-
+        Pairs.Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+        if ((sunriseSunset = this.sunriseSunset) != null) {
             Item sunriseItem = new Item();
             sunriseItem.icon = context.getDrawable(R.drawable.ic_sunrise_24dp);
-            sunriseItem.title = LawnchairUtilsKt.formatTime(sunrise, context);
+            sunriseItem.title = LawnchairUtilsKt.formatTime(sunriseSunset.car(), context);
 
             Item sunsetItem = new Item();
             sunsetItem.icon = context.getDrawable(R.drawable.ic_sunset_24dp);
-            sunsetItem.title = LawnchairUtilsKt.formatTime(sunset, context);
+            sunsetItem.title = LawnchairUtilsKt.formatTime(sunriseSunset.cdr(), context);
 
             return Arrays.asList(sunriseItem, sunsetItem);
         }

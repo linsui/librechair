@@ -23,36 +23,31 @@ package ch.deletescape.lawnchair.feed.util;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/*
- * A simple, functional pair.
- * Resembles a LISP cons pair.
- */
-
 @SuppressWarnings({"unchecked", "WeakerAccess"})
-public final class LispConsImpls {
-    private LispConsImpls() {
+public final class Pairs {
+    private Pairs() {
         throw new RuntimeException("Instantiation ugh");
     }
 
-    public static <Ta, Tb> ConsPair<Ta, Tb> cons(Ta a, Tb b) {
+    public static <Ta, Tb> Pair<Ta, Tb> cons(Ta a, Tb b) {
         return function -> function.apply(a, b);
     }
 
-    public static <Ta, Tb> Ta car(ConsPair<Ta, Tb> pair) {
+    public static <Ta, Tb> Ta car(Pair<Ta, Tb> pair) {
         return (Ta) pair.apply((a, b) -> a);
     }
 
-    public static <Ta, Tb> Tb cdr(ConsPair<Ta, Tb> pair) {
+    public static <Ta, Tb> Tb cdr(Pair<Ta, Tb> pair) {
         return (Tb) pair.apply((a, b) -> b);
     }
 
-    public interface ConsPair<Ta, Tb> extends Function<BiFunction<Ta, Tb, Object>, Object> {
+    public interface Pair<Ta, Tb> extends Function<BiFunction<Ta, Tb, Object>, Object> {
         default Ta car() {
-            return LispConsImpls.car(this);
+            return Pairs.car(this);
         }
 
         default Tb cdr() {
-            return LispConsImpls.cdr(this);
+            return Pairs.cdr(this);
         }
     }
 }
