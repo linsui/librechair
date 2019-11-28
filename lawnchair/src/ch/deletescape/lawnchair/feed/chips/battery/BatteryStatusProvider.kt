@@ -93,7 +93,7 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
         if (!full) {
             lines.add("$level%")
         }
-        return listOf(object : Item(){
+        return listOf(object : Item() {
             override fun bindVoodo(bridge: ChipItemBridge) {
                 changeListeners += {
                     val lines1 = mutableListOf<Any>()
@@ -108,12 +108,14 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                     bridge.setTitle(lines1.joinToString(" - ") {
                         if (it is Int) it.fromStringRes(context) else it as CharSequence
                     })
-                    bridge.setIcon(BatteryMeterDrawableBase(context, FeedAdapter.getOverrideColor(context)).apply {
+                    bridge.setIcon(BatteryMeterDrawableBase(context,
+                            FeedAdapter.getOverrideColor(context)).apply {
                         this.batteryLevel = this@BatteryStatusProvider.level
                         this.charging = this@BatteryStatusProvider.charging
                     })
                     bridge.setOnClickListener {
-                        FeedUtil.startActivity(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY), it)
+                        FeedUtil.startActivity(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
+                                it)
                     }
                 }
             }
