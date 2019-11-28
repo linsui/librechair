@@ -75,7 +75,7 @@ public class MediaNotificationProvider extends ChipProvider {
                     if (currentState.getInfo().getTitle() != null) {
                         bridge.setTitle(currentState.getInfo().getTitle().toString());
                     } else {
-                        bridge.setTitle("");
+                        bridge.setTitle(context.getString(R.string.title_chip_no_title));
                     }
                 } else {
                     if (Utilities.HIDDEN_APIS_ALLOWED) {
@@ -110,7 +110,7 @@ public class MediaNotificationProvider extends ChipProvider {
                         if (tracking.getInfo().getTitle() != null) {
                             bridge.setTitle(tracking.getInfo().getTitle().toString());
                         } else {
-                            bridge.setTitle("");
+                            bridge.setTitle(context.getString(R.string.title_chip_no_title));
                         }
                     } else {
                         if (Utilities.HIDDEN_APIS_ALLOWED) {
