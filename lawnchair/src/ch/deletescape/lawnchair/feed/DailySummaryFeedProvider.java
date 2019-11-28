@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,13 +42,7 @@ import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 
-import net.time4j.PlainDate;
-import net.time4j.calendar.astro.SolarTime;
-import net.time4j.calendar.astro.Twilight;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,12 +52,13 @@ import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.CalendarManager;
+import ch.deletescape.lawnchair.awareness.SunriseSunsetManager;
+import ch.deletescape.lawnchair.feed.util.Pairs;
 import ch.deletescape.lawnchair.font.CustomFontManager;
-import kotlin.Pair;
 import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
-    private Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private Pairs.Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
     private int calEvCount = 0;
     private long sunriseSunsetExpiry;
 
@@ -85,50 +79,11 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             .withSecond(0))).count();
             return Unit.INSTANCE;
         });
-        LawnchairUtilsKt.getLawnchairLocationManager(c).addCallback((lat, lon) -> {
-            SolarTime solarTime = SolarTime.ofLocation(lat, lon);
-            ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(
-                            solarTime.sunrise(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
-                    ZoneId.systemDefault());
-            ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                    PlainDate.nowInSystemTime().get(
-                            solarTime.sunset(Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
-                    ZoneId.systemDefault());
-            Log.d(getClass().getName(),
-                    "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                            + sunset);
-            sunriseSunset = new Pair<>(sunrise, sunset);
-            sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
-            return Unit.INSTANCE;
-        });
+        SunriseSunsetManager.subscribe(ss -> sunriseSunset = ss);
     }
 
     @Override
     public List<Card> getCards() {
-        if (sunriseSunsetExpiry < System.currentTimeMillis()) {
-            Pair<Double, Double> location = LawnchairUtilsKt
-                    .getLawnchairLocationManager(getContext()).getLocation();
-            if (location != null) {
-                SolarTime solarTime = SolarTime.ofLocation(location.getFirst(),
-                        location.getSecond());
-                ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                        PlainDate.nowInSystemTime().get(
-                                solarTime.sunrise(
-                                        Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
-                        ZoneId.systemDefault());
-                ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                        PlainDate.nowInSystemTime().get(
-                                solarTime.sunset(
-                                        Twilight.ASTRONOMICAL)).inLocalView().getPosixTime()),
-                        ZoneId.systemDefault());
-                Log.d(getClass().getName(),
-                        "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                                + sunset);
-                sunriseSunset = new Pair<>(sunrise, sunset);
-                sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
-            }
-        }
         return Collections.singletonList(new Card(null, null,
                 parent -> {
                     View v = LayoutInflater.from(parent.getContext())
@@ -198,13 +153,13 @@ public class DailySummaryFeedProvider extends FeedProvider {
                                 context.getDrawable(R.drawable.ic_sunrise_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
-                                .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
+                                .formatTime(feedProvider.sunriseSunset.car(), context)));
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
                                 context.getDrawable(R.drawable.ic_sunset_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
-                                .formatTime(feedProvider.sunriseSunset.getSecond(), context)));
+                                .formatTime(feedProvider.sunriseSunset.cdr(), context)));
             }
             notifyDataSetChanged();
         }

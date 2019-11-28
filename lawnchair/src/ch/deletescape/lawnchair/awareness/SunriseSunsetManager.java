@@ -69,21 +69,26 @@ public final class SunriseSunsetManager {
             return Unit.INSTANCE;
         });
         TickManager.INSTANCE.subscribe(() -> {
-            Pairs.Pair<Double, Double> currentLocation;
-            if ((currentLocation = location) != null) {
-                SolarTime st = SolarTime.ofLocation(currentLocation.car(), currentLocation.cdr());
-                ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                        PlainDate.nowInSystemTime().get(st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
-                                ZoneId.systemDefault().getId()).getPosixTime()),
-                        ZoneId.systemDefault());
-                ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
-                        PlainDate.nowInSystemTime().get(st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
-                                ZoneId.systemDefault().getId()).getPosixTime()),
-                        ZoneId.systemDefault());
-                Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
-                currentSs = current = Pairs.cons(sunrise, sunset);
-                synchronized (listeners) {
-                    listeners.forEach(listener -> listener.accept(current));
+            if (ZonedDateTime.now().getHour() == 0 && ZonedDateTime.now().getMinute() == 0) {
+                Pairs.Pair<Double, Double> currentLocation;
+                if ((currentLocation = location) != null) {
+                    SolarTime st = SolarTime.ofLocation(currentLocation.car(),
+                            currentLocation.cdr());
+                    ZonedDateTime sunrise = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                            PlainDate.nowInSystemTime().get(
+                                    st.sunrise(Twilight.ASTRONOMICAL)).inZonalView(
+                                    ZoneId.systemDefault().getId()).getPosixTime()),
+                            ZoneId.systemDefault());
+                    ZonedDateTime sunset = ZonedDateTime.ofInstant(Instant.ofEpochSecond(
+                            PlainDate.nowInSystemTime().get(
+                                    st.sunset(Twilight.ASTRONOMICAL)).inZonalView(
+                                    ZoneId.systemDefault().getId()).getPosixTime()),
+                            ZoneId.systemDefault());
+                    Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
+                    currentSs = current = Pairs.cons(sunrise, sunset);
+                    synchronized (listeners) {
+                        listeners.forEach(listener -> listener.accept(current));
+                    }
                 }
             }
             return Unit.INSTANCE;
