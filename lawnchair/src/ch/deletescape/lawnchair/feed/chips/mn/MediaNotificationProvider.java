@@ -20,12 +20,18 @@
 
 package ch.deletescape.lawnchair.feed.chips.mn;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.AnimatedVectorDrawable;
 
 import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.function.Consumer;
 
@@ -47,12 +53,24 @@ public class MediaNotificationProvider extends ChipProvider {
             @Override
             public void bindVoodo(ChipItemBridge bridge) {
                 bridge.setOnClickListener(v -> mediaListener.toggle());
+                AnimatedVectorDrawable drawable = (AnimatedVectorDrawable)
+                        Objects.requireNonNull(context.getDrawable(R.drawable.play_pause)).mutate();
+                bridge.setIcon(drawable);
                 OMCMediaListener.MediaNotificationController currentState;
                 if ((currentState = mediaListener.getTracking()) != null) {
                     if (currentState.isPlaying()) {
-                        bridge.setIcon(context.getDrawable(R.drawable.ic_pause_black_24dp));
+                        drawable.start();
                     } else {
-                        bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                        if (Utilities.HIDDEN_APIS_ALLOWED) {
+                            try {
+                                @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                                Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                        "reverse");
+                                method.invoke(drawable);
+                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                     if (currentState.getInfo().getTitle() != null) {
                         bridge.setTitle(currentState.getInfo().getTitle().toString());
@@ -60,15 +78,33 @@ public class MediaNotificationProvider extends ChipProvider {
                         bridge.setTitle("");
                     }
                 } else {
-                    bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                    if (Utilities.HIDDEN_APIS_ALLOWED) {
+                        try {
+                            @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                            Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                    "reverse");
+                            method.invoke(drawable);
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     bridge.setTitle(context.getString(R.string.title_nothings_playing));
                 }
                 onMediaNotifChange.add(tracking -> {
                     if (tracking != null) {
                         if (tracking.isPlaying()) {
-                            bridge.setIcon(context.getDrawable(R.drawable.ic_pause_black_24dp));
+                            drawable.start();
                         } else {
-                            bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                            if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                try {
+                                    @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                            "reverse");
+                                    method.invoke(drawable);
+                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                         if (tracking.getInfo().getTitle() != null) {
                             bridge.setTitle(tracking.getInfo().getTitle().toString());
@@ -76,7 +112,16 @@ public class MediaNotificationProvider extends ChipProvider {
                             bridge.setTitle("");
                         }
                     } else {
-                        bridge.setIcon(context.getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                        if (Utilities.HIDDEN_APIS_ALLOWED) {
+                            try {
+                                @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                                Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                        "reverse");
+                                method.invoke(drawable);
+                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+                        }
                         bridge.setTitle(context.getString(R.string.title_nothings_playing));
                     }
                 });
