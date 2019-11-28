@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.chips.calendar
 
+import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -44,15 +45,16 @@ import java.util.*
 import java.util.function.Consumer
 
 class UpcomingEventsProvider(val context: Context) : ChipProvider() {
+    @SuppressLint("Recycle")
     override fun getItems(context: Context):
-            List<ChipProvider.Item> {
-        val chips = mutableListOf<ChipProvider.Item>()
+            List<Item> {
+        val chips = mutableListOf<Item>()
         val currentTime = GregorianCalendar()
         val endTime = GregorianCalendar().apply {
             add(Calendar.DAY_OF_MONTH, context.lawnchairPrefs.feedCalendarEventThreshold)
         }
         val query =
-                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
+                "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.timeInMillis + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.timeInMillis + " ))"
         try {
             val eventCursor: Cursor = context.contentResolver
                     .query(CalendarContract.Events.CONTENT_URI,
@@ -73,22 +75,18 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                 eventEndTime.timeInMillis = eventCursor.getLong(2)
                 val text: String
                 val diff = startTime.timeInMillis - currentTime.timeInMillis
-                val diffSeconds = diff / 1000
                 val diffMinutes = diff / (60 * 1000)
                 val diffHours = diff / (60 * 60 * 1000)
                 val diffDays = diff / (24 * 60 * 60 * 1000)
-                if (diffDays > 20) {
-                    text = IcuDateTextView.getDateFormat(context, true, null, false)
+                when {
+                    diffDays > 20 -> text = IcuDateTextView.getDateFormat(context, true, null, false)
                             .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
-                } else if (diffDays >= 1) {
-                    text = if (diffDays < 1 || diffDays > 1) context.getString(
+                    diffDays >= 1 -> text = if (diffDays < 1 || diffDays > 1) context.getString(
                             R.string.title_text_calendar_feed_provider_in_d_days,
                             diffDays) else context.getString(R.string.tomorrow)
-                } else if (diffHours > 4) {
-                    text = context
+                    diffHours > 4 -> text = context
                             .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                } else {
-                    text = if (diffMinutes <= 0) context.getString(
+                    else -> text = if (diffMinutes <= 0) context.getString(
                             R.string.reusable_str_now) else context.getString(
                             if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
                             diffMinutes)
@@ -107,7 +105,7 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                 val address = eventCursor.getString(6)
                 intent.flags = intent.flags or Intent.FLAG_ACTIVITY_NEW_TASK
                 if (address?.trim()?.isEmpty() == false) {
-                    intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"));
+                    intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$address"))
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 chips += Item().apply {
