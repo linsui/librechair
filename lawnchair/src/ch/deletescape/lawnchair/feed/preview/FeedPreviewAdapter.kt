@@ -43,7 +43,7 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
             context.getString(R.string.title_card_feed_preview_header), { v, _ -> View(context) },
             Card.TEXT_ONLY, "nosort,top"),
             Card(R.drawable.ic_information.fromDrawableRes(context).tint(
-                    FeedAdapter.getOverrideColor(context)),
+                    getOverrideColor(context)),
                     context.getString(R.string.title_card_feed_preview_header),
                     { v, _ ->
                         TextView(v.context).apply {

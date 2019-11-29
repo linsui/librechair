@@ -35,6 +35,6 @@ class SeekbarPreference(context: Context, attrs: AttributeSet?) :
 
     override fun getPersistedFloat(defaultReturnValue: Float): Float {
         return SimplePersistence.InstanceHolder
-                .getInstance(context).get(key, defaultReturnValue.toString()).toFloat();
+                .getInstance(context).get(key, defaultReturnValue.toString()).toFloat()
     }
 }
