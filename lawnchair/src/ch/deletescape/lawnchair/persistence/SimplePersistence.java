@@ -28,19 +28,34 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.persistence.db.StringDatabase;
 
 public class SimplePersistence {
 
     private final AtomicReference<Context> context = new AtomicReference<>();
+    private final HashMap<String, String> cache = new HashMap<>();
+
 
     private SimplePersistence(Context context) {
         this.context.set(context);
     }
 
     public String get(String key, String defaultValue) {
+        if (cache.get(key) != null && !InvalidationTracker.isInvalidated(key)) {
+            return cache.get(key);
+        } else {
+            String result = getInternal(key, defaultValue);
+            InvalidationTracker.validate(key);
+            cache.put(key, result);
+            return result;
+        }
+    }
+
+    private String getInternal(String key, String defaultValue) {
         String query;
         if ((query = StringDatabase.getInstance(context.get()).dao().getSafe(key)) != null) {
             return query;
@@ -67,6 +82,7 @@ public class SimplePersistence {
     }
 
     public synchronized void put(String key, String value) {
+        FeedUtil.runOnMainThread(() -> InvalidationTracker.invalidate(key, context.get()));
         StringDatabase.getInstance(context.get()).dao().put(key, value);
     }
 

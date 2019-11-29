@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.feed.getFeedController
 import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
+import ch.deletescape.lawnchair.persistence.InvalidationTracker
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
@@ -142,6 +143,7 @@ open class LawnchairApp : Application() {
         DynamicProviderController.attachContext(this)
         ChipStyleRegistry.populateWithContext(this)
         CardStyleRegistry.populateWithContext(this)
+        InvalidationTracker.attachToContext(this)
     }
 
     fun onLauncherAppStateCreated() {
