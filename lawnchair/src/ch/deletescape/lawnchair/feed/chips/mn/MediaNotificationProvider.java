@@ -42,6 +42,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipItemBridge;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.notifications.OMCMediaListener;
 
+@SuppressWarnings("ConstantConditions")
 public class MediaNotificationProvider extends ChipProvider {
     private final Context context;
     private final List<Consumer<OMCMediaListener.MediaNotificationController>> onMediaNotifChange = new Vector<>();
@@ -50,8 +51,15 @@ public class MediaNotificationProvider extends ChipProvider {
 
     public MediaNotificationProvider(Context context) {
         this.context = context;
-        this.mediaListener = new OMCMediaListener(context,
-                () -> onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking())));
+        this.mediaListener = new OMCMediaListener(context, () -> {
+            synchronized (onMediaNotifChange) {
+                for (int i = 0; i < onMediaNotifChange.size(); ++i) {
+                    if (i < onMediaNotifChange.size()) {
+                        onMediaNotifChange.get(i).accept(mediaListener.getTracking());
+                    }
+                }
+            }
+        });
         this.item = new Item() {
             @Override
             public void bindVoodo(ChipItemBridge bridge) {
@@ -94,10 +102,28 @@ public class MediaNotificationProvider extends ChipProvider {
                     bridge.setTitle(context.getString(R.string.title_nothings_playing));
                 }
                 Consumer<OMCMediaListener.MediaNotificationController> tc;
-                onMediaNotifChange.add((tc = (tracking -> {
-                    if (tracking != null) {
-                        if (tracking.isPlaying()) {
-                            drawable.start();
+                synchronized (onMediaNotifChange) {
+                    onMediaNotifChange.add((tc = (tracking -> {
+                        if (tracking != null) {
+                            if (tracking.isPlaying()) {
+                                drawable.start();
+                            } else {
+                                if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                    try {
+                                        @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                                        Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                                "reverse");
+                                        method.invoke(drawable);
+                                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                            if (tracking.getInfo().getTitle() != null) {
+                                bridge.setTitle(tracking.getInfo().getTitle().toString());
+                            } else {
+                                bridge.setTitle(context.getString(R.string.title_chip_no_title));
+                            }
                         } else {
                             if (Utilities.HIDDEN_APIS_ALLOWED) {
                                 try {
@@ -109,41 +135,31 @@ public class MediaNotificationProvider extends ChipProvider {
                                     e.printStackTrace();
                                 }
                             }
+                            bridge.setTitle(context.getString(R.string.title_nothings_playing));
                         }
-                        if (tracking.getInfo().getTitle() != null) {
-                            bridge.setTitle(tracking.getInfo().getTitle().toString());
-                        } else {
-                            bridge.setTitle(context.getString(R.string.title_chip_no_title));
+                    })));
+                    bridge.onDetach = () -> {
+                        synchronized (onMediaNotifChange) {
+                            onMediaNotifChange.remove(tc);
                         }
-                    } else {
-                        if (Utilities.HIDDEN_APIS_ALLOWED) {
-                            try {
-                                @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
-                                Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
-                                        "reverse");
-                                method.invoke(drawable);
-                            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        bridge.setTitle(context.getString(R.string.title_nothings_playing));
-                    }
-                })));
-                bridge.onDetach = () -> onMediaNotifChange.remove(tc);
-                bridge.setGestureDetector(new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public void onLongPress(MotionEvent e) {
-                        if (e.getX() <
-                                LawnchairUtilsKt
-                                        .getPositionOnScreen(bridge.getView())
-                                        .getFirst() +
-                                        (float) bridge.getView().getMeasuredWidth() / 2) {
-                            mediaListener.previous();
-                        } else {
-                            mediaListener.next();
-                        }
-                    }
-                }));
+                    };
+                    bridge.setGestureDetector(
+                            new GestureDetector(context,
+                                    new GestureDetector.SimpleOnGestureListener() {
+                                        @Override
+                                        public void onLongPress(MotionEvent e) {
+                                            if (e.getX() <
+                                                    LawnchairUtilsKt
+                                                            .getPositionOnScreen(bridge.getView())
+                                                            .getFirst() +
+                                                            (float) bridge.getView().getMeasuredWidth() / 2) {
+                                                mediaListener.previous();
+                                            } else {
+                                                mediaListener.next();
+                                            }
+                                        }
+                                    }));
+                }
             }
         };
         this.item.title = context.getString(R.string.title_err_chip_unsupported);
