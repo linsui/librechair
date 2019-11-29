@@ -233,7 +233,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         @Override
         public void setGestureDetector(GestureDetector gd) {
             vh.itemView
-              .setOnTouchListener((v, mv) -> gd.onGenericMotionEvent(mv));
+              .setOnTouchListener((v, mv) -> gd.onTouchEvent(mv));
+            vh.itemView
+                    .setOnGenericMotionListener((v, mv) -> gd.onGenericMotionEvent(mv));
         }
 
         @Override
