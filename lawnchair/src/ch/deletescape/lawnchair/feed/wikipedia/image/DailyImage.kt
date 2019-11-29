@@ -23,7 +23,8 @@ package ch.deletescape.lawnchair.feed.wikipedia.image
 import ch.deletescape.lawnchair.feed.FeedScope
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import kotlinx.coroutines.async
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.withContext
 import org.apache.commons.io.IOUtils
 import java.io.IOException
 import java.net.URL
@@ -38,13 +39,16 @@ object DailyImage {
                 Calendar.YEAR)}/${"%02d".format(GregorianCalendar().get(
                 Calendar.MONTH) + 1)}/${GregorianCalendar().get(Calendar.DAY_OF_MONTH)}"
 
+    @ObsoleteCoroutinesApi
     suspend fun getFeaturedImage(): String? = uriCache[TimeUnit.MILLISECONDS.toDays(
-            System.currentTimeMillis())] ?: FeedScope.async {
-        JsonParser().parse(IOUtils.toString(URL(API_URL).openStream(), Charset.defaultCharset()))
+            System.currentTimeMillis())] ?: withContext(FeedScope.coroutineContext) {
+        JsonParser().parse(
+                IOUtils.toString(URL(API_URL).openStream(), Charset.defaultCharset()))
                 .asJsonObject.getAsJsonObject(
                 "image")?.getAsJsonObject("image")?.getAsJsonPrimitive("source")?.asString
-    }.await().also { uriCache[TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())] = it }
+    }.also { uriCache[TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())] = it }
 
+    @ObsoleteCoroutinesApi
     suspend fun safeGetFeaturedImage(): String? {
         try {
             return getFeaturedImage()

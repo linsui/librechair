@@ -26,6 +26,7 @@ import android.graphics.BitmapFactory
 import android.os.SystemClock
 import ch.deletescape.lawnchair.feed.wikipedia.image.DailyImage
 import ch.deletescape.lawnchair.mainHandler
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -39,6 +40,7 @@ class WikipediaFeaturedImageProvider(val context: Context) : ImageProvider {
         get() = File(context.cacheDir,
                 "wp_daily_cache_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}.png")
 
+    @ObsoleteCoroutinesApi
     override suspend fun getBitmap(context: Context): Bitmap? = try {
         if (cache.exists().not()) BitmapFactory.decodeStream(
                 URL(DailyImage.safeGetFeaturedImage()).openStream()).also {
