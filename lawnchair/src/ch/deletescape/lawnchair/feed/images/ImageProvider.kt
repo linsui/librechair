@@ -29,7 +29,7 @@ import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.cam.CameraScreen
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.fromStringRes
-import ch.deletescape.lawnchair.getPostionOnScreen
+import ch.deletescape.lawnchair.getPositionOnScreen
 import ch.deletescape.lawnchair.tint
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -84,8 +84,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                             }
                         }
                     }.display(this@ImageProvider,
-                            it.getPostionOnScreen().first + it.measuredWidth / 2,
-                            it.getPostionOnScreen().second + it.measuredHeight / 2, it)
+                            it.getPositionOnScreen().first + it.measuredWidth / 2,
+                            it.getPositionOnScreen().second + it.measuredHeight / 2, it)
                 }
             })
 

@@ -109,9 +109,9 @@ public class ArticleViewerScreen extends ProviderScreen {
                             WebViewScreen screen = WebViewScreen.obtain(ArticleViewerScreen.this,
                                     url);
                             screen.display(ArticleViewerScreen.this,
-                                    StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(
+                                    StrictMath.round(LawnchairUtilsKt.getPositionOnScreen(
                                             openInBrowser).getFirst() + e.getX()),
-                                    StrictMath.round(LawnchairUtilsKt.getPostionOnScreen(
+                                    StrictMath.round(LawnchairUtilsKt.getPositionOnScreen(
                                             openInBrowser).getSecond() + e.getY()));
                         } catch (IllegalStateException e2) {
                             Utilities.openURLinBrowser(ArticleViewerScreen.this, url);

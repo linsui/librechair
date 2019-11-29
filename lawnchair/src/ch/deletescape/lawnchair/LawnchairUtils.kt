@@ -1047,13 +1047,13 @@ fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, 
                                     MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon, GeoPoint(ch.deletescape.lawnchair.location.LocationManager.location!!.first,
                                             ch.deletescape.lawnchair.location.LocationManager.location!!.second), GeoPoint(lat, lon))
                                             .display(provider,
-                                                    v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
-                                                    v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                                    v.maps_more_btn.getPositionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPositionOnScreen().second + e.y.roundToInt())
                                 } else {
                                     MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon)
                                             .display(provider,
-                                                    v.maps_more_btn.getPostionOnScreen().first + e.x.roundToInt(),
-                                                    v.maps_more_btn.getPostionOnScreen().second + e.y.roundToInt())
+                                                    v.maps_more_btn.getPositionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPositionOnScreen().second + e.y.roundToInt())
                                 }
                                 return true;
                             }
@@ -1257,7 +1257,7 @@ fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float): Bitmap
 fun Bitmap?.toDrawable(c: Context? = null) = if (this == null) null else if (c == null) BitmapDrawable(this) else BitmapDrawable(
         c.resources, this)
 
-fun View.getPostionOnScreen(): Pair<Int, Int> {
+fun View.getPositionOnScreen(): Pair<Int, Int> {
     val array = intArrayOf(0, 0)
     getLocationOnScreen(array)
     return array[0] to array[1]

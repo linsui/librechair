@@ -23,6 +23,8 @@ package ch.deletescape.lawnchair.feed.chips.mn;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -35,6 +37,7 @@ import java.util.Objects;
 import java.util.Vector;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipItemBridge;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.notifications.OMCMediaListener;
@@ -127,6 +130,20 @@ public class MediaNotificationProvider extends ChipProvider {
                     }
                 })));
                 bridge.onDetach = () -> onMediaNotifChange.remove(tc);
+                bridge.setGestureDetector(new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public void onLongPress(MotionEvent e) {
+                        if (e.getX() <
+                                LawnchairUtilsKt
+                                        .getPositionOnScreen(bridge.getView())
+                                        .getFirst() +
+                                        (float) bridge.getView().getMeasuredWidth() / 2) {
+                            mediaListener.previous();
+                        } else {
+                            mediaListener.next();
+                        }
+                    }
+                }));
             }
         };
         this.item.title = context.getString(R.string.title_err_chip_unsupported);

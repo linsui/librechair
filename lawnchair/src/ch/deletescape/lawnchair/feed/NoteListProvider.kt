@@ -70,8 +70,8 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
                 (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
                     setOnClickListener {
                         NoteProviderScreen(context).display(this@NoteListProvider,
-                                it.getPostionOnScreen().first,
-                                it.getPostionOnScreen().second)
+                                it.getPositionOnScreen().first,
+                                it.getPositionOnScreen().second)
                     }
                 }
             }, Card.RAISE or Card.NO_HEADER, "nosort, top",

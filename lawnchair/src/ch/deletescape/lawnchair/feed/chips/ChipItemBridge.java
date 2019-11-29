@@ -21,17 +21,18 @@
 package ch.deletescape.lawnchair.feed.chips;
 
 import android.graphics.drawable.Drawable;
+import android.view.GestureDetector;
 import android.view.View;
 
 import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ChipItemBridge {
-    private final Voodo vh;
+    private final ItemBridgeBackend vh;
     private final UUID bindId;
     public Runnable onDetach;
 
-    ChipItemBridge(Voodo vh, UUID bindId) {
+    ChipItemBridge(ItemBridgeBackend vh, UUID bindId) {
         this.vh = vh;
         this.bindId = bindId;
     }
@@ -60,10 +61,24 @@ public class ChipItemBridge {
         }
     }
 
-    public interface Voodo {
+    public void setGestureDetector(GestureDetector gd) {
+        if (vh.getUUID().equals(bindId)) {
+            vh.setGestureDetector(gd);
+        } else if (onDetach != null) {
+            onDetach.run();
+        }
+    }
+
+    public View getView() {
+        return vh.getView();
+    }
+
+    public interface ItemBridgeBackend {
         UUID getUUID();
         void setOnClickListener(View.OnClickListener vocl);
         void setIcon(Drawable icns);
         void setTitle(String title);
+        void setGestureDetector(GestureDetector gd);
+        View getView();
     }
 }

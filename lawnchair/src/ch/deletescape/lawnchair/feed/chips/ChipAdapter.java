@@ -27,6 +27,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
+import android.view.GestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -178,7 +179,7 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         } else {
             chipViewHolder.itemView.setOnClickListener(null);
         }
-        item.bindVoodo(new ChipItemBridge(new ViewHolderVoodo(chipViewHolder, ColorEngine.getInstance(context)
+        item.bindVoodo(new ChipItemBridge(new ViewHolderBackend(chipViewHolder, ColorEngine.getInstance(context)
                                                                                              .getResolverCache(ColorEngine.Resolvers.FEED_CHIP)
                                                                                              .getValue()
                                                                                              .computeForegroundColor()), chipViewHolder.bindId));
@@ -202,12 +203,12 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         notifyDataSetChanged();
     }
 
-    private class ViewHolderVoodo implements ChipItemBridge.Voodo {
+    private class ViewHolderBackend implements ChipItemBridge.ItemBridgeBackend {
 
         private ChipViewHolder vh;
         private int icc;
 
-        ViewHolderVoodo(ChipViewHolder vh, int icc) {
+        ViewHolderBackend(ChipViewHolder vh, int icc) {
             this.vh = vh;
             this.icc = icc;
         }
@@ -225,7 +226,19 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
         @Override
         public void setIcon(Drawable icns) {
             vh.itemView.setChipIcon(icns instanceof VectorDrawable ?
-                                        LawnchairUtilsKt.tint(icns, icc) : icns);
+                    LawnchairUtilsKt.tint(icns, icc) : icns);
+        }
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public void setGestureDetector(GestureDetector gd) {
+            vh.itemView
+              .setOnTouchListener((v, mv) -> gd.onGenericMotionEvent(mv));
+        }
+
+        @Override
+        public View getView() {
+            return vh.itemView;
         }
 
         @Override

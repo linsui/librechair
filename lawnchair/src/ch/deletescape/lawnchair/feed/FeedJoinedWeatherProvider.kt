@@ -115,8 +115,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 WebViewScreen.obtain(context,
                                                         url.replace("http://", "https://"))
                                                         .display(this@FeedJoinedWeatherProvider,
-                                                                (currentIcon.getPostionOnScreen().first + e.x).roundToInt(),
-                                                                (currentIcon.getPostionOnScreen().second + e.y).roundToInt())
+                                                                (currentIcon.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (currentIcon.getPositionOnScreen().second + e.y).roundToInt())
                                             } else {
                                                 FeedUtil.openUrl(context, url, currentIcon)
                                             }
@@ -140,8 +140,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 WebViewScreen.obtain(context,
                                                         url.replace("http://", "https://"))
                                                         .display(this@FeedJoinedWeatherProvider,
-                                                                (currentInformation.getPostionOnScreen().first + e.x).roundToInt(),
-                                                                (currentInformation.getPostionOnScreen().second + e.y).roundToInt())
+                                                                (currentInformation.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (currentInformation.getPositionOnScreen().second + e.y).roundToInt())
                                             } else {
                                                 FeedUtil.openUrl(context, url, currentInformation)
                                             }
@@ -164,8 +164,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 WebViewScreen.obtain(context,
                                                         url.replace("http://", "https://"))
                                                         .display(this@FeedJoinedWeatherProvider,
-                                                                (highLow.getPostionOnScreen().first + e.x).roundToInt(),
-                                                                (highLow.getPostionOnScreen().second + e.y).roundToInt())
+                                                                (highLow.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (highLow.getPositionOnScreen().second + e.y).roundToInt())
                                             } else {
                                                 FeedUtil.openUrl(context, url, highLow)
                                             }
@@ -188,8 +188,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                 WebViewScreen.obtain(context,
                                                         url.replace("http://", "https://"))
                                                         .display(this@FeedJoinedWeatherProvider,
-                                                                (information.getPostionOnScreen().first + e.x).roundToInt(),
-                                                                (information.getPostionOnScreen().second + e.y).roundToInt())
+                                                                (information.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (information.getPositionOnScreen().second + e.y).roundToInt())
                                             } else {
                                                 FeedUtil.openUrl(context, url, information)
                                             }

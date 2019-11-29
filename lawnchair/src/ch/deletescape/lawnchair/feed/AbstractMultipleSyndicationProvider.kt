@@ -124,9 +124,9 @@ abstract class AbstractMultipleSyndicationProvider(c: Context): FeedProvider(c) 
                                                 entry.link,
                                                 if (entry.description != null) entry.description.value else "")
                                                 .display(this@AbstractMultipleSyndicationProvider,
-                                                        readMore.getPostionOnScreen().first + Math.round(
+                                                        readMore.getPositionOnScreen().first + Math.round(
                                                                 e.getX()),
-                                                        (((readMore).getPostionOnScreen().second + Math.round(
+                                                        (((readMore).getPositionOnScreen().second + Math.round(
                                                                 e.getY()))))
                                     } else {
                                         Utilities.openURLinBrowser(context, entry.link)

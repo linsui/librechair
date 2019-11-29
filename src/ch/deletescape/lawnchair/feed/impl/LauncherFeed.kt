@@ -254,7 +254,7 @@ class LauncherFeed(private val originalContext: Context,
                             ({
                                 Utilities.openURLinBrowser(context, readMoreUrl)
                             } as () -> Unit) else null)
-                screen.display(this, it.getPostionOnScreen().first, it.getPostionOnScreen().second)
+                screen.display(this, it.getPositionOnScreen().first, it.getPositionOnScreen().second)
             }
             runOnMainThread {
                 (infobox.parent as View).visibility =

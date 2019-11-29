@@ -74,8 +74,8 @@ public class CurrentLocationChipProvider extends ChipProvider {
                 MapScreen screen = new MapScreen(context, getLauncherFeed(), loc.getFirst(),
                         loc.getSecond(), 12.0);
                 screen.display(getLauncherFeed(),
-                        LawnchairUtilsKt.getPostionOnScreen(v).getFirst() + v.getMeasuredWidth() / 2,
-                        LawnchairUtilsKt.getPostionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2, v);
+                        LawnchairUtilsKt.getPositionOnScreen(v).getFirst() + v.getMeasuredWidth() / 2,
+                        LawnchairUtilsKt.getPositionOnScreen(v).getSecond() + v.getMeasuredHeight() / 2, v);
             };
             return item;
         }).get()) : Collections.EMPTY_LIST;

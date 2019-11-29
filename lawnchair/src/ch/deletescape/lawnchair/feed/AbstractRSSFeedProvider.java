@@ -278,10 +278,10 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                                         entry.url,
                                                         entry.content != null ? entry.content : "")
                                                         .display(AbstractRSSFeedProvider.this,
-                                                                (LawnchairUtilsKt.getPostionOnScreen(
+                                                                (LawnchairUtilsKt.getPositionOnScreen(
                                                                         readMore).getFirst() + Math.round(
                                                                         e.getX())),
-                                                                (LawnchairUtilsKt.getPostionOnScreen(
+                                                                (LawnchairUtilsKt.getPositionOnScreen(
                                                                         readMore).getSecond() + Math.round(
                                                                         e.getY())));
                                             } else {
@@ -340,9 +340,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                     entry.url,
                                     entry.content != null ? entry.content : "")
                                     .display(AbstractRSSFeedProvider.this,
-                                            (LawnchairUtilsKt.getPostionOnScreen(
+                                            (LawnchairUtilsKt.getPositionOnScreen(
                                                     v).getFirst() + v.getMeasuredWidth() / 2),
-                                            (LawnchairUtilsKt.getPostionOnScreen(
+                                            (LawnchairUtilsKt.getPositionOnScreen(
                                                     v).getSecond() + v.getMeasuredHeight() / 2), v);
                         } else {
                             Utilities.openURLinBrowser(getContext(),

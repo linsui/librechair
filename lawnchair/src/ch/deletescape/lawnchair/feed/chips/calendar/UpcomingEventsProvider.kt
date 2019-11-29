@@ -34,7 +34,7 @@ import ch.deletescape.lawnchair.feed.maps.MapScreen
 import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.fromDrawableRes
-import ch.deletescape.lawnchair.getPostionOnScreen
+import ch.deletescape.lawnchair.getPositionOnScreen
 import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
@@ -119,8 +119,8 @@ class UpcomingEventsProvider(val context: Context) : ChipProvider() {
                                     FeedScope.launch(Dispatchers.Main) {
                                         MapScreen(context, launcherFeed, loc.first, loc.second,
                                                 13.0).display(launcherFeed,
-                                                it.getPostionOnScreen().first + it.measuredWidth / 2,
-                                                it.getPostionOnScreen().second + it.measuredHeight / 2, it)
+                                                it.getPositionOnScreen().first + it.measuredWidth / 2,
+                                                it.getPositionOnScreen().second + it.measuredHeight / 2, it)
                                     }
                                 } else {
                                     FeedScope.launch(Dispatchers.Main) {
