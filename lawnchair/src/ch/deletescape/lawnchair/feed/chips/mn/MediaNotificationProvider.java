@@ -25,6 +25,7 @@ import android.content.Context;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
@@ -153,9 +154,19 @@ public class MediaNotificationProvider extends ChipProvider {
                                                             .getPositionOnScreen(bridge.getView())
                                                             .getFirst() +
                                                             (float) bridge.getView().getMeasuredWidth() / 2) {
-                                                mediaListener.previous();
+                                                if (LawnchairUtilsKt.getRtl(
+                                                        (ViewGroup) bridge.getView().getParent())) {
+                                                    mediaListener.next();
+                                                } else {
+                                                    mediaListener.previous();
+                                                }
                                             } else {
-                                                mediaListener.next();
+                                                if (!LawnchairUtilsKt.getRtl(
+                                                        (ViewGroup) bridge.getView().getParent())) {
+                                                    mediaListener.next();
+                                                } else {
+                                                    mediaListener.previous();
+                                                }
                                             }
                                         }
                                     }) {
