@@ -153,7 +153,7 @@ public class MediaNotificationProvider extends ChipProvider {
                                                     LawnchairUtilsKt
                                                             .getPositionOnScreen(bridge.getView())
                                                             .getFirst() +
-                                                            (float) bridge.getView().getMeasuredWidth() / 2) {
+                                                            ((float) bridge.getView().getMeasuredWidth()) / 2) {
                                                 if (LawnchairUtilsKt.getRtl(
                                                         (ViewGroup) bridge.getView().getParent())) {
                                                     mediaListener.next();
