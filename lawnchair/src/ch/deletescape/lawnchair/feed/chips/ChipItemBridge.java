@@ -70,7 +70,12 @@ public class ChipItemBridge {
     }
 
     public View getView() {
-        return vh.getView();
+        if (vh.getUUID().equals(bindId)) {
+            return vh.getView();
+        } else if (onDetach != null) {
+            onDetach.run();
+        }
+        throw new IllegalStateException("getView called w/o valid vh");
     }
 
     public interface ItemBridgeBackend {
