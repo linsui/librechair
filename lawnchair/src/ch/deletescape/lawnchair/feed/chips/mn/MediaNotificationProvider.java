@@ -158,7 +158,13 @@ public class MediaNotificationProvider extends ChipProvider {
                                                 mediaListener.next();
                                             }
                                         }
-                                    }));
+                                    }) {
+                                @Override
+                                public boolean onTouchEvent(MotionEvent ev) {
+                                    getLauncherFeed().getFeedController().setDisallowInterceptCurrentTouchEvent(true);
+                                    return super.onTouchEvent(ev);
+                                }
+                            });
                 }
             }
         };
