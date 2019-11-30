@@ -86,7 +86,7 @@ class ImageStore private constructor(val context: Context) {
                     val imageStream = contentResolver.openInputStream(data.data!!)
                     try {
                         setResult(Activity.RESULT_OK, Intent().putExtra(IMAGE_UUID,
-                                ImageStore.getInstance(
+                                getInstance(
                                         this@ImageStoreActivity).storeBitmap(
                                         BitmapFactory.decodeStream(
                                                 imageStream)).also {
