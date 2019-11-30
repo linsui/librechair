@@ -39,7 +39,7 @@ public class Contact {
         return Objects.hash(lbcLookupKey);
     }
 
-    public String lbcLookupKey;
+    String lbcLookupKey;
     public Intent intent;
     public String name;
     public String phone;
