@@ -23,6 +23,8 @@ package ch.deletescape.lawnchair.feed.chips.mn;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.AnimatedVectorDrawable;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
@@ -149,6 +151,8 @@ public class MediaNotificationProvider extends ChipProvider {
                                     new GestureDetector.SimpleOnGestureListener() {
                                         @Override
                                         public void onLongPress(MotionEvent e) {
+                                            ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
+                                                    .vibrate(VibrationEffect.createOneShot(100, 5));
                                             if (e.getX() <
                                                     LawnchairUtilsKt
                                                             .getPositionOnScreen(bridge.getView())
