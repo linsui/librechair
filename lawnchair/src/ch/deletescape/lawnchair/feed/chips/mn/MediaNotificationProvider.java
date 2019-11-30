@@ -152,7 +152,7 @@ public class MediaNotificationProvider extends ChipProvider {
                                         @Override
                                         public void onLongPress(MotionEvent e) {
                                             ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
-                                                    .vibrate(VibrationEffect.createOneShot(100, 5));
+                                                    .vibrate(VibrationEffect.createOneShot(100, 255));
                                             if (e.getX() <
                                                     LawnchairUtilsKt
                                                             .getPositionOnScreen(bridge.getView())
