@@ -30,8 +30,8 @@ class JobSchedulerService : JobService() {
     override fun onStartJob(params: JobParameters) = synchronized(JobSchedulerService) {
 
         JobScope.launch {
-            idCallbacks.filter { it.first == params.jobId }.forEach {
-                it.second {
+            idCallbacks.filter { it.first == params.jobId }.forEach { cb ->
+                cb.second {
                     jobFinished(params, it)
                 }
             }
