@@ -23,6 +23,7 @@ package ch.deletescape.lawnchair.feed.images.ng
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.AbstractImageProvider
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +36,7 @@ import java.net.URL
 
 class NgDailyImageProvider(c: Context) : AbstractImageProvider<String>(c) {
     override val images: MutableMap<Bitmap, String> = mutableMapOf()
-    override val headerCard = null
+    override val headerCard = null as List<Card>?
     override val onRemoveListener: (id: String) -> Unit = {}
 
     init {
