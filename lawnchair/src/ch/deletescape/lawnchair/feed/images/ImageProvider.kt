@@ -22,15 +22,12 @@ package ch.deletescape.lawnchair.feed.images
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
 import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.cam.CameraScreen
-import ch.deletescape.lawnchair.fromDrawableRes
-import ch.deletescape.lawnchair.fromStringRes
-import ch.deletescape.lawnchair.getPositionOnScreen
-import ch.deletescape.lawnchair.tint
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.Dispatchers
@@ -54,8 +51,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                                         "normal"))
                     }.invokeOnCompletion { _ ->
                         images += ImageStore.getInstance(context).getBitmap(it) to it
-                        if (feed != null) {
-                            feed.refresh(10, 0, true)
+                        runOnMainThread {
+                            requestRefreshFeed()
                         }
                     }
                 }
