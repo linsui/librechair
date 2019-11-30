@@ -71,12 +71,15 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
 
 
     @Override
-    public Object getBitmap(@NotNull Context context, Continuation<? super Bitmap> o) {
+    public Object getBitmap(@NotNull Context context, @NotNull Continuation<? super Bitmap> o) {
         Log.d(getClass().getName(), "getBitmap: retrieving bitmap");
         if (cache.exists()) {
             Bitmap cachedBitmap =  BitmapFactory.decodeFile(cache.getAbsolutePath());
             if (cachedBitmap == null) {
                 Bitmap map = internalGetBitmap(context);
+                if (map == null) {
+                    return null;
+                }
                 try {
                     map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
                 } catch (FileNotFoundException | NullPointerException e) {
@@ -88,6 +91,9 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
             }
         } else {
             Bitmap map = internalGetBitmap(context);
+            if (map == null) {
+                return null;
+            }
             try {
                 map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
             } catch (FileNotFoundException | NullPointerException e) {
@@ -104,6 +110,8 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
                     .getApi(context)
                     .getPicOfTheDay(1, "js", 0, LawnchairUtilsKt.getLocale(context).getLanguage())
                     .execute();
+            assert response
+                    .body() != null;
             Log.d(getClass().getName(),
                     "internalGetBitmap: retrieved URL " + "https://www.bing.com" + response
                             .body().images[0].url);
