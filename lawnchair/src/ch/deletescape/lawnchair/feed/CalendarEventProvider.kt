@@ -80,7 +80,9 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     events != lastEvents) {
                 FeedScope.launch {
                     if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
-                        feed?.refresh(0)
+                        runOnMainThread {
+                            requestRefreshFeed()
+                        }
                     }
                 }
             }
@@ -110,10 +112,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         events != lastEvents) {
                     FeedScope.launch {
                         if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
-                            feed?.refresh(0)
+                            runOnMainThread {
+                                requestRefreshFeed()
+                            }
                         }
                     }
-
                     ec = true
                 }
             }

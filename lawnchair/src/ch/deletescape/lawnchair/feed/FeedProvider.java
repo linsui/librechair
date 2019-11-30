@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.feed.impl.FeedController;
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
@@ -114,6 +115,16 @@ public abstract class FeedProvider {
 
     public List<Action> getActions(boolean exclusive) {
         return Collections.EMPTY_LIST;
+    }
+
+    protected void requestRefreshFeed() {
+        if (feed != null) {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                feed.refresh(0, 0, true, true);
+            });
+        } else if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @SuppressWarnings("WeakerAccess")
