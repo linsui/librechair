@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.feed.maps.locationsearch;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Pair;
 
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.maps.locationsearch.mapbox.MapboxFactory;
@@ -38,6 +40,7 @@ import retrofit2.Response;
 
 public final class LocationSearchManager {
     private final Context context;
+    @SuppressLint("StaticFieldLeak")
     private static LocationSearchManager sInstance;
 
     public synchronized static LocationSearchManager getInstance(Context context) {
@@ -59,7 +62,8 @@ public final class LocationSearchManager {
                 return new Pair<>(nominatimResponseResponse.body()[0].lat,
                         nominatimResponseResponse.body()[0].lon);
             } else if ((resultResponse = MapboxFactory.getInstance(context).getLocation(
-                    query).execute()).body() != null && resultResponse.isSuccessful() && resultResponse.body().features.length >= 1) {
+                    query).execute()).body() != null && resultResponse.isSuccessful() && Objects.requireNonNull(
+                    resultResponse.body()).features.length >= 1) {
                 return new Pair<>(Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
                         Collectors.toList()).get(0).center[1],
                         Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
