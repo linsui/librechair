@@ -130,7 +130,9 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                             e.printStackTrace() // todo dirty hack
                         }
                     }.invokeOnCompletion {
-                        feed?.refresh(0, 0, true)
+                        runOnMainThread {
+                            requestRefreshFeed()
+                        }
                     }
                 }
             }
