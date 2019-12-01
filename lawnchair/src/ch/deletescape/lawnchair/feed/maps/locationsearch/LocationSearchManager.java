@@ -20,7 +20,6 @@
 
 package ch.deletescape.lawnchair.feed.maps.locationsearch;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Pair;
 
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.maps.locationsearch.mapbox.MapboxFactory;
@@ -39,8 +39,7 @@ import ch.deletescape.lawnchair.nominatim.NominatimResponse;
 import retrofit2.Response;
 
 public final class LocationSearchManager {
-    private final Context context;
-    @SuppressLint("StaticFieldLeak")
+    private final AtomicReference<Context> context = new AtomicReference<>();
     private static LocationSearchManager sInstance;
 
     public synchronized static LocationSearchManager getInstance(Context context) {
@@ -48,7 +47,7 @@ public final class LocationSearchManager {
     }
 
     private LocationSearchManager(Context context) {
-        this.context = context;
+        this.context.set(context);
     }
 
     @Nullable
@@ -56,12 +55,12 @@ public final class LocationSearchManager {
         Response<MapboxResult> resultResponse;
         Response<NominatimResponse[]> nominatimResponseResponse;
         try {
-            if ((nominatimResponseResponse = NominatimFactory.getInstance(context).query(
+            if ((nominatimResponseResponse = NominatimFactory.getInstance(context.get()).query(
                     query).execute()).isSuccessful() && nominatimResponseResponse.body() != null && nominatimResponseResponse.body()
                     .length > 0) {
                 return new Pair<>(nominatimResponseResponse.body()[0].lat,
                         nominatimResponseResponse.body()[0].lon);
-            } else if ((resultResponse = MapboxFactory.getInstance(context).getLocation(
+            } else if ((resultResponse = MapboxFactory.getInstance(context.get()).getLocation(
                     query).execute()).body() != null && resultResponse.isSuccessful() && Objects.requireNonNull(
                     resultResponse.body()).features.length >= 1) {
                 return new Pair<>(Arrays.stream(resultResponse.body().features).sorted(Comparator.comparingDouble(it -> it.relevance)).collect(
