@@ -41,8 +41,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
         View(context)
     }, Card.RAISE or Card.TEXT_ONLY, "nosort, top",
             "manageNotes".hashCode()).apply {
-        globalClickListener = {
-            OverlayCallbacks.postImageRequest(context, it) {
+        globalClickListener = { v ->
+            OverlayCallbacks.postImageRequest(context, v) {
                 if (it != null) {
                     FeedScope.launch(Dispatchers.IO) {
                         ImageDatabase.getInstance(
@@ -64,8 +64,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                     context.getString(R.string.title_card_take_image), { _, _ -> View(context) },
                     Card.RAISE or Card.TEXT_ONLY, "nosort, top",
                     "manageNotes".hashCode()).apply {
-                globalClickListener = {
-                    CameraScreen(it.context) {
+                globalClickListener = { v ->
+                    CameraScreen(v.context) {
                         if (it != null) {
                             FeedScope.launch(Dispatchers.IO) {
                                 val id = ImageStore.getInstance(context)
@@ -81,8 +81,8 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                             }
                         }
                     }.display(this@ImageProvider,
-                            it.getPositionOnScreen().first + it.measuredWidth / 2,
-                            it.getPositionOnScreen().second + it.measuredHeight / 2, it)
+                            v.getPositionOnScreen().first + v.measuredWidth / 2,
+                            v.getPositionOnScreen().second + v.measuredHeight / 2, v)
                 }
             })
 
