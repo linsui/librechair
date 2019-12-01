@@ -42,7 +42,6 @@ public class NPRFeedProvider extends AbstractRSSFeedProvider {
         tokenCallback.accept(getId());
     }
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected void bindFeed(BindCallback callback, String token) {
         FeedUtil.download("https://www.npr.org/rss/rss.php", getContext(), is -> {
