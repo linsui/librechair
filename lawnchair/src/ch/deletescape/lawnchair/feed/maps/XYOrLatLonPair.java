@@ -27,11 +27,11 @@ public class XYOrLatLonPair {
     private double latitude;
     private double longitude;
     
-    public XYOrLatLonPair(double lat, double lon){
+    XYOrLatLonPair(double lat, double lon){
         this.latitude = lat;
         this.longitude = lon;
     }
-    public XYOrLatLonPair(XYOrLatLonPair pCoodinates) {
+    XYOrLatLonPair(XYOrLatLonPair pCoodinates) {
         this.latitude = pCoodinates.getLatOrY();
         this.longitude = pCoodinates.getLonOrX();
     }
@@ -55,7 +55,7 @@ public class XYOrLatLonPair {
         this.longitude = lon;
     }
     
-    public XYOrLatLonPair substract(XYOrLatLonPair pCoordinates){
+    XYOrLatLonPair substract(XYOrLatLonPair pCoordinates){
         double lat = this.latitude - pCoordinates.getLatOrY();
         double lon = this.longitude - pCoordinates.getLonOrX();
         return new XYOrLatLonPair(lat, lon);
