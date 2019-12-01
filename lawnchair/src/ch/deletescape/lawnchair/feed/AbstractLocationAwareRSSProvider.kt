@@ -33,7 +33,7 @@ import java.util.*
 import java.util.function.Consumer
 
 abstract class AbstractLocationAwareRSSProvider(c: Context) : AbstractRSSFeedProvider(c) {
-    var callbackAdded: Boolean = false
+    private var callbackAdded: Boolean = false
 
     @SuppressLint("MissingPermission")
     final override fun bindFeed(callback: BindCallback, token: String) {
