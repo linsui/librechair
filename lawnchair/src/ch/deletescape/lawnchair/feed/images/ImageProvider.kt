@@ -76,7 +76,7 @@ class ImageProvider(c: Context) : AbstractImageProvider<String>(c) {
                                                 "normal"))
                                 images += ImageStore.getInstance(context).getBitmap(id) to id
                                 if (feed != null) {
-                                    feed.refresh(10, 0, true)
+                                    runOnMainThread { requestRefreshFeed() }
                                 }
                             }
                         }

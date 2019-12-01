@@ -103,7 +103,7 @@ class I18nDtClocksProvider(c: Context) : FeedProvider(c) {
                         .setAction(R.string.undo.fromStringRes(context)) {
                             context.feedPrefs.clockTimeZones.clear()
                             context.feedPrefs.clockTimeZones.addAll(backup)
-                            feed?.refresh(0)
+                            requestRefreshFeed()
                         }
                         .setBackgroundTint(context.colorEngine.getResolverCache(
                                 ColorEngine.Resolvers.FEED_CARD).value.resolveColor())
