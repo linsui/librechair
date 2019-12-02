@@ -30,9 +30,10 @@ import ch.deletescape.lawnchair.feed.SortingAlgorithm;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
 public class NormalSortHelper implements SortingAlgorithm<ChipProvider.Item> {
+    @SafeVarargs
     @NotNull
     @Override
-    public List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
+    public final List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
         return Arrays.stream(ts).flatMap(List::stream).collect(Collectors.toList());
     }
 }
