@@ -6,7 +6,7 @@ You can download directly from CI / CD or [join the Telegram releases channel](h
   The original project Lawnchair can be found [here](https://github.com/LawnchairLauncher/Lawnchair)^Warning: ^LibreJS ^Incompatible.
   This project is a fork of Lawnchair that aims to remove non-free (proprietary) blobs from Lawnchair, and make it completely free (libre) software.
   Apart from features that require non-free blobs (Sesame) and features that require interfacing with non-free software (Google Feed),
-  Librechair aims to track upstream Lawnchair. What this means is that new Lawnchair features will eventually show up in Lawnchair, sans those
+  Librechair aims to track upstream Lawnchair. What this means is that new Lawnchair features will eventually show up in Librechair, sans those
   that require non-free blobs.
 
 ## Librechair is not yet complete
