@@ -1181,11 +1181,11 @@ class LauncherFeed(private val originalContext: Context,
                     val (height, width) = measuredHeight to measuredWidth
                     viewTreeObserver.removeOnPreDrawListener(this)
                     val radius = hypot(height.toDouble(), width.toDouble())
-                    if (x != null && y != null) {
+                    if ((x != null && y != null) || clipBounds != null) {
                         val animator: Animator
                         if (clipBounds == null) {
                             animator = ViewAnimationUtils
-                                    .createCircularReveal(this@apply, x.toInt(), y.toInt(), 0f,
+                                    .createCircularReveal(this@apply, x!!.toInt(), y!!.toInt(), 0f,
                                             radius.toFloat())
                         } else {
                             val endRect = Rect(getX().roundToInt(), getY().roundToInt(),
