@@ -31,11 +31,12 @@ import ch.deletescape.lawnchair.feed.SortingAlgorithm;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 
 public class MixerSortHelper implements SortingAlgorithm<ChipProvider.Item> {
+    @SafeVarargs
     @NotNull
     @Override
-    public List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
-        if (ts.length == 0 || Arrays.stream(ts).allMatch(it -> it.isEmpty())) {
-            return Collections.EMPTY_LIST;
+    public final List<ChipProvider.Item> sort(@NotNull List<? extends ChipProvider.Item>... ts) {
+        if (ts.length == 0 || Arrays.stream(ts).allMatch(List::isEmpty)) {
+            return Collections.emptyList();
         }
         List<ChipProvider.Item> results = new ArrayList<>();
 
