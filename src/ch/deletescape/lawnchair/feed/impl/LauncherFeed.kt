@@ -1247,11 +1247,11 @@ class LauncherFeed(private val originalContext: Context,
         v.apply {
             val (height, width) = measuredHeight to measuredWidth
             val radius = hypot(height.toDouble(), width.toDouble())
-            if (x != null && y != null) {
+            if (x != null && y != null || (clipBounds != null)) {
                 val animator: Animator
                 if (clipBounds == null) {
                     animator = ViewAnimationUtils
-                            .createCircularReveal(this@apply, x.toInt(), y.toInt(),
+                            .createCircularReveal(this@apply, x!!.toInt(), y!!.toInt(),
                                     radius.toFloat(), 0f)
                 } else {
                     val startRect = Rect()
