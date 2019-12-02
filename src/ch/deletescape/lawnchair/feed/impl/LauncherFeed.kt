@@ -92,8 +92,6 @@ import kotlin.reflect.full.declaredMembers
 import kotlin.reflect.jvm.isAccessible
 
 
-// todo kt-utils.el warning sweep
-//     * nothing was done
 @Suppress("NestedLambdaShadowedImplicitParameter")
 class LauncherFeed(private val originalContext: Context,
                    backgroundSetupListener: ((backgroundCallback: (bkg: Bitmap) -> Unit) -> Unit)? = null) :
@@ -706,7 +704,7 @@ class LauncherFeed(private val originalContext: Context,
                                 (tabView.getChildAt(0) as ViewGroup).childs.forEach {
                                     val textView = it::class.java.getDeclaredField(
                                             "textView").also { it.isAccessible = true }.get(it)
-                                            as? TextView // TODO figure out Kotlin reflection is being so slow
+                                            as? TextView
                                     if (textView != null) {
                                         CustomFontManager.getInstance(context)
                                                 .loadFont(CustomFontManager.FONT_FEED_TITLES,
