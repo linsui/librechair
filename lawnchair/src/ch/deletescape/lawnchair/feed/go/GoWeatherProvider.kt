@@ -90,12 +90,12 @@ class GoWeatherProvider(context: Context) : GoCardFactory(context),
                                         if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
                                         parent,
                                         false).apply {
-                                    val temperature = findViewById(
-                                            R.id.forecast_current_temperature) as TextView
-                                    val time = findViewById(
-                                            R.id.forecast_current_time) as TextView
-                                    val icon = findViewById(
-                                            R.id.forecast_weather_icon) as ImageView
+                                    val temperature = findViewById<TextView>(
+                                            R.id.forecast_current_temperature)
+                                    val time = findViewById<TextView>(
+                                            R.id.forecast_current_time)
+                                    val icon = findViewById<ImageView>(
+                                            R.id.forecast_weather_icon)
 
                                     viewTreeObserver.addOnGlobalLayoutListener {
                                         if (context.lawnchairPrefs.showVerticalHourlyForecast) {
@@ -137,14 +137,13 @@ class GoWeatherProvider(context: Context) : GoCardFactory(context),
                                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                                     ViewGroup.LayoutParams.WRAP_CONTENT)
                                         }
-                                        true
                                     }
-                                    val temperature = findViewById(
-                                            R.id.forecast_current_temperature) as TextView
-                                    val time = findViewById(
-                                            R.id.forecast_current_time) as TextView
-                                    val icon = findViewById(
-                                            R.id.forecast_weather_icon) as ImageView
+                                    val temperature = findViewById<TextView>(
+                                            R.id.forecast_current_temperature)
+                                    val time = findViewById<TextView>(
+                                            R.id.forecast_current_time)
+                                    val icon = findViewById<ImageView>(
+                                            R.id.forecast_weather_icon)
 
                                     icon.setImageBitmap(it.icon)
                                     val zonedDateTime = ZonedDateTime
