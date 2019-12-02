@@ -21,6 +21,7 @@
 package ch.deletescape.lawnchair.feed.chips.weather;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 
 import com.android.launcher3.Utilities;
@@ -39,7 +40,9 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
 import kotlin.Unit;
 
@@ -70,6 +73,18 @@ public class ForecastChipProvider extends ChipProvider {
                                             it.getDate().getTime()),
                                             ZoneId.of("UTC")).withZoneSameInstant(
                                             TimeZone.getDefault().toZoneId()), context));
+                    item.viewClickListener = v -> {
+                        if (!FeedPersistence.Companion.getInstance(
+                                context).getDirectlyOpenLinksInBrowser()) {
+                            WebViewScreen.obtain(context, it.getData().getForecastUrl())
+                                    .display(getLauncherFeed(), null, null, v);
+                        } else {
+                            Rect r = new Rect();
+                            v.getGlobalVisibleRect(r);
+                            Utilities.openURLinBrowser(context, it.getData().getForecastUrl(), r,
+                                    null);
+                        }
+                    };
                     return item;
                 }).limit((int) Math.round(
                 ChipPersistence.Companion.getInstance(context).getWeatherItems())).collect(
