@@ -78,6 +78,10 @@ public abstract class ProviderScreen extends ContextWrapper
 
     protected abstract void bindView(View view);
 
+    public boolean forceBlurredBackground() {
+        return false;
+    }
+
     protected void clearActions() {
         actions.clear();
         if (feed != null) {

@@ -1035,7 +1035,7 @@ class LauncherFeed(private val originalContext: Context,
         var view: View? = null
         displayView({
             inflater(it).also { view = it }
-        }, x, y, clipBounds)
+        }, x, y, clipBounds, screen.forceBlurredBackground())
         internalActions.remove("search".hashCode())
         providerScreens.add(screen to ScreenData(x, y, view!!, clipBounds))
         synchronized(internalActions) {
@@ -1112,7 +1112,7 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     private fun displayView(inflater: (parent: ViewGroup) -> View, x: Float?, y: Float?,
-                            clipBounds: Rect? = null) {
+                            clipBounds: Rect? = null, fbb: Boolean = false) {
         if (useTabbedMode) {
             tabView.tabsEnabled = false
             oldIconTint = tabView.tabIconTint!!
@@ -1167,7 +1167,7 @@ class LauncherFeed(private val originalContext: Context,
                             originalPaddingHorizontal!!.second + if (!rtl) windowInsets.stableInsetRight else windowInsets.stableInsetLeft,
                             originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + statusBarHeight!! else statusBarHeight!!)
                 }
-                background = if (context.feedPrefs.useBackgroundImageAsScreenBackground) {
+                background = if (context.feedPrefs.useBackgroundImageAsScreenBackground || fbb) {
                     if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
                 } else {
                     ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))

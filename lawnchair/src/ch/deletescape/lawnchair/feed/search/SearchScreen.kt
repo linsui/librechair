@@ -117,7 +117,6 @@ class SearchScreen(private val feed: LauncherFeed) : ProviderScreen(feed.context
         }
     }
 
-    override fun getView(parent: ViewGroup): View {
-        return parent.inflate(R.layout.search_screen)
-    }
+    override fun getView(parent: ViewGroup) = parent.inflate(R.layout.search_screen)
+    override fun forceBlurredBackground() = true
 }
