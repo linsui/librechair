@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -248,7 +249,8 @@ public final class FeedUtil {
 
                     if (handleDrawable != null) {
                         Drawable drawable = handleDrawable.mutate();
-                        drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+                        drawable.setColorFilter(
+                                new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
                         handleField.set(editor, drawable);
                     }
                 }
@@ -279,8 +281,8 @@ public final class FeedUtil {
                     fCursorDrawable.setAccessible(true);
 
                     Drawable drawable = editText.getContext().getDrawable(mCursorDrawableRes);
-                    Objects.requireNonNull(drawable).setColorFilter(color,
-                            PorterDuff.Mode.SRC_IN);
+                    Objects.requireNonNull(drawable).setColorFilter(
+                            new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
                     fCursorDrawable.set(editor, drawable);
                 } catch (IllegalAccessException | NoSuchFieldException e) {
                     e.printStackTrace();
@@ -301,15 +303,32 @@ public final class FeedUtil {
                     Drawable[] drawables = new Drawable[2];
                     drawables[0] = editText.getContext().getDrawable(mCursorDrawableRes);
                     drawables[1] = editText.getContext().getDrawable(mCursorDrawableRes);
-                    Objects.requireNonNull(drawables[0]).setColorFilter(color,
-                            PorterDuff.Mode.SRC_IN);
-                    Objects.requireNonNull(drawables[1]).setColorFilter(color,
-                            PorterDuff.Mode.SRC_IN);
+                    Objects.requireNonNull(drawables[0]).setColorFilter(
+                            new PorterDuffColorFilter(color,
+                                    PorterDuff.Mode.SRC_IN));
+                    Objects.requireNonNull(drawables[1]).setColorFilter(
+                            new PorterDuffColorFilter(color,
+                                    PorterDuff.Mode.SRC_IN));
                     fCursorDrawable.set(editor, drawables);
                 } catch (IllegalAccessException | NoSuchFieldException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @AnyThread
+    @Nonnull
+    public static <T extends CharSequence> CharSequence getNullsafeString(@Nullable T nul,
+                                                                          @Nonnull CharSequence ifNull) {
+        assert ifNull != null;
+        return nul != null ? nul : ifNull;
+    }
+
+    @AnyThread
+    @Nonnull
+    public static <T extends CharSequence> CharSequence getNullsafeString(@Nullable T nul) {
+        return getNullsafeString(nul, "");
     }
 }

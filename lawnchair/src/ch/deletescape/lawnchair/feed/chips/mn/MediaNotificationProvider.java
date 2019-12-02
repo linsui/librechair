@@ -44,6 +44,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.chips.ChipItemBridge;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.notifications.OMCMediaListener;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 @SuppressWarnings("ConstantConditions")
 public class MediaNotificationProvider extends ChipProvider {
@@ -86,11 +87,9 @@ public class MediaNotificationProvider extends ChipProvider {
                             }
                         }
                     }
-                    if (currentState.getInfo().getTitle() != null) {
-                        bridge.setTitle(currentState.getInfo().getTitle().toString());
-                    } else {
-                        bridge.setTitle(context.getString(R.string.title_chip_no_title));
-                    }
+                    bridge.setTitle(
+                            FeedUtil.getNullsafeString(currentState.getInfo().getTitle().toString(),
+                                    context.getString(R.string.title_chip_no_title)).toString());
                 } else {
                     if (Utilities.HIDDEN_APIS_ALLOWED) {
                         try {
@@ -122,11 +121,9 @@ public class MediaNotificationProvider extends ChipProvider {
                                     }
                                 }
                             }
-                            if (tracking.getInfo().getTitle() != null) {
-                                bridge.setTitle(tracking.getInfo().getTitle().toString());
-                            } else {
-                                bridge.setTitle(context.getString(R.string.title_chip_no_title));
-                            }
+                            bridge.setTitle(FeedUtil.getNullsafeString(
+                                    tracking.getInfo().getTitle().toString(),
+                                    context.getString(R.string.title_chip_no_title)).toString());
                         } else {
                             if (Utilities.HIDDEN_APIS_ALLOWED) {
                                 try {
@@ -151,8 +148,10 @@ public class MediaNotificationProvider extends ChipProvider {
                                     new GestureDetector.SimpleOnGestureListener() {
                                         @Override
                                         public void onLongPress(MotionEvent e) {
-                                            ((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE))
-                                                    .vibrate(VibrationEffect.createOneShot(50, 127));
+                                            ((Vibrator) context.getSystemService(
+                                                    Context.VIBRATOR_SERVICE))
+                                                    .vibrate(
+                                                            VibrationEffect.createOneShot(50, 127));
                                             if (e.getX() <
                                                     LawnchairUtilsKt
                                                             .getPositionOnScreen(bridge.getView())
@@ -176,7 +175,8 @@ public class MediaNotificationProvider extends ChipProvider {
                                     }) {
                                 @Override
                                 public boolean onTouchEvent(MotionEvent ev) {
-                                    getLauncherFeed().getFeedController().setDisallowInterceptCurrentTouchEvent(true);
+                                    getLauncherFeed().getFeedController().setDisallowInterceptCurrentTouchEvent(
+                                            true);
                                     return super.onTouchEvent(ev);
                                 }
                             });
