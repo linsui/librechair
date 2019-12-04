@@ -199,6 +199,14 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 globalClickListener = { v ->
                     FeedUtil.startActivity(context, it.intent, v)
                 }
+                actionName = R.string.action_share.fromStringRes(context)
+                actionListener = { v ->
+                    val shareIntent = Intent(Intent.ACTION_SEND)
+                    shareIntent.type = "text/plain"
+                    shareIntent.putExtra(Intent.EXTRA_TEXT,
+                            "${it.title}\n${it.description?.plus("\n") ?: ""}")
+                    v.context.startActivity(shareIntent)
+                }
             }
         })
         cards.addAll(ongoingEvents.map {
