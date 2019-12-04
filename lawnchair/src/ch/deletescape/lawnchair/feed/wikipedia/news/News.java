@@ -30,7 +30,7 @@ public final class News {
         requestRefresh();
     }
 
-    public static synchronized void requestRefresh() {
+    private static synchronized void requestRefresh() {
         fetchExecutor.execute(() -> {
             try {
                 URLConnection connection = new URL(API_URL).openConnection();
