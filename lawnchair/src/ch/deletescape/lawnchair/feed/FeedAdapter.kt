@@ -9,7 +9,7 @@
  *     (at your option) any later version.
  *
  *     Lawnchair Launcher is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     but WITHOUT ANY WARRANTY without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
@@ -64,6 +64,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
+@Suppress("DEPRECATION")
 open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                        var context: Context, val feed: LauncherFeed?) :
         RecyclerView.Adapter<CardViewHolder>() {
@@ -117,7 +118,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             if (::recyclerView.isInitialized) {
                 recyclerView.adapter = null
                 recyclerView.adapter = this
-                feed?.refresh(0);
+                feed?.refresh(0)
                 d("onAttachedToRecyclerView: theme changed")
             }
         }
@@ -167,14 +168,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 
     @SuppressLint("MissingPermission")
-    override fun getItemCount(): Int {
-        return cards.size;
-    }
-
-    override fun onDetachedFromRecyclerView(
-            recyclerView: RecyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView)
-    }
+    override fun getItemCount() = cards.size
 
     @SuppressLint("MissingPermission", "RestrictedApi")
     override fun onBindViewHolder(holder: CardViewHolder, position: Int) {
@@ -288,7 +282,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                     isDeleteActive = false
                                     holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
                                     holder.itemView.removeView(holder.itemView.findViewById<View>(
-                                            R.id.card_removal_hint));
+                                            R.id.card_removal_hint))
                                 }
                             }
                             findViewById<Button>(R.id.remove_action).setOnClickListener {
@@ -304,16 +298,16 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                     backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                                 }
                                 FeedScope.launch {
-                                    cardCache.keys.forEach {
-                                        if (cardCache.contains(it) && cardCache[it]!!.contains(
+                                    cardCache.keys.forEach { fp ->
+                                        if (cardCache.contains(fp) && cardCache[fp]!!.contains(
                                                         card)) {
-                                            cardCache[it] = cardCache[it]!!.filterNot { it == card }
+                                            cardCache[fp] = cardCache[fp]!!.filterNot { it == card }
                                         }
                                     }
                                     holder.itemView.post {
                                         holder.itemView.removeView(
                                                 holder.itemView.findViewById<View>(
-                                                        R.id.card_removal_hint));
+                                                        R.id.card_removal_hint))
                                         notifyItemRemoved(holder.adapterPosition)
                                     }
                                 }
@@ -330,7 +324,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                 true
             }
 
-            holder.itemView.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            holder.itemView.setOnTouchListener { _: View, motionEvent: MotionEvent ->
                 if (isDeleteActive && motionEvent.action == MotionEvent.ACTION_UP && !hasAction) {
                     holder.itemView.animate().scaleX(0f).scaleY(0f)
                             .setInterpolator(Interpolators.ACCEL).duration = 500
@@ -351,7 +345,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                         }
                         holder.itemView.post {
                             (holder.itemView as ViewGroup).removeView(
-                                    holder.itemView.findViewById<View>(R.id.card_removal_hint));
+                                    holder.itemView.findViewById<View>(R.id.card_removal_hint))
                             notifyItemRemoved(holder.adapterPosition)
                         }
                     }
@@ -360,7 +354,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     isDeleteActive = false
                     holder.itemView.animate().scaleX(1f).scaleY(1f).duration = 100
                     (holder.itemView as ViewGroup)
-                            .removeView(holder.itemView.findViewById<View>(R.id.card_removal_hint));
+                            .removeView(holder.itemView.findViewById<View>(R.id.card_removal_hint))
                 }
 
                 return@setOnTouchListener false
@@ -454,7 +448,23 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     }
 }
 
-class CardViewHolder : RecyclerView.ViewHolder {
+class CardViewHolder(parent: ViewGroup, type: Int, backgroundColor: Int) :
+        RecyclerView.ViewHolder(LayoutInflater.from(
+                ContextThemeWrapper(parent.context, if (useWhiteText(
+                                if (type and Card.RAISE != 0) parent.context.colorEngine.getResolver(
+                                        FEED_CARD).resolveColor() else backgroundColor,
+                                parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)).inflate(
+                when (type) {
+                    Card.DEFAULT -> R.layout.card_default
+                    Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
+                    Card.DEFAULT or Card.RAISE -> R.layout.card_raised
+                    Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
+                    Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
+                    Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
+                    Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
+                    Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
+                    else -> error("invalid bitmask")
+                }, parent, false)) {
     val icon by lazy {
         itemView.findViewById(R.id.card_provider_small_icon) as ImageView?
     }
@@ -466,26 +476,10 @@ class CardViewHolder : RecyclerView.ViewHolder {
         itemView.findViewById(R.id.card_blur_view) as RealtimeBlurView?
     }
 
-    constructor(parent: ViewGroup, type: Int, backgroundColor: Int) : super(LayoutInflater.from(
-            ContextThemeWrapper(parent.context, if (useWhiteText(
-                            if (type and Card.RAISE != 0) parent.context.colorEngine.getResolver(
-                                    FEED_CARD).resolveColor() else backgroundColor,
-                            parent.context) || parent.context.lawnchairPrefs.feedCardBlur) R.style.FeedTheme_Dark else R.style.FeedTheme_Light)).inflate(
-            when (type) {
-                Card.DEFAULT -> R.layout.card_default
-                Card.DEFAULT or Card.NARROW -> R.layout.card_narrow
-                Card.DEFAULT or Card.RAISE -> R.layout.card_raised
-                Card.DEFAULT or Card.RAISE or Card.NARROW -> R.layout.card_raised_narrow
-                Card.DEFAULT or Card.TEXT_ONLY -> R.layout.card_text_only
-                Card.DEFAULT or Card.RAISE or Card.TEXT_ONLY -> R.layout.card_raised_text_only
-                Card.DEFAULT or Card.NO_HEADER -> R.layout.card_default_no_header
-                Card.DEFAULT or Card.RAISE or Card.NO_HEADER -> R.layout.card_raised_no_header
-                else -> error("invalid bitmask")
-            }, parent, false)) {
+    init {
         if (type and Card.TEXT_ONLY == 1) {
             viewHolder.visibility = GONE
         }
-
         if (type and Card.RAISE == 0) {
             ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
                     .marginEnd = parent.context.feedPrefs.flatCardHorizontalPadding.roundToInt()
@@ -496,7 +490,6 @@ class CardViewHolder : RecyclerView.ViewHolder {
             ((viewHolder.parent as View).layoutParams as ViewGroup.MarginLayoutParams)
                     .topMargin = parent.context.feedPrefs.flatCardVerticalPadding.roundToInt()
         }
-
         itemView.viewTreeObserver.addOnGlobalLayoutListener {
             (itemView as ViewGroup).allChildren.forEach { view ->
                 if (view is TextView && view.tag != "font_ignore") {
@@ -508,10 +501,8 @@ class CardViewHolder : RecyclerView.ViewHolder {
                 }
             }
         }
-
         d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
                 backgroundColor)}")
-
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor,
                         viewHolder.context)) {
             description!!.setTextColor(description!!.context.getColor(R.color.textColorPrimary))
@@ -519,7 +510,6 @@ class CardViewHolder : RecyclerView.ViewHolder {
             description?.setTextColor(
                     description?.context?.getColor(R.color.textColorPrimaryInverse) ?: 0)
         }
-
         if (viewHolder.context.lawnchairPrefs.feedCardBlur && type and Card.RAISE != 0) {
             (itemView as CardView).setCardBackgroundColor(
                     Color.TRANSPARENT)
