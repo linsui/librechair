@@ -77,14 +77,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     init {
         d("init: backgroundColor is ${backgroundColor}")
         this.backgroundColor = backgroundColor
-        if (!context.lawnchairPrefs.feedOnboardingShown) {
-            providers += OnboardingProvider(context)
-            context.lawnchairPrefs.feedOnboardingShown = true
-        } else {
-            if (providers.any { it.javaClass == OnboardingProvider::class.java }) {
-                providers = providers.filter { it.javaClass != OnboardingProvider::class.java }
-            }
-        }
     }
 
     open val cardCache = mutableMapOf<FeedProvider, List<Card>>()
