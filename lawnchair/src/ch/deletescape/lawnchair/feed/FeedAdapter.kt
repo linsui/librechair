@@ -71,12 +71,12 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {
-            d("init: backgroundColor is now ${value}")
+            d("init: backgroundColor is now $value")
             field = value
         }
 
     init {
-        d("init: backgroundColor is ${backgroundColor}")
+        d("init: backgroundColor is $backgroundColor")
         this.backgroundColor = backgroundColor
     }
 
@@ -175,7 +175,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         var isDeleteActive = false
         holder.itemView.animate().scaleX(1f).scaleY(1f)
 
-        holder.description?.setTag("font_ignore")
+        holder.description?.tag = "font_ignore"
 
         if (holder.description != null) {
             CustomFontManager.getInstance(context)
@@ -367,11 +367,15 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             holder.description?.text = cards[holder.adapterPosition].title
             holder.icon?.setImageDrawable(cards[holder.adapterPosition].icon.let {
                 if (it is VectorDrawable) {
-                    it.tint(if (holder.itemViewType and Card.RAISE != 0) getOverrideColor(
-                            holder.itemView.context) else if (useWhiteText(backgroundColor,
-                                    context)) R.color.qsb_background.fromColorRes(context).setAlpha(
-                            255) else R.color.qsb_background_dark.fromColorRes(context).setAlpha(
-                            255))
+                    it.tint(when {
+                        holder.itemViewType and Card.RAISE != 0 -> getOverrideColor(
+                                holder.itemView.context)
+                        useWhiteText(backgroundColor,
+                                context) -> R.color.qsb_background.fromColorRes(context).setAlpha(
+                                255)
+                        else -> R.color.qsb_background_dark.fromColorRes(context).setAlpha(
+                                255)
+                    })
                 } else {
                     it
                 }
@@ -501,7 +505,7 @@ class CardViewHolder(parent: ViewGroup, type: Int, backgroundColor: Int) :
                 }
             }
         }
-        d("constructor: luminace for background ${backgroundColor} is ${ColorUtils.calculateLuminance(
+        d("constructor: luminace for background $backgroundColor is ${ColorUtils.calculateLuminance(
                 backgroundColor)}")
         if (type and Card.RAISE == 0 && description != null && useWhiteText(backgroundColor,
                         viewHolder.context)) {
