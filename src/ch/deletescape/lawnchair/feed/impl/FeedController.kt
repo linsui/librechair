@@ -118,7 +118,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             animator.duration =
                     if (duration != 0) duration.toLong() else ((1.0 - context.feedPrefs.openingAnimationSpeed) * 350L * 2).roundToLong()
             animator.interpolator =
-                    Interpolators.ACCEL_DEACCEL
+                    InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
             animator.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     mCurrentState = FeedState.CLOSED
@@ -262,7 +262,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private fun createAnim(toState: FeedState, duration: Long): AnimatorSet {
         val translationX = ObjectAnimator.ofFloat(this, PROGRESS, toState.progress)
         translationX.duration = duration
-        translationX.interpolator =  InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
+        translationX.interpolator =
+                InterpolatorRegistry.ALL[context.feedPrefs.feedAnimationInterpolator]!!
 
         val animatorSet = AnimatorSet()
         animatorSet.play(translationX)
