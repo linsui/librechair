@@ -331,4 +331,14 @@ public final class FeedUtil {
     public static <T extends CharSequence> CharSequence getNullsafeString(@Nullable T nul) {
         return getNullsafeString(nul, "");
     }
+
+    @AnyThread
+    @Nonnull
+    public static String truncateWithSuffix(@Nonnull String cs, int len, @Nonnull String suffix) {
+        if (cs.length() > len) {
+            return cs.substring(0, len) + suffix;
+        } else {
+            return cs;
+        }
+    }
 }

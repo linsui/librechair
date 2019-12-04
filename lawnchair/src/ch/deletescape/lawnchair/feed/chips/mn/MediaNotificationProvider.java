@@ -87,9 +87,10 @@ public class MediaNotificationProvider extends ChipProvider {
                             }
                         }
                     }
-                    bridge.setTitle(
+                    bridge.setTitle(FeedUtil.truncateWithSuffix(
                             FeedUtil.getNullsafeString(currentState.getInfo().getTitle().toString(),
-                                    context.getString(R.string.title_chip_no_title)).toString());
+                                    context.getString(R.string.title_chip_no_title)).toString(), 50,
+                            "..."));
                 } else {
                     if (Utilities.HIDDEN_APIS_ALLOWED) {
                         try {
@@ -121,9 +122,10 @@ public class MediaNotificationProvider extends ChipProvider {
                                     }
                                 }
                             }
-                            bridge.setTitle(FeedUtil.getNullsafeString(
+                            bridge.setTitle(FeedUtil.truncateWithSuffix(FeedUtil.getNullsafeString(
                                     tracking.getInfo().getTitle().toString(),
-                                    context.getString(R.string.title_chip_no_title)).toString());
+                                    context.getString(R.string.title_chip_no_title)).toString(), 50,
+                                    "..."));
                         } else {
                             if (Utilities.HIDDEN_APIS_ALLOWED) {
                                 try {
