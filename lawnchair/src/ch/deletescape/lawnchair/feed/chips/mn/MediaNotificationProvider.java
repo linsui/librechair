@@ -150,8 +150,9 @@ public class MediaNotificationProvider extends ChipProvider {
                                     new GestureDetector.SimpleOnGestureListener() {
                                         @Override
                                         public void onLongPress(MotionEvent e) {
-                                            ((Vibrator) context.getSystemService(
-                                                    Context.VIBRATOR_SERVICE))
+                                            ((Vibrator) Objects.requireNonNull(
+                                                    context.getSystemService(
+                                                            Context.VIBRATOR_SERVICE)))
                                                     .vibrate(
                                                             VibrationEffect.createOneShot(50, 127));
                                             if (e.getX() <

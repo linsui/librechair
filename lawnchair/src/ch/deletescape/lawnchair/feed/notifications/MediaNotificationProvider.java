@@ -27,9 +27,14 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.media.AudioManager;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -366,6 +371,38 @@ public class MediaNotificationProvider extends FeedProvider {
                     });
                 }
             });
+
+            GestureDetector gd = new GestureDetector(getContext(),
+                    new GestureDetector.SimpleOnGestureListener() {
+                        @Override
+                        public void onLongPress(MotionEvent e) {
+                            ((Vibrator) Objects.requireNonNull(getContext().getSystemService(
+                                    Context.VIBRATOR_SERVICE)))
+                                    .vibrate(
+                                            VibrationEffect.createOneShot(50, 127));
+                            if (e.getX() <
+                                    LawnchairUtilsKt
+                                            .getPositionOnScreen(mnv)
+                                            .getFirst() +
+                                            ((float) mnv.getMeasuredWidth()) / 2) {
+                                if (LawnchairUtilsKt.getRtl(
+                                        (ViewGroup) mnv.getParent())) {
+                                    mediaListener.next();
+                                } else {
+                                    mediaListener.previous();
+                                }
+                            } else {
+                                if (!LawnchairUtilsKt.getRtl(
+                                        (ViewGroup) mnv.getParent())) {
+                                    mediaListener.next();
+                                } else {
+                                    mediaListener.previous();
+                                }
+                            }
+                        }
+                    });
+            mnv.setOnTouchListener((v, ev) -> gd.onTouchEvent(ev));
+            mnv.setOnGenericMotionListener((v, ev) -> gd.onGenericMotionEvent(ev));
             return mnv;
         }, Card.RAISE | Card.NO_HEADER, "nosort,top",
                 mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
