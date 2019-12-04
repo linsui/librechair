@@ -205,7 +205,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                     shareIntent.type = "text/plain"
                     shareIntent.putExtra(Intent.EXTRA_TEXT,
                             "${it.title}\n${it.description?.plus("\n") ?: ""}")
-                    v.context.startActivity(shareIntent)
+                    try {
+                        v.context.startActivity(shareIntent)
+                    } catch (e: ActivityNotFoundException) {
+                        e.printStackTrace()
+                    }
                 }
             }
         })
