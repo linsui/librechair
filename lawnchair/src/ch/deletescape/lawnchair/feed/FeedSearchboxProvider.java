@@ -106,13 +106,12 @@ public class FeedSearchboxProvider extends FeedProvider {
                                 adapter.addAll(suggestions.toArray(new String[0]));
                                 adapter.notifyDataSetChanged();
                                 predictions.setOnItemClickListener(
-                                        (parent1, view, position, id) -> {
-                                            WebViewScreen.obtain(parent.getContext(), String.format(
-                                                    Utilities.getLawnchairPrefs(
-                                                            getContext()).getFeedSearchUrl(),
-                                                    suggestions.get(position))).display(
-                                                    FeedSearchboxProvider.this, null, null);
-                                        });
+                                        (parent1, view, position, id) -> WebViewScreen.obtain(
+                                                parent.getContext(), String.format(
+                                                        Utilities.getLawnchairPrefs(
+                                                                getContext()).getFeedSearchUrl(),
+                                                        suggestions.get(position))).display(
+                                                FeedSearchboxProvider.this, null, null));
                             });
                         }
                     });
