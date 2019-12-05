@@ -79,7 +79,7 @@ public class ForecastChipProvider extends ChipProvider {
                             WebViewScreen.obtain(context, it.getData().getForecastUrl())
                                     .display(getLauncherFeed(), null, null, v);
                         } else {
-                            FeedUtil.openUrl(context, v, it.getData().getForecastUrl());
+                            FeedUtil.openUrl(context, it.getData().getForecastUrl(), v);
                         }
                     };
                     return item;
