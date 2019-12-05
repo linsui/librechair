@@ -61,8 +61,8 @@ public class AlarmEventProvider extends FeedProvider {
         }
         AlarmClockInfo info = manager.getNextAlarmClock();
         if (info != null) {
-            Drawable alarm = getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp);
-            alarm = LawnchairUtilsKt.tint(Objects.requireNonNull(alarm),
+            Drawable alarm = LawnchairUtilsKt.tint(Objects.requireNonNull(
+                    getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp)),
                     FeedAdapter.Companion.getOverrideColor(getContext()));
             return Collections.singletonList(FeedUtil.apply(new Card(alarm,
                     LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), getContext()),
