@@ -74,12 +74,14 @@ public class ForecastChipProvider extends ChipProvider {
                                             ZoneId.of("UTC")).withZoneSameInstant(
                                             TimeZone.getDefault().toZoneId()), context));
                     item.viewClickListener = v -> {
-                        if (!FeedPersistence.Companion.getInstance(
-                                context).getDirectlyOpenLinksInBrowser()) {
-                            WebViewScreen.obtain(context, it.getData().getForecastUrl())
-                                    .display(getLauncherFeed(), null, null, v);
-                        } else {
-                            FeedUtil.openUrl(context, it.getData().getForecastUrl(), v);
+                        if (it.getData().getForecastUrl() != null) {
+                            if (!FeedPersistence.Companion.getInstance(
+                                    context).getDirectlyOpenLinksInBrowser()) {
+                                WebViewScreen.obtain(context, it.getData().getForecastUrl())
+                                        .display(getLauncherFeed(), null, null, v);
+                            } else {
+                                FeedUtil.openUrl(context, it.getData().getForecastUrl(), v);
+                            }
                         }
                     };
                     return item;
