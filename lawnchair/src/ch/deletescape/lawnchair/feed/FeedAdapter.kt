@@ -98,9 +98,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         }
     }
 
-    // TODO kt-utils2.el context+semantics-aware variable name refactor
-    //    * lifted invalid syntax
-    //    * enabled aggresive lexer syntax conversion table
     override fun onAttachedToRecyclerView(rv: RecyclerView) {
         super.onAttachedToRecyclerView(rv)
         if (rv.itemDecorationCount == 0) {
@@ -337,10 +334,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                         backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                     }
                     FeedScope.launch {
-                        cardCache.keys.forEach {
-                            if (cardCache.contains(it) && cardCache[it]!!.contains(
+                        cardCache.keys.forEach { fp ->
+                            if (cardCache.contains(fp) && cardCache[fp]!!.contains(
                                             card)) {
-                                cardCache[it] = cardCache[it]!!.filterNot { it == card }
+                                cardCache[fp] = cardCache[fp]!!.filterNot { it == card }
                             }
                         }
                         holder.itemView.post {
