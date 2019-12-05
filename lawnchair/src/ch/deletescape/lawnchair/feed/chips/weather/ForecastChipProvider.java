@@ -21,7 +21,6 @@
 package ch.deletescape.lawnchair.feed.chips.weather;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 
 import com.android.launcher3.Utilities;
@@ -40,6 +39,7 @@ import java.util.stream.Collectors;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.WeatherManager;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.web.WebViewScreen;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
@@ -79,10 +79,7 @@ public class ForecastChipProvider extends ChipProvider {
                             WebViewScreen.obtain(context, it.getData().getForecastUrl())
                                     .display(getLauncherFeed(), null, null, v);
                         } else {
-                            Rect r = new Rect();
-                            v.getGlobalVisibleRect(r);
-                            Utilities.openURLinBrowser(context, it.getData().getForecastUrl(), r,
-                                    null);
+                            FeedUtil.openUrl(context, v, it.getData().getForecastUrl());
                         }
                     };
                     return item;
