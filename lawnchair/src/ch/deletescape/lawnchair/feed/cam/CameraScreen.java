@@ -69,6 +69,8 @@ public class CameraScreen extends ProviderScreen {
     private CameraCaptureSession session;
     private int facing = CameraCharacteristics.LENS_FACING_BACK;
 
+    private static final int REQUEST_PERMISSION_CAMERA = 49;
+
     public CameraScreen(Context base, Consumer<Bitmap> listener) {
         super(base);
         this.listener = listener;
@@ -129,9 +131,15 @@ public class CameraScreen extends ProviderScreen {
             });
         } else {
             if (getBoundFeed() != null) {
-                getBoundFeed().closeScreen(this);
                 BlankActivity.Companion.requestPermission(this, Manifest.permission.CAMERA,
-                        Manifest.permission.CAMERA.hashCode(), b -> Unit.INSTANCE);
+                        REQUEST_PERMISSION_CAMERA, b -> {
+                            if (b) {
+                                bindView(view);
+                            } else {
+                                getBoundFeed().closeScreen(this);
+                            }
+                            return Unit.INSTANCE;
+                        });
             }
         }
     }
