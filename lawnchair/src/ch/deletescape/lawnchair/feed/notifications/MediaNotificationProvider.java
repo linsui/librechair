@@ -377,33 +377,35 @@ public class MediaNotificationProvider extends FeedProvider {
                     new GestureDetector.SimpleOnGestureListener() {
                         @Override
                         public void onLongPress(MotionEvent e) {
-                            ((Vibrator) Objects.requireNonNull(getContext().getSystemService(
-                                    Context.VIBRATOR_SERVICE)))
-                                    .vibrate(
-                                            VibrationEffect.createOneShot(50, 127));
-                            if (e.getX() <
-                                    LawnchairUtilsKt
-                                            .getPositionOnScreen(mnv)
-                                            .getFirst() +
-                                            ((float) mnv.getMeasuredWidth()) / 2) {
-                                if (LawnchairUtilsKt.getRtl(
-                                        (ViewGroup) mnv.getParent())) {
-                                    mediaListener.next();
+                            if (mnv.getParent() != null) {
+                                ((Vibrator) Objects.requireNonNull(getContext().getSystemService(
+                                        Context.VIBRATOR_SERVICE)))
+                                        .vibrate(
+                                                VibrationEffect.createOneShot(50, 127));
+                                if (e.getX() <
+                                        LawnchairUtilsKt
+                                                .getPositionOnScreen(mnv)
+                                                .getFirst() +
+                                                ((float) mnv.getMeasuredWidth()) / 2) {
+                                    if (LawnchairUtilsKt.getRtl(
+                                            (ViewGroup) mnv.getParent())) {
+                                        mediaListener.next();
+                                    } else {
+                                        mediaListener.previous();
+                                    }
                                 } else {
-                                    mediaListener.previous();
+                                    if (!LawnchairUtilsKt.getRtl(
+                                            (ViewGroup) mnv.getParent())) {
+                                        mediaListener.next();
+                                    } else {
+                                        mediaListener.previous();
+                                    }
                                 }
-                            } else {
-                                if (!LawnchairUtilsKt.getRtl(
-                                        (ViewGroup) mnv.getParent())) {
-                                    mediaListener.next();
-                                } else {
-                                    mediaListener.previous();
-                                }
+                                mnv.setActivated(false);
+                                ((View) mnv.getParent()).setActivated(false);
+                                ((View) mnv.getParent().getParent()).setActivated(false);
+                                lastLongPress.set(System.currentTimeMillis());
                             }
-                            mnv.setActivated(false);
-                            ((View) mnv.getParent()).setActivated(false);
-                            ((View) mnv.getParent().getParent()).setActivated(false);
-                            lastLongPress.set(System.currentTimeMillis());
                         }
                     });
             mnv.setOnTouchListener((v, ev) -> gd.onTouchEvent(ev));
