@@ -401,6 +401,8 @@ public class MediaNotificationProvider extends FeedProvider {
                                 }
                             }
                             mnv.setActivated(false);
+                            ((View) mnv.getParent()).setActivated(false);
+                            ((View) mnv.getParent().getParent()).setActivated(false);
                             lastLongPress.set(System.currentTimeMillis());
                         }
                     });
