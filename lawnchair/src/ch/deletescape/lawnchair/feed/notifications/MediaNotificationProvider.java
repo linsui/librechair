@@ -400,6 +400,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                     mediaListener.previous();
                                 }
                             }
+                            mnv.setActivated(false);
                             lastLongPress.set(System.currentTimeMillis());
                         }
                     });
