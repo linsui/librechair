@@ -85,6 +85,7 @@ public class MediaNotificationProvider extends FeedProvider {
         Log.d(getClass().getName(), "getCards: mnc: " + mnc);
         NotificationInfo mediaInfo = mnc.get() != null ? new NotificationInfo(getContext(),
                 mnc.get().getSbn()) : null;
+        AtomicLong lastLongPress = new AtomicLong(0);
         cards.add(new Card(null, null, parent -> {
             View mnv = LayoutInflater.from(parent.getContext()).inflate(
                     R.layout.media_notification, parent, false);
@@ -399,6 +400,7 @@ public class MediaNotificationProvider extends FeedProvider {
                                     mediaListener.previous();
                                 }
                             }
+                            lastLongPress.set(System.currentTimeMillis());
                         }
                     });
             mnv.setOnTouchListener((v, ev) -> gd.onTouchEvent(ev));
@@ -407,7 +409,7 @@ public class MediaNotificationProvider extends FeedProvider {
         }, Card.RAISE | Card.NO_HEADER, "nosort,top",
                 mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
         cards.get(0).setGlobalClickListener(v -> {
-            if (mnc.get() != null) {
+            if (mnc.get() != null && System.currentTimeMillis() - lastLongPress.get() >= 500) {
                 try {
                     mnc.get().getSbn().getNotification().contentIntent.send();
                 } catch (PendingIntent.CanceledException | NullPointerException e) {
