@@ -38,9 +38,9 @@ public final class InterpolatorRegistry {
             new LinkedHashMap<>(), map -> {
                 map.put("linear", Interpolators.LINEAR);
                 map.put("accel", Interpolators.ACCEL);
-                map.put("snappy_accel", Interpolators.ACCEL_1_5);
+                map.put("snappy_accel", Interpolators.ACCEL_2);
                 map.put("deaccel", Interpolators.DEACCEL);
-                map.put("snappy_deaccel", Interpolators.DEACCEL_1_5);
+                map.put("snappy_deaccel", Interpolators.DEACCEL_2);
                 map.put("ease_in_out", Interpolators.AGGRESSIVE_EASE_IN_OUT);
             });
     
