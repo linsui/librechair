@@ -79,8 +79,11 @@ public class FeedLocationSearchProvider extends FeedProvider {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     //noinspection ResultOfMethodCallIgnored
                     Flowable.fromCallable(() -> LocationSearchManager.getInstance(getContext()).get(
-                            editText.getText().toString())).doOnError(e -> editText.post(() -> editText.setText(""))).subscribeOn(
-                            Schedulers.newThread()).subscribe(pair -> editText.post(() -> new MapScreen(getContext(), getFeed(), pair.first, pair.second, 18.0,
+                            editText.getText().toString())).doOnError(
+                            e -> editText.post(() -> editText.setText(""))).subscribeOn(
+                            Schedulers.newThread()).subscribe(pair -> editText.post(
+                            () -> new MapScreen(getContext(), getFeed(), pair.first, pair.second,
+                                    18.0,
                                     pair.first, pair.second).display(this, null, null)));
                 }
                 return true;
