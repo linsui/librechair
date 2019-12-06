@@ -33,7 +33,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object DailyImage {
-    val uriCache = mutableMapOf<Long, String?>()
+    private val uriCache = mutableMapOf<Long, String?>()
     private val API_URL
         get() = "https://en.wikipedia.org/api/rest_v1/feed/featured/${GregorianCalendar().get(
                 Calendar.YEAR)}/${"%02d".format(GregorianCalendar().get(
@@ -50,14 +50,14 @@ object DailyImage {
 
     @ObsoleteCoroutinesApi
     suspend fun safeGetFeaturedImage(): String? {
-        try {
-            return getFeaturedImage()
+        return try {
+            getFeaturedImage()
         } catch (e: IOException) {
             e.printStackTrace()
-            return null
+            null
         } catch (e: JsonParseException) {
             e.printStackTrace()
-            return null
+            null
         }
     }
 }
