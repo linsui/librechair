@@ -412,7 +412,7 @@ public class MediaNotificationProvider extends FeedProvider {
         }, Card.RAISE | Card.NO_HEADER, "nosort,top",
                 mnc.get() != null ? mnc.get().getSbn().getId() : 13824221));
         cards.get(0).setGlobalClickListener(v -> {
-            if (mnc.get() != null && System.currentTimeMillis() - lastLongPress.get() >= 500) {
+            if (mnc.get() != null && System.currentTimeMillis() - lastLongPress.get() >= 1500) {
                 try {
                     mnc.get().getSbn().getNotification().contentIntent.send();
                 } catch (PendingIntent.CanceledException | NullPointerException e) {
