@@ -124,6 +124,10 @@ public class CameraScreen extends ProviderScreen {
 
                 }
             });
+        } else {
+            if (getBoundFeed() != null) {
+                getBoundFeed().closeScreen(this);
+            }
         }
     }
 
