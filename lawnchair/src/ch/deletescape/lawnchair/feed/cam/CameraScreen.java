@@ -53,9 +53,11 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.BlankActivity;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.ProviderScreen;
+import kotlin.Unit;
 
 public class CameraScreen extends ProviderScreen {
     private final Handler cameraHandler;
@@ -98,7 +100,8 @@ public class CameraScreen extends ProviderScreen {
                                                       int height) {
                     setUpCamera(this, cam);
                     clearActions();
-                    addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_lawnstep), getString(R.string.title_action_rotate), () -> {
+                    addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_lawnstep),
+                            getString(R.string.title_action_rotate), () -> {
                         if (session != null) {
                             dev.close();
                             session.close();
@@ -127,6 +130,8 @@ public class CameraScreen extends ProviderScreen {
         } else {
             if (getBoundFeed() != null) {
                 getBoundFeed().closeScreen(this);
+                BlankActivity.Companion.requestPermission(this, Manifest.permission.CAMERA,
+                        Manifest.permission.CAMERA.hashCode(), b -> Unit.INSTANCE);
             }
         }
     }
@@ -190,14 +195,16 @@ public class CameraScreen extends ProviderScreen {
             SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
             surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
             Surface previewSurface = new Surface(surfaceTexture);
-            CaptureRequest.Builder captureRequestBuilder = dev.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            CaptureRequest.Builder captureRequestBuilder = dev.createCaptureRequest(
+                    CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(previewSurface);
 
             dev.createCaptureSession(Collections.singletonList(previewSurface),
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
-                        public void onConfigured(@NotNull CameraCaptureSession cameraCaptureSession) {
+                        public void onConfigured(
+                                @NotNull CameraCaptureSession cameraCaptureSession) {
                             if (dev == null) {
                                 return;
                             }
@@ -213,7 +220,8 @@ public class CameraScreen extends ProviderScreen {
                         }
 
                         @Override
-                        public void onConfigureFailed(@NotNull CameraCaptureSession cameraCaptureSession) {
+                        public void onConfigureFailed(
+                                @NotNull CameraCaptureSession cameraCaptureSession) {
 
                         }
                     }, cameraHandler);
