@@ -21,7 +21,9 @@ package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import ch.deletescape.lawnchair.feed.FeedProvider;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -29,9 +31,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import kotlin.jvm.internal.Intrinsics;
-import org.jetbrains.annotations.NotNull;
 
+import ch.deletescape.lawnchair.feed.FeedProvider;
+import kotlin.jvm.internal.Intrinsics;
+
+@SuppressWarnings("unchecked")
 public class TabController {
 
     private final Context context;
@@ -68,14 +72,15 @@ public class TabController {
         return Arrays.asList(TabController.class,
                 CategorizedTabbingController.class,
                 ProviderTabbingController.class,
-                CustomTabbingController.class);
+                CustomTabbingController.class,
+                G2CategorizedTabbingController.class);
     }
 
     public static class Item {
 
         public Drawable icon;
         public String title;
-        public boolean isWidgetTab;
+        boolean isWidgetTab;
 
         public Item() {
             this(null, null);
