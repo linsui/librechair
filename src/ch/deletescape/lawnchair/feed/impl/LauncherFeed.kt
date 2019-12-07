@@ -917,7 +917,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
 
                         override fun onItemRangeRemoved(
-                                sender: ObservableList<FeedProviderContainer>?,
+                                sender: ObservableList<FeedProviderContainer>,
                                 positionStart: Int, itemCount: Int) {
                             if (sender.isEmpty()) {
                                 return
@@ -944,7 +944,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
 
                         override fun onItemRangeMoved(
-                                sender: ObservableList<FeedProviderContainer>?,
+                                sender: ObservableList<FeedProviderContainer>,
                                 fromPosition: Int, toPosition: Int, itemCount: Int) {
                             if (sender.isEmpty()) {
                                 return
@@ -971,7 +971,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
 
                         override fun onItemRangeInserted(
-                                sender: ObservableList<FeedProviderContainer>?,
+                                sender: ObservableList<FeedProviderContainer>,
                                 positionStart: Int, itemCount: Int) {
                             if (sender.isEmpty()) {
                                 return
@@ -998,7 +998,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
 
                         override fun onItemRangeChanged(
-                                sender: ObservableList<FeedProviderContainer>?,
+                                sender: ObservableList<FeedProviderContainer>,
                                 positionStart: Int, itemCount: Int) {
                             if (sender.isEmpty()) {
                                 return
