@@ -891,7 +891,10 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     context.feedPrefs.feedProviders.addOnListChangedCallback(object :
                             ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
-                        override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
+                        override fun onChanged(sender: ObservableList<FeedProviderContainer>) {
+                            if (sender.isEmpty()) {
+                                return
+                            }
                             FeedScope.launch(Dispatchers.Main) {
                                 if (useTabbedMode) {
                                     tabs.clear()
@@ -916,6 +919,9 @@ class LauncherFeed(private val originalContext: Context,
                         override fun onItemRangeRemoved(
                                 sender: ObservableList<FeedProviderContainer>?,
                                 positionStart: Int, itemCount: Int) {
+                            if (sender.isEmpty()) {
+                                return
+                            }
                             FeedScope.launch(Dispatchers.Main) {
                                 if (useTabbedMode) {
                                     tabs.clear()
@@ -940,6 +946,9 @@ class LauncherFeed(private val originalContext: Context,
                         override fun onItemRangeMoved(
                                 sender: ObservableList<FeedProviderContainer>?,
                                 fromPosition: Int, toPosition: Int, itemCount: Int) {
+                            if (sender.isEmpty()) {
+                                return
+                            }
                             FeedScope.launch(Dispatchers.Main) {
                                 if (useTabbedMode) {
                                     tabs.clear()
@@ -964,6 +973,9 @@ class LauncherFeed(private val originalContext: Context,
                         override fun onItemRangeInserted(
                                 sender: ObservableList<FeedProviderContainer>?,
                                 positionStart: Int, itemCount: Int) {
+                            if (sender.isEmpty()) {
+                                return
+                            }
                             FeedScope.launch(Dispatchers.Main) {
                                 if (useTabbedMode) {
                                     tabs.clear()
@@ -988,6 +1000,9 @@ class LauncherFeed(private val originalContext: Context,
                         override fun onItemRangeChanged(
                                 sender: ObservableList<FeedProviderContainer>?,
                                 positionStart: Int, itemCount: Int) {
+                            if (sender.isEmpty()) {
+                                return
+                            }
                             FeedScope.launch(Dispatchers.Main) {
                                 if (useTabbedMode) {
                                     tabs.clear()
