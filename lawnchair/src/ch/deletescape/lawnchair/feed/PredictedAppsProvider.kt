@@ -66,7 +66,7 @@ class PredictedAppsProvider(c: Context) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         refreshPredictions()
         return listOf(
-                Card(null, R.string.title_card_suggested_apps.fromStringRes(context), { v, _ ->
+                Card(null, R.string.title_card_suggested_apps.fromStringRes(context), { _, _ ->
                     recyclerView
                 }, Card.RAISE, "nosort, top", "predictedApps".hashCode()))
     }
