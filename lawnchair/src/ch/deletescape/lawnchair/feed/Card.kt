@@ -41,8 +41,6 @@ data class Card constructor(val icon: Drawable?, val title: String?, val inflate
     var indexData: String? = null
 
     var vhBindListener: ((vh: CardViewHolder) -> Unit)? = null
-
-    @ValueRange(min = 0.0, max = 1.0)
     var overrideOpacity: Float? = null
     lateinit var globalClickListener: (v: View) -> Unit
 
