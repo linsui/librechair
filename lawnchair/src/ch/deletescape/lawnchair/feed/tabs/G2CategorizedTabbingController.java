@@ -70,7 +70,7 @@ public class G2CategorizedTabbingController extends TabController {
         super(context);
         TOOLS_TAB = new Item(context.getDrawable(R.drawable.ic_tooltip_image_outline_24dp),
                 context.getString(R.string.category_tools));
-        NEWS_TAB = new Item(context.getDrawable(R.drawable.ic_smartspace),
+        NEWS_TAB = new Item(context.getDrawable(R.drawable.ic_smartspace_preferences),
                 context.getString(R.string.title_feed_category_updates));
         MISC_TAB = new Item(context.getDrawable(R.drawable.ic_public_black_24dp),
                 context.getString(R.string.pref_category_misc));
