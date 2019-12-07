@@ -26,6 +26,6 @@ object NameRegistry {
                         CategorizedTabbingController::class.java.name to R.string.title_sorting_provider_categorized,
                         ProviderTabbingController::class.java.name to R.string.title_tab_controller_by_provider,
             CustomTabbingController::class.java.name to R.string.title_tabbing_controller_custom,
-            G2CategorizedTabbingController::class.qualifiedName!! to context.getString(
-                    R.string.title_tab_controller_categorized_g2))
+            G2CategorizedTabbingController::class.qualifiedName!! to
+                    R.string.title_tab_controller_categorized_g2)
 }
