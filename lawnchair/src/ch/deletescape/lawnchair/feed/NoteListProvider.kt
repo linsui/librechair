@@ -38,13 +38,17 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
             try {
                 context.bindService(intent, object : ServiceConnection {
                     override fun onServiceDisconnected(name: ComponentName?) {
-                        providerMap.remove(intent)
+                        synchronized(providerMap) {
+                            providerMap.remove(intent)
+                        }
                         updateBindings(intent)
                     }
 
                     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                         try {
-                            providerMap += intent to INoteProvider.Stub.asInterface(service)
+                            synchronized(providerMap) {
+                                providerMap += intent to INoteProvider.Stub.asInterface(service)
+                            }
                         } catch (e: RuntimeException) {
                             e.printStackTrace()
                         }
@@ -65,7 +69,7 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
         if (providerMap.isEmpty()) {
             updateBindings()
         }
-        synchronized(this) {
+        synchronized(providerMap) {
             return listOf(Card(null, null, { parent, _ ->
                 (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
                     setOnClickListener {
