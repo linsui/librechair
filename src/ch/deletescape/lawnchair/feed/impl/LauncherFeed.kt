@@ -156,7 +156,7 @@ class LauncherFeed(private val originalContext: Context,
                     (tabLayout.getChildAt(0) as ViewGroup).childs.forEach {
                         val textView = it::class.java.getDeclaredField(
                                 "textView").also { it.isAccessible = true }.get(it)
-                                as? TextView // TODO figure out Kotlin reflection is being so slow
+                                as? TextView
                         if (textView != null) {
                             CustomFontManager.getInstance(context)
                                     .loadFont(CustomFontManager.FONT_FEED_TITLES,
@@ -173,8 +173,6 @@ class LauncherFeed(private val originalContext: Context,
     private var toolbar = (feedController.findViewById(R.id.feed_title_bar) as Toolbar)
     private val toolbarParent
         get() = feedController.feed_title_parent
-    // todo automated kt-utils.el getter conversion
-    //     * converted mutable variable to value
     private val frame
         get() = (feedController.findViewById(R.id.feed_main_frame) as FrameLayout)
     private var upButton =
