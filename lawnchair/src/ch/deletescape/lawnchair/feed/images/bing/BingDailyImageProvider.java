@@ -50,8 +50,8 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
     private final Map<Bitmap, String> images = new LinkedHashMap<>();
     private final Callback<BingPictureResponse> callback = new Callback<BingPictureResponse>() {
         @Override
-        public synchronized void onResponse(Call<BingPictureResponse> call,
-                Response<BingPictureResponse> response) {
+        public synchronized void onResponse(@NotNull Call<BingPictureResponse> call,
+                                            Response<BingPictureResponse> response) {
             Log.d(BingDailyImageProvider.this.getClass().getName(),
                     "onResponse: retrieved daily wallpaper " + response);
             images.clear();
@@ -84,7 +84,8 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
         }
 
         @Override
-        public synchronized void onFailure(Call<BingPictureResponse> call, Throwable t) {
+        public synchronized void onFailure(@NotNull Call<BingPictureResponse> call,
+                                           @NotNull Throwable t) {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try {
                     Thread.sleep(TimeUnit.MINUTES.toMillis(1));
