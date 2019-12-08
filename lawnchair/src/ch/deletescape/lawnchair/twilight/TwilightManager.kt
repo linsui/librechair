@@ -30,16 +30,15 @@ import android.os.Message
 import android.util.ArrayMap
 import android.util.Log
 import androidx.core.content.ContextCompat
-import ch.deletescape.lawnchair.awareness.SunriseSunsetManager
 import ch.deletescape.lawnchair.ensureOnMainThread
-import ch.deletescape.lawnchair.feed.util.Pairs
+import ch.deletescape.lawnchair.lawnchairLocationManager
 import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.BuildConfig
 import net.time4j.PlainDate
+import net.time4j.calendar.astro.SolarTime
 import net.time4j.engine.CalendarDays
-import java.time.ZonedDateTime
 
 @SuppressLint("MissingPermission")
 class TwilightManager(private val context: Context) : Handler.Callback, (Double, Double) -> Unit {
@@ -47,7 +46,7 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
     private val handler = Handler(Looper.getMainLooper(), this)
 
     private val alarmManager = ContextCompat.getSystemService(context, AlarmManager::class.java)!!
-    private lateinit var sunriseSunset: Pairs.Pair<ZonedDateTime, ZonedDateTime>
+    private val locationManager = context.lawnchairLocationManager
 
     private val listeners = ArrayMap<TwilightListener, Handler>()
     private var hasListeners = false
@@ -56,7 +55,7 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
     private var lastLocation: Pair<Double, Double>? = null
 
     var lastTwilightState: TwilightState? =
-            calculateTwilightState(System.currentTimeMillis())
+            calculateTwilightState(null, null, System.currentTimeMillis())
         get() = synchronized(listeners) { field }
         private set(value) {
             synchronized(listeners) {
@@ -158,13 +157,16 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
         if (lastTwilightState != null) {
             alarmManager.cancel(PendingIntent.getBroadcast(context, 0, updateIntent, 0))
         }
+
+        locationManager.changeCallbacks -= this
         lastLocation = null
     }
 
     private fun updateTwilightState() {
         // Calculate the twilight state based on the current time and location.
         val currentTimeMillis = System.currentTimeMillis()
-        val state = calculateTwilightState(currentTimeMillis)
+        val location = lastLocation ?: locationManager.location
+        val state = calculateTwilightState(location?.first, location?.second, currentTimeMillis)
         Log.d(TAG, "updateTwilightState: $state")
 
         lastTwilightState = state
@@ -183,22 +185,6 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
         updateTwilightState()
     }
 
-    private fun calculateTwilightState(timeMillis: Long): TwilightState? {
-        if (::sunriseSunset.isInitialized.not()) {
-            return null
-        }
-        val sunriseMillis = sunriseSunset.car().toEpochSecond() * 1000
-        val sunsetMillis = sunriseSunset.cdr().toEpochSecond() * 1000
-
-        val adjustedSunrise = if (sunriseMillis < timeMillis) PlainDate.nowInSystemTime().plus(
-                CalendarDays.ONE).get(SunriseSunsetManager.getClock().sunrise()).inLocalView().posixTime * 1000 else sunriseMillis
-        // TODO kt-utils.el automated boolean negation
-        val adjustedSunset = if (!(sunriseMillis < timeMillis)) PlainDate.nowInSystemTime().plus(
-                CalendarDays.ONE).get(SunriseSunsetManager.getClock().sunset()).inLocalView().posixTime * 1000 else sunsetMillis
-
-        return TwilightState(adjustedSunrise, adjustedSunset)
-    }
-
     companion object : SingletonHolder<TwilightManager, Context>(
             ensureOnMainThread(useApplicationContext(::TwilightManager))) {
 
@@ -209,5 +195,29 @@ class TwilightManager(private val context: Context) : Handler.Callback, (Double,
 
         private const val MSG_START_LISTENING = 1
         private const val MSG_STOP_LISTENING = 2
+
+        fun calculateTwilightState(latitude: Double?, longitude: Double?,
+                                   timeMillis: Long): TwilightState? {
+            if (latitude == null || longitude == null) {
+                return null
+            }
+            val solarTime = SolarTime.ofLocation(latitude, longitude)
+            val sunrise = solarTime.sunrise()
+            val sunset = solarTime.sunset()
+            val sunriseMillis = PlainDate.nowInSystemTime().get(
+                    sunrise).inLocalView().toMoment().posixTime * 1000
+            val sunsetMillis = PlainDate.nowInSystemTime().get(
+                    sunset).inLocalView().toMoment().posixTime * 1000
+
+            val adjustedSunrise = if (sunriseMillis < timeMillis) PlainDate.nowInSystemTime().plus(
+                    CalendarDays.ONE).get(sunrise).inLocalView().posixTime * 1000 else sunriseMillis
+            // TODO kt-utils.el automated boolean negation
+            val adjustedSunset =
+                    if (!(sunriseMillis < timeMillis)) PlainDate.nowInSystemTime().plus(
+                            CalendarDays.ONE).get(
+                            sunset).inLocalView().posixTime * 1000 else sunsetMillis
+
+            return TwilightState(adjustedSunrise, adjustedSunset)
+        }
     }
 }
