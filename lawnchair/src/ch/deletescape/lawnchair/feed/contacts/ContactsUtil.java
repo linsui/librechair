@@ -28,9 +28,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import com.android.launcher3.R;
@@ -67,7 +67,8 @@ public class ContactsUtil {
             contact.lbcLookupKey = String.valueOf(cursor.getInt(4));
             try {
                 contact.intent = new Intent(Intent.ACTION_VIEW,
-                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(cursor.getInt(4))));
+                        Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI,
+                                String.valueOf(cursor.getInt(4))));
                 contact.name = cursor.getString(1);
                 try {
                     contact.avatar = getAvatar(cursor.getString(3), context);
@@ -97,9 +98,9 @@ public class ContactsUtil {
                         ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
                 if (imageUri != null) {
                     try {
-                        contactAvatar = MediaStore.Images.Media
-                                .getBitmap(context.getContentResolver(),
-                                        Uri.parse(imageUri));
+                        contactAvatar = ImageDecoder.decodeBitmap(
+                                ImageDecoder.createSource(context.getContentResolver(),
+                                        Uri.parse(imageUri)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
