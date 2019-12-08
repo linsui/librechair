@@ -53,6 +53,7 @@ import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
 import ch.deletescape.lawnchair.feed.chips.ChipCardProvider;
 import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider;
+import ch.deletescape.lawnchair.feed.dt.I18nDtClocksProvider;
 import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
 import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider;
 import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider;
@@ -105,6 +106,7 @@ public class G2CategorizedTabbingController extends TabController {
                 || it instanceof MediaNotificationProvider
                 || it instanceof FeedWidgetsProvider
                 || it instanceof FeedContactsProvider
+                || it instanceof I18nDtClocksProvider
                 || Objects
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "tools")).collect(Collectors.toList());
