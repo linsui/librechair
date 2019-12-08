@@ -43,23 +43,25 @@ import androidx.annotation.Nullable;
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
+import org.jetbrains.annotations.NotNull;
+
 public class BatteryMeterDrawableBase extends Drawable {
     private static final float ASPECT_RATIO = .58f;
     public static final String TAG = BatteryMeterDrawableBase.class.getSimpleName();
     private static final float RADIUS_RATIO = 1.0f / 17f;
     protected final Context mContext;
-    protected final Paint mFramePaint;
-    protected final Paint mBatteryPaint;
-    protected final Paint mWarningTextPaint;
-    protected final Paint mTextPaint;
-    protected final Paint mBoltPaint;
-    protected final Paint mPlusPaint;
-    protected final Paint mPowersavePaint;
-    protected float mButtonHeightFraction;
+    private final Paint mFramePaint;
+    private final Paint mBatteryPaint;
+    private final Paint mWarningTextPaint;
+    private final Paint mTextPaint;
+    private final Paint mBoltPaint;
+    private final Paint mPlusPaint;
+    private final Paint mPowersavePaint;
+    private float mButtonHeightFraction;
     private int mLevel = -1;
     private boolean mCharging;
     private boolean mPowerSaveEnabled;
-    protected boolean mPowerSaveAsColorError = true;
+    private boolean mPowerSaveAsColorError = true;
     private boolean mShowPercent;
     private static final boolean SINGLE_DIGIT_PERCENT = false;
     private static final int FULL = 96;
@@ -187,7 +189,7 @@ public class BatteryMeterDrawableBase extends Drawable {
         mPowerSaveAsColorError = asError;
     }
     // an approximation of View.postInvalidate()
-    public void postInvalidate() {
+    private void postInvalidate() {
         unscheduleSelf(this::invalidateSelf);
         scheduleSelf(this::invalidateSelf, 0);
     }
@@ -218,7 +220,7 @@ public class BatteryMeterDrawableBase extends Drawable {
         mWarningTextHeight = -mWarningTextPaint.getFontMetrics().ascent;
     }
     @Override
-    public boolean getPadding(Rect padding) {
+    public boolean getPadding(@NotNull Rect padding) {
         if (mPadding.left == 0
             && mPadding.top == 0
             && mPadding.right == 0
@@ -258,13 +260,14 @@ public class BatteryMeterDrawableBase extends Drawable {
         mChargeColor = fillColor;
         invalidateSelf();
     }
-    protected int batteryColorForLevel(int level) {
+
+    private int batteryColorForLevel(int level) {
         return (mCharging || (mPowerSaveEnabled && mPowerSaveAsColorError))
                 ? mChargeColor
                 : getColorForLevel(level);
     }
     @Override
-    public void draw(Canvas c) {
+    public void draw(@NotNull Canvas c) {
         final int level = mLevel;
         final Rect bounds = getBounds();
         if (level == -1) return;
@@ -430,10 +433,12 @@ public class BatteryMeterDrawableBase extends Drawable {
     public int getCriticalLevel() {
         return mCriticalLevel;
     }
-    protected float getAspectRatio() {
+
+    private float getAspectRatio() {
         return ASPECT_RATIO;
     }
-    protected float getRadiusRatio() {
+
+    private float getRadiusRatio() {
         return RADIUS_RATIO;
     }
 }
