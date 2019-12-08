@@ -73,8 +73,6 @@ import ch.deletescape.lawnchair.views.SpringRecyclerView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.config.FeatureFlags
-import com.android.overlayclient.compat.ColorDelegate
-import com.android.overlayclient.compat.FloatDelegate
 import com.android.overlayclient.state.ActivityState
 import com.android.overlayclient.state.ServiceState
 import com.google.android.libraries.launcherclient.ILauncherOverlay
@@ -1423,16 +1421,10 @@ class LauncherFeed(private val originalContext: Context,
             feedAttached = false
             layoutParams = lp
         }
-        //        layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        //        layoutParams.flags = layoutParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
     }
 
     override fun windowAttached2(bundle: Bundle, cb: ILauncherOverlayCallback) {
-        d("windowAttached2: $bundle")
-        d("windowAttached2: primary background color is ${String.format("#%06X",
-                0xFFFFFF and bundle.getInt(ColorDelegate.PRIMARY))}")
-        d("windowAttached2: exported CCR is ${bundle.getFloat(FloatDelegate.CARD_CORNER_RADIUS)}")
-        windowAttached(bundle.getParcelable("layout_params")!!, cb, 0 /* TODO: figure this out */)
+        windowAttached(bundle.getParcelable("layout_params")!!, cb, 0)
     }
 
     override fun windowDetached(isChangingConfigurations: Boolean) {
