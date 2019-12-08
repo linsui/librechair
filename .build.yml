@@ -9,13 +9,13 @@ environment:
   VARIANTGO_CAP:       "QuickstepLawnchairL3goDevWithWebView"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
-  CHAT_ID:             "librechair"
+  CHAT_ID:             "librechairr"
   APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-debug"
   APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 secrets:
-  - d2f72036-bb5d-42df-959b-c02c0e43acc7 # bot token, other secrets
+  - 8061fc56-f8b5-4efc-977f-fbbb26e4163e. # bot token, other secrets
   - 97ec254d-ce28-40b5-a907-57b7fcc083b3 # signing keys [ TOP SECRET ]
   - 685bfdb2-ca3a-4332-bbdb-d7d0d722c923 # keystore alias [ TOP SECRET ]
   - bd60efd1-123b-43ca-a61f-4c0522ab9114 # keystore password [ TOP SECRET ]
