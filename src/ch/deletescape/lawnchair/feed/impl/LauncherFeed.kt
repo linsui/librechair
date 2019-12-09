@@ -1511,9 +1511,6 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         runOnMainThread {
-            if (useTabbedMode) {
-                tabbedProviders[currentTab]?.forEach { it.markRead() }
-            }
             if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
                 internalActions["search".hashCode()] = searchAction
             } else {
@@ -1536,6 +1533,11 @@ class LauncherFeed(private val originalContext: Context,
         d("refresh: refreshing chips")
         FeedScope.launch {
             ChipController.getInstance(context, this@LauncherFeed).refresh()
+        }
+        runOnMainThread {
+            if (useTabbedMode) {
+                tabbedProviders[currentTab]?.forEach { it.markRead() }
+            }
         }
         d("refresh: beginning refresh 1")
         runOnMainThread {
