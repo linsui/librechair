@@ -33,6 +33,7 @@ import java.net.URLConnection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -49,10 +50,11 @@ public class ApodDailyImageProvider extends AbstractImageProvider<String> {
     private final Map<Bitmap, String> images = new LinkedHashMap<>();
     private final Callback<ApodResponse> callback = new Callback<ApodResponse>() {
         @Override
-        public synchronized void onResponse(Call<ApodResponse> call,
-                Response<ApodResponse> response) {
+        public synchronized void onResponse(@NotNull Call<ApodResponse> call,
+                                            Response<ApodResponse> response) {
             if (response.isSuccessful() && response.body() != null
-                    && response.body().hdurl != null || response.body().url != null && response
+                    && response.body().hdurl != null || Objects.requireNonNull(
+                    response.body()).url != null && response
                     .body().media_type.equals("image")) {
                 Executors.newSingleThreadExecutor().submit(() -> {
                     synchronized (images) {
@@ -75,7 +77,7 @@ public class ApodDailyImageProvider extends AbstractImageProvider<String> {
         }
 
         @Override
-        public synchronized void onFailure(Call<ApodResponse> call, Throwable t) {
+        public synchronized void onFailure(@NotNull Call<ApodResponse> call, @NotNull Throwable t) {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try {
                     Thread.sleep(TimeUnit.MINUTES.toMillis(1));
