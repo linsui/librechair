@@ -1085,7 +1085,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         updateActions()
-        tabView.tabMode = TabLayout.MODE_FIXED
+        tabView.tabMode = TabLayout.MODE_AUTO
         tabView.tabGravity = TabLayout.GRAVITY_FILL
         tabView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
     }
