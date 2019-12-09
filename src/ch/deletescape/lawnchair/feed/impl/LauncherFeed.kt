@@ -562,8 +562,6 @@ class LauncherFeed(private val originalContext: Context,
                     upButton.animate().translationY(
                             (upButton.measuredHeight + (upButton.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin).toFloat())
                 }
-                tabView.tabMode = TabLayout.MODE_SCROLLABLE
-                tabView.tabGravity = TabLayout.GRAVITY_FILL
                 tabView.setOnTouchListener { _, _ ->
                     feedController.disallowInterceptCurrentTouchEvent = true
                     true
@@ -1088,6 +1086,8 @@ class LauncherFeed(private val originalContext: Context,
         }
         updateActions()
         tabView.tabMode = TabLayout.MODE_FIXED
+        tabView.tabGravity = TabLayout.GRAVITY_FILL
+        tabView.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
