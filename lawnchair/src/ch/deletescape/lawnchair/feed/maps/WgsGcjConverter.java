@@ -25,14 +25,14 @@ package ch.deletescape.lawnchair.feed.maps;
 import kotlin.Pair;
 
 public class WgsGcjConverter {
-    public static final double SEMI_MAJOR_AXIS = 6378245.0;
-    public static final double BAIDU_SEMI_MAJOR_AXIS =
+    private static final double SEMI_MAJOR_AXIS = 6378245.0;
+    private static final double BAIDU_SEMI_MAJOR_AXIS =
             SEMI_MAJOR_AXIS - 108;
-    public static final double FLATTENING = 0.00335233;
-    public static final double SEMI_MINOR_AXIS = SEMI_MAJOR_AXIS * (1.0 - FLATTENING);
+    private static final double FLATTENING = 0.00335233;
+    private static final double SEMI_MINOR_AXIS = SEMI_MAJOR_AXIS * (1.0 - FLATTENING);
     private static final double a = SEMI_MAJOR_AXIS;
     private static final double b = SEMI_MINOR_AXIS;
-    public static final double EE = (a * a - b * b) / (a * b);
+    private static final double EE = (a * a - b * b) / (a * b);
 
     private static double[] array1 = {75, 60, 45, 30, 15, 0};
     private static double[] array3 = {12890594.86, 8362377.87, 5591021, 3481989.83, 1678043.12, 0};
@@ -119,10 +119,7 @@ public class WgsGcjConverter {
         if (wgsLat < 0.8293 || wgsLat > 55.8271) {
             return true;
         }
-        if (wgsLon < 72.004 || wgsLon > 137.8347) {
-            return true;
-        }
-        return false;
+        return wgsLon < 72.004 || wgsLon > 137.8347;
     }
 
 
@@ -176,7 +173,6 @@ public class WgsGcjConverter {
     public static XYOrLatLonPair latLng2Mercator(XYOrLatLonPair p) {
         double[] arr = null;
         double n_lat = p.getLatOrY() > 74 ? 74 : p.getLatOrY();
-        n_lat = n_lat < -74 ? -74 : n_lat;
         for (int i = 0; i < array1.length; i++) {
             if (p.getLatOrY() >= array1[i]) {
                 arr = array2[i];
@@ -191,6 +187,7 @@ public class WgsGcjConverter {
                 }
             }
         }
+        assert arr != null;
         double[] res = convert(p.getLatOrY(), p.getLonOrX(), arr);
         return new XYOrLatLonPair(res[0], res[1]);
     }
