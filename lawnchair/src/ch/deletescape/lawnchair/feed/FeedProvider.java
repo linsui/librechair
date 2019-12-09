@@ -43,6 +43,8 @@ public abstract class FeedProvider {
     private LauncherFeed feed;
     private FeedProviderContainer container;
     private WindowManager windowService;
+    private boolean hasUnread;
+
 
     public FeedProvider(Context c) {
         this(c, new HashMap<>());
@@ -115,6 +117,24 @@ public abstract class FeedProvider {
 
     public List<Action> getActions(boolean exclusive) {
         return Collections.EMPTY_LIST;
+    }
+
+    public void markRead() {
+        this.hasUnread = false;
+        if (feed != null) {
+            feed.onUnreadStateChanged();
+        }
+    }
+
+    public void markUnread() {
+        this.hasUnread = true;
+        if (feed != null) {
+            feed.onUnreadStateChanged();
+        }
+    }
+
+    public boolean hasUnread() {
+        return hasUnread;
     }
 
     protected void requestRefreshFeed() {

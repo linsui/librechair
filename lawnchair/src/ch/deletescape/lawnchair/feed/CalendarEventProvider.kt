@@ -85,6 +85,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         }
                     }
                 }
+            } else {
+                runOnMainThread {
+                    markUnread()
+                }
             }
         }
 
@@ -118,6 +122,10 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         }
                     }
                     ec = true
+                } else {
+                    runOnMainThread {
+                        markUnread()
+                    }
                 }
             }
         }
@@ -258,6 +266,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
     }
 
     companion object {
-        val calendarApps = listOf("com.android.calendar", "ws.xsoh.etar", "com.google.android.apps.calendar")
+        val calendarApps =
+                listOf("com.android.calendar", "ws.xsoh.etar", "com.google.android.apps.calendar")
     }
 }

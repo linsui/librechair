@@ -1522,6 +1522,9 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         runOnMainThread {
+            if (useTabbedMode) {
+                tabbedProviders[currentTab]?.forEach { it.markRead() }
+            }
             if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
                 internalActions["search".hashCode()] = searchAction
             } else {
@@ -1787,6 +1790,15 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     fun onBackPressed() = false
+
+    fun onUnreadStateChanged() {
+        if (useTabbedMode) {
+            for (i in 0 until tabView.tabCount) {
+                tabView.getTabAt(i)?.orCreateBadge?.isVisible =
+                        tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
+            }
+        }
+    }
 
     private data class ScreenData(val x: Float?, val y: Float?, val view: View,
                                   val rect: Rect? = null)
