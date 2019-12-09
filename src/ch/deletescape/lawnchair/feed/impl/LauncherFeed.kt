@@ -637,18 +637,6 @@ class LauncherFeed(private val originalContext: Context,
                             icon = it.icon
                         })
                     }
-                    val pxWidth = context.resources.displayMetrics.widthPixels
-                    val tlWidth = tabView
-                            .apply {
-                                measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                            }
-                            .measuredWidth
-                    if (pxWidth < tlWidth) {
-                        tabView.tabMode = TabLayout.MODE_SCROLLABLE
-                    } else {
-                        tabView.tabMode = TabLayout.MODE_FIXED
-                        tabView.setOnTouchListener(null)
-                    }
                     currentTab = tabs[0]
                     if (!reinit) {
                         d("reinitState: adding onTabChangedListener", Throwable())
@@ -1099,6 +1087,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         updateActions()
+        tabView.tabMode = TabLayout.MODE_FIXED
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
