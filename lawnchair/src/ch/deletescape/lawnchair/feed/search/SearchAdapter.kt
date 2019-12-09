@@ -54,12 +54,12 @@ class SearchAdapter(private val parent: FeedAdapter, var searchQuery: String?) :
         @JvmStatic
         fun matches(query: String, content: String): Boolean {
             if (query.startsWith(".re ")) {
-                try {
+                return try {
                     d("matches: regex query is ${query.substring(4)}")
-                    return content.matches(Regex(query.substring(4)))
+                    content.matches(Regex(query.substring(4)))
                 } catch (e: RuntimeException) {
                     e.printStackTrace()
-                    return false
+                    false
                 }
             } else {
                 if (content.contains(query, true)) {
