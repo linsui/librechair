@@ -45,11 +45,14 @@ import androidx.preference.DialogPreference
 import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.feed.FeedProviderContainer
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.MainFeedController
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
 import com.android.launcher3.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
         DialogPreference(context, attrs),
@@ -63,7 +66,12 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
     fun setProviders(providers: List<FeedProviderContainer>) {
         context.feedPrefs.feedProviders.apply {
             clear()
-            addAll(providers)
+            FeedScope.launch {
+                delay(100)
+                runOnMainThread {
+                    addAll(providers)
+                }
+            }
         }
     }
 
@@ -114,10 +122,6 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
                 updateSummary()
             }
         })
-    }
-
-    override fun onDetached() {
-        super.onDetached()
     }
 
     override fun onListPrefChanged(key: String) {
