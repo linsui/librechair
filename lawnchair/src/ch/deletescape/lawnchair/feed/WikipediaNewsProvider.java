@@ -37,6 +37,7 @@ import com.android.launcher3.R;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
@@ -50,7 +51,9 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     public WikipediaNewsProvider(Context c) {
         super(c);
-        this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
+        this.newsIcon = Objects.requireNonNull(
+                Objects.requireNonNull(
+                        c.getDrawable(R.drawable.ic_assessment_black_24dp)).getConstantState())
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
     }
