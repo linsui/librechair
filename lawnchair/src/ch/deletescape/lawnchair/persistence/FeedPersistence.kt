@@ -102,6 +102,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_disable_rv_springs", false)
     val showTitleInSharedArticles
             by BooleanDelegate(context, "feed_show_title_in_shared_articles", false)
+    val displayUnreadIndicatorMarks
+            by BooleanDelegate(context, "feed_display_unread_indicators", true)
 
     /* Constants */
     val conservativeRefreshes = true
