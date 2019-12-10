@@ -51,6 +51,7 @@ public class NotificationFeedProvider extends FeedProvider {
                 handled = false;
                 notifs.clear();
                 notifs.addAll(sbns);
+                markUnread();
             }
         });
     }
