@@ -1787,6 +1787,7 @@ class LauncherFeed(private val originalContext: Context,
             for (i in 0 until tabView.tabCount) {
                 tabView.getTabAt(i)?.orCreateBadge?.isVisible =
                         tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
+                tabView.getTabAt(i)?.orCreateBadge?.setTint(getColorForIndex(i))
             }
         }
     }
