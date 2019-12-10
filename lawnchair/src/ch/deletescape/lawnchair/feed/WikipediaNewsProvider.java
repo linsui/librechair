@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Objects;
 
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
 import ch.deletescape.lawnchair.feed.wikipedia.news.News;
 
@@ -62,7 +63,10 @@ public class WikipediaNewsProvider extends FeedProvider {
     public void setFeed(LauncherFeed feed) {
         super.setFeed(feed);
         if (!init) {
-            News.addListener(items -> this.adapter = new ITNAdapter(items, getControllerView()));
+            News.addListener(items -> {
+                this.adapter = new ITNAdapter(items, getControllerView());
+                FeedUtil.runOnMainThread(this::markUnread);
+            });
             init = true;
         }
     }
