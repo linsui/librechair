@@ -1511,6 +1511,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         runOnMainThread {
+            onUnreadStateChanged()
             if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
                 internalActions["search".hashCode()] = searchAction
             } else {
