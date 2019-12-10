@@ -55,6 +55,12 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
     private var ec = true
+        set(value) {
+            field = value
+            runOnMainThread {
+                markUnread()
+            }
+        }
     private val events = mutableListOf<CalendarManager.CalendarEvent>()
     private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
 
@@ -127,9 +133,7 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
         }
     }
 
-    override fun isVolatile(): Boolean {
-        return ec
-    }
+    override fun isVolatile() = ec
 
     override fun getCards(): List<Card> {
         val cards = ArrayList<Card>()
