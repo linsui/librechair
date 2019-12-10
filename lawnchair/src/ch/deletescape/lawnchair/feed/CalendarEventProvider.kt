@@ -122,10 +122,6 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         }
                     }
                     ec = true
-                } else {
-                    runOnMainThread {
-                        markUnread()
-                    }
                 }
             }
         }
