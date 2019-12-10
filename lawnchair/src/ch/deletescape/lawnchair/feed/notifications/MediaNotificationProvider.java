@@ -61,6 +61,7 @@ import ch.deletescape.lawnchair.awareness.VolumeManager;
 import ch.deletescape.lawnchair.feed.Card;
 import ch.deletescape.lawnchair.feed.FeedAdapter;
 import ch.deletescape.lawnchair.feed.FeedProvider;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.views.AnimatingSeekbar;
 import ch.deletescape.lawnchair.theme.ThemeManager;
 import kotlin.Unit;
@@ -73,7 +74,10 @@ public class MediaNotificationProvider extends FeedProvider {
     public MediaNotificationProvider(Context c) {
         super(c);
         mediaListener = new OMCMediaListener(c,
-                () -> onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking())));
+                () -> {
+                    FeedUtil.runOnMainThread(this::markUnread);
+                    onMediaNotifChange.forEach(it -> it.accept(mediaListener.getTracking()));
+                });
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -103,8 +107,9 @@ public class MediaNotificationProvider extends FeedProvider {
                     R.color.qsb_background_hotseat_white));
             seekbarContainer.setAlpha(0);
             seekbar.setProgressTintList(
-                    ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(parent.getContext(),
-                            LawnchairUtilsKt.getColorEngineAccent(parent.getContext()))));
+                    ColorStateList.valueOf(
+                            FeedAdapter.Companion.getOverrideColor(parent.getContext(),
+                                    LawnchairUtilsKt.getColorEngineAccent(parent.getContext()))));
             seekbar.setThumbTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(parent.getContext(),
                             LawnchairUtilsKt.getColorEngineAccent(parent.getContext()))));
