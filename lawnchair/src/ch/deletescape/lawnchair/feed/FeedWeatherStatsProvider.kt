@@ -46,6 +46,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
     init {
         WeatherManager.subscribeWeather {
             weatherData = it
+            runOnMainThread {
+                markUnread()
+            }
         }
         WeatherManager.subscribeHourly {
             hourlyWeatherForecast = it
@@ -65,6 +68,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
             val type = WeatherTypes
                     .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
             weatherTypeResource = WeatherTypes.getStringResource(type)
+            runOnMainThread {
+                markUnread()
+            }
         }
     }
 
