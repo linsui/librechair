@@ -60,9 +60,15 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
     init {
         WeatherManager.subscribeWeather {
             weatherData = it
+            runOnMainThread {
+                markUnread()
+            }
             handled = false
         }
         WeatherManager.subscribeHourly {
+            runOnMainThread {
+                markUnread()
+            }
             hourlyWeatherForecast = it
             val today: List<Int> = it.data.filter {
                 it.date.before(tomorrow())
@@ -83,6 +89,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
             handled = false
         }
         WeatherManager.subscribeDaily {
+            runOnMainThread {
+                markUnread()
+            }
             dailyForecast = it
             handled = false
         }
