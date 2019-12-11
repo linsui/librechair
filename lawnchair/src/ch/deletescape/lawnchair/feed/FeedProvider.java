@@ -139,9 +139,7 @@ public abstract class FeedProvider {
 
     protected void requestRefreshFeed() {
         if (feed != null) {
-            Executors.newSingleThreadExecutor().submit(() -> {
-                feed.refresh(0, 0, true, true);
-            });
+            Executors.newSingleThreadExecutor().submit(() -> feed.refresh(0, 0, true, true));
         } else if (adapter != null) {
             adapter.notifyDataSetChanged();
         }
