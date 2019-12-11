@@ -134,9 +134,9 @@ class LauncherFeed(private val originalContext: Context,
         get() = tabController.allTabs.isNotEmpty()
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers).toMutableMap()
     private val tabs = tabController.allTabs.toMutableList()
-    private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also {
-        it.viewTreeObserver.addOnGlobalLayoutListener {
-            (it.getChildAt(0) as ViewGroup).childs.forEach {
+    private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also { tl ->
+        tl.viewTreeObserver.addOnGlobalLayoutListener {
+            (tl.getChildAt(0) as ViewGroup).childs.forEach {
                 val textView = it::class.java.getDeclaredField(
                         "textView").also { it.isAccessible = true }.get(it)
                         as? TextView
@@ -146,6 +146,13 @@ class LauncherFeed(private val originalContext: Context,
                                     textView.typeface.style) {
                                 textView.typeface = it
                             }
+                }
+                it.setOnLongClickListener { _ ->
+                    tabbedProviders[tabs[(tl.getChildAt(
+                            0) as ViewGroup).indexOfChild(it)]]
+                            ?.forEach { it.markRead() }
+                    onUnreadStateChanged()
+                    true
                 }
             }
         }
