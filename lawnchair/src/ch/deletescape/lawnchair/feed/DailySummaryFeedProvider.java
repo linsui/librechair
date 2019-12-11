@@ -53,6 +53,7 @@ import java.util.Objects;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.awareness.CalendarManager;
 import ch.deletescape.lawnchair.awareness.SunriseSunsetManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.util.Pairs;
 import ch.deletescape.lawnchair.font.CustomFontManager;
 import kotlin.Unit;
@@ -77,6 +78,7 @@ public class DailySummaryFeedProvider extends FeedProvider {
                             .withMinute(0)
                             .withHour(0)
                             .withSecond(0))).count();
+            FeedUtil.runOnMainThread(this::markUnread);
             return Unit.INSTANCE;
         });
         SunriseSunsetManager.subscribe(ss -> sunriseSunset = ss);
