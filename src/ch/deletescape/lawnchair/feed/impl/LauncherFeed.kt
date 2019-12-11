@@ -248,7 +248,8 @@ class LauncherFeed(private val originalContext: Context,
                             ({
                                 Utilities.openURLinBrowser(context, readMoreUrl)
                             } as () -> Unit) else null)
-                screen.display(this, it.getPositionOnScreen().first, it.getPositionOnScreen().second)
+                screen.display(this, it.getPositionOnScreen().first,
+                        it.getPositionOnScreen().second)
             }
             runOnMainThread {
                 (infobox.parent as View).visibility =
@@ -693,6 +694,12 @@ class LauncherFeed(private val originalContext: Context,
                                                         textView.typeface.style) {
                                                     textView.typeface = it
                                                 }
+                                    }
+                                    it.setOnLongClickListener {
+                                        tabbedProviders[tabs[(tabView.getChildAt(
+                                                0) as ViewGroup).indexOfChild(it)]]
+                                                ?.forEach { it.markRead() }
+                                        true
                                     }
                                 }
                                 updateActions()
