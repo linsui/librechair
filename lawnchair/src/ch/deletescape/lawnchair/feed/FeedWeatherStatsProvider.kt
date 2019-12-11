@@ -50,9 +50,9 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
                 markUnread()
             }
         }
-        WeatherManager.subscribeHourly {
-            hourlyWeatherForecast = it
-            val today: List<Int> = it.data.filter {
+        WeatherManager.subscribeHourly { forecast ->
+            hourlyWeatherForecast = forecast
+            val today: List<Int> = forecast.data.filter {
                 it.date.before(tomorrow())
             }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
             forecastLow = Collections.min(today)
@@ -81,7 +81,7 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
                          @SuppressLint("SetTextI18n")
                          override fun inflate(parent: ViewGroup): View {
                              d("inflate: inflating view")
-                             val v = LayoutInflater.from(parent.getContext())
+                             val v = LayoutInflater.from(parent.context)
                                      .inflate(R.layout.weather_heads_up, parent, false)
                              d("inflate: inflated view")
                              val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
@@ -105,11 +105,11 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
                              d("inflate: set thext for rest of views")
                              if (useWhiteText(backgroundColor, parent.context)) {
                                  highLow.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                                  information.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                                  currentInformation.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                              }
                              d("inflate: returning view")
                              return v
