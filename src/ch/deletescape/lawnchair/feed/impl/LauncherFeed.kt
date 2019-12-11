@@ -1786,10 +1786,12 @@ class LauncherFeed(private val originalContext: Context,
     fun onUnreadStateChanged() {
         if (useTabbedMode) {
             for (i in 0 until tabView.tabCount) {
-                tabView.getTabAt(i)?.orCreateBadge?.isVisible =
-                        tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
-                                && context.feedPrefs.displayUnreadIndicatorMarks
-                tabView.getTabAt(i)?.orCreateBadge?.setTint(getColorForIndex(i))
+                if (tabView.selectedTabPosition != i) {
+                    tabView.getTabAt(i)?.orCreateBadge?.isVisible =
+                            tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
+                                    && context.feedPrefs.displayUnreadIndicatorMarks
+                    tabView.getTabAt(i)?.orCreateBadge?.setTint(getColorForIndex(i))
+                }
             }
         }
     }
