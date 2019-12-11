@@ -699,6 +699,7 @@ class LauncherFeed(private val originalContext: Context,
                                         tabbedProviders[tabs[(tabView.getChildAt(
                                                 0) as ViewGroup).indexOfChild(it)]]
                                                 ?.forEach { it.markRead() }
+                                        onUnreadStateChanged()
                                         true
                                     }
                                 }
