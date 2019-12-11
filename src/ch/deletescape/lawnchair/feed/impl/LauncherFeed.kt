@@ -148,11 +148,13 @@ class LauncherFeed(private val originalContext: Context,
                             }
                 }
                 it.setOnLongClickListener { _ ->
+                    val hadUnread = tabbedProviders[tabs[(tl.getChildAt(
+                            0) as ViewGroup).indexOfChild(it)]]?.any { it.hasUnread() } == true
                     tabbedProviders[tabs[(tl.getChildAt(
                             0) as ViewGroup).indexOfChild(it)]]
                             ?.forEach { it.markRead() }
                     onUnreadStateChanged()
-                    true
+                    hadUnread
                 }
             }
         }
@@ -703,11 +705,14 @@ class LauncherFeed(private val originalContext: Context,
                                                 }
                                     }
                                     it.setOnLongClickListener {
+                                        val hadUnread = tabbedProviders[tabs[(tabView.getChildAt(
+                                                0) as ViewGroup).indexOfChild(
+                                                it)]]?.any { it.hasUnread() } == true
                                         tabbedProviders[tabs[(tabView.getChildAt(
                                                 0) as ViewGroup).indexOfChild(it)]]
                                                 ?.forEach { it.markRead() }
                                         onUnreadStateChanged()
-                                        true
+                                        hadUnread
                                     }
                                 }
                                 updateActions()
@@ -1608,9 +1613,11 @@ class LauncherFeed(private val originalContext: Context,
                                 lastSize < currentSize -> {
                                     val diffSize = currentSize - lastSize
                                     adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize,
+                                            diffSize)
                                 }
-                                lastSize == currentSize -> adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                lastSize == currentSize -> adapter.notifyItemRangeChanged(
+                                        sizeBefore - 1, lastSize)
                                 currentSize < lastSize -> {
                                     val diffSize = lastSize - currentSize
                                     adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
@@ -1632,9 +1639,11 @@ class LauncherFeed(private val originalContext: Context,
                                 lastSize < currentSize -> {
                                     val diffSize = currentSize - lastSize
                                     adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
-                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize, diffSize)
+                                    adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize,
+                                            diffSize)
                                 }
-                                lastSize == currentSize -> adapter.notifyItemRangeChanged(sizeBefore - 1, lastSize)
+                                lastSize == currentSize -> adapter.notifyItemRangeChanged(
+                                        sizeBefore - 1, lastSize)
                                 currentSize < lastSize -> {
                                     val diffSize = lastSize - currentSize
                                     adapter.notifyItemRangeChanged(sizeBefore - 1, currentSize)
