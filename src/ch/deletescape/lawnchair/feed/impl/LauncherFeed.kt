@@ -1726,6 +1726,7 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     fun updateActions() {
+        onUnreadStateChanged()
         toolbar.menu.clear()
         if (!context.feedPrefs.hideActions && providerScreens.isEmpty()) {
             if (adapter.providers.filter { !it.isActionFree }.size == 1) {
