@@ -81,7 +81,10 @@ public class DailySummaryFeedProvider extends FeedProvider {
             FeedUtil.runOnMainThread(this::markUnread);
             return Unit.INSTANCE;
         });
-        SunriseSunsetManager.subscribe(ss -> sunriseSunset = ss);
+        SunriseSunsetManager.subscribe(ss -> {
+            sunriseSunset = ss;
+            markUnread();
+        });
     }
 
     @Override
