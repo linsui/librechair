@@ -1793,7 +1793,7 @@ class LauncherFeed(private val originalContext: Context,
                             tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
                                     && context.feedPrefs.displayUnreadIndicatorMarks
                     tabView.getTabAt(i)?.orCreateBadge?.setTint(
-                            FeedAdapter.getOverrideColor(context))
+                            FeedAdapter.getOverrideColor(context, dark = dark))
                 }
             }
         }
