@@ -36,7 +36,6 @@ import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.Binder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -1386,27 +1385,6 @@ class LauncherFeed(private val originalContext: Context,
                 feedController.background =
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
             }
-        }
-        accessingPackages += context.packageManager.getPackagesForUid(
-                Binder.getCallingUid())?.toSet() ?: emptySet()
-        handler.post {
-            feedAttached = true
-            if (accessingPackages.size > 1) {
-                displayView({
-                    return@displayView FrameLayout(it.context).apply {
-                        layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-                        layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
-                        addView(TextView(it.context).apply {
-                            layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
-                            layoutParams.width = FrameLayout.LayoutParams.MATCH_PARENT
-                            gravity = Gravity.CENTER
-                            text = R.string.message_feed_multiple_processes
-                                    .fromStringRes(context)
-                        })
-                    }
-                }, 0f, 0f)
-            }
-            feedController.startScroll()
         }
     }
 
