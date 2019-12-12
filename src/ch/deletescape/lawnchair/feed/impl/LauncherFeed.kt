@@ -103,7 +103,6 @@ class LauncherFeed(private val originalContext: Context,
                     0xFFFFFF and value)}", Throwable())
         }
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
-    private val accessingPackages = mutableSetOf<String>()
     private val activityState = ActivityState()
     var background: Bitmap? = null
     private lateinit var currentTab: TabController.Item
