@@ -67,6 +67,10 @@ public final class SunriseSunsetManager {
                                 clock.sunset(Twilight.ASTRONOMICAL)).inZonalView(
                                 ZoneId.systemDefault().getId()).getPosixTime()),
                         ZoneId.systemDefault());
+                if (currentSs.car().equals(sunrise)
+                        && currentSs.cdr().equals(sunset)) {
+                    return Unit.INSTANCE;
+                }
                 Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
                 currentSs = current = Pairs.cons(sunrise, sunset);
                 synchronized (listeners) {
@@ -91,6 +95,10 @@ public final class SunriseSunsetManager {
                                     clock.sunset(Twilight.ASTRONOMICAL)).inZonalView(
                                     ZoneId.systemDefault().getId()).getPosixTime()),
                             ZoneId.systemDefault());
+                    if (currentSs.car().equals(sunrise)
+                            && currentSs.cdr().equals(sunset)) {
+                        return Unit.INSTANCE;
+                    }
                     Pairs.Pair<ZonedDateTime, ZonedDateTime> current;
                     currentSs = current = Pairs.cons(sunrise, sunset);
                     synchronized (listeners) {
