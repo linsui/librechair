@@ -22,7 +22,6 @@ package ch.deletescape.lawnchair.feed;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +45,6 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -134,12 +132,6 @@ public class DailySummaryFeedProvider extends FeedProvider {
 
         public void refresh() {
             items.clear();
-            Date currentTime = new Date();
-            String query =
-                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTime()
-                            + " ) AND ( " + CalendarContract.Events.DTSTART + " <= "
-                            + LawnchairUtilsKt
-                            .tomorrow(currentTime).getTime() + " ))";
             if (feedProvider.calEvCount > 0) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(
