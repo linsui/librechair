@@ -128,10 +128,10 @@ class LauncherFeed(private val originalContext: Context,
     private var tabChanged = false
     private val tabController: TabController =
             TabController.inflate(context.lawnchairPrefs.feedTabController, context)
+    private val useTabbedMode
+        get() = tabController.allTabs.isNotEmpty()
     private val tabbedProviders = tabController.sortFeedProviders(adapter.providers).toMutableMap()
     private val tabs = tabController.allTabs.toMutableList()
-    private val useTabbedMode
-        get() = tabs.isNotEmpty()
     private var tabView = (feedController.findViewById(R.id.feed_tabs) as TabLayout).also { tl ->
         tl.viewTreeObserver.addOnGlobalLayoutListener {
             (tl.getChildAt(0) as ViewGroup).childs.forEach {
@@ -623,7 +623,6 @@ class LauncherFeed(private val originalContext: Context,
                             arrayOf(tabColours[0],
                                     R.color.textColorPrimary.fromColorRes(context)).toIntArray())
                 }
-                processTabs()
                 if (!useTabbedMode) {
                     if (tabbedProviders.keys != setOf(null)) {
                         error("tabbing inconsistency detected: no tabs were defined but providers are sorted by tabs")
@@ -632,6 +631,7 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     tabView.visibility = View.GONE
                 } else {
+                    processTabs()
                     mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
                     tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(
                             Class.forName(
