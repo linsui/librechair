@@ -627,7 +627,7 @@ class LauncherFeed(private val originalContext: Context,
                 if (!useTabbedMode) {
                     tabView.visibility = View.GONE
                 } else {
-                    mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
+                    conservativeRefreshTimes = mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
                     tabView.setSelectedTabIndicator(TabIndicatorProvider.inflate(
                             Class.forName(
                                     context.lawnchairPrefs.feedIndicatorProvider).kotlin as KClass<out TabIndicatorProvider>,
