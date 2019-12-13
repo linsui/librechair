@@ -625,11 +625,6 @@ class LauncherFeed(private val originalContext: Context,
                 }
                 processTabs()
                 if (!useTabbedMode) {
-                    if (tabbedProviders.keys != setOf(null)) {
-                        error("tabbing inconsistency detected: no tabs were defined but providers are sorted by tabs")
-                    } else if (tabbedProviders.keys.isEmpty()) {
-                        error("tabbing inconsistency detected: no tabs were defined but there is no null key in provider map")
-                    }
                     tabView.visibility = View.GONE
                 } else {
                     mutableMapOf(* tabs.map { it to 0L }.toTypedArray())
