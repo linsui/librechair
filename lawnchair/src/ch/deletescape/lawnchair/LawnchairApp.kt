@@ -64,7 +64,10 @@ import java.util.*
 import kotlin.collections.HashSet
 
 open class LawnchairApp : Application() {
-    val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also { it.start() }.looper)
+    val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also {
+        it.isDaemon = true
+        it.start()
+    }.looper)
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
     val bugReporter = LawnchairBugReporter(this, Thread.getDefaultUncaughtExceptionHandler())
