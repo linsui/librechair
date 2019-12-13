@@ -1380,6 +1380,10 @@ class LauncherFeed(private val originalContext: Context,
                         if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
             }
         }
+        handler.post {
+            feedAttached = true
+            feedController.startScroll()
+        }
     }
 
     override fun onScroll(progress: Float) {
@@ -1389,11 +1393,14 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     override fun endScroll() {
-        handler.post { synchronized(this@LauncherFeed) { feedController.endScroll() } }
+        handler.post {
+            feedController.endScroll()
+        }
     }
 
     override fun windowAttached(lp: WindowManager.LayoutParams, cb: ILauncherOverlayCallback,
                                 flags: Int) {
+        d("windowAttached: window attached $lp $cb $flags")
         callback = cb
         cb.overlayStatusChanged(1)
         if (::layoutParams.isInitialized.not() || layoutParams != lp) {
