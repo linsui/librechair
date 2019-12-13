@@ -1383,7 +1383,9 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         handler.post {
-            feedAttached = true
+            if (!feedAttached) {
+                feedAttached = true
+            }
             feedController.startScroll()
         }
     }
