@@ -243,24 +243,26 @@ class LauncherFeed(private val originalContext: Context,
     @Suppress("USELESS_CAST")
     @SuppressLint("SetTextI18n")
     fun initBitmapInfo(url: String, desc: String, bkg: Bitmap) {
-        if (context.lawnchairPrefs.feedShowInfobox) {
-            readMoreUrl = url
-            infobox.text = desc.take(60)
-            if (infobox.text.length == 60) {
-                infobox.text = infobox.text.toString() + "..."
-            }
-            infobox.setOnClickListener {
-                val screen = ImageDataScreen(context, bkg, desc,
-                        if (readMoreUrl != null)
-                            ({
-                                Utilities.openURLinBrowser(context, readMoreUrl)
-                            } as () -> Unit) else null)
-                screen.display(this, it.getPositionOnScreen().first,
-                        it.getPositionOnScreen().second)
-            }
-            runOnMainThread {
-                (infobox.parent as View).visibility =
-                        if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
+        runOnMainThread {
+            if (context.lawnchairPrefs.feedShowInfobox) {
+                readMoreUrl = url
+                infobox.text = desc.take(60)
+                if (infobox.text.length == 60) {
+                    infobox.text = infobox.text.toString() + "..."
+                }
+                infobox.setOnClickListener {
+                    val screen = ImageDataScreen(context, bkg, desc,
+                            if (readMoreUrl != null)
+                                ({
+                                    Utilities.openURLinBrowser(context, readMoreUrl)
+                                } as () -> Unit) else null)
+                    screen.display(this, it.getPositionOnScreen().first,
+                            it.getPositionOnScreen().second)
+                }
+                runOnMainThread {
+                    (infobox.parent as View).visibility =
+                            if (infobox.text.length > 1 && context.lawnchairPrefs.feedShowInfobox) View.VISIBLE else View.GONE
+                }
             }
         }
     }
