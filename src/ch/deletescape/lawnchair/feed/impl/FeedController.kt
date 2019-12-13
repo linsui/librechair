@@ -19,7 +19,6 @@ import android.animation.*
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
-import android.os.Looper
 import android.util.AttributeSet
 import android.util.Property
 import android.view.MotionEvent
@@ -33,7 +32,6 @@ import ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS
 import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.useWhiteText
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
@@ -43,12 +41,14 @@ import kotlin.math.sign
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
         SwipeDetector.Listener {
     var mOpenedCallback: (() -> Unit)? = null
-    val mDetector: SwipeDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
+    val mDetector: SwipeDetector
+    var discardTouchEvents = false
     protected var mStartState: FeedState? = null
     protected var mFromState: FeedState? = null
     protected var mToState: FeedState? = null
     protected var mCurrentAnimationPlaybackController: AnimatorPlaybackController? = null
     protected var mPendingAnimation: PendingAnimation? = null
+    private val mNoIntercept: Boolean = false
     private var mStartProgress: Float = 0.toFloat()
     // Ratio of transition process [0, 1] to drag displacement (px)
     private var mProgressMultiplier: Float = 0.toFloat()
@@ -87,6 +87,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     protected val shiftRange: Float
         get() = width.toFloat()
+
+    init {
+        mDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
+    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -189,19 +193,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     fun startScroll() {
-        if (Thread.currentThread() != Looper.getMainLooper().thread) {
-            error("startScroll can only be called from the main thread")
-        }
-        d("startScroll: ${Thread.currentThread().name}")
         mDownTime = time()
         onInterceptTouchEvent(
                 MotionEvent.obtain(mDownTime, mDownTime, MotionEvent.ACTION_DOWN, 0f, 0f, 0))
     }
 
     fun onScroll(progress: Float) {
-        if (Thread.currentThread() != Looper.getMainLooper().thread) {
-            error("onScroll can only be called from the main thread")
-        }
         mLastScroll = progress
         onTouchEvent(
                 MotionEvent.obtain(mDownTime, time(), MotionEvent.ACTION_MOVE, mLastScroll * width,
@@ -215,9 +212,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        d("onInterceptTouchEvent: $ev")
-        if (disallowInterceptCurrentTouchEvent
-                && mFromState == FeedState.OPEN) {
+        if (disallowInterceptCurrentTouchEvent) {
             disallowInterceptCurrentTouchEvent = false
             return false
         }
@@ -225,15 +220,14 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 mFromState === FeedState.OPEN) {
             return false
         }
-        d("onInterceptTouchEvent: $ev 1")
-        mDetector.setDetectableScrollConditions(swipeDirection, true)
+        mDetector.setDetectableScrollConditions(swipeDirection,
+                mCurrentAnimationPlaybackController != null)
         mDetector.onTouchEvent(ev)
-        d("onInterceptTouchEvent: $ev 2")
         return mDetector.isDraggingOrSettling
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        return onInterceptTouchEvent(event)
+        return if (discardTouchEvents) true else mDetector.onTouchEvent(event)
     }
 
     /**
@@ -283,7 +277,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
     }
 
-    private fun reinitCurrentAnimation(reachedToState: Boolean): Boolean {
+    private fun reinitCurrentAnimation(reachedToState: Boolean,
+                                       isDragTowardPositive: Boolean): Boolean {
         val newFromState = if (mFromState == null) mCurrentState
         else if (reachedToState) mToState else mFromState
         val newToState = getTargetState(newFromState!!)
@@ -306,13 +301,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDragStart(start: Boolean) {
-        d("onDragStart: $start")
         mStartState = mCurrentState
         if (mCurrentAnimationPlaybackController == null) {
             mFromState = mStartState
             mToState = null
             cancelAnimationControllers()
-            reinitCurrentAnimation(false)
+            reinitCurrentAnimation(false, mDetector.wasInitialTouchPositive())
             mDisplacementShift = 0f
         } else {
             mCurrentAnimationPlaybackController!!.pause()
@@ -323,7 +317,6 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDrag(displacement: Float, velocity: Float): Boolean {
-        d("onDrag: $displacement")
         val deltaProgress =
                 mProgressMultiplier * ((if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement - mDisplacementShift)
@@ -332,7 +325,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         val isDragTowardPositive = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
             -1 else 1) * displacement - mDisplacementShift < 0
         if (progress <= 0) {
-            if (reinitCurrentAnimation(false)) {
+            if (reinitCurrentAnimation(false, isDragTowardPositive)) {
                 mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
@@ -340,7 +333,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 }
             }
         } else if (progress >= 1) {
-            if (reinitCurrentAnimation(true)) {
+            if (reinitCurrentAnimation(true, isDragTowardPositive)) {
                 mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
@@ -359,7 +352,6 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     }
 
     override fun onDragEnd(velocity: Float, fling: Boolean) {
-        d("onDragEnd: $velocity, $fling")
         var fling = fling
         val blockedFling = fling && mFlingBlockCheck.isBlocked
         if (blockedFling) {
