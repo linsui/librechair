@@ -16,6 +16,7 @@
 package ch.deletescape.lawnchair.feed.impl
 
 import android.animation.*
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Handler
@@ -35,20 +36,20 @@ import ch.deletescape.lawnchair.useWhiteText
 import com.android.launcher3.R
 import com.android.launcher3.util.FlingBlockCheck
 import com.android.launcher3.util.PendingAnimation
+import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlin.math.sign
 
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
         SwipeDetector.Listener {
     var mOpenedCallback: (() -> Unit)? = null
-    val mDetector: SwipeDetector
+    val mDetector: SwipeDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
     var discardTouchEvents = false
-    protected var mStartState: FeedState? = null
-    protected var mFromState: FeedState? = null
-    protected var mToState: FeedState? = null
-    protected var mCurrentAnimationPlaybackController: AnimatorPlaybackController? = null
-    protected var mPendingAnimation: PendingAnimation? = null
-    private val mNoIntercept: Boolean = false
+    private var mStartState: FeedState? = null
+    private var mFromState: FeedState? = null
+    private var mToState: FeedState? = null
+    private var mCurrentAnimationPlaybackController: AnimatorPlaybackController? = null
+    private var mPendingAnimation: PendingAnimation? = null
     private var mStartProgress: Float = 0.toFloat()
     // Ratio of transition process [0, 1] to drag displacement (px)
     private var mProgressMultiplier: Float = 0.toFloat()
@@ -85,12 +86,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             return swipeDirection
         }
 
-    protected val shiftRange: Float
+    private val shiftRange: Float
         get() = width.toFloat()
-
-    init {
-        mDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
-    }
 
     override fun onFinishInflate() {
         super.onFinishInflate()
@@ -226,6 +223,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         return mDetector.isDraggingOrSettling
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return if (discardTouchEvents) true else mDetector.onTouchEvent(event)
     }
@@ -234,11 +232,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
      * Returns the state to go to from fromState given the drag direction. If there is no state in
      * that direction, returns fromState.
      */
-    protected fun getTargetState(fromState: FeedState): FeedState {
+    private fun getTargetState(fromState: FeedState): FeedState {
         return if (fromState === FeedState.CLOSED) FeedState.OPEN else FeedState.CLOSED
     }
 
-    protected fun initCurrentAnimation(): Float {
+    private fun initCurrentAnimation(): Float {
         val range = shiftRange
         val maxAccuracy =
                 ((2 * range).toLong() * (1.0 - context.feedPrefs.openingAnimationSpeed)).roundToLong()
@@ -277,10 +275,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
     }
 
-    private fun reinitCurrentAnimation(reachedToState: Boolean,
-                                       isDragTowardPositive: Boolean): Boolean {
-        val newFromState = if (mFromState == null) mCurrentState
-        else if (reachedToState) mToState else mFromState
+    private fun reinitCurrentAnimation(reachedToState: Boolean): Boolean {
+        val newFromState = when {
+            mFromState == null -> mCurrentState
+            reachedToState -> mToState
+            else -> mFromState
+        }
         val newToState = getTargetState(newFromState!!)
 
         if (newFromState === mFromState && newToState === mToState || newFromState === newToState) {
@@ -306,7 +306,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             mFromState = mStartState
             mToState = null
             cancelAnimationControllers()
-            reinitCurrentAnimation(false, mDetector.wasInitialTouchPositive())
+            reinitCurrentAnimation(false)
             mDisplacementShift = 0f
         } else {
             mCurrentAnimationPlaybackController!!.pause()
@@ -322,10 +322,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                     -1 else 1) * displacement - mDisplacementShift)
         val progress = deltaProgress + mStartProgress
         updateProgress(progress)
-        val isDragTowardPositive = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
-            -1 else 1) * displacement - mDisplacementShift < 0
         if (progress <= 0) {
-            if (reinitCurrentAnimation(false, isDragTowardPositive)) {
+            if (reinitCurrentAnimation(false)) {
                 mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
@@ -333,7 +331,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 }
             }
         } else if (progress >= 1) {
-            if (reinitCurrentAnimation(true, isDragTowardPositive)) {
+            if (reinitCurrentAnimation(true)) {
                 mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
@@ -347,12 +345,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         return true
     }
 
-    protected fun updateProgress(fraction: Float) {
+    private fun updateProgress(fraction: Float) {
         mCurrentAnimationPlaybackController!!.setPlayFraction(fraction)
     }
 
-    override fun onDragEnd(velocity: Float, fling: Boolean) {
-        var fling = fling
+    override fun onDragEnd(velocity: Float, _fling: Boolean) {
+        var fling = _fling
         val blockedFling = fling && mFlingBlockCheck.isBlocked
         if (blockedFling) {
             fling = false
@@ -364,13 +362,12 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                     -1 else 1)
         val interpolatedProgress =
                 mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
-        if (fling) {
-            targetState = if (sign(velocity).compareTo(Math.signum(
+        targetState = if (fling) {
+            if (sign(velocity).compareTo(sign(
                             mProgressMultiplier)) == 0) mToState else mFromState
             // snap to top or bottom using the release velocity
         } else {
-            targetState =
-                    if (interpolatedProgress > SUCCESS_TRANSITION_PROGRESS) mToState else mFromState
+            if (interpolatedProgress > SUCCESS_TRANSITION_PROGRESS) mToState else mFromState
         }
 
         val endProgress: Float
@@ -392,8 +389,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                         progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
                         1f)
                 duration = SwipeDetector.calculateDuration(velocity,
-                        endProgress - Math.max(progress,
-                                0f)) * durationMultiplier
+                        endProgress - progress.coerceAtLeast(0f)) * durationMultiplier
             }
         } else {
             // Let the state manager know that the animation didn't go to the target state,
@@ -411,8 +407,8 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 startProgress = Utilities.boundToRange(
                         progress + velocity * SINGLE_FRAME_MS.toFloat() * mProgressMultiplier, 0f,
                         1f)
-                duration = SwipeDetector.calculateDuration(velocity, Math.min(progress,
-                        1f) - endProgress) * durationMultiplier
+                duration = SwipeDetector.calculateDuration(velocity,
+                        progress.coerceAtMost(1f) - endProgress) * durationMultiplier
             }
         }
 
@@ -421,19 +417,19 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
         val anim = mCurrentAnimationPlaybackController!!.animationPlayer
         anim.setFloatValues(startProgress, endProgress)
-        updateSwipeCompleteAnimation(anim, duration, targetState, velocity, fling)
+        updateSwipeCompleteAnimation(anim, duration, velocity)
         mCurrentAnimationPlaybackController!!.dispatchOnStart()
         anim.start()
     }
 
-    protected fun updateSwipeCompleteAnimation(animator: ValueAnimator, expectedDuration: Long,
-                                               targetState: FeedState?, velocity: Float,
-                                               isFling: Boolean) {
+    private fun updateSwipeCompleteAnimation(animator: ValueAnimator,
+                                             expectedDuration: Long,
+                                             velocity: Float) {
         animator.setDuration(expectedDuration).interpolator =
                 scrollInterpolatorForVelocity(velocity)
     }
 
-    protected fun onSwipeInteractionCompleted(targetState: FeedState?) {
+    private fun onSwipeInteractionCompleted(targetState: FeedState?) {
         cancelAnimationControllers()
         var shouldGoToTargetState = true
         if (mPendingAnimation != null) {
@@ -448,7 +444,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         mLauncherFeed!!.onProgress(mProgress, false)
     }
 
-    protected fun clearState() {
+    private fun clearState() {
         cancelAnimationControllers()
     }
 
@@ -461,8 +457,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     companion object {
 
         // Progress after which the transition is assumed to be a success in case user does not fling
-        val SUCCESS_TRANSITION_PROGRESS = 0.5f
-        private val TAG = "FeedController"
+        const val SUCCESS_TRANSITION_PROGRESS = 0.5f
         val PROGRESS: Property<FeedController, Float> =
                 object : Property<FeedController, Float>(Float::class.java, "progress") {
                     override fun get(`object`: FeedController): Float? {
@@ -475,7 +470,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
                 }
 
         fun blockedFlingDurationFactor(velocity: Float): Int {
-            return Utilities.boundToRange(Math.abs(velocity) / 2, 2f, 6f).toInt()
+            return Utilities.boundToRange(abs(velocity) / 2, 2f, 6f).toInt()
         }
     }
 }
