@@ -1696,12 +1696,6 @@ class LauncherFeed(private val originalContext: Context,
         }
     }
 
-    fun pickWidget(callback: (id: Int) -> Unit) {
-        handler.post {
-            OverlayCallbacks.postWidgetRequest(context, callback)
-        }
-    }
-
     fun updateActions() {
         onUnreadStateChanged()
         toolbar.menu.clear()

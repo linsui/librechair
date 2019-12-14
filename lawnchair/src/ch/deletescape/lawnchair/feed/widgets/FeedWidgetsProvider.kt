@@ -26,6 +26,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.os.Bundle
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
+import ch.deletescape.lawnchair.cp.OverlayCallbacks
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.DbScope
 import ch.deletescape.lawnchair.feed.FeedProvider
@@ -116,7 +117,7 @@ class FeedWidgetsProvider(c: Context) : FeedProvider(c) {
                 if (useWhiteText(backgroundColor, context)) R.color.textColorPrimary.fromColorRes(
                         context) else R.color.textColorPrimaryInverse.fromColorRes(context)),
                 R.string.title_feed_toolbar_add_widget.fromStringRes(context), Runnable {
-            feed?.pickWidget {
+            OverlayCallbacks.postWidgetRequest(context) {
                 if (it != -1) {
                     DbScope.launch {
                         try {
