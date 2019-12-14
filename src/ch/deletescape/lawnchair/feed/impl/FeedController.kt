@@ -43,8 +43,8 @@ import kotlin.math.sign
 class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs),
         SwipeDetector.Listener {
     var mOpenedCallback: (() -> Unit)? = null
-    val mDetector: SwipeDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
-    var discardTouchEvents = false
+    private val mDetector: SwipeDetector = SwipeDetector(context, this, SwipeDetector.HORIZONTAL)
+    private var discardTouchEvents = false
     private var mStartState: FeedState? = null
     private var mFromState: FeedState? = null
     private var mToState: FeedState? = null
