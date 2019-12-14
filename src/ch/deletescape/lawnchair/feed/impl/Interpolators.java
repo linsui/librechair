@@ -56,7 +56,7 @@ public class Interpolators {
     public static final Interpolator OVERSHOOT_1_2 = new OvershootInterpolator(1.2f);
     public static final Interpolator TOUCH_RESPONSE_INTERPOLATOR =
             new PathInterpolator(0.3f, 0f, 0.1f, 1f);
-    public static final Interpolator ZOOM_OUT = new Interpolator() {
+    private static final Interpolator ZOOM_OUT = new Interpolator() {
 
         private static final float FOCAL_LENGTH = 0.35f;
 
@@ -131,9 +131,10 @@ public class Interpolators {
      * This is useful, for example, if we only use this interpolator for part of the animation, such
      * as to take over a user-controlled animation when they let go.
      */
-    private static Interpolator mapToProgress(Interpolator interpolator, float lowerBound,
+    private static Interpolator mapToProgress(float lowerBound,
                                               float upperBound) {
-        return t -> Utilities.mapRange(interpolator.getInterpolation(t), lowerBound, upperBound);
+        return t -> Utilities.mapRange(Interpolators.ACCEL_DEACCEL.getInterpolation(t), lowerBound,
+                upperBound);
     }
 
     public static Interpolator constant(float value) {
@@ -206,7 +207,7 @@ public class Interpolators {
             // such that final progress is endProgress. For example, if we overshot to 1.1 but want
             // to end at 1, we need to map to 1/1.1.
             Interpolator settle = Interpolators.clampToProgress(Interpolators.mapToProgress(
-                    ACCEL_DEACCEL, 1, (endProgress - start) / (end - start)), overshootFraction, 1);
+                    1, (endProgress - start) / (end - start)), overshootFraction, 1);
             interpolator = t -> t <= overshootFraction
                     ? overshoot.getInterpolation(t)
                     : settle.getInterpolation(t);
