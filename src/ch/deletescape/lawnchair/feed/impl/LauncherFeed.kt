@@ -1404,7 +1404,6 @@ class LauncherFeed(private val originalContext: Context,
 
     override fun windowAttached(lp: WindowManager.LayoutParams, cb: ILauncherOverlayCallback,
                                 flags: Int) {
-        d("windowAttached: window attached $lp $cb $flags")
         callback = cb
         cb.overlayStatusChanged(1)
         if (::layoutParams.isInitialized.not() || layoutParams != lp) {
