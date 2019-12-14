@@ -105,9 +105,6 @@ class FeedPersistence private constructor(val context: Context) {
     val displayUnreadIndicatorMarks
             by BooleanDelegate(context, "feed_display_unread_indicators", true)
 
-    /* Constants */
-    val conservativeRefreshes = true
-
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }
 

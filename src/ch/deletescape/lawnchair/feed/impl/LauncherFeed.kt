@@ -1570,7 +1570,7 @@ class LauncherFeed(private val originalContext: Context,
         val oldCards = adapter.immutableCards
         FeedScope.launch {
             if (!quick) {
-                if (clearCache || !context.feedPrefs.conservativeRefreshes ||
+                if (clearCache ||
                         ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                 15)) ||
                                 (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
@@ -1635,7 +1635,7 @@ class LauncherFeed(private val originalContext: Context,
                 }
             }
             if (quick) {
-                if (!(clearCache || !context.feedPrefs.conservativeRefreshes ||
+                if (!(clearCache ||
                                 ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                         15)) ||
                                         (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
@@ -1656,7 +1656,7 @@ class LauncherFeed(private val originalContext: Context,
                                     if (!flag) {
                                         flag = true
                                         FeedScope.launch {
-                                            if (clearCache || !context.feedPrefs.conservativeRefreshes ||
+                                            if (clearCache ||
                                                     ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                                             15)) ||
                                                             (useTabbedMode && System.currentTimeMillis() - conservativeRefreshTimes[currentTab]!! > TimeUnit.MINUTES.toMillis(
