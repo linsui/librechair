@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ShortcutInfo
@@ -44,18 +45,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("Registered")
 class OverlayService : Service(), () -> Unit {
     companion object {
+        @SuppressLint("StaticFieldLeak")
         lateinit var feed: LauncherFeed
         val feedInitialized
             get() = ::feed.isInitialized
     }
 
-    val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
-
-    override fun onCreate() {
-        super.onCreate()
-    }
+    private val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
 
     override fun onBind(intent: Intent): IBinder? {
         if (!feedInitialized) {
@@ -101,12 +100,13 @@ class OverlayService : Service(), () -> Unit {
                  *  will fix later.
                  */
                 feed.reinitState(feed.background,
-                                 reinit = true,
-                                 blurBitmap = false)
+                        reinit = true,
+                        blurBitmap = false)
             }
         }
     }
 
+    @SuppressLint("Registered")
     class CompanionService : Service() {
         override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
             override fun onBackPressed() = feed.onBackPressed()
@@ -125,10 +125,10 @@ class OverlayService : Service(), () -> Unit {
             }
 
             override fun shouldScrollWorkspace(): Boolean {
-                if (feedInitialized) {
-                    return feed.feedController.animationDelegate.shouldScroll
+                return if (feedInitialized) {
+                    feed.feedController.animationDelegate.shouldScroll
                 } else {
-                    return true
+                    true
                 }
             }
         }
