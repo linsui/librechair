@@ -30,6 +30,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipItemBridge
 import ch.deletescape.lawnchair.feed.chips.ChipProvider
 import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.fromStringRes
+import ch.deletescape.lawnchair.runOnMainThread
 import com.android.launcher3.R
 import java.util.*
 import java.util.function.Consumer
@@ -70,7 +71,9 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                         * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                         / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
             }
-            changeListeners.forEach { it() }
+            changeListeners.forEach {
+                runOnMainThread(it)
+            }
         }
     }
 
