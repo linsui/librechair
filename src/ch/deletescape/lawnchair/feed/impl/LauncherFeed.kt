@@ -30,9 +30,7 @@ import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Rect
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -1785,9 +1783,10 @@ class LauncherFeed(private val originalContext: Context,
                     tabView.getTabAt(i)?.orCreateBadge?.isVisible =
                             tabbedProviders[tabs[i]!!]!!.any { it.hasUnread() }
                                     && context.feedPrefs.displayUnreadIndicatorMarks
-                    tabView.getTabAt(i)?.orCreateBadge?.setTint(
-                            context.colorEngine.getResolver(
-                                    ColorEngine.Resolvers.FEED_UNREAD_INDICATOR).resolveColor())
+                    tabView.getTabAt(i)?.orCreateBadge?.colorFilter =
+                            PorterDuffColorFilter(context.colorEngine.getResolver(
+                                    ColorEngine.Resolvers.FEED_UNREAD_INDICATOR).resolveColor(),
+                                    PorterDuff.Mode.DST_OVER)
                 }
             }
         }
