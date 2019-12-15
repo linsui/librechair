@@ -1530,7 +1530,7 @@ class LauncherFeed(private val originalContext: Context,
                 recyclerView.suppressLayout(true)
             }
         }
-        FeedScope.launch {
+        FeedRefreshScope.launch {
             ChipController.getInstance(context, this@LauncherFeed).refresh()
         }
         runOnMainThread {
@@ -1565,7 +1565,7 @@ class LauncherFeed(private val originalContext: Context,
             chipAdapter.notifyDataSetChanged()
         }
         val oldCards = adapter.immutableCards
-        FeedScope.launch {
+        FeedRefreshScope.launch {
             if (!quick) {
                 if (clearCache ||
                         ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
@@ -1652,7 +1652,7 @@ class LauncherFeed(private val originalContext: Context,
                                 override fun onAnimationEnd(animation: Animator?) {
                                     if (!flag) {
                                         flag = true
-                                        FeedScope.launch {
+                                        FeedRefreshScope.launch {
                                             if (clearCache ||
                                                     ((!useTabbedMode && System.currentTimeMillis() - lastRefresh > TimeUnit.MINUTES.toMillis(
                                                             15)) ||

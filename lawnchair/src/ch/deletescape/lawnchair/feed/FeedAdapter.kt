@@ -138,7 +138,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                 it.context = context
             }
             changed += (cardCache[it]?.size ?: 0) to it
-            coroutines += FeedScope.launch {
+            coroutines += FeedRefreshScope.launch {
                 it.feed = feed
                 cardCache[it] = it.cards.toImmutableList()
             }
@@ -155,7 +155,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                 it.context = context
             }
             changed += (cardCache[it]?.size ?: 0) to it
-            coroutines += FeedScope.launch {
+            coroutines += FeedRefreshScope.launch {
                 it.feed = feed
                 cardCache[it] = it.cards.toImmutableList()
             }
@@ -294,7 +294,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                                 if (backupCards[holder.adapterPosition].onRemoveListener != null) {
                                     backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                                 }
-                                FeedScope.launch {
+                                FeedRefreshScope.launch {
                                     cardCache.keys.forEach { fp ->
                                         if (cardCache.contains(fp) && cardCache[fp]!!.contains(
                                                         card)) {
@@ -333,7 +333,7 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                     if (backupCards[holder.adapterPosition].onRemoveListener != null) {
                         backupCards[holder.adapterPosition].onRemoveListener!!(holder.itemView)
                     }
-                    FeedScope.launch {
+                    FeedRefreshScope.launch {
                         cardCache.keys.forEach { fp ->
                             if (cardCache.contains(fp) && cardCache[fp]!!.contains(
                                             card)) {

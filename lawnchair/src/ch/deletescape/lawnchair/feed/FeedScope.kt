@@ -32,6 +32,13 @@ object FeedScope : CoroutineScope {
 
 }
 
+object FeedRefreshScope : CoroutineScope {
+    @ObsoleteCoroutinesApi
+    override val coroutineContext: CoroutineContext =
+            newFixedThreadPoolContext(64, "feed")
+
+}
+
 object ArticleJobsScope : CoroutineScope {
     @ObsoleteCoroutinesApi
     override val coroutineContext: CoroutineContext =
