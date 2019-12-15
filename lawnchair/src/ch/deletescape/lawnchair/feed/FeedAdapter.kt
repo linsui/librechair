@@ -516,7 +516,7 @@ class CardViewHolder(parent: ViewGroup, type: Int, backgroundColor: Int) :
             (itemView as ViewGroup).allChildren.forEach { view ->
                 if (view is TextView && view.tag != "font_ignore") {
                     CustomFontManager.getInstance(itemView.context)
-                            .loadFont(CustomFontManager.FONT_TEXT, view.typeface.style,
+                            .loadFont(CustomFontManager.FONT_FEED, view.typeface.style,
                                     into = {
                                         view.typeface = Typeface.create(it, view.typeface.style)
                                     })
