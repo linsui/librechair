@@ -162,6 +162,7 @@ class ColorEngine private constructor(val context: Context) :
             const val FEED_BACKGROUND = "pref_feedBackgroundColorResolver"
             const val FEED_CHIP = "pref_feedChipColorResolver"
             const val FEED_CARD = "pref_feedCardColorResolver"
+            const val FEED_UNREAD_INDICATOR = "pref_feedUnreadIndicator"
             fun getDefaultResolver(key: String, engine: ColorEngine): ColorResolver {
                 val context = engine.context
                 return when (key) {
@@ -171,7 +172,7 @@ class ColorEngine private constructor(val context: Context) :
                     ALLAPPS_QSB_BG -> {
                         DrawerQsbAutoResolver(createConfig(key, engine))
                     }
-                    ALLAPPS_ICON_LABEL -> {
+                    ALLAPPS_ICON_LABEL, FEED_UNREAD_INDICATOR -> {
                         DrawerLabelAutoResolver(createConfig(key, engine))
                     }
                     WORKSPACE_ICON_LABEL -> {

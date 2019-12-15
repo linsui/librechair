@@ -804,4 +804,5 @@
     <string name="title_tab_controller_categorized_g2">Categorized (new)</string>
     <string name="summary_pref_feed_display_unread_indicators">Whether or not to display unread indicators in tabs</string>
     <string name="title_pref_feed_display_unread_indicators">Display unread indicators</string>
+    <string name="title_pref_feedUnreadIndicators">Unread indicator tint</string>
 </resources>
