@@ -24,36 +24,39 @@ import com.android.launcher3.R
 import java.util.*
 
 enum class WeatherTypes {
-    CLEAR, CLEAR_CLOUDS, CLEAR_RAIN, CLEAR_SNOW, CLEAR_THUNDER, CLOUDS, CLOUDS_CLEAR, CLOUDS_RAIN, CLOUDS_SNOW, CLOUDS_THUNDER, RAIN, RAIN_CLEAR, RAIN_CLOUDS, RAIN_SNOW, RAIN_THUNDER, THUNDER, THUNDER_CLEAR, THUNDER_CLOUDS, THUNDER_SNOW, THUNDER_RAIN, SNOW, SNOW_CLEAR, SNOW_CLOUDS, SNOW_RAIN, SNOW_THUNDER;
+    CLEAR, CLEAR_CLOUDS, CLEAR_RAIN, CLEAR_SNOW, CLEAR_THUNDER, CLOUDS, CLOUDS_CLEAR, CLOUDS_RAIN,
+    CLOUDS_SNOW, CLOUDS_THUNDER, RAIN, RAIN_CLEAR, RAIN_CLOUDS, RAIN_SNOW, RAIN_THUNDER, THUNDER,
+    THUNDER_CLEAR, THUNDER_CLOUDS, THUNDER_SNOW, THUNDER_RAIN, SNOW, SNOW_CLEAR, SNOW_CLOUDS,
+    SNOW_RAIN, SNOW_THUNDER;
 
     companion object {
         fun getStringResource(type: WeatherTypes): Int {
             return when (type) {
-                WeatherTypes.CLEAR -> R.string.hud_weather_information_sunny
-                WeatherTypes.CLEAR_CLOUDS -> R.string.hud_weather_information_sunny_occasional_clouds
-                WeatherTypes.CLEAR_RAIN -> R.string.hud_weather_information_sunny_occasional_rain
-                WeatherTypes.CLEAR_SNOW -> R.string.hud_weather_information_sunny_occasional_snow
-                WeatherTypes.CLEAR_THUNDER -> R.string.hud_weather_information_sunny_occasional_thunder
-                WeatherTypes.CLOUDS -> R.string.hud_weather_information_cloudy
-                WeatherTypes.CLOUDS_CLEAR -> R.string.hud_weather_information_cloudy_occasional_sun
-                WeatherTypes.CLOUDS_RAIN -> R.string.hud_weather_information_cloudy_occasional_rain
-                WeatherTypes.CLOUDS_SNOW -> R.string.hud_weather_information_cloudy_occasional_snow
-                WeatherTypes.CLOUDS_THUNDER -> R.string.hud_weather_information_cloudy_occasional_thunder
-                WeatherTypes.RAIN -> R.string.hud_weather_information_rainy
-                WeatherTypes.RAIN_CLEAR -> R.string.hud_weather_information_rainy_occasional_sun
-                WeatherTypes.RAIN_CLOUDS -> R.string.hud_weather_information_rainy_occasional_clouds
-                WeatherTypes.RAIN_SNOW -> R.string.hud_weather_information_rainy_occasional_snow
-                WeatherTypes.RAIN_THUNDER -> R.string.hud_weather_information_rainy_occasional_thunder
-                WeatherTypes.THUNDER -> R.string.hud_weather_information_thunder
-                WeatherTypes.THUNDER_CLEAR -> R.string.hud_weather_information_thunder_occasional_sun
-                WeatherTypes.THUNDER_CLOUDS -> R.string.hud_weather_information_thunder_occasional_clouds
-                WeatherTypes.THUNDER_SNOW -> R.string.hud_weather_information_thunder_occasional_snow
-                WeatherTypes.THUNDER_RAIN -> R.string.hud_weather_information_thunder_occasional_rain
-                WeatherTypes.SNOW -> R.string.hud_weather_information_snowy
-                WeatherTypes.SNOW_CLEAR -> R.string.hud_weather_information_snowy_occasional_sun
-                WeatherTypes.SNOW_CLOUDS -> R.string.hud_weather_information_snowy_occasional_clouds
-                WeatherTypes.SNOW_RAIN -> R.string.hud_weather_information_snowy_occasional_rain
-                WeatherTypes.SNOW_THUNDER -> R.string.hud_weather_information_snowy_occasional_thunder
+                CLEAR -> R.string.hud_weather_information_sunny
+                CLEAR_CLOUDS -> R.string.hud_weather_information_sunny_occasional_clouds
+                CLEAR_RAIN -> R.string.hud_weather_information_sunny_occasional_rain
+                CLEAR_SNOW -> R.string.hud_weather_information_sunny_occasional_snow
+                CLEAR_THUNDER -> R.string.hud_weather_information_sunny_occasional_thunder
+                CLOUDS -> R.string.hud_weather_information_cloudy
+                CLOUDS_CLEAR -> R.string.hud_weather_information_cloudy_occasional_sun
+                CLOUDS_RAIN -> R.string.hud_weather_information_cloudy_occasional_rain
+                CLOUDS_SNOW -> R.string.hud_weather_information_cloudy_occasional_snow
+                CLOUDS_THUNDER -> R.string.hud_weather_information_cloudy_occasional_thunder
+                RAIN -> R.string.hud_weather_information_rainy
+                RAIN_CLEAR -> R.string.hud_weather_information_rainy_occasional_sun
+                RAIN_CLOUDS -> R.string.hud_weather_information_rainy_occasional_clouds
+                RAIN_SNOW -> R.string.hud_weather_information_rainy_occasional_snow
+                RAIN_THUNDER -> R.string.hud_weather_information_rainy_occasional_thunder
+                THUNDER -> R.string.hud_weather_information_thunder
+                THUNDER_CLEAR -> R.string.hud_weather_information_thunder_occasional_sun
+                THUNDER_CLOUDS -> R.string.hud_weather_information_thunder_occasional_clouds
+                THUNDER_SNOW -> R.string.hud_weather_information_thunder_occasional_snow
+                THUNDER_RAIN -> R.string.hud_weather_information_thunder_occasional_rain
+                SNOW -> R.string.hud_weather_information_snowy
+                SNOW_CLEAR -> R.string.hud_weather_information_snowy_occasional_sun
+                SNOW_CLOUDS -> R.string.hud_weather_information_snowy_occasional_clouds
+                SNOW_RAIN -> R.string.hud_weather_information_snowy_occasional_rain
+                SNOW_THUNDER -> R.string.hud_weather_information_snowy_occasional_thunder
             }
         }
 
@@ -107,7 +110,8 @@ enum class WeatherTypes {
             if (secondary < (main * (40 / 100) /* Magic threshold though I don't know why */)) {
                 secondary = main
             }
-            d("getWeatherTypeFromStatistics: deducing result ${concat.indexOf(main)} and then ${concat.indexOf(secondary)}")
+            d("getWeatherTypeFromStatistics: deducing result ${concat.indexOf(
+                    main)} and then ${concat.indexOf(secondary)}")
             val result = when (concat.indexOf(main)) {
                 0 -> {
                     when (concat.indexOf(secondary)) {
