@@ -214,7 +214,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             return false
         }
         if (mCurrentAnimationPlaybackController != null &&
-                mFromState === FeedState.OPEN) {
+                mFromState eqp FeedState.OPEN) {
             return false
         }
         mDetector.setDetectableScrollConditions(swipeDirection,
@@ -233,7 +233,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
      * that direction, returns fromState.
      */
     private fun getTargetState(fromState: FeedState): FeedState {
-        return if (fromState === FeedState.CLOSED) FeedState.OPEN else FeedState.CLOSED
+        return if (fromState eqp FeedState.CLOSED) FeedState.OPEN else FeedState.CLOSED
     }
 
     private fun initCurrentAnimation(): Float {
@@ -283,7 +283,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         }
         val newToState = getTargetState(newFromState!!)
 
-        if (newFromState === mFromState && newToState === mToState || newFromState === newToState) {
+        if (newFromState eqp mFromState && newToState eqp mToState || newFromState eqp newToState) {
             return false
         }
 
@@ -375,11 +375,11 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         val duration: Long
         // Increase the duration if we prevented the fling, as we are going against a high velocity.
         val durationMultiplier =
-                ((if (blockedFling && targetState === mFromState) blockedFlingDurationFactor(
+                ((if (blockedFling && targetState eqp mFromState) blockedFlingDurationFactor(
                         velocity)
                 else 1) * (1.0 - context.feedPrefs.openingAnimationSpeed)).roundToLong()
 
-        if (targetState === mToState) {
+        if (targetState eqp mToState) {
             endProgress = 1f
             if (progress >= 1) {
                 duration = 0
@@ -433,7 +433,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         cancelAnimationControllers()
         var shouldGoToTargetState = true
         if (mPendingAnimation != null) {
-            val reachedTarget = mToState === targetState
+            val reachedTarget = mToState eqp targetState
             mPendingAnimation!!.finish(reachedTarget, 0)
             mPendingAnimation = null
             shouldGoToTargetState = !reachedTarget
