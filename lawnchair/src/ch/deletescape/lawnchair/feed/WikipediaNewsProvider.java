@@ -27,6 +27,7 @@ package ch.deletescape.lawnchair.feed;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -38,6 +39,7 @@ import com.android.launcher3.R;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Executors;
 
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
@@ -62,19 +64,22 @@ public class WikipediaNewsProvider extends FeedProvider {
     @Override
     public void setFeed(LauncherFeed feed) {
         super.setFeed(feed);
-        if (!init) {
-            News.addListener(items -> {
-                this.adapter = new ITNAdapter(items, getControllerView());
-                FeedUtil.runOnMainThread(this::markUnread);
-            });
-            init = true;
-        }
+        Executors.newSingleThreadExecutor().submit(() -> {
+            if (!init) {
+                News.addListener(items -> {
+                    this.adapter = new ITNAdapter(items, getControllerView());
+                    FeedUtil.runOnMainThread(this::markUnread);
+                });
+                init = true;
+            }
+        });
     }
 
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public List<Card> getCards() {
+        Log.d(getClass().getName(), "getCards: procedure invoked");
         return adapter == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {

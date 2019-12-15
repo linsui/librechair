@@ -46,6 +46,7 @@ import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers.Companion.FEED_CARD
 import ch.deletescape.lawnchair.colors.resolvers.FeedBackgroundResolver
 import ch.deletescape.lawnchair.feed.impl.Interpolators
 import ch.deletescape.lawnchair.feed.impl.LauncherFeed
+import ch.deletescape.lawnchair.feed.impl.nilp
 import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.feedPrefs
@@ -53,6 +54,7 @@ import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.reflection.ReflectionUtils
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.util.extensions.e
 import com.android.launcher3.R
 import com.github.mmin18.widget.RealtimeBlurView
 import com.google.android.material.card.MaterialCardView
@@ -132,18 +134,32 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     open suspend fun refresh(): List<Pair<Int, FeedProvider>> {
         val coroutines = mutableListOf<Job>()
         val changed = Vector<Pair<Int, FeedProvider>>()
-        providers.forEach {
-            d("refresh: refreshing $it")
-            if (it.context != context) {
-                it.context = context
+        val refreshed = mutableListOf<FeedProvider>()
+        providers.forEach { fp ->
+            if (fp.context != context) {
+                fp.context = context
             }
-            changed += (cardCache[it]?.size ?: 0) to it
+            changed += (cardCache[fp]?.size ?: 0) to fp
             coroutines += FeedRefreshScope.launch {
-                it.feed = feed
-                cardCache[it] = it.cards.toImmutableList()
+                d("refresh: refreshing $fp")
+                if (fp.feed.nilp()) {
+                    fp.feed = feed
+                }
+                try {
+                    cardCache[fp] = fp.cards.toImmutableList()
+                } catch (ec: Exception) {
+                    e("refresh: refreshing $fp failed", ec)
+                }
+                synchronized(refreshed) {
+                    refreshed += fp
+                }
+                d("refresh: refreshed $fp; not refreshed yet: ${providers.filter {
+                    refreshed.contains(it).not()
+                }}")
             }
         }
         coroutines.forEach { it.join() }
+        d("refresh: refresh complete")
         return changed
     }
 
@@ -157,10 +173,15 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             changed += (cardCache[it]?.size ?: 0) to it
             coroutines += FeedRefreshScope.launch {
                 it.feed = feed
-                cardCache[it] = it.cards.toImmutableList()
+                try {
+                    cardCache[it] = it.cards.toImmutableList()
+                } catch (ec: Exception) {
+                    e("refreshVolatile: refreshing $it failed", ec)
+                }
             }
         }
         coroutines.forEach { it.join() }
+        d("refreshVolatile: refresh complete")
         return changed
     }
 
