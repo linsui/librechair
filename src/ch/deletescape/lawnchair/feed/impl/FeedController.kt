@@ -77,10 +77,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         get() {
             val fromState = mCurrentState
             var swipeDirection = 0
-            if (getTargetState(fromState!!) !eqp fromState) {
+            if (!(getTargetState(fromState!!) eqp fromState)) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_POSITIVE
             }
-            if (getTargetState(fromState!!) !eqp fromState) {
+            if (!(getTargetState(fromState) eqp fromState)) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_NEGATIVE
             }
             return swipeDirection

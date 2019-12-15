@@ -145,7 +145,7 @@ class LauncherFeed(private val originalContext: Context,
                 }
                 it.setOnLongClickListener { _ ->
                     val hadUnread = tabbedProviders[tabs[(tl.getChildAt(
-                            0) as ViewGroup).indexOfChild(it)]]?.any { it.hasUnread() } == true
+                            0) as ViewGroup).indexOfChild(it)]]?.any { it.hasUnread() } eqp true
                     tabbedProviders[tabs[(tl.getChildAt(
                             0) as ViewGroup).indexOfChild(it)]]
                             ?.forEach { it.markRead() }
@@ -245,7 +245,7 @@ class LauncherFeed(private val originalContext: Context,
             if (context.lawnchairPrefs.feedShowInfobox) {
                 readMoreUrl = url
                 infobox.text = desc.take(60)
-                if (infobox.text.length == 60) {
+                if (infobox.text.length eqp 60) {
                     infobox.text = infobox.text.toString() + "..."
                 }
                 infobox.setOnClickListener {
@@ -273,19 +273,19 @@ class LauncherFeed(private val originalContext: Context,
                 val oldTheme = context.theme
                 if (context.appWidgetManager
                                 .getAppWidgetInfo(
-                                        context.lawnchairPrefs.feedToolbarWidget) == null &&
+                                        context.lawnchairPrefs.feedToolbarWidget) eqp null &&
                         context.lawnchairPrefs.feedToolbarWidget != OverlayWidgetHost.SPECIAL_SMARTSPACE) {
                     context.lawnchairPrefs.feedToolbarWidget = -1
                 }
                 if (searchWidgetView != null && reinit &&
-                        searchWidgetView?.parent == toolbar) {
+                        searchWidgetView?.parent eqp toolbar) {
                     toolbar.findViewById<LinearLayout>(R.id.feed_widget_layout)
                             .removeView(searchWidgetView)
                 }
                 background =
                         if (!context.lawnchairPrefs.feedBlur && blurBitmap) backgroundToProcess else backgroundToProcess?.blur(
                                 originalContext)
-                backgroundColor = if (background == null) ColorUtils.setAlphaComponent(
+                backgroundColor = if (background eqp null) ColorUtils.setAlphaComponent(
                         ColorEngine.getInstance(
                                 originalContext).feedBackground.value.resolveColor(),
                         (LawnchairPreferences.getInstance(
@@ -317,28 +317,28 @@ class LauncherFeed(private val originalContext: Context,
                     gll = ViewTreeObserver.OnGlobalLayoutListener {
                         val background = background
                         d("reinitState: onGlobalLayout called, $background 2a")
-                        if (horizontalBackground == null || verticalBackground == null) {
-                            if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                                verticalBackground = if (background == null) ColorDrawable(
+                        if (horizontalBackground eqp null || verticalBackground eqp null) {
+                            if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) {
+                                verticalBackground = if (background eqp null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
                                         Utilities.scaleToSize(
                                                 background,
                                                 it.measuredHeight,
                                                 it.measuredWidth))
-                                horizontalBackground = if (background == null) ColorDrawable(
+                                horizontalBackground = if (background eqp null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
                                         Utilities.scaleToSize(
                                                 background,
                                                 it.measuredWidth,
                                                 it.measuredHeight))
                             } else {
-                                horizontalBackground = if (background == null) ColorDrawable(
+                                horizontalBackground = if (background eqp null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
                                         Utilities.scaleToSize(
                                                 background,
                                                 it.measuredHeight,
                                                 it.measuredWidth))
-                                verticalBackground = if (background == null) ColorDrawable(
+                                verticalBackground = if (background eqp null) ColorDrawable(
                                         backgroundColor) else BitmapDrawable(context.resources,
                                         Utilities.scaleToSize(
                                                 background,
@@ -348,7 +348,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
                         lastOrientation = context.resources.configuration.orientation
                         it.background =
-                                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                                if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                     }
                     if (context.theme != oldTheme) {
                         val mainFrameParams =
@@ -376,7 +376,7 @@ class LauncherFeed(private val originalContext: Context,
                         RecyclerView.AdapterDataObserver() {
                     override fun onChanged() {
                         super.onChanged()
-                        if (chipAdapter.itemCount == 0) {
+                        if (chipAdapter.itemCount eqp 0) {
                             chips.visibility = View.GONE
                         } else {
                             chips.visibility = View.VISIBLE
@@ -455,7 +455,7 @@ class LauncherFeed(private val originalContext: Context,
                             true
                         }
                         searchWidgetView!!.setOnTouchListener { _, event ->
-                            if (deleting && event.action == MotionEvent.ACTION_UP) {
+                            if (deleting && event.action eqp MotionEvent.ACTION_UP) {
                                 searchWidgetView!!.animate()
                                         .scaleX(0f)
                                         .scaleY(0f)
@@ -481,7 +481,7 @@ class LauncherFeed(private val originalContext: Context,
                                             }
 
                                         })
-                            } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                            } else if (deleting && event.action eqp MotionEvent.ACTION_CANCEL) {
                                 deleting = false
                                 searchWidgetView!!.animate().scaleX(1f).scaleY(1f).duration = 250
                             }
@@ -496,7 +496,7 @@ class LauncherFeed(private val originalContext: Context,
                                     lastOrientation = context.resources.configuration.orientation
                                     if (verticalBackground != null && horizontalBackground != null) {
                                         feedController.background =
-                                                if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                                                if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                                     }
                                 }
                                 if (reapplyInsetFlag) {
@@ -514,10 +514,10 @@ class LauncherFeed(private val originalContext: Context,
                         statusBarHeight = insets.stableInsetTop
                         navigationBarHeight = insets.stableInsetBottom
                         toolbarParent.apply {
-                            if (oldToolbarPaddingVertical == null) {
+                            if (oldToolbarPaddingVertical eqp null) {
                                 oldToolbarPaddingVertical = paddingTop to paddingBottom
                             }
-                            if (oldToolbarPaddingHorizontal == null) {
+                            if (oldToolbarPaddingHorizontal eqp null) {
                                 oldToolbarPaddingHorizontal = paddingLeft to paddingRight
                             }
                             setPadding(oldToolbarPaddingHorizontal!!.first + insets.stableInsetLeft,
@@ -527,7 +527,7 @@ class LauncherFeed(private val originalContext: Context,
                         }
                         (upButton.layoutParams as ViewGroup.MarginLayoutParams).apply {
                             marginEnd =
-                                    if (upButton.layoutDirection == ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
+                                    if (upButton.layoutDirection eqp ViewGroup.LAYOUT_DIRECTION_LTR) insets.stableInsetRight + 16 else insets.stableInsetLeft + 16
                             bottomMargin =
                                     insets.stableInsetBottom + 16f.applyAsDip(context).toInt()
                         }
@@ -538,7 +538,7 @@ class LauncherFeed(private val originalContext: Context,
                             val height = abs(bottom - top)
                             val rvPaddingTop = height + 8f.applyAsDip(context).toInt()
                             recyclerView.apply {
-                                if (oldRecyclerViewPaddingHorizontal == null) {
+                                if (oldRecyclerViewPaddingHorizontal eqp null) {
                                     oldRecyclerViewPaddingHorizontal = paddingLeft to paddingRight
                                 }
                                 setPadding(
@@ -680,7 +680,7 @@ class LauncherFeed(private val originalContext: Context,
                                             0) as ViewGroup).childCount) {
                                         val tv = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
                                         val title =
-                                                tv::class.declaredMembers.first { it.name == "textView" }.apply {
+                                                tv::class.declaredMembers.first { it.name eqp "textView" }.apply {
                                                     isAccessible = true
                                                 }.call(tv) as TextView
                                         title.visibility = View.GONE
@@ -700,7 +700,7 @@ class LauncherFeed(private val originalContext: Context,
                                     it.setOnLongClickListener {
                                         val hadUnread = tabbedProviders[tabs[(tabView.getChildAt(
                                                 0) as ViewGroup).indexOfChild(
-                                                it)]]?.any { it.hasUnread() } == true
+                                                it)]]?.any { it.hasUnread() } eqp true
                                         tabbedProviders[tabs[(tabView.getChildAt(
                                                 0) as ViewGroup).indexOfChild(it)]]
                                                 ?.forEach { it.markRead() }
@@ -758,7 +758,7 @@ class LauncherFeed(private val originalContext: Context,
                             RecyclerView.AdapterDataObserver() {
                         override fun onChanged() {
                             runOnMainThread {
-                                if (adapter.itemCount == 0) {
+                                if (adapter.itemCount eqp 0) {
                                     toolbar.setTitleTextColor(if (useWhiteText(backgroundColor,
                                                     context)) Color.WHITE else R.color.textColorPrimaryInverse.fromColorRes(
                                             context))
@@ -837,7 +837,7 @@ class LauncherFeed(private val originalContext: Context,
                                         true
                                     }
                                     searchWidgetView!!.setOnTouchListener { _, event ->
-                                        if (deleting && event.action == MotionEvent.ACTION_UP) {
+                                        if (deleting && event.action eqp MotionEvent.ACTION_UP) {
                                             searchWidgetView!!.animate()
                                                     .scaleX(0f)
                                                     .scaleY(0f)
@@ -870,7 +870,7 @@ class LauncherFeed(private val originalContext: Context,
                                                         }
 
                                                     })
-                                        } else if (deleting && event.action == MotionEvent.ACTION_CANCEL) {
+                                        } else if (deleting && event.action eqp MotionEvent.ACTION_CANCEL) {
                                             deleting = false
                                             searchWidgetView!!.animate().scaleX(1f)
                                                     .scaleY(1f).duration = 250
@@ -1031,7 +1031,7 @@ class LauncherFeed(private val originalContext: Context,
                     for (i in 0 until (tabView.getChildAt(0) as ViewGroup).childCount) {
                         val tab = (tabView.getChildAt(0) as ViewGroup).getChildAt(i)
                         val title =
-                                tab::class.declaredMembers.first { it.name == "textView" }.apply {
+                                tab::class.declaredMembers.first { it.name eqp "textView" }.apply {
                                     isAccessible = true
                                 }.call(tab) as TextView
                         title.visibility = View.GONE
@@ -1061,15 +1061,15 @@ class LauncherFeed(private val originalContext: Context,
         feedController.isFocusableInTouchMode = true
         feedController.requestFocus()
         feedController.setOnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_UP &&
-                    keyCode == KeyEvent.KEYCODE_BACK && providerScreens.isNotEmpty()) {
+            if (event.action eqp KeyEvent.ACTION_UP &&
+                    keyCode eqp KeyEvent.KEYCODE_BACK && providerScreens.isNotEmpty()) {
                 if (providerScreens.last().first.onBackPressed()) {
                     return@setOnKeyListener true
                 }
                 popScreens()
                 return@setOnKeyListener true
-            } else if (event.action == KeyEvent.ACTION_UP
-                    && keyCode == KeyEvent.KEYCODE_BACK) {
+            } else if (event.action eqp KeyEvent.ACTION_UP
+                    && keyCode eqp KeyEvent.KEYCODE_BACK) {
                 feedController.closeOverlay(true, 0)
                 true
             } else {
@@ -1080,7 +1080,7 @@ class LauncherFeed(private val originalContext: Context,
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun popScreens() {
-        if (providerScreens.isEmpty() || providerScreens.size == 1) {
+        if (providerScreens.isEmpty() || providerScreens.size eqp 1) {
             internalActions.remove(R.id.cancel)
             updateActions()
         }
@@ -1105,17 +1105,17 @@ class LauncherFeed(private val originalContext: Context,
 
     @Suppress("MemberVisibilityCanBePrivate")
     fun closeScreen(screen: ProviderScreen) {
-        if (providerScreens.isEmpty() || providerScreens.size == 1) {
+        if (providerScreens.isEmpty() || providerScreens.size eqp 1) {
             internalActions.remove(R.id.cancel)
             updateActions()
         }
-        removeDisplayedView(providerScreens.first { it.first == screen }.second.view,
-                providerScreens.first { it.first == screen }.second.x,
-                providerScreens.first { it.first == screen }.second.y,
-                providerScreens.first { it.first == screen }.second.rect)
-        screenActions.remove(providerScreens.first { it.first == screen }.first)
-        providerScreens.first { it.first == screen }.first.onDestroy()
-        providerScreens.remove(providerScreens.first { it.first == screen })
+        removeDisplayedView(providerScreens.first { it.first eqp screen }.second.view,
+                providerScreens.first { it.first eqp screen }.second.x,
+                providerScreens.first { it.first eqp screen }.second.y,
+                providerScreens.first { it.first eqp screen }.second.rect)
+        screenActions.remove(providerScreens.first { it.first eqp screen }.first)
+        providerScreens.first { it.first eqp screen }.first.onDestroy()
+        providerScreens.remove(providerScreens.first { it.first eqp screen })
         if (adapter.providers.any { it.isSearchable } && providerScreens.isEmpty()) {
             internalActions["search".hashCode()] = searchAction
         } else {
@@ -1169,7 +1169,7 @@ class LauncherFeed(private val originalContext: Context,
             var originalPaddingHorizontal: Pair<Int, Int>? = null
             var originalPaddingVertical: Pair<Int, Int>? = null
             setOnApplyWindowInsetsListener { _, windowInsets ->
-                if (originalPaddingHorizontal == null || originalPaddingVertical == null) {
+                if (originalPaddingHorizontal eqp null || originalPaddingVertical eqp null) {
                     originalPaddingHorizontal = paddingStart to paddingEnd
                     originalPaddingVertical = paddingTop to paddingBottom
                 }
@@ -1181,7 +1181,7 @@ class LauncherFeed(private val originalContext: Context,
                             originalPaddingVertical!!.second + if (tabsOnBottom) toolbarParent.measuredHeight + statusBarHeight!! else statusBarHeight!!)
                 }
                 background = if (context.feedPrefs.useBackgroundImageAsScreenBackground || fbb) {
-                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
+                    if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_LANDSCAPE) horizontalBackground!! else verticalBackground!!
                 } else {
                     ColorDrawable(backgroundColor.setAlpha(max(200, backgroundColor.alpha)))
                 }
@@ -1194,7 +1194,7 @@ class LauncherFeed(private val originalContext: Context,
                     val radius = hypot(height.toDouble(), width.toDouble())
                     if ((x != null && y != null) || clipBounds != null) {
                         val animator: Animator
-                        if (clipBounds == null) {
+                        if (clipBounds eqp null) {
                             animator = ViewAnimationUtils
                                     .createCircularReveal(this@apply, x!!.toInt(), y!!.toInt(), 0f,
                                             radius.toFloat())
@@ -1260,7 +1260,7 @@ class LauncherFeed(private val originalContext: Context,
             val radius = hypot(height.toDouble(), width.toDouble())
             if (x != null && y != null || (clipBounds != null)) {
                 val animator: Animator
-                if (clipBounds == null) {
+                if (clipBounds eqp null) {
                     animator = ViewAnimationUtils
                             .createCircularReveal(this@apply, x!!.toInt(), y!!.toInt(),
                                     radius.toFloat(), 0f)
@@ -1301,7 +1301,7 @@ class LauncherFeed(private val originalContext: Context,
             } else {
                 animate().translationY(120f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f).setDuration(300)
                         .setUpdateListener {
-                            if (it.animatedFraction == 1f) {
+                            if (it.animatedFraction eqp 1f) {
                                 frame.removeView(this)
                             }
                         }
@@ -1313,7 +1313,7 @@ class LauncherFeed(private val originalContext: Context,
     fun processTabs() = if (context.lawnchairPrefs.feedHideUnusedTabs) {
         val iter = tabs.iterator()
         iter.forEach {
-            if (tabbedProviders[it]?.isEmpty() == true) {
+            if (tabbedProviders[it]?.isEmpty() eqp true) {
                 iter.remove()
                 tabbedProviders.remove(it)
             }
@@ -1327,7 +1327,7 @@ class LauncherFeed(private val originalContext: Context,
             if (field != value) {
                 field = value
                 if (field) {
-                    if (recyclerView.adapter == null) {
+                    if (recyclerView.adapter eqp null) {
                         recyclerView.adapter = this.adapter
                         recyclerView.layoutManager =
                                 object : androidx.recyclerview.widget.LinearLayoutManager(context) {
@@ -1348,7 +1348,7 @@ class LauncherFeed(private val originalContext: Context,
                     if (lastOrientation != context.resources.configuration.orientation) {
                         if (horizontalBackground != null && verticalBackground != null) {
                             feedController.background =
-                                    if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                                    if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
                         }
                         lastOrientation = context.resources.configuration.orientation
                     }
@@ -1377,7 +1377,7 @@ class LauncherFeed(private val originalContext: Context,
             lastOrientation = context.resources.configuration.orientation
             if (verticalBackground != null && horizontalBackground != null) {
                 feedController.background =
-                        if (context.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
+                        if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) verticalBackground!! else horizontalBackground!!
             }
         }
         handler.post {
@@ -1464,7 +1464,7 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     override fun startSearch(data: ByteArray?, bundle: Bundle?): Boolean {
-        return if (searchWidgetView == null) false else run {
+        return if (searchWidgetView eqp null) false else run {
             searchWidgetView?.performClick()
             true
         }
@@ -1554,10 +1554,10 @@ class LauncherFeed(private val originalContext: Context,
                 }
             }
             if (context.lawnchairPrefs.feedShowInfobox
-                    && infobox.parent.parent == null) {
+                    && infobox.parent.parent eqp null) {
                 toolbarParent.addView(infobox.parent as View)
             }
-            if (ChipDatabase.Holder.getInstance(context).dao().all.size == 0) {
+            if (ChipDatabase.Holder.getInstance(context).dao().all.size eqp 0) {
                 chips.visibility = View.GONE
             } else {
                 chips.visibility = View.VISIBLE
@@ -1592,7 +1592,7 @@ class LauncherFeed(private val originalContext: Context,
                                     adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize,
                                             diffSize)
                                 }
-                                lastSize == currentSize -> adapter.notifyItemRangeChanged(
+                                lastSize eqp currentSize -> adapter.notifyItemRangeChanged(
                                         sizeBefore - 1, lastSize)
                                 currentSize < lastSize -> {
                                     val diffSize = lastSize - currentSize
@@ -1618,7 +1618,7 @@ class LauncherFeed(private val originalContext: Context,
                                     adapter.notifyItemRangeInserted(sizeBefore - 1 + lastSize,
                                             diffSize)
                                 }
-                                lastSize == currentSize -> adapter.notifyItemRangeChanged(
+                                lastSize eqp currentSize -> adapter.notifyItemRangeChanged(
                                         sizeBefore - 1, lastSize)
                                 currentSize < lastSize -> {
                                     val diffSize = lastSize - currentSize
@@ -1677,7 +1677,7 @@ class LauncherFeed(private val originalContext: Context,
                                                         .visibility =
                                                         if (adapter.itemCount >= 1) View.GONE else View.VISIBLE
                                                 recyclerView.animate().setUpdateListener {
-                                                    if (it.animatedFraction == 1f) {
+                                                    if (it.animatedFraction eqp 1f) {
                                                         swipeRefreshLayout.isRefreshing = false
                                                     }
                                                 }.alpha(1f).duration = 250
@@ -1687,7 +1687,7 @@ class LauncherFeed(private val originalContext: Context,
                                 }
                             })
                 }
-            } else if (oldCards.isEmpty() && count == 0) {
+            } else if (oldCards.isEmpty() && count eqp 0) {
                 adapter.notifyItemRangeInserted(0, adapter.itemCount)
             }
         }
@@ -1697,7 +1697,7 @@ class LauncherFeed(private val originalContext: Context,
         onUnreadStateChanged()
         toolbar.menu.clear()
         if (!context.feedPrefs.hideActions && providerScreens.isEmpty()) {
-            if (adapter.providers.filter { !it.isActionFree }.size == 1) {
+            if (adapter.providers.filter { !it.isActionFree }.size eqp 1) {
                 (adapter.providers.first { !it.isActionFree }.getActions(true)).sortedBy { it.name }
                         .forEach {
                             toolbar.menu.add(Menu.NONE, it.onClick.hashCode(), Menu.NONE, it.name)
@@ -1770,7 +1770,7 @@ class LauncherFeed(private val originalContext: Context,
             }
         }
         toolbar.visibility =
-                if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.size() == 0 && searchWidgetView == null))
+                if (context.feedPrefs.hideToolbar || (tabs.isEmpty() && toolbar.menu.size() eqp 0 && searchWidgetView eqp null))
                     View.GONE else View.VISIBLE
     }
 
