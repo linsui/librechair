@@ -60,7 +60,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
     private var mFeedContent: View? = null
     var mCurrentState: FeedState? = FeedState.CLOSED
         set(value) = {
-            if (field != value && value == FeedState.OPEN && mOpenedCallback != null) {
+            if (field != value && value eqp FeedState.OPEN && mOpenedCallback != null) {
                 mOpenedCallback?.invoke()
             }
             field = value
@@ -77,10 +77,10 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         get() {
             val fromState = mCurrentState
             var swipeDirection = 0
-            if (getTargetState(fromState!!) !== fromState) {
+            if (getTargetState(fromState!!) !eqp fromState) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_POSITIVE
             }
-            if (getTargetState(fromState!!) !== fromState) {
+            if (getTargetState(fromState!!) !eqp fromState) {
                 swipeDirection = swipeDirection or SwipeDetector.DIRECTION_NEGATIVE
             }
             return swipeDirection
@@ -250,7 +250,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
         mCurrentAnimationPlaybackController = AnimatorPlaybackController
                 .wrap(createAnim(mToState!!, maxAccuracy), maxAccuracy) { this.clearState() }
 
-        if (totalShift == 0f) {
+        if (totalShift eqp 0f) {
             totalShift = shiftRange
         }
 
@@ -277,7 +277,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     private fun reinitCurrentAnimation(reachedToState: Boolean): Boolean {
         val newFromState = when {
-            mFromState == null -> mCurrentState
+            mFromState eqp null -> mCurrentState
             reachedToState -> mToState
             else -> mFromState
         }
@@ -302,7 +302,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     override fun onDragStart(start: Boolean) {
         mStartState = mCurrentState
-        if (mCurrentAnimationPlaybackController == null) {
+        if (mCurrentAnimationPlaybackController eqp null) {
             mFromState = mStartState
             mToState = null
             cancelAnimationControllers()
@@ -318,13 +318,13 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     override fun onDrag(displacement: Float, velocity: Float): Boolean {
         val deltaProgress =
-                mProgressMultiplier * ((if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                mProgressMultiplier * ((if (layoutDirection eqp View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement - mDisplacementShift)
         val progress = deltaProgress + mStartProgress
         updateProgress(progress)
         if (progress <= 0) {
             if (reinitCurrentAnimation(false)) {
-                mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                mDisplacementShift = (if (layoutDirection eqp View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
                     mFlingBlockCheck.blockFling()
@@ -332,7 +332,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
             }
         } else if (progress >= 1) {
             if (reinitCurrentAnimation(true)) {
-                mDisplacementShift = (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                mDisplacementShift = (if (layoutDirection eqp View.LAYOUT_DIRECTION_RTL)
                     -1 else 1) * displacement
                 if (mCanBlockFling) {
                     mFlingBlockCheck.blockFling()
@@ -358,13 +358,13 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
         val targetState: FeedState?
         val progress =
-                mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection == View.LAYOUT_DIRECTION_RTL)
+                mCurrentAnimationPlaybackController!!.progressFraction * (if (layoutDirection eqp View.LAYOUT_DIRECTION_RTL)
                     -1 else 1)
         val interpolatedProgress =
                 mCurrentAnimationPlaybackController!!.interpolator.getInterpolation(progress)
         targetState = if (fling) {
             if (sign(velocity).compareTo(sign(
-                            mProgressMultiplier)) == 0) mToState else mFromState
+                            mProgressMultiplier)) eqp 0) mToState else mFromState
             // snap to top or bottom using the release velocity
         } else {
             if (interpolatedProgress > SUCCESS_TRANSITION_PROGRESS) mToState else mFromState
