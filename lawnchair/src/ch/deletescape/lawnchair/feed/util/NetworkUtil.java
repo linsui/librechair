@@ -52,10 +52,10 @@ public final class NetworkUtil {
             if (conn instanceof HttpURLConnection) {
                 if (((HttpURLConnection) conn).getResponseCode() > 300 &&
                         ((HttpURLConnection) conn).getResponseCode() < 400) {
-                    if (conn.getHeaderField("Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("Location"), count + 1);
-                    } else if (conn.getHeaderField("Content-Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("Content-Location"), count + 1);
+                    if (conn.getHeaderField("location") != null) {
+                        return resolveRedirects(conn.getHeaderField("location"), count + 1);
+                    } else if (conn.getHeaderField("content-Location") != null) {
+                        return resolveRedirects(conn.getHeaderField("content-Location"), count + 1);
                     }
                 }
                 return url;
