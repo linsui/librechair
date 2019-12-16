@@ -245,7 +245,9 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
 
         @Override
         public void setTitle(String title) {
-            vh.itemView.setText(title);
+            vh.itemView.post(() -> {
+                vh.itemView.setText(title);
+            });
         }
     }
 }
