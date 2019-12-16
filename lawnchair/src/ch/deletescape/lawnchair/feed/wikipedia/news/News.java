@@ -20,6 +20,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+
 public final class News {
     private static final Executor fetchExecutor = Executors.newSingleThreadExecutor();
     private static final List<Consumer<List<NewsItem>>> onChangeListeners = new ArrayList<>();
@@ -85,11 +87,13 @@ public final class News {
         }
     }
 
-    public static synchronized void addListener(Consumer<List<NewsItem>> consumer) {
-        if (currentItem != null) {
-            consumer.accept(currentItem);
-        }
-        onChangeListeners.add(consumer);
+    public static void addListener(Consumer<List<NewsItem>> consumer) {
+        FeedUtil.runOnMainThread(() -> {
+            if (currentItem != null) {
+                consumer.accept(currentItem);
+            }
+            onChangeListeners.add(consumer);
+        });
     }
 
     private News() {
