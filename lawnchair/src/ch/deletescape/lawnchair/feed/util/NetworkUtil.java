@@ -21,7 +21,6 @@
 package ch.deletescape.lawnchair.feed.util;
 
 import android.annotation.WorkerThread;
-import android.util.Log;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -46,7 +45,7 @@ public final class NetworkUtil {
     private static String resolveRedirects(@Nonnull String _url, int count) throws IOException {
         String url = _url.replace("http://", "https://");
         if (count > 15) {
-            throw new IOException("too many redirects");
+            return url;
         } else {
             URL urlV = new URL(url);
             URLConnection conn = urlV.openConnection();
@@ -58,8 +57,6 @@ public final class NetworkUtil {
             if (conn instanceof HttpURLConnection) {
                 if (((HttpURLConnection) conn).getResponseCode() > 300 &&
                         ((HttpURLConnection) conn).getResponseCode() < 400) {
-                    Log.d(NetworkUtil.class.getName(),
-                            "resolveRedirects: resolved redirect " + url + " " + conn.getHeaderFields());
                     if (conn.getHeaderField("location") != null) {
                         return resolveRedirects(conn.getHeaderField("location"), count + 1);
                     } else if (conn.getHeaderField("content-location") != null) {
