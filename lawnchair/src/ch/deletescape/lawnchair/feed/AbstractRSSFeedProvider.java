@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteConstraintException;
 import android.net.Uri;
 import android.text.Html;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,6 +47,7 @@ import com.squareup.picasso.Picasso.Builder;
 
 import org.jetbrains.annotations.Contract;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +64,7 @@ import ch.deletescape.lawnchair.feed.news.NewsDb;
 import ch.deletescape.lawnchair.feed.news.NewsEntry;
 import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.util.NetworkUtil;
 import ch.deletescape.lawnchair.persistence.FeedPersistence;
 import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
 import kotlin.Pair;
@@ -318,14 +321,24 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 card.setActionName(getContext().getString(getContext().getResources()
                         .getIdentifier("whichSendApplicationLabel", "string", "android")));
                 card.setActionListener(view -> {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
-                            getContext()).getShowTitleInSharedArticles() ? entry.title + (char) 10 : "") + entry.url);
-                    FeedUtil.startActivity(view.getContext(), Intent.createChooser(i,
-                            getContext().getString(getContext().getResources()
-                                    .getIdentifier("whichSendApplicationLabel", "string",
-                                            "android"))), view);
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        String url = entry.url;
+                        try {
+                            url = NetworkUtil.resolveRedirects(url);
+                        } catch (IOException e) {
+                            Log.d(getClass().getName(), "getCards: failed to resolve redirects", e);
+                        }
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
+                                getContext()).getShowTitleInSharedArticles() ? entry.title + (char) 10 : "") + url);
+                        FeedUtil.runOnMainThread(() -> FeedUtil.startActivity(view.getContext(),
+                                Intent.createChooser(i,
+                                        getContext().getString(getContext().getResources()
+                                                .getIdentifier("whichSendApplicationLabel",
+                                                        "string",
+                                                        "android"))), view));
+                    });
                     return Unit.INSTANCE;
                 });
                 if (minicard) {
