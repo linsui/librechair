@@ -62,8 +62,8 @@ public final class NetworkUtil {
                             "resolveRedirects: resolved redirect " + url + " " + conn.getHeaderFields());
                     if (conn.getHeaderField("location") != null) {
                         return resolveRedirects(conn.getHeaderField("location"), count + 1);
-                    } else if (conn.getHeaderField("content-Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("content-Location"), count + 1);
+                    } else if (conn.getHeaderField("content-location") != null) {
+                        return resolveRedirects(conn.getHeaderField("content-location"), count + 1);
                     }
                 }
                 return url;
