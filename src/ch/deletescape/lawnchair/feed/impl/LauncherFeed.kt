@@ -1537,6 +1537,7 @@ class LauncherFeed(private val originalContext: Context,
             if (useTabbedMode) {
                 tabbedProviders[currentTab]?.forEach { it.markRead() }
             }
+            onUnreadStateChanged()
         }
         runOnMainThread {
             if (!context.lawnchairPrefs.feedShowInfobox) {
