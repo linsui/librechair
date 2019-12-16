@@ -44,7 +44,7 @@ public final class NetworkUtil {
     @WorkerThread
     @Nonnull
     private static String resolveRedirects(@Nonnull String _url, int count) throws IOException {
-        String url = _url.replace("http://", "https");
+        String url = _url.replace("http://", "https://");
         if (count > 15) {
             throw new IOException("too many redirects");
         } else {
