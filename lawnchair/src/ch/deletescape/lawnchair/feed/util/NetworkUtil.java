@@ -50,7 +50,11 @@ public final class NetworkUtil {
         } else {
             URL urlV = new URL(url);
             URLConnection conn = urlV.openConnection();
-            conn.connect();
+            try {
+                conn.connect();
+            } catch (IOException e) {
+                return url;
+            }
             if (conn instanceof HttpURLConnection) {
                 if (((HttpURLConnection) conn).getResponseCode() > 300 &&
                         ((HttpURLConnection) conn).getResponseCode() < 400) {
