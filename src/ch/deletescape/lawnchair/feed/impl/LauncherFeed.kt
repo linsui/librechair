@@ -1788,7 +1788,7 @@ class LauncherFeed(private val originalContext: Context,
                             PorterDuffColorFilter(context.colorEngine.getResolver(
                                     ColorEngine.Resolvers.FEED_UNREAD_INDICATOR).resolveColor(),
                                     PorterDuff.Mode.DST_OVER)
-                    if (context.feedPrefs.displayUnreadIndicatorMarks) {
+                    if (context.feedPrefs.displayUnreadCount) {
                         tabView.getTabAt(i)?.orCreateBadge?.number =
                                 tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
                     } else {
