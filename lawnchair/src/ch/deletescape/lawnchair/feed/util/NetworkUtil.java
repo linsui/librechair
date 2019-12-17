@@ -46,7 +46,7 @@ public final class NetworkUtil {
     private static String resolveRedirects(@Nonnull String _url, int count, long startTime)
             throws IOException {
         String url = _url.replace("http://", "https://");
-        if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(15)) {
+        if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(25)) {
             return url;
         }
         if (count > 3) {
