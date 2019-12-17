@@ -571,5 +571,10 @@
             android:defaultValue="true"
             android:title="@string/title_pref_feed_show_title_in_shared_articles"
             android:summary="@string/summary_pref_feed_show_title_in_shared_articles"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_resolve_redirects"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_resolve_redirects"
+            android:summary="@string/summary_pref_feed_resolve_redirects" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

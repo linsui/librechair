@@ -323,10 +323,14 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 card.setActionListener(view -> {
                     Executors.newSingleThreadExecutor().submit(() -> {
                         String url = entry.url;
-                        try {
-                            url = NetworkUtil.resolveRedirects(url);
-                        } catch (IOException e) {
-                            Log.d(getClass().getName(), "getCards: failed to resolve redirects", e);
+                        if (FeedPersistenceKt.getFeedPrefs(getContext())
+                                .getResolveRedirectsBeforeSharing()) {
+                            try {
+                                url = NetworkUtil.resolveRedirects(url);
+                            } catch (IOException e) {
+                                Log.d(getClass().getName(), "getCards: failed to resolve redirects",
+                                        e);
+                            }
                         }
                         Intent i = new Intent(Intent.ACTION_SEND);
                         i.setType("text/plain");
