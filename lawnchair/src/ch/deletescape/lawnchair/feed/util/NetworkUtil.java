@@ -44,7 +44,7 @@ public final class NetworkUtil {
     @Nonnull
     private static String resolveRedirects(@Nonnull String _url, int count) throws IOException {
         String url = _url.replace("http://", "https://");
-        if (count > 15) {
+        if (count > 5) {
             return url;
         } else {
             URL urlV = new URL(url);
