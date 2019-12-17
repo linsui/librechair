@@ -807,4 +807,6 @@
     <string name="title_pref_feedUnreadIndicators">Unread indicator tint</string>
     <string name="title_pref_feed_resolve_redirects">Resolve redirects before sharing article</string>
     <string name="summary_pref_feed_resolve_redirects">Librechair will attempt to resolve all redirects prior to sharing an article</string>
+    <string name="title_pref_feed_display_unread_indicator_count">Display unread count</string>
+    <string name="summary_pref_feed_display_unread_indicator_count">The amount of unread providers will be displayed in the unread indicators</string>
 </resources>

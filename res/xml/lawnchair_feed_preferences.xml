@@ -87,6 +87,11 @@
             android:defaultValue="true"
             android:summary="@string/summary_pref_feed_display_unread_indicators"
             android:title="@string/title_pref_feed_display_unread_indicators" />
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_display_unread_indicator_count"
+            android:defaultValue="true"
+            android:summary="@string/summary_pref_feed_display_unread_indicator_count"
+            android:title="@string/title_pref_feed_display_unread_indicator_count" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:key="pref_feed_infobox"
             android:defaultValue="true"
