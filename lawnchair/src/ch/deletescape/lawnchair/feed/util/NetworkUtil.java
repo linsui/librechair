@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nonnull;
 
@@ -37,13 +38,17 @@ public final class NetworkUtil {
     @Nonnull
     @WorkerThread
     public static String resolveRedirects(@Nonnull String url) throws IOException {
-        return resolveRedirects(url, 0);
+        return resolveRedirects(url, 0, System.currentTimeMillis());
     }
 
     @WorkerThread
     @Nonnull
-    private static String resolveRedirects(@Nonnull String _url, int count) throws IOException {
+    private static String resolveRedirects(@Nonnull String _url, int count, long startTime)
+            throws IOException {
         String url = _url.replace("http://", "https://");
+        if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(15)) {
+            return url;
+        }
         if (count > 3) {
             return url;
         } else {
@@ -58,9 +63,11 @@ public final class NetworkUtil {
                 if (((HttpURLConnection) conn).getResponseCode() > 300 &&
                         ((HttpURLConnection) conn).getResponseCode() < 400) {
                     if (conn.getHeaderField("location") != null) {
-                        return resolveRedirects(conn.getHeaderField("location"), count + 1);
+                        return resolveRedirects(conn.getHeaderField("location"), count + 1,
+                                startTime);
                     } else if (conn.getHeaderField("content-location") != null) {
-                        return resolveRedirects(conn.getHeaderField("content-location"), count + 1);
+                        return resolveRedirects(conn.getHeaderField("content-location"), count + 1,
+                                startTime);
                     }
                 }
                 return url;
