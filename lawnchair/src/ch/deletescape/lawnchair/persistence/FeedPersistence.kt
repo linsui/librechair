@@ -106,6 +106,8 @@ class FeedPersistence private constructor(val context: Context) {
             by BooleanDelegate(context, "feed_display_unread_indicators", true)
     val resolveRedirectsBeforeSharing
             by BooleanDelegate(context, "feed_resolve_redirects", true)
+    val displayUnreadCount
+            by BooleanDelegate(context, "feed_display_unread_indicator_count", true)
 
     companion object : SingletonHolder<FeedPersistence, Context>(::FeedPersistence)
 }

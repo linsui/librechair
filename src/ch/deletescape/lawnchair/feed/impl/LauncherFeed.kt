@@ -1444,7 +1444,7 @@ class LauncherFeed(private val originalContext: Context,
     override fun requestVoiceDetection(start: Boolean) {
     }
 
-    override fun getVoiceSearchLanguage(): String {
+    override fun getVoiceSearchLanguage(): String? {
         return null
     }
 
@@ -1788,8 +1788,12 @@ class LauncherFeed(private val originalContext: Context,
                             PorterDuffColorFilter(context.colorEngine.getResolver(
                                     ColorEngine.Resolvers.FEED_UNREAD_INDICATOR).resolveColor(),
                                     PorterDuff.Mode.DST_OVER)
-                    tabView.getTabAt(i)?.orCreateBadge?.number =
-                            tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
+                    if (context.feedPrefs.displayUnreadIndicatorMarks) {
+                        tabView.getTabAt(i)?.orCreateBadge?.number =
+                                tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
+                    } else {
+                        tabView.getTabAt(i)?.orCreateBadge?.clearNumber()
+                    }
                 }
             }
         }
