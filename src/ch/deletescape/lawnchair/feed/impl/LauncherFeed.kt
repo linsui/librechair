@@ -1445,7 +1445,7 @@ class LauncherFeed(private val originalContext: Context,
     }
 
     override fun getVoiceSearchLanguage(): String {
-        return "en"
+        return null
     }
 
     override fun isVoiceDetectionRunning(): Boolean {
