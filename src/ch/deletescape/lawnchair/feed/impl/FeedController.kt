@@ -97,7 +97,7 @@ class FeedController(context: Context, attrs: AttributeSet) : FrameLayout(contex
 
     override fun setBackground(background: Drawable?) {
         super.setBackground(background)
-        if (mProgress >= 0.5) {
+        if (mLastScroll >= 0.5) {
             if (!useWhiteText(mLauncherFeed!!.backgroundColor, context)) {
                 mLauncherFeed!!.feedController.systemUiVisibility =
                         View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
