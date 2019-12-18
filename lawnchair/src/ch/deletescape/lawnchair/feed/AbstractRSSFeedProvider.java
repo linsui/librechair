@@ -86,7 +86,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                 FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
         JobSchedulerService.Companion.getIdCallbacks().add(
                 new Pair<>(REFRESH_TASK, unitFunction1 -> {
-                    FeedUtil.runOnMainThread(this::markUnread);
                     refresh(c, () -> unitFunction1.invoke(false), true);
                     return Unit.INSTANCE;
                 }));
@@ -133,6 +132,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                             return newsEntry;
                         }).collect(Collectors.toList());
+                        if (!articles.isEmpty()) {
+                            FeedUtil.runOnMainThread(this::markUnread);
+                        }
                         synchronized (AbstractRSSFeedProvider.class) {
                             try {
                                 NewsDb.getDatabase(c, token).open().purge();
