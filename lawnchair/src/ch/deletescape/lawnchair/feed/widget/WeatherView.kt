@@ -20,10 +20,7 @@
 package ch.deletescape.lawnchair.feed.widget
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -33,6 +30,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.lawnchairPrefs
@@ -74,13 +72,9 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                 onTick()
             }
         }
-        context.registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                onTick()
-            }
-        }, IntentFilter().apply {
-            addAction(Intent.ACTION_TIME_TICK)
-        })
+        TickManager.subscribe {
+            onTick()
+        }
     }
 
     @SuppressLint("SetTextI18n")
