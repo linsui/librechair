@@ -1784,8 +1784,12 @@ class LauncherFeed(private val originalContext: Context,
                                     ColorEngine.Resolvers.FEED_UNREAD_INDICATOR).resolveColor(),
                                     PorterDuff.Mode.DST_OVER)
                     if (context.feedPrefs.displayUnreadCount) {
-                        tabView.getTabAt(i)?.orCreateBadge?.number =
-                                tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
+                        val l = tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
+                        if (l > 1) {
+                            tabView.getTabAt(i)?.orCreateBadge?.number = l
+                        } else {
+                            tabView.getTabAt(i)?.orCreateBadge?.clearNumber()
+                        }
                     } else {
                         tabView.getTabAt(i)?.orCreateBadge?.clearNumber()
                     }
