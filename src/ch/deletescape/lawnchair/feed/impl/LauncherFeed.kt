@@ -65,7 +65,6 @@ import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.font.CustomFontManager
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.SpringRecyclerView
 import com.android.launcher3.R
 import com.android.launcher3.Utilities
@@ -97,8 +96,6 @@ class LauncherFeed(private val originalContext: Context,
                     originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
         set(value) {
             field = value
-            d("set: setting background color to ${String.format("#%06X",
-                    0xFFFFFF and value)}", Throwable())
         }
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val activityState = ActivityState()
@@ -316,7 +313,6 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     gll = ViewTreeObserver.OnGlobalLayoutListener {
                         val background = background
-                        d("reinitState: onGlobalLayout called, $background 2a")
                         if (horizontalBackground eqp null || verticalBackground eqp null) {
                             if (context.resources.configuration.orientation eqp Configuration.ORIENTATION_PORTRAIT) {
                                 verticalBackground = if (background eqp null) ColorDrawable(
@@ -640,7 +636,6 @@ class LauncherFeed(private val originalContext: Context,
                     }
                     currentTab = tabs[0]
                     if (!reinit) {
-                        d("reinitState: adding onTabChangedListener", Throwable())
                         tabView.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                             override fun onTabReselected(tab: TabLayout.Tab) {
                             }
