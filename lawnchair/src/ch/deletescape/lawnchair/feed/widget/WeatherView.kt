@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.widget
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,14 +28,14 @@ import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
+import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.formatTime
+import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import com.android.launcher3.R
@@ -43,30 +44,36 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
-import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs),
-        LawnchairSmartspaceController.Listener {
-    private var weatherData: LawnchairSmartspaceController.WeatherData? = null
+class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(context, attrs) {
+    private var weatherData: ForecastProvider.CurrentWeather? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     private var dailyForecast: ForecastProvider.DailyForecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
-    private val refreshExecutor = Executors.newSingleThreadExecutor()
-    private var lastRefresh: Long = 0
 
     init {
-        viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                context.lawnchairApp.smartspace.addListener(this@WeatherView)
-                updateData()
-                viewTreeObserver.removeOnGlobalLayoutListener(this)
+        WeatherManager.subscribeDaily {
+            dailyForecast = it
+            post {
+                onTick()
             }
-        })
+        }
+        WeatherManager.subscribeHourly {
+            hourlyWeatherForecast = it
+            post {
+                onTick()
+            }
+        }
+        WeatherManager.subscribeWeather {
+            weatherData = it
+            post {
+                onTick()
+            }
+        }
         context.registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 onTick()
@@ -76,6 +83,7 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         })
     }
 
+    @SuppressLint("SetTextI18n")
     fun updateData() = if (weatherData != null) {
         val highLow = findViewById(R.id.weather_hud_day_night) as TextView
         val information = findViewById(R.id.weather_hud_information) as TextView
@@ -183,7 +191,8 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                 }
 
 
-        currentInformation.text = weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
+        currentInformation.text =
+                weatherData?.temperature?.toString(context.lawnchairPrefs.weatherUnit)
         currentIcon.setImageBitmap(weatherData?.icon)
 
 
@@ -208,76 +217,6 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
     }
 
     fun onTick() {
-        refreshExecutor.submit {
-            lastRefresh = System.currentTimeMillis();
-            val oldData = weatherData;
-
-            if (oldData?.coordLat != null && oldData.coordLon != null) {
-                try {
-                    try {
-                        hourlyWeatherForecast = context.forecastProvider
-                                .getHourlyForecast(oldData.coordLat, oldData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    try {
-                        dailyForecast = context.forecastProvider
-                                .getDailyForecast(oldData.coordLat, oldData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
-                        if (it.date.before(tomorrow())) {
-                            it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
-                        } else {
-                            null
-                        }
-                    }
-                    val today = ArrayList<Int>()
-                    tempList.forEach {
-                        if (it != null) {
-                            today.add(it)
-                        }
-                    }
-
-
-                    forecastLow = Collections.min(today)
-                    forecastHigh = Collections.max(today)
-                    val condCodes = run {
-                        val list = newList<Int>()
-                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
-                                .forEach { list += it.condCode?.toList() ?: listOf(1) }
-                        list
-                    }
-
-
-                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                            condCodes.toTypedArray())
-                    val type = WeatherTypes
-                            .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-
-
-                    weatherTypeResource = WeatherTypes.getStringResource(type)
-                } catch (e: ForecastProvider.ForecastException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace();
-                }
-            }
-            post {
-                updateData()
-            }
-        }
-    }
-
-    override fun onDataUpdated(weather: LawnchairSmartspaceController.WeatherData?,
-                               card: LawnchairSmartspaceController.CardData?) {
-        if (weather?.coordLat != null && weather.coordLon != null) {
-            val wasNull = weatherData == null
-            this.weatherData = weather
-            if (wasNull) {
-                onTick()
-            }
-        }
+        updateData()
     }
 }
