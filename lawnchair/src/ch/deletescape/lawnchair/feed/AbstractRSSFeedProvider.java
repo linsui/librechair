@@ -132,9 +132,6 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                             newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
                             return newsEntry;
                         }).collect(Collectors.toList());
-                        if (!articles.isEmpty()) {
-                            FeedUtil.runOnMainThread(this::markUnread);
-                        }
                         synchronized (AbstractRSSFeedProvider.class) {
                             try {
                                 NewsDb.getDatabase(c, token).open().purge();
@@ -144,6 +141,9 @@ public abstract class AbstractRSSFeedProvider extends FeedProvider {
                                                 it));
                             } catch (SQLiteConstraintException e) {
                                 e.printStackTrace();
+                            }
+                            if (!articles.isEmpty()) {
+                                FeedUtil.runOnMainThread(this::markUnread);
                             }
                         }
                         if (diff) {
