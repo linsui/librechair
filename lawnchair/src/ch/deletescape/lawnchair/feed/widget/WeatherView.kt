@@ -105,12 +105,12 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                             LayoutInflater.from(hourlyLayout.context).inflate(
                                     if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item, hourlyLayout,
                                     false).apply {
-                                val temperature = findViewById(
-                                        R.id.forecast_current_temperature) as TextView
-                                val time = findViewById(
-                                        R.id.forecast_current_time) as TextView
-                                val icon = findViewById(
-                                        R.id.forecast_weather_icon) as ImageView
+                                val temperature = findViewById<TextView>(
+                                        R.id.forecast_current_temperature)
+                                val time = findViewById<TextView>(
+                                        R.id.forecast_current_time)
+                                val icon = findViewById<ImageView>(
+                                        R.id.forecast_weather_icon)
 
                                 viewTreeObserver.addOnPreDrawListener {
                                     if (context.lawnchairPrefs.showVerticalHourlyForecast) {
@@ -208,7 +208,7 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         }
         information.text = weatherTypeResource?.let { context.getString(it) }
     } else {
-        val information = findViewById(R.id.weather_hud_day_night) as TextView
+        val information = findViewById<TextView>(R.id.weather_hud_day_night)
         information.setText(R.string.loading)
         if (!ThemeManager.getInstance(context).supportsDarkText) {
             information.setTextColor(context.resources.getColor(R.color.textColorPrimary))
