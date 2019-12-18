@@ -202,16 +202,16 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         }
 
         if (!ThemeManager.getInstance(context).supportsDarkText) {
-            highLow.setTextColor(context.resources.getColor(R.color.textColorPrimary))
-            information.setTextColor(context.resources.getColor(R.color.textColorPrimary))
-            currentInformation.setTextColor(context.resources.getColor(R.color.textColorPrimary))
+            highLow.setTextColor(context.getColor(R.color.textColorPrimary))
+            information.setTextColor(context.getColor(R.color.textColorPrimary))
+            currentInformation.setTextColor(context.getColor(R.color.textColorPrimary))
         }
         information.text = weatherTypeResource?.let { context.getString(it) }
     } else {
         val information = findViewById<TextView>(R.id.weather_hud_day_night)
         information.setText(R.string.loading)
         if (!ThemeManager.getInstance(context).supportsDarkText) {
-            information.setTextColor(context.resources.getColor(R.color.textColorPrimary))
+            information.setTextColor(context.getColor(R.color.textColorPrimary))
         }
         Unit
     }
