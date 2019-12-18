@@ -85,12 +85,12 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
 
     @SuppressLint("SetTextI18n")
     fun updateData() = if (weatherData != null) {
-        val highLow = findViewById(R.id.weather_hud_day_night) as TextView
-        val information = findViewById(R.id.weather_hud_information) as TextView
-        val currentInformation = findViewById(R.id.weather_hud_current_temp) as TextView
-        val currentIcon = findViewById(R.id.weather_hud_icon) as ImageView
-        val hourlyLayout = findViewById(R.id.unified_weather_forecast) as LinearLayout
-        val dailyLayout = findViewById(R.id.unified_weather_daily) as LinearLayout
+        val highLow = findViewById<TextView>(R.id.weather_hud_day_night)
+        val information = findViewById<TextView>(R.id.weather_hud_information)
+        val currentInformation = findViewById<TextView>(R.id.weather_hud_current_temp)
+        val currentIcon = findViewById<ImageView>(R.id.weather_hud_icon)
+        val hourlyLayout = findViewById<LinearLayout>(R.id.unified_weather_forecast)
+        val dailyLayout = findViewById<LinearLayout>(R.id.unified_weather_daily)
 
         hourlyLayout.removeAllViews()
         dailyLayout.removeAllViews()
@@ -160,9 +160,9 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                             }
                         }
                         val temperature =
-                                findViewById(R.id.forecast_current_temperature) as TextView
-                        val time = findViewById(R.id.forecast_current_time) as TextView
-                        val icon = findViewById(R.id.forecast_weather_icon) as ImageView
+                                findViewById<TextView>(R.id.forecast_current_temperature)
+                        val time = findViewById<TextView>(R.id.forecast_current_time)
+                        val icon = findViewById<ImageView>(R.id.forecast_weather_icon)
 
                         icon.setImageBitmap(it.icon)
                         val zonedDateTime =
