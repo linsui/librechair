@@ -210,7 +210,7 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         Unit
     }
 
-    fun onTick() {
+    private fun onTick() {
         updateData()
     }
 }
