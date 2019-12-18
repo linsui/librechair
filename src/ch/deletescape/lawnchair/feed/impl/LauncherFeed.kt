@@ -94,9 +94,6 @@ class LauncherFeed(private val originalContext: Context,
             ColorEngine.getInstance(originalContext).feedBackground.value.resolveColor(),
             (LawnchairPreferences.getInstance(
                     originalContext).feedBackgroundOpacity * (255f / 100f)).roundToInt())
-        set(value) {
-            field = value
-        }
     private var dark: Boolean = useWhiteText(backgroundColor.setAlpha(255), originalContext)
     private val activityState = ActivityState()
     var background: Bitmap? = null
