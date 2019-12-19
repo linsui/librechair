@@ -63,6 +63,7 @@ import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.tabs.indicator.inflate
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.persistence.InvalidationTracker
 import ch.deletescape.lawnchair.persistence.chipPrefs
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.views.SpringRecyclerView
@@ -1068,6 +1069,24 @@ class LauncherFeed(private val originalContext: Context,
                 false
             }
         }
+
+        recyclerView.post {
+            recyclerView.apply {
+                if (this is SpringRecyclerView) {
+                    this.springEnabled = !context.feedPrefs.disableSpringAnimation
+                }
+            }
+        }
+
+        InvalidationTracker.addListener("feed_disable_rv_springs") {
+            recyclerView.post {
+                recyclerView.apply {
+                    if (this is SpringRecyclerView) {
+                        this.springEnabled = !context.feedPrefs.disableSpringAnimation
+                    }
+                }
+            }
+        }
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -1493,13 +1512,6 @@ class LauncherFeed(private val originalContext: Context,
             swipeRefreshLayout.isEnabled = context.feedPrefs.pullDownToRefresh
             swipeRefreshLayout.setColorSchemeColors(* tabColours.toIntArray())
             swipeRefreshLayout.isRefreshing = true
-        }
-        recyclerView.post {
-            recyclerView.apply {
-                if (this is SpringRecyclerView) {
-                    this.springEnabled = !context.feedPrefs.disableSpringAnimation
-                }
-            }
         }
         runOnMainThread {
             onUnreadStateChanged()

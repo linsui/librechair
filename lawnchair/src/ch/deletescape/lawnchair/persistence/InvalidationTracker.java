@@ -27,11 +27,18 @@ import android.content.IntentFilter;
 
 import com.android.launcher3.BuildConfig;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public final class InvalidationTracker {
     private final static Set<String> CURRENTLY_INVALIDATED = new HashSet<>();
+    private final static Map<String, List<Runnable>> listeners = new HashMap<>();
 
     private InvalidationTracker() {
         throw new RuntimeException();
@@ -41,6 +48,12 @@ public final class InvalidationTracker {
         context.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                synchronized (listeners) {
+                    Objects.requireNonNull(listeners
+                            .getOrDefault(intent.getStringExtra("invalidated"),
+                                    Collections.emptyList()))
+                            .forEach(Runnable::run);
+                }
                 CURRENTLY_INVALIDATED.add(intent.getStringExtra("invalidated"));
             }
         }, new IntentFilter(BuildConfig.APPLICATION_ID + ".PERSISTENCE_INVALIDATED"));
@@ -57,5 +70,15 @@ public final class InvalidationTracker {
     static void invalidate(String key, Context context) {
         context.sendBroadcast(new Intent(BuildConfig.APPLICATION_ID + ".PERSISTENCE_INVALIDATED")
                 .putExtra("invalidated", key));
+    }
+
+    public static void addListener(String key, Runnable oc) {
+        synchronized (listeners) {
+            if (listeners.get(key) == null) {
+                listeners.put(key, new ArrayList<>(Collections.singletonList(oc)));
+            } else {
+                Objects.requireNonNull(listeners.get(key)).add(oc);
+            }
+        }
     }
 }
