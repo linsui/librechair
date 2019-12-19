@@ -76,6 +76,9 @@ public final class NetworkUtil {
                     } else if (conn.getHeaderField("Content-Location") != null) {
                         return resolveRedirects(conn.getHeaderField("Content-Location"), count + 1,
                                 startTime);
+                    } else if (conn.getHeaderField("Content-location") != null) {
+                        return resolveRedirects(conn.getHeaderField("Content-location"), count + 1,
+                                startTime);
                     }
                 }
                 return url;
