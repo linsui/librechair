@@ -24,7 +24,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
 import com.android.launcher3.BuildConfig;
 
@@ -42,7 +41,6 @@ public final class InvalidationTracker {
         context.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(getClass().getName(), "onReceive: invalidated key " + intent.getStringExtra("invalidated"));
                 CURRENTLY_INVALIDATED.add(intent.getStringExtra("invalidated"));
             }
         }, new IntentFilter(BuildConfig.APPLICATION_ID + ".PERSISTENCE_INVALIDATED"));
