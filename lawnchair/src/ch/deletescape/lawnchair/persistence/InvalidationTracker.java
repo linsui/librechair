@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class InvalidationTracker {
-    private static Set<String> CURRENTLY_INVALIDATED = new HashSet<>();
+    private final static Set<String> CURRENTLY_INVALIDATED = new HashSet<>();
 
     private InvalidationTracker() {
         throw new RuntimeException();
