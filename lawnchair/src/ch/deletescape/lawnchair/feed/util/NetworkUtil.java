@@ -54,6 +54,8 @@ public final class NetworkUtil {
         } else {
             URL urlV = new URL(url);
             URLConnection conn = urlV.openConnection();
+            conn.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(5));
+            conn.setReadTimeout((int) TimeUnit.SECONDS.toMillis(10));
             try {
                 conn.connect();
             } catch (IOException e) {
