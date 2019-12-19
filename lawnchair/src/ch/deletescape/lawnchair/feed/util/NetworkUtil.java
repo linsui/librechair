@@ -49,7 +49,7 @@ public final class NetworkUtil {
         if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(25)) {
             return url;
         }
-        if (count > 6) {
+        if (count > 10) {
             return url;
         } else {
             URL urlV = new URL(url);
