@@ -46,6 +46,10 @@ public class VolumeManager {
     private static final List<Consumer<Integer>> listeners = new Vector<>();
     private static final AtomicReference<Context> context = new AtomicReference<>();
 
+    private VolumeManager() {
+        throw new RuntimeException();
+    }
+
     private static final ContentObserver observer = new ContentObserver(
             new Handler(FeedUtil.apply(new HandlerThread("volume-manager"),
                     Thread::start).getLooper())) {
