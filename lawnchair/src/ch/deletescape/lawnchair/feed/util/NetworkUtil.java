@@ -38,12 +38,12 @@ public final class NetworkUtil {
     @Nonnull
     @WorkerThread
     public static String resolveRedirects(@Nonnull String url) throws IOException {
-        return resolveRedirects(url, 0, System.currentTimeMillis());
+        return _resolveRedirects(url, 0, System.currentTimeMillis());
     }
 
     @WorkerThread
     @Nonnull
-    private static String resolveRedirects(@Nonnull String _url, int count, long startTime)
+    private static String _resolveRedirects(@Nonnull String _url, int count, long startTime)
             throws IOException {
         String url = _url.replace("http://", "https://");
         if (System.currentTimeMillis() - startTime > TimeUnit.SECONDS.toMillis(25)) {
@@ -65,19 +65,19 @@ public final class NetworkUtil {
                 if (((HttpURLConnection) conn).getResponseCode() > 300 &&
                         ((HttpURLConnection) conn).getResponseCode() < 400) {
                     if (conn.getHeaderField("location") != null) {
-                        return resolveRedirects(conn.getHeaderField("location"), count + 1,
+                        return _resolveRedirects(conn.getHeaderField("location"), count + 1,
                                 startTime);
                     } else if (conn.getHeaderField("content-location") != null) {
-                        return resolveRedirects(conn.getHeaderField("content-location"), count + 1,
+                        return _resolveRedirects(conn.getHeaderField("content-location"), count + 1,
                                 startTime);
                     } else if (conn.getHeaderField("Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("Location"), count + 1,
+                        return _resolveRedirects(conn.getHeaderField("Location"), count + 1,
                                 startTime);
                     } else if (conn.getHeaderField("Content-Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("Content-Location"), count + 1,
+                        return _resolveRedirects(conn.getHeaderField("Content-Location"), count + 1,
                                 startTime);
                     } else if (conn.getHeaderField("content-Location") != null) {
-                        return resolveRedirects(conn.getHeaderField("content-Location"), count + 1,
+                        return _resolveRedirects(conn.getHeaderField("content-Location"), count + 1,
                                 startTime);
                     }
                 }
