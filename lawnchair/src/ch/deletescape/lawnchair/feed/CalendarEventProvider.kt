@@ -35,7 +35,6 @@ import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.CalendarManager
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.feed.util.FeedUtil
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import kotlinx.android.synthetic.main.calendar_event.view.*
@@ -75,13 +74,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                         it.startTime <= LocalDateTime.now()
                         .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
             }
-            d("init: events are $events")
             ongoingEvents.clear()
             ongoingEvents += it.filter {
                 it.startTime <= LocalDateTime.now() &&
                         it.endTime >= LocalDateTime.now()
             }
-            d("init: ongoing events are $ongoingEvents")
             if (ongoingEvents != lastOngoing ||
                     events != lastEvents) {
                 FeedScope.launch {
@@ -111,13 +108,11 @@ class CalendarEventProvider(context: Context) : FeedProvider(context) {
                 }
                 val ongoingBackup = listOf(* ongoingEvents.toTypedArray())
                 ongoingEvents += ongoingBackup.filter {
-                    d("init: (tick) ongoing event: $it currentTime: ${LocalDateTime.now()}")
                     it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
                             Instant.now())) <= System.currentTimeMillis() / 1000 &&
                             it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
                                     Instant.now())) >= System.currentTimeMillis() / 1000
                 }
-                d("init: (tick) ongoing events are $ongoingEvents")
                 if (ongoingEvents != lastOngoing ||
                         events != lastEvents) {
                     FeedScope.launch {
