@@ -48,7 +48,7 @@ public final class SunriseSunsetManager {
     private static SolarTime clock;
 
     private SunriseSunsetManager() {
-        throw new RuntimeException("This class cannot be instantiated");
+        throw new RuntimeException();
     }
 
     static {
