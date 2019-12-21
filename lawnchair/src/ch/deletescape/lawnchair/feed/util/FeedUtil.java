@@ -69,7 +69,7 @@ public final class FeedUtil {
     private static final Object CLIENT_INSTANTIATION_LOCK = new Object();
 
     private FeedUtil() {
-        throw new RuntimeException("putting your time on instantiating this class smh");
+        throw new RuntimeException("");
     }
 
     @AnyThread
