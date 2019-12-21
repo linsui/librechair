@@ -81,15 +81,12 @@ public final class FeedUtil {
                 client = new OkHttpClientBuilder().build(context);
             }
         }
-
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-
         if (!request.isHttps()) {
             throw new SecurityException("Mandatory HTTPS requirement not met");
         }
-
         try {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try {
@@ -121,15 +118,12 @@ public final class FeedUtil {
                 client = new OkHttpClientBuilder().build(context);
             }
         }
-
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-
         if (!request.isHttps()) {
             throw new SecurityException("Mandatory HTTPS requirement not met");
         }
-
         try {
             Response response = client.newCall(request).execute();
             if (response.body() == null) {
