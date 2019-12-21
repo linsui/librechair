@@ -44,7 +44,6 @@ import ch.deletescape.lawnchair.drawableToBitmap
 import ch.deletescape.lawnchair.feed.CalendarScope
 import ch.deletescape.lawnchair.formatTime
 import ch.deletescape.lawnchair.runOnMainThread
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -57,19 +56,16 @@ import java.util.concurrent.TimeUnit
 class BuiltInCalendarProvider(controller: LawnchairSmartspaceController) :
         LawnchairSmartspaceController.DataProvider(controller) {
     private var card: LawnchairSmartspaceController.CardData? = null
-    private val contentResolver
-        get() = context.contentResolver
     private val events = mutableListOf<CalendarManager.CalendarEvent>()
 
     init {
-        CalendarManager.subscribe {
+        CalendarManager.subscribe { ev ->
             events.clear()
-            events += it.filter {
+            events += ev.filter {
                 it.startTime >= LocalDateTime.now() &&
                         it.startTime <= LocalDateTime.now()
                         .plusHours(2)
             }
-            d("init: $events")
             runOnMainThread {
                 updateInformation()
             }
