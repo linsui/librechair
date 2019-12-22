@@ -39,7 +39,6 @@ public class RemoteItem implements Parcelable {
 
     }
 
-    @SuppressWarnings("WeakerAccess")
     protected RemoteItem(Parcel in) {
         title = in.readString();
         icon = in.readParcelable(Bitmap.class.getClassLoader());
@@ -53,7 +52,7 @@ public class RemoteItem implements Parcelable {
         dest.writeStrongInterface(click);
     }
 
-    public ChipProvider.Item toItem(Context context) {
+    ChipProvider.Item toItem(Context context) {
         ChipProvider.Item item = new ChipProvider.Item();
         item.title = title;
         item.icon = new BitmapDrawable(context.getResources(), icon);
