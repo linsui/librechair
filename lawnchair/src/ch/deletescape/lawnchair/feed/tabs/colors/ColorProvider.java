@@ -51,13 +51,7 @@ public class ColorProvider {
         public static ColorProvider inflate(Class<? extends ColorProvider> clazz) {
             try {
                 return clazz.getConstructor().newInstance();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
             return null;
