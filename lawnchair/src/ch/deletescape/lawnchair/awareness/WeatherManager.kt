@@ -38,28 +38,28 @@ import ch.deletescape.lawnchair.util.extensions.w
 import java.util.concurrent.TimeUnit
 
 object WeatherManager {
-    var currentForecast: ForecastProvider.Forecast? = null
+    private var currentForecast: ForecastProvider.Forecast? = null
         set(value) {
             field = value
             if (value != null) {
                 hourlyForecastCallbacks.forEach { it(value) }
             }
         }
-    var currentWeather: ForecastProvider.CurrentWeather? = null
+    private var currentWeather: ForecastProvider.CurrentWeather? = null
         set(value) {
             field = value
             if (value != null) {
                 weatherCallbacks.forEach { it(value) }
             }
         }
-    var currentDailyForecast: ForecastProvider.DailyForecast? = null
+    private var currentDailyForecast: ForecastProvider.DailyForecast? = null
         set(value) {
             field = value
             if (value != null) {
                 dailyForecastCallbacks.forEach { it(value) }
             }
         }
-    var currentGeo: Pair<Double, Double>? = null
+    private var currentGeo: Pair<Double, Double>? = null
         set(value) {
             field = value
             if (value != null) {
