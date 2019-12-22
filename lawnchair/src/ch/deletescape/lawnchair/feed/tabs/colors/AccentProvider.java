@@ -22,6 +22,8 @@ package ch.deletescape.lawnchair.feed.tabs.colors;
 
 import android.content.Context;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -29,6 +31,7 @@ import ch.deletescape.lawnchair.LawnchairUtilsKt;
 
 
 public class AccentProvider extends ColorProvider {
+    @NotNull
     @Override
     public List<Integer> getColors(Context context) {
         return Collections.singletonList(LawnchairUtilsKt.getColorEngineAccent(context));
