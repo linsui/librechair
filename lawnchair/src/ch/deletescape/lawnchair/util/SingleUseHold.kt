@@ -22,7 +22,7 @@ package ch.deletescape.lawnchair.util
 import kotlinx.coroutines.channels.Channel
 
 class SingleUseHold(private val channel: Channel<Unit> = Channel(0)) {
-    private var triggered = false;
+    private var triggered = false
     suspend fun waitFor() {
         if (!triggered) {
             channel.receive()
@@ -31,7 +31,7 @@ class SingleUseHold(private val channel: Channel<Unit> = Channel(0)) {
     }
 
     fun trigger() {
-        triggered = true;
+        triggered = true
         channel.offer(Unit)
     }
 }
