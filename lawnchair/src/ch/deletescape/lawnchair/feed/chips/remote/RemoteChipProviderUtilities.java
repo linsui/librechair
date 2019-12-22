@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class RemoteChipProviderUtilities {
-    public static final String INTENT_ACTION = "ch.deletescape.lawnchair.feed.chips.CHIP_PROVIDER";
+    private static final String INTENT_ACTION = "ch.deletescape.lawnchair.feed.chips.CHIP_PROVIDER";
 
     private RemoteChipProviderUtilities() {
         Utilities.error("This class only has static members, and cannot be instantiated");
