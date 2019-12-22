@@ -23,14 +23,15 @@ package ch.deletescape.lawnchair.feed.views;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.android.launcher3.anim.Interpolators;
+
 public class AnimatingSeekbar extends AppCompatSeekBar {
 
-    private static final Interpolator DEFAULT_INTERPOLATER = new AccelerateDecelerateInterpolator();
+    private static final Interpolator DEFAULT_INTERPOLATER = Interpolators.AGGRESSIVE_EASE_IN_OUT;
 
     private ValueAnimator animator;
     private ValueAnimator animatorSecondary;
