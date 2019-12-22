@@ -29,13 +29,13 @@ import android.util.Log;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
-
-import static java.util.Collections.EMPTY_LIST;
 
 public class PredictedActionsProvider extends ChipProvider {
     private final Context context;
@@ -57,14 +57,15 @@ public class PredictedActionsProvider extends ChipProvider {
                                     Math.max(it.first.getHeight(), it.first.getWidth()));
                         }
                         try {
-                            item.title = it.second.getShortLabel().toString();
+                            item.title = Objects.requireNonNull(
+                                    it.second.getShortLabel()).toString();
                         } catch (NullPointerException e) {
                             item.title = "";
                         }
                         item.viewClickListener = v -> {
                             try {
-                                ((LauncherApps) context.getSystemService(
-                                        Context.LAUNCHER_APPS_SERVICE))
+                                ((LauncherApps) Objects.requireNonNull(context.getSystemService(
+                                        Context.LAUNCHER_APPS_SERVICE)))
                                         .startShortcut(it.second, null,
                                                 ActivityOptions.makeClipRevealAnimation(v, 0, 0,
                                                         v.getMeasuredWidth(),
@@ -75,10 +76,10 @@ public class PredictedActionsProvider extends ChipProvider {
                             }
                         };
                         return item;
-                    }).filter(it -> it != null).collect(Collectors.toList());
+                    }).filter(Objects::nonNull).collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
             Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);
-            return EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 }
