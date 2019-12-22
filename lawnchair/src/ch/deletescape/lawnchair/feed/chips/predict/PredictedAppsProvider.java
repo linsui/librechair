@@ -26,6 +26,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,8 +35,6 @@ import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.persistence.ChipPersistence;
-
-import static java.util.Collections.EMPTY_LIST;
 
 public class PredictedAppsProvider extends ChipProvider {
     private final Context context;
@@ -55,9 +54,11 @@ public class PredictedAppsProvider extends ChipProvider {
                             item.icon = it.getIcon() != null ? new BitmapDrawable(
                                     context.getResources(), it.getIcon()) :
                                     context.getPackageManager().getActivityIcon(
-                                            it.getComponentKey().componentName);
+                                            Objects.requireNonNull(
+                                                    it.getComponentKey().componentName));
                             item.title = context.getPackageManager().getActivityInfo(
-                                    it.getComponentKey().componentName, 0).loadLabel(
+                                    Objects.requireNonNull(it.getComponentKey().componentName),
+                                    0).loadLabel(
                                     context.getPackageManager()).toString();
                             item.viewClickListener = v -> FeedUtil.startActivity(context,
                                     new Intent().setComponent(
@@ -71,7 +72,7 @@ public class PredictedAppsProvider extends ChipProvider {
                     .collect(Collectors.toList());
         } catch (Exception /* RemoteException */ e) {
             Log.e(getClass().getSimpleName(), "getItems: error retrieving predictions", e);
-            return EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 }
