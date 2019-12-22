@@ -33,7 +33,6 @@ import ch.deletescape.lawnchair.feed.pod.FeedPod
 import ch.deletescape.lawnchair.feed.pod.PodFeedProvider
 import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.tint
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.SpringRecyclerView
 import com.android.launcher3.R
 import java.util.*
@@ -43,7 +42,6 @@ class ChipCardProvider(context: Context) : PodFeedProvider(context) {
 
     init {
         setPod {
-            d("setPod: ${context.feedPrefs.chipCompactCard.not()}")
             if (context.feedPrefs.chipCompactCard.not()) VerticalChipPodImpl(context, feed) else CompactChipPodImpl(context, feed)
         }
     }
@@ -64,27 +62,27 @@ class VerticalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPo
     override fun accept(t: List<ChipProvider.Item>?) {
         items.clear()
         if (t != null) {
-            items += t;
+            items += t
         }
     }
 
     override fun getCards(): List<Card> {
-        return items.map {
-            Card(it.icon.let {
+        return items.map { item ->
+            Card(item.icon.let {
                 if (it is VectorDrawable) it.tint(
                         ColorEngine.getInstance(context).getResolverCache(
                                 ColorEngine.Resolvers.FEED_CHIP).value.computeForegroundColor()) else it
-            }, it.title,
+            }, item.title,
                     { _, _ -> View(context) }, Card.TEXT_ONLY or Card.RAISE, "",
-                    (it.title?.hashCode() ?: UUID.randomUUID().hashCode())
-                            shl 10 or (it.icon?.hashCode() ?: 0 and 0b1111111111)).apply {
-                if (it.click != null || it.viewClickListener != null) {
+                    (item.title?.hashCode() ?: UUID.randomUUID().hashCode())
+                            shl 10 or (item.icon?.hashCode() ?: 0 and 0b1111111111)).apply {
+                if (item.click != null || item.viewClickListener != null) {
                     globalClickListener = { v ->
-                        if (it.viewClickListener != null) {
-                            it.viewClickListener.accept(v)
+                        if (item.viewClickListener != null) {
+                            item.viewClickListener.accept(v)
                         }
-                        if (it.click != null) {
-                            it.click.run()
+                        if (item.click != null) {
+                            item.click.run()
                         }
                     }
                 }
@@ -94,7 +92,7 @@ class VerticalChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPo
 }
 
 class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod {
-    lateinit var parentView: ViewGroup
+    private lateinit var parentView: ViewGroup
     val rv by lazy {
         SpringRecyclerView(parentView.context).also {
             it.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -109,10 +107,8 @@ class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod
     }
 
     override fun getCards(): List<Card> {
-        d("getCards: retrieving cards")
         return listOf(
                 Card(null, context.getString(R.string.title_card_chips), { parent, _ ->
-                    ch.deletescape.lawnchair.util.extensions.d("inflate: $parent");
                     parentView = parent as ViewGroup
                     rv
                 }, Card.RAISE, "nosort,top", "chips".hashCode()))
