@@ -10,7 +10,7 @@
  *     (at your option) any later version.
  *
  *     Librechair is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     but WITHOUT ANY WARRANTY without even the implied warranty of
  *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *     GNU General Public License for more details.
  *
@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.cp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
@@ -28,7 +29,6 @@ import android.content.Intent
 import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
-import ch.deletescape.lawnchair.feed.images.ImageStore
 import ch.deletescape.lawnchair.lawnchairApp
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
@@ -39,21 +39,12 @@ object NonoverlayCallbacks {
     private val imageRequests = mutableListOf<ImageRequest>()
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
-        val id = UUID.randomUUID().hashCode();
+        val id = UUID.randomUUID().hashCode()
         widgetRequests.add(WidgetRequest(id) {
             d("postWidgetRequest: retrieved widget $it")
             callback(it)
         })
         context.startActivity(Intent(context, WidgetRequestActivity::class.java).apply {
-            putExtra("request_id", id)
-            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
-        })
-    }
-
-    fun postImageRequest(context: Context, callback: (storeUUID: String?) -> Unit) {
-        val id = UUID.randomUUID().hashCode()
-        imageRequests += ImageRequest(id, callback)
-        context.startActivity(Intent(context, ImageRequestActivity::class.java).apply {
             putExtra("request_id", id)
             flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
         })
@@ -66,10 +57,11 @@ object NonoverlayCallbacks {
 
     data class ImageRequest(val id: Int, val callback: (storeUUID: String?) -> Unit)
 
+    @SuppressLint("Registered")
     class WidgetRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
         val request by lazy { widgetRequests.first { it.id == id } }
-        var configurable = false
+        private var configurable = false
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -142,35 +134,6 @@ object NonoverlayCallbacks {
                 super.onActivityResult(requestCode, resultCode, data)
                 setResult(resultCode, data)
                 finish()
-            }
-        }
-    }
-
-    class ImageRequestActivity : Activity() {
-        val id by lazy { intent.extras!!["request_id"] as Int }
-        val request by lazy { imageRequests.first { it.id == id } }
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
-            val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
-            startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
-            overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
-        }
-
-        override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            if (resultCode == RESULT_OK) {
-                request.callback(data!!.getStringExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)!!)
-                finish()
-                overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
-            } else {
-                try {
-                    request.callback(null)
-                } catch (e: RuntimeException) {
-                    e.printStackTrace();
-                }
-                finish()
-                overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
             }
         }
     }
