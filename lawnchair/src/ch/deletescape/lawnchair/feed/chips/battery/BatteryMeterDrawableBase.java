@@ -45,6 +45,10 @@ import com.android.launcher3.Utilities;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Objects;
+
 public class BatteryMeterDrawableBase extends Drawable {
     private static final float ASPECT_RATIO = .58f;
     public static final String TAG = BatteryMeterDrawableBase.class.getSimpleName();
@@ -101,8 +105,16 @@ public class BatteryMeterDrawableBase extends Drawable {
         for (int i = 0; i < N; i++) {
             mColors[2 * i] = levels.getInt(i, 0);
             if (colors.getType(i) == TypedValue.TYPE_ATTRIBUTE) {
-                mColors[2 * i + 1] = Utilities.getColorAttrDefaultColor(context,
-                        colors.getThemeAttributeId(i, 0));
+                try {
+                    Method getThemeAttributeId = colors.getClass().getDeclaredMethod(
+                            "getThemeAttributeId", Integer.class, Integer.class);
+                    //noinspection ConstantConditions
+                    mColors[2 * i + 1] = Utilities.getColorAttrDefaultColor(context,
+                            Objects.requireNonNull(
+                                    (Integer) getThemeAttributeId.invoke(colors, i, 0)));
+                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 mColors[2 * i + 1] = colors.getColor(i, 0);
             }
