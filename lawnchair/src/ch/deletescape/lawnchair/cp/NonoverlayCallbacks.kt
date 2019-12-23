@@ -36,7 +36,6 @@ import java.util.*
 
 object NonoverlayCallbacks {
     private val widgetRequests = mutableListOf<WidgetRequest>()
-    private val imageRequests = mutableListOf<ImageRequest>()
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
         val id = UUID.randomUUID().hashCode()
@@ -54,8 +53,6 @@ object NonoverlayCallbacks {
     data class WidgetRequest(val id: Int, val callback: (arg: Int) -> Unit) {
         var configured = false
     }
-
-    data class ImageRequest(val id: Int, val callback: (storeUUID: String?) -> Unit)
 
     @SuppressLint("Registered")
     class WidgetRequestActivity : Activity() {
