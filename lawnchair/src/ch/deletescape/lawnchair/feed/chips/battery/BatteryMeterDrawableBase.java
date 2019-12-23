@@ -49,6 +49,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+@SuppressWarnings("JavaReflectionMemberAccess")
 public class BatteryMeterDrawableBase extends Drawable {
     private static final float ASPECT_RATIO = .58f;
     public static final String TAG = BatteryMeterDrawableBase.class.getSimpleName();
@@ -95,6 +96,7 @@ public class BatteryMeterDrawableBase extends Drawable {
     private final Path mShapePath = new Path();
     private final Path mOutlinePath = new Path();
     private final Path mTextPath = new Path();
+
     public BatteryMeterDrawableBase(Context context, int frameColor) {
         mContext = context;
         final Resources res = context.getResources();
@@ -106,13 +108,15 @@ public class BatteryMeterDrawableBase extends Drawable {
             mColors[2 * i] = levels.getInt(i, 0);
             if (colors.getType(i) == TypedValue.TYPE_ATTRIBUTE) {
                 try {
-                    Method getThemeAttributeId = colors.getClass().getDeclaredMethod(
-                            "getThemeAttributeId", Integer.class, Integer.class);
-                    mColors[2 * i + 1] = Utilities.getColorAttrDefaultColor(context,
-                            Objects.requireNonNull(
-                                    (Integer) getThemeAttributeId.invoke(colors, i, 0)));
+                    if (Utilities.HIDDEN_APIS_ALLOWED) {
+                        Method getThemeAttributeId = TypedArray.class.getMethod(
+                                "getThemeAttributeId", Integer.class, Integer.class);
+                        mColors[2 * i + 1] = Utilities.getColorAttrDefaultColor(context,
+                                Objects.requireNonNull(
+                                        (Integer) getThemeAttributeId.invoke(colors, i, 0)));
+                    }
                 } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             } else {
                 mColors[2 * i + 1] = colors.getColor(i, 0);
@@ -163,47 +167,59 @@ public class BatteryMeterDrawableBase extends Drawable {
         mIntrinsicWidth = context.getResources().getDimensionPixelSize(R.dimen.battery_width);
         mIntrinsicHeight = context.getResources().getDimensionPixelSize(R.dimen.battery_height);
     }
+
     @Override
     public int getIntrinsicHeight() {
         return mIntrinsicHeight;
     }
+
     @Override
     public int getIntrinsicWidth() {
         return mIntrinsicWidth;
     }
+
     public void setShowPercent(boolean show) {
         mShowPercent = show;
         postInvalidate();
     }
+
     public void setCharging(boolean val) {
         mCharging = val;
         postInvalidate();
     }
+
     public boolean getCharging() {
         return mCharging;
     }
+
     public void setBatteryLevel(int val) {
         mLevel = val;
         postInvalidate();
     }
+
     public int getBatteryLevel() {
         return mLevel;
     }
+
     public void setPowerSave(boolean val) {
         mPowerSaveEnabled = val;
         postInvalidate();
     }
+
     public boolean getPowerSave() {
         return mPowerSaveEnabled;
     }
+
     protected void setPowerSaveAsColorError(boolean asError) {
         mPowerSaveAsColorError = asError;
     }
+
     // an approximation of View.postInvalidate()
     private void postInvalidate() {
         unscheduleSelf(this::invalidateSelf);
         scheduleSelf(this::invalidateSelf, 0);
     }
+
     private static float[] loadPoints(Resources res, int pointArrayRes) {
         final int[] pts = res.getIntArray(pointArrayRes);
         int maxX = 0, maxY = 0;
@@ -218,11 +234,13 @@ public class BatteryMeterDrawableBase extends Drawable {
         }
         return ptsF;
     }
+
     @Override
     public void setBounds(int left, int top, int right, int bottom) {
         super.setBounds(left, top, right, bottom);
         updateSize();
     }
+
     private void updateSize() {
         final Rect bounds = getBounds();
         mHeight = (bounds.bottom - mPadding.bottom) - (bounds.top + mPadding.top);
@@ -230,17 +248,19 @@ public class BatteryMeterDrawableBase extends Drawable {
         mWarningTextPaint.setTextSize(mHeight * 0.75f);
         mWarningTextHeight = -mWarningTextPaint.getFontMetrics().ascent;
     }
+
     @Override
     public boolean getPadding(@NotNull Rect padding) {
         if (mPadding.left == 0
-            && mPadding.top == 0
-            && mPadding.right == 0
-            && mPadding.bottom == 0) {
+                && mPadding.top == 0
+                && mPadding.right == 0
+                && mPadding.bottom == 0) {
             return super.getPadding(padding);
         }
         padding.set(mPadding);
         return true;
     }
+
     public void setPadding(int left, int top, int right, int bottom) {
         mPadding.left = left;
         mPadding.top = top;
@@ -248,6 +268,7 @@ public class BatteryMeterDrawableBase extends Drawable {
         mPadding.bottom = bottom;
         updateSize();
     }
+
     private int getColorForLevel(int percent) {
         int thresh, color = 0;
         for (int i = 0; i < mColors.length; i += 2) {
@@ -264,6 +285,7 @@ public class BatteryMeterDrawableBase extends Drawable {
         }
         return color;
     }
+
     public void setColors(int fillColor, int backgroundColor) {
         mIconTint = fillColor;
         mFramePaint.setColor(backgroundColor);
@@ -277,6 +299,7 @@ public class BatteryMeterDrawableBase extends Drawable {
                 ? mChargeColor
                 : getColorForLevel(level);
     }
+
     @Override
     public void draw(@NotNull Canvas c) {
         final int level = mLevel;
@@ -425,10 +448,12 @@ public class BatteryMeterDrawableBase extends Drawable {
             c.drawPath(mOutlinePath, mPowersavePaint);
         }
     }
+
     // Some stuff required by Drawable.
     @Override
     public void setAlpha(int alpha) {
     }
+
     @Override
     public void setColorFilter(@Nullable ColorFilter colorFilter) {
         mFramePaint.setColorFilter(colorFilter);
@@ -437,10 +462,12 @@ public class BatteryMeterDrawableBase extends Drawable {
         mBoltPaint.setColorFilter(colorFilter);
         mPlusPaint.setColorFilter(colorFilter);
     }
+
     @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
     }
+
     public int getCriticalLevel() {
         return mCriticalLevel;
     }
