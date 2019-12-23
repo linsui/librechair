@@ -20,6 +20,7 @@
 
 package ch.deletescape.lawnchair.cp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
@@ -41,7 +42,7 @@ object OverlayCallbacks {
     private val imageRequests = mutableListOf<ImageRequest>()
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
-        val id = UUID.randomUUID().hashCode();
+        val id = UUID.randomUUID().hashCode()
         widgetRequests.add(WidgetRequest(id) {
             d("postWidgetRequest: retrieved widget $it")
             callback(it)
@@ -60,7 +61,7 @@ object OverlayCallbacks {
             if (view != null) {
                 putExtra("activity_transition_options",
                         ActivityOptionsCompat.makeClipRevealAnimation(view, 0, 0,
-                                view.measuredWidth, view.measuredHeight).toBundle());
+                                view.measuredWidth, view.measuredHeight).toBundle())
             }
             flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
         })
@@ -73,10 +74,11 @@ object OverlayCallbacks {
 
     data class ImageRequest(val id: Int, val callback: (storeUUID: String?) -> Unit)
 
+    @SuppressLint("Registered")
     class WidgetRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
         val request by lazy { widgetRequests.first { it.id == id } }
-        var configurable = false
+        private var configurable = false
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -153,6 +155,7 @@ object OverlayCallbacks {
         }
     }
 
+    @SuppressLint("Registered")
     class ImageRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
         val startOpt by lazy { intent.extras!!["activity_transition_options"] as Bundle? }
@@ -174,7 +177,7 @@ object OverlayCallbacks {
                 try {
                     request.callback(null)
                 } catch (e: RuntimeException) {
-                    e.printStackTrace();
+                    e.printStackTrace()
                 }
                 finish()
                 overridePendingTransition(R.anim.fade_in_short, R.anim.fade_out_short)
