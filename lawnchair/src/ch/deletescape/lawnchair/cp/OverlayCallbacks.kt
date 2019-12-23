@@ -158,7 +158,7 @@ object OverlayCallbacks {
     @SuppressLint("Registered")
     class ImageRequestActivity : Activity() {
         val id by lazy { intent.extras!!["request_id"] as Int }
-        val startOpt by lazy { intent.extras!!["activity_transition_options"] as Bundle? }
+        private val startOpt by lazy { intent.extras!!["activity_transition_options"] as Bundle? }
         val request by lazy { imageRequests.first { it.id == id } }
 
         override fun onCreate(savedInstanceState: Bundle?) {
