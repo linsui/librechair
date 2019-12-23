@@ -99,7 +99,7 @@ class CompactChipPodImpl(val context: Context, val feed: LauncherFeed) : FeedPod
             it.adapter = feed.chipAdapter
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT)
-            it.setOnTouchListener { v, event ->
+            it.setOnTouchListener { _, _ ->
                 feed.feedController.disallowInterceptCurrentTouchEvent = true
                 false
             }
