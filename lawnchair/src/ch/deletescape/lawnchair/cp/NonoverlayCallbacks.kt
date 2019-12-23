@@ -30,28 +30,21 @@ import android.os.Bundle
 import ch.deletescape.lawnchair.LawnchairApp
 import ch.deletescape.lawnchair.appWidgetManager
 import ch.deletescape.lawnchair.lawnchairApp
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
 object NonoverlayCallbacks {
-    private val widgetRequests = mutableListOf<WidgetRequest>()
+    private val widgetRequests = mutableListOf<OverlayCallbacks.WidgetRequest>()
 
     fun postWidgetRequest(context: Context, callback: (id: Int) -> Unit) {
         val id = UUID.randomUUID().hashCode()
-        widgetRequests.add(WidgetRequest(id) {
-            d("postWidgetRequest: retrieved widget $it")
+        widgetRequests.add(OverlayCallbacks.WidgetRequest(id) {
             callback(it)
         })
         context.startActivity(Intent(context, WidgetRequestActivity::class.java).apply {
             putExtra("request_id", id)
             flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
         })
-    }
-
-
-    data class WidgetRequest(val id: Int, val callback: (arg: Int) -> Unit) {
-        var configured = false
     }
 
     @SuppressLint("Registered")
