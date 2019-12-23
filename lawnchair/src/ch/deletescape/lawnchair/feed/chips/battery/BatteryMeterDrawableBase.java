@@ -108,7 +108,6 @@ public class BatteryMeterDrawableBase extends Drawable {
                 try {
                     Method getThemeAttributeId = colors.getClass().getDeclaredMethod(
                             "getThemeAttributeId", Integer.class, Integer.class);
-                    //noinspection ConstantConditions
                     mColors[2 * i + 1] = Utilities.getColorAttrDefaultColor(context,
                             Objects.requireNonNull(
                                     (Integer) getThemeAttributeId.invoke(colors, i, 0)));
