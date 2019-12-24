@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -30,12 +31,14 @@ import com.android.launcher3.R;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
 import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
 import ch.deletescape.lawnchair.feed.RemoteCard.Types;
 import ch.deletescape.lawnchair.util.IRunnable;
 
+@SuppressLint("Registered")
 public class RemoteDemoService extends Service {
 
     private IBinder binder;
@@ -47,11 +50,11 @@ public class RemoteDemoService extends Service {
     public IBinder onBind(Intent intent) {
         return binder != null ? binder : (binder = new Stub() {
             @Override
-            public List<RemoteCard> getCards() throws RemoteException {
+            public List<RemoteCard> getCards() {
                 RemoteCard demoCard = new RemoteCard(null, "feed provider demo",
                         new RemoteInflateHelper.Stub() {
                             @Override
-                            public RemoteViews inflate(boolean darkText) throws RemoteException {
+                            public RemoteViews inflate(boolean darkText) {
                                 RemoteViews views = new RemoteViews(
                                         getApplicationContext().getPackageName(),
                                         R.layout.appwidget_error);
@@ -76,9 +79,9 @@ public class RemoteDemoService extends Service {
             }
 
             @Override
-            public List<RemoteAction> getActions(boolean exclusive) throws RemoteException {
+            public List<RemoteAction> getActions(boolean exclusive) {
                 return Collections.singletonList(new RemoteAction("Demo", LawnchairUtilsKt.drawableToBitmap(
-                        getDrawable(R.drawable.ic_smartspace_preferences)),
+                        Objects.requireNonNull(getDrawable(R.drawable.ic_smartspace_preferences))),
                         new IRunnable.Stub() {
                             @Override
                             public void run() throws RemoteException {
