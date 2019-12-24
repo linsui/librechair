@@ -27,14 +27,10 @@ import com.rometools.rome.io.SyndFeedInput;
 
 import org.xml.sax.InputSource;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
-import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder;
-import okhttp3.OkHttpClient;
 
 public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
 

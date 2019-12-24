@@ -31,7 +31,6 @@ import org.xml.sax.InputSource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
