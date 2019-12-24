@@ -71,7 +71,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
 
 
     @Override
-    public Object getBitmap(@NotNull Context context, Continuation<? super Bitmap> o) {
+    public Object getBitmap(@NotNull Context context, @NotNull Continuation<? super Bitmap> o) {
         if (cache.exists()) {
             Bitmap cachedBitmap = BitmapFactory.decodeFile(cache.getAbsolutePath());
             if (cachedBitmap == null) {
@@ -89,7 +89,8 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
         } else {
             Bitmap map = internalGetBitmap(context);
             try {
-                map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
+                Objects.requireNonNull(map).compress(CompressFormat.PNG, 100,
+                        new FileOutputStream(cache));
             } catch (FileNotFoundException | NullPointerException e) {
                 e.printStackTrace();
             }
