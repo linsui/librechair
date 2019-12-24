@@ -25,6 +25,7 @@ import retrofit2.http.Query;
 
 public interface BingApi {
     @GET("/HPImageArchive.aspx")
-    public Call<BingPictureResponse> getPicOfTheDay(@Query("n") int amount,
-            @Query("format") String format, @Query("idx") int index, @Query("mkt") String locale);
+    Call<BingPictureResponse> getPicOfTheDay(@Query("n") int amount,
+                                             @Query("format") String format,
+                                             @Query("idx") int index, @Query("mkt") String locale);
 }

@@ -19,10 +19,10 @@
 
 package ch.deletescape.lawnchair.feed.images.nasa;
 
-public final class Apod {
+final class Apod {
     public static final String API_KEY = "bcpuyAzZfWZNE7fxz5Qk0yDbgD6Gxj4fNmSGXHxu";
 
     private Apod() {
-
+        throw new RuntimeException("");
     }
 }

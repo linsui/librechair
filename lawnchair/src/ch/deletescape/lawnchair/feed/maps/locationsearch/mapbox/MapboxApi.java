@@ -26,5 +26,5 @@ import retrofit2.http.Path;
 
 public interface MapboxApi {
     @GET("/geocoding/v5/mapbox.places/{query}.json")
-    public Call<MapboxResult> getLocation(@Path("query") String query);
+    Call<MapboxResult> getLocation(@Path("query") String query);
 }

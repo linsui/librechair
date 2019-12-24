@@ -26,7 +26,6 @@ import java.util.List;
 
 import ch.deletescape.lawnchair.feed.FeedProviderContainer;
 
-@SuppressWarnings("WeakerAccess")
 public abstract class DynamicProviderDelegate {
     private final Context context;
 
