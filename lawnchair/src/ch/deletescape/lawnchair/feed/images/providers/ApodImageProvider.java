@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -76,7 +77,8 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
             if (cachedBitmap == null) {
                 Bitmap map = internalGetBitmap(context);
                 try {
-                    map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
+                    Objects.requireNonNull(map).compress(CompressFormat.PNG, 100,
+                            new FileOutputStream(cache));
                 } catch (FileNotFoundException | NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -98,6 +100,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
     private Bitmap internalGetBitmap(Context context) {
         try {
             Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            assert response.body() != null;
             if (response.body().media_type.equals("image")) {
                 return BitmapFactory.decodeStream(new URL(response.body().hdurl).openStream());
             } else {
@@ -147,7 +150,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
                                  @NotNull Continuation<? super String> o) {
         try {
             Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
-            if (response.body().media_type.equals("image")) {
+            if (Objects.requireNonNull(response.body()).media_type.equals("image")) {
                 return response.body().explanation;
             } else {
                 return null;
@@ -163,7 +166,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
     public Object getUrl(@NotNull Context context, @NotNull Continuation<? super String> o) {
         try {
             Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
-            if (response.body().media_type.equals("image")) {
+            if (Objects.requireNonNull(response.body()).media_type.equals("image")) {
                 return response.body().url;
             } else {
                 return null;
