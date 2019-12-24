@@ -19,7 +19,6 @@
 
 package ch.deletescape.lawnchair.feed.widgets
 
-import android.annotation.WorkerThread
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
@@ -44,6 +43,7 @@ import kotlin.math.abs
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
+@Suppress("RedundantLambdaArrow")
 class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
 
     override fun onCreateView(context: Context, appWidgetId: Int,
@@ -131,7 +131,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                             context.lawnchairPrefs.searchBarRadius
                     }
                 }
-                background?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
+                background?.setColorFilter(PorterDuffColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC))
             }
             allChildren.forEach { view ->
                 if (dark && darkSubst.keys.any { it.isSuperclassOf(view::class) }) {
@@ -189,27 +189,24 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
         }
 
         private companion object {
-            var lightSubst = mapOf(
-                    (TextView::class as KClass<out View>) to { it: View ->
-                        (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimaryInverse
-                                .fromColorRes(it.context)))
-                        Unit
-                    },
-                    (ImageView::class as KClass<out View>) to { it: View ->
-                        (it as ImageView)
-                        if (it.drawable != null) {
-                            try {
-                                it.setImageBitmap(processDrawable(it.drawable, it.context,
-                                        R.color.textColorPrimaryInverse.fromColorRes(
-                                                it.context)))
-                            } catch (e: Resources.NotFoundException) {
-                                // TODO why COSP throw random notfoundexception
-                            }
-                        }
-                        Unit
+            var lightSubst = mapOf((TextView::class as KClass<out View>) to { it: View ->
+                (it as TextView)
+                it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimaryInverse
+                        .fromColorRes(it.context)))
+                Unit
+            }, (ImageView::class as KClass<out View>) to { it: View ->
+                (it as ImageView)
+                if (it.drawable != null) {
+                    try {
+                        it.setImageBitmap(processDrawable(it.drawable, it.context,
+                                R.color.textColorPrimaryInverse.fromColorRes(
+                                        it.context)))
+                    } catch (e: Resources.NotFoundException) {
+                        // TODO why COSP throw random notfoundexception
                     }
-            )
+                }
+                Unit
+            })
             var darkSubst = mapOf(
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)

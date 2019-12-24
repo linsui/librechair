@@ -36,6 +36,6 @@ fun getFeedSortingAlgorithmName(algorithm: String, context: Context): String {
         CategorizedSortingAlgorithm::class.java.name -> context.getString(
                     R.string.title_sorting_provider_categorized)
 
-        else -> error("No such sorting algorithm ${algorithm}")
+        else -> error("No such sorting algorithm $algorithm")
     }
 }
