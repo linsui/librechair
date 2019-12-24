@@ -40,7 +40,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.XmlRes;
@@ -59,10 +58,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback;
 import androidx.preference.PreferenceGroup;
-import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
-import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,7 +90,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -810,7 +806,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.setType("image/png");
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CurrentImageProvider.Companion.getAUTHORITY() + "/" + shareId));
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(
+                            "content://" + CurrentImageProvider.AUTHORITY + "/" + shareId));
                     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     getActivity().startActivity(shareIntent);
                     return true;
