@@ -39,6 +39,7 @@ class CurrentImageProvider : ContentProvider() {
         return "image/png"
     }
 
+    @Suppress("ControlFlowWithEmptyBody")
     @Throws(FileNotFoundException::class)
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? = synchronized(this) {
         if (!SHARE_QUERIES.contains(uri.lastPathSegment!!)) {
@@ -51,7 +52,7 @@ class CurrentImageProvider : ContentProvider() {
         FeedScope.launch {
             try {
                 ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground,
-                                      context!!)?.getBitmap(context!!)!!
+                        context!!)?.getBitmap(context!!)!!
                         .compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(currentBitmap))
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
