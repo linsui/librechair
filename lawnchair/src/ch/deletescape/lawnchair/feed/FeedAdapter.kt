@@ -73,12 +73,10 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
         set(value) {
-            d("init: backgroundColor is now $value")
             field = value
         }
 
     init {
-        d("init: backgroundColor is $backgroundColor")
         this.backgroundColor = backgroundColor
     }
 
