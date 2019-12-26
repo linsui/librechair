@@ -113,7 +113,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
                 recyclerView.adapter = null
                 recyclerView.adapter = this
                 feed?.refresh(0)
-                d("onAttachedToRecyclerView: theme changed")
             }
         }
     }
