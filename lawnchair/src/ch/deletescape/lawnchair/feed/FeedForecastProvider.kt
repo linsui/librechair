@@ -45,7 +45,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c) {
     override fun getCards(): List<Card> {
         return if (forecast == null) emptyList() else listOf(
             Card(BitmapDrawable(context.resources, weatherData?.icon),
-                 context.getString(R.string.forecast_s), object : Card.Companion.InflateHelper {
+                    null, object : Card.Companion.InflateHelper {
                     override fun inflate(parent: ViewGroup): View {
                         val recyclerView = LayoutInflater.from(parent.context).inflate(
                             R.layout.width_inflatable_recyclerview, parent, false) as androidx.recyclerview.widget.RecyclerView
