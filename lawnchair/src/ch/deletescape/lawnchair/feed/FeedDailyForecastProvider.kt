@@ -41,8 +41,7 @@ class FeedDailyForecastProvider(c: Context) : FeedProvider(c) {
 
     override fun getCards(): List<Card> {
         return if (forecast == null) emptyList() else listOf(
-                Card(null,
-                        context.getString(R.string.forecast_s),
+                Card(null, null,
                         object : Card.Companion.InflateHelper {
                             override fun inflate(parent: ViewGroup): View {
                                 val recyclerView = LayoutInflater.from(parent.context).inflate(
