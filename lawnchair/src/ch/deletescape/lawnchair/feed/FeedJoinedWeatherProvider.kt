@@ -320,6 +320,10 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                 }
                             })
                         }
+                        if (forecastHigh != null && forecastLow != null) {
+                            highLow.text =
+                                    "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
+                        }
                         dailyForecast?.dailyForecastData
                                 ?.take(if (context.lawnchairPrefs.showVerticalDailyForecast) context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt()
                                 else dailyForecast!!.dailyForecastData.size)
@@ -366,6 +370,9 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                                                     tomorrowDate)) {
                                                         time.text = context.getString(
                                                                 R.string.title_text_today)
+                                                        highLow.text = "${it.high.toString(
+                                                                context.lawnchairPrefs.weatherUnit)} / ${it.low.toString(
+                                                                context.lawnchairPrefs.weatherUnit)}"
                                                     } else {
                                                         time.text =
                                                                 IcuDateTextView.getDateFormat(
@@ -428,10 +435,6 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                                 weatherData?.temperature?.toString(
                                         context.lawnchairPrefs.weatherUnit)
                         currentIcon.setImageBitmap(weatherData?.icon)
-                        if (forecastHigh != null && forecastLow != null) {
-                            highLow.text =
-                                    "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
-                        }
 
                         val url = hourlyWeatherForecast?.url
 
