@@ -475,6 +475,4 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
                         "nosort,top"))
         else mutableListOf()
     }
-
-    override fun isVolatile() = !handled
 }
