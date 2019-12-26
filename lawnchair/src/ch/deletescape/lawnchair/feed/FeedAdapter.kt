@@ -72,9 +72,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
         RecyclerView.Adapter<CardViewHolder>() {
     private lateinit var recyclerView: RecyclerView
     var backgroundColor: Int = 0
-        set(value) {
-            field = value
-        }
 
     init {
         this.backgroundColor = backgroundColor
@@ -120,7 +117,6 @@ open class FeedAdapter(var providers: List<FeedProvider>, backgroundColor: Int,
             }
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CardViewHolder {
         return CardViewHolder(parent, viewType, backgroundColor)
     }
