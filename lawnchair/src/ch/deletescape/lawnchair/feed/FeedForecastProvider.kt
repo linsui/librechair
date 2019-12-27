@@ -61,7 +61,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c) {
                         recyclerView.layoutParams = ViewGroup
                                 .LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                               ViewGroup.LayoutParams.MATCH_PARENT)
-                        return recyclerView;
+                        return recyclerView
                     }
 
                 }, Card.NO_HEADER, "nosort,top"))

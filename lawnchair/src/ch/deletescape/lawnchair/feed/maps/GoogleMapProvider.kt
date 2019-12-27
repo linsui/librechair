@@ -43,9 +43,9 @@ open class GoogleMapProvider : MapProvider() {
                     0, 19, 256, ".png", arrayOf("https://mt0.google.cn", "https://mt1.google.cn",
                     "https://mt2.google.cn", "https://mt3.google.cn")) {
                 override fun getTileURLString(tileLoc: Long): String {
-                    val (lat, lon) = WgsGcjConverter.num2deg(tileLoc.x, tileLoc.y, tileLoc.zoom);
+                    val (lat, lon) = WgsGcjConverter.num2deg(tileLoc.x, tileLoc.y, tileLoc.zoom)
                     val gcj = WgsGcjConverter.wgs84ToGcj02(lat, lon)
-                    val (x, y) = WgsGcjConverter.deg2num(gcj.latOrY, gcj.lonOrX, tileLoc.zoom);
+                    val (x, y) = WgsGcjConverter.deg2num(gcj.latOrY, gcj.lonOrX, tileLoc.zoom)
                     return "$baseUrl/vt/lyrs=m&x=$x&y=$y&z=${tileLoc.zoom}"
                 }
             }

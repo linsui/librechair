@@ -51,7 +51,7 @@ class GoWeatherProvider(context: Context) : GoCardFactory(context),
     @StringRes
     private var weatherTypeResource: Int? = null
     private val refreshExecutor = Executors.newSingleThreadExecutor()
-    private val cache = CacheTime();
+    private val cache = CacheTime()
 
     init {
         context.lawnchairApp.smartspace.addListener(this)
@@ -196,7 +196,7 @@ class GoWeatherProvider(context: Context) : GoCardFactory(context),
                                card: LawnchairSmartspaceController.CardData?) {
         if (weatherData?.coordLat != null && weatherData.coordLon != null && cache.expired) {
             refreshExecutor.submit {
-                this.weatherData = weatherData;
+                this.weatherData = weatherData
                 try {
                     try {
                         hourlyWeatherForecast = context.forecastProvider
@@ -242,7 +242,7 @@ class GoWeatherProvider(context: Context) : GoCardFactory(context),
                 } catch (e: ForecastProvider.ForecastException) {
                     e.printStackTrace()
                 } catch (e: NullPointerException) {
-                    e.printStackTrace();
+                    e.printStackTrace()
                 }
             }
         }
