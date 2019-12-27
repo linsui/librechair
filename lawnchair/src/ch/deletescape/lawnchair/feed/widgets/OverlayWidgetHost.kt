@@ -211,7 +211,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)
                         it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimary
-                                .fromColorRes(it.context)));
+                                .fromColorRes(it.context)))
                         Unit
                     },
                     (ImageView::class as KClass<out View>) to { it: View ->

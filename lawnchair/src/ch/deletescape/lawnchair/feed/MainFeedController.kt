@@ -48,7 +48,7 @@ fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
         theController = MainFeedController(c)
     }
-    return theController!!;
+    return theController!!
 }
 
 class MainFeedController(val context: Context) {

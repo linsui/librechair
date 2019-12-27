@@ -44,7 +44,7 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
                 ColorEngine.getInstance(
                         context).feedBackground.value.resolveColor().setAlpha(
                         (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
-                context, null);
+                context, null)
         layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
         postDelayed({

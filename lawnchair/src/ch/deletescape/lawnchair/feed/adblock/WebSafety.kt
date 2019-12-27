@@ -75,7 +75,7 @@ object WebSafety {
             }
             if (block) {
                 blockCache += dom to block
-                return block;
+                return block
             }
             if (Utilities.ATLEAST_P && context.lawnchairApp.isGsb4jAvailable()) {
                 try {
