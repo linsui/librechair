@@ -43,7 +43,7 @@ import com.android.launcher3.R
 
 @SuppressLint("StaticFieldLeak")
 private var theController: MainFeedController? = null
-const val METADATA_CONTROLLER_PACKAGE = "special::controller_package";
+const val METADATA_CONTROLLER_PACKAGE = "special::controller_package"
 fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
         theController = MainFeedController(c)
@@ -61,7 +61,7 @@ class MainFeedController(val context: Context) {
     }
 
     companion object {
-        val substitutions =
+        private val substitutions =
                 mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to WeatherBarFeedProvider::class.qualifiedName)
 
         fun getDisplayName(provider: FeedProviderContainer, context: Context): String {
