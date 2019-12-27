@@ -51,7 +51,7 @@ class FeedForecastProvider(c: Context) : FeedProvider(c) {
                             R.layout.width_inflatable_recyclerview, parent, false) as androidx.recyclerview.widget.RecyclerView
                         if (forecast != null) {
                             recyclerView.layoutManager =
-                                    androidx.recyclerview.widget.LinearLayoutManager(context, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
+                                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
                                             false)
                             recyclerView.adapter = OWMWeatherActivity
                                     .HourlyForecastAdapter(forecast!!, context,
