@@ -20,12 +20,13 @@
 
 package ch.deletescape.lawnchair.feed.tabs.indicator
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import ch.deletescape.lawnchair.fromDrawableRes
 
 class LegacyTabIndicatorProvider(context: Context) : TabIndicatorProvider(context) {
     override val drawable: Drawable
-        get() = com.google.android.material.R.drawable.
-                abc_tab_indicator_material.fromDrawableRes(context)
+        @SuppressLint("PrivateResource")
+        get() = com.google.android.material.R.drawable.abc_tab_indicator_material.fromDrawableRes(context)
 }
