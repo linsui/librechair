@@ -41,4 +41,4 @@ fun TabIndicatorProvider.Companion.inflate(klazz: KClass<out TabIndicatorProvide
 val TabIndicatorProvider.Companion.allProviders
     get() = listOf(TabIndicatorProvider::class to R.string.theme_default,
             DotIndicatorProvider::class to R.string.title_tab_indicator_dot,
-            TabIndicatorProvider::class to R.string.title_tab_indicator_legacy)
+            LegacyTabIndicatorProvider::class to R.string.title_tab_indicator_legacy)
