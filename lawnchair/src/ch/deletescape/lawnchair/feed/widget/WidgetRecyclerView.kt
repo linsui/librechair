@@ -19,10 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.widget
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import androidx.recyclerview.widget.RecyclerView
@@ -57,25 +54,4 @@ class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(
         }, 4000)
     }
 
-    val tickReciever = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            FeedScope.launch {
-                (adapter as? FeedAdapter)?.refresh()
-                post {
-                    scrollToPosition(0)
-                    isLayoutFrozen = true
-                    postDelayed({
-                        adapter?.notifyDataSetChanged()
-                        isLayoutFrozen = false
-                    }, 100)
-                }
-            }
-        }
-    }.also {
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(Intent.ACTION_TIME_TICK)
-        intentFilter.addAction(Intent.ACTION_TIME_CHANGED)
-        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED)
-        context.registerReceiver(it, intentFilter)
-    }
 }

@@ -229,8 +229,6 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                     }
             )
 
-            val SUBST_MASK = arrayOf(3, 3, 3)
-
             fun processDrawable(drawable: Drawable, c: Context, color: Int): Bitmap {
                 val src = drawable.toBitmap()!!
                 val bitmap = Bitmap.createBitmap(
