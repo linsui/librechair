@@ -53,11 +53,11 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
     @StringRes
     private var weatherTypeResource: Int? = null
 
-    init {
+    override fun onFinishInflate() {
+        super.onFinishInflate()
         WeatherManager.subscribeDaily {
             dailyForecast = it
             post {
-                onTick()
             }
         }
         WeatherManager.subscribeHourly {
