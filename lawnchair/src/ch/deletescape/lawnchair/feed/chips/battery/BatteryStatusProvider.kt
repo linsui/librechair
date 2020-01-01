@@ -53,7 +53,9 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                         * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                         / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
             }
-            changeListeners.forEach { it() }
+            synchronized(changeListeners) {
+                changeListeners.forEach { it() }
+            }
         }
     }
 
@@ -71,8 +73,10 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
                         * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
                         / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)).toInt()
             }
-            changeListeners.forEach {
-                runOnMainThread(it)
+            synchronized(changeListeners) {
+                changeListeners.forEach {
+                    runOnMainThread(it)
+                }
             }
         }
     }
@@ -98,27 +102,30 @@ class BatteryStatusProvider(val context: Context) : ChipProvider() {
         }
         return listOf(object : Item() {
             override fun bindVoodo(bridge: ChipItemBridge) {
-                changeListeners += {
-                    val lines1 = mutableListOf<Any>()
-                    when {
-                        full -> lines1.add(R.string.battery_full)
-                        charging -> lines1.add(R.string.battery_charging)
-                        level <= 15 -> lines1.add(R.string.battery_low)
-                    }
-                    if (!full) {
-                        lines1.add("$level%")
-                    }
-                    bridge.setTitle(lines1.joinToString(" - ") {
-                        if (it is Int) it.fromStringRes(context) else it as CharSequence
-                    })
-                    bridge.setIcon(BatteryMeterDrawableBase(context,
-                            FeedAdapter.getOverrideColor(context)).apply {
-                        this.batteryLevel = this@BatteryStatusProvider.level
-                        this.charging = this@BatteryStatusProvider.charging
-                    })
-                    bridge.setOnClickListener {
-                        FeedUtil.startActivity(context, Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
-                                it)
+                synchronized(changeListeners) {
+                    changeListeners += {
+                        val lines1 = mutableListOf<Any>()
+                        when {
+                            full -> lines1.add(R.string.battery_full)
+                            charging -> lines1.add(R.string.battery_charging)
+                            level <= 15 -> lines1.add(R.string.battery_low)
+                        }
+                        if (!full) {
+                            lines1.add("$level%")
+                        }
+                        bridge.setTitle(lines1.joinToString(" - ") {
+                            if (it is Int) it.fromStringRes(context) else it as CharSequence
+                        })
+                        bridge.setIcon(BatteryMeterDrawableBase(context,
+                                FeedAdapter.getOverrideColor(context)).apply {
+                            this.batteryLevel = this@BatteryStatusProvider.level
+                            this.charging = this@BatteryStatusProvider.charging
+                        })
+                        bridge.setOnClickListener {
+                            FeedUtil.startActivity(context,
+                                    Intent(Intent.ACTION_POWER_USAGE_SUMMARY),
+                                    it)
+                        }
                     }
                 }
             }
