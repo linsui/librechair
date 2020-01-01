@@ -30,10 +30,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.awareness.WeatherManager
-import ch.deletescape.lawnchair.formatTime
-import ch.deletescape.lawnchair.lawnchairPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import com.android.launcher3.R
@@ -62,6 +61,22 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
         }
         WeatherManager.subscribeHourly {
             hourlyWeatherForecast = it
+            val today: List<Int> = it.data.filter {
+                it.date.before(tomorrow())
+            }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
+            forecastLow = Collections.min(today)
+            forecastHigh = Collections.max(today)
+            val condCodes = run {
+                val list = newList<Int>()
+                hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                        .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                list
+            }
+            val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                    condCodes.toTypedArray())
+            val type = WeatherTypes
+                    .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+            weatherTypeResource = WeatherTypes.getStringResource(type)
             post {
                 onTick()
             }
