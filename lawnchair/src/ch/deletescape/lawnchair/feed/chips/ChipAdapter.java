@@ -125,8 +125,8 @@ public class ChipAdapter extends RecyclerView.Adapter<ChipViewHolder> implements
             Field field2 = ChipDrawable.class.getDeclaredField("chipSurfaceColor");
             field.setAccessible(true);
             field2.setAccessible(true);
-            field.set(chipViewHolder.itemView.getBackgroundDrawable(), 0);
-            field2.set(chipViewHolder.itemView.getBackgroundDrawable(), ColorStateList.valueOf(0));
+            field.set(chipViewHolder.itemView.getChipDrawable(), 0);
+            field2.set(chipViewHolder.itemView.getChipDrawable(), ColorStateList.valueOf(0));
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
