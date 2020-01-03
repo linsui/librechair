@@ -18,7 +18,6 @@
 package ch.deletescape.lawnchair
 
 import android.app.Activity
-import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -63,7 +62,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.HashSet
 
-open class LawnchairApp : Application() {
+open class LawnchairApp : androidx.multidex.MultiDexApplication() {
     val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also {
         it.isDaemon = true
         it.start()
