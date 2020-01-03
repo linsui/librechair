@@ -18,6 +18,7 @@
 package ch.deletescape.lawnchair
 
 import android.app.Activity
+import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -29,6 +30,10 @@ import android.os.HandlerThread
 import android.provider.Settings
 import android.webkit.WebView
 import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.CalendarManager
+import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.awareness.VolumeManager
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
@@ -62,7 +67,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.HashSet
 
-open class LawnchairApp : androidx.multidex.MultiDexApplication() {
+class LawnchairApp : Application() {
     val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also {
         it.isDaemon = true
         it.start()
@@ -146,6 +151,10 @@ open class LawnchairApp : androidx.multidex.MultiDexApplication() {
         ChipStyleRegistry.populateWithContext(this)
         CardStyleRegistry.populateWithContext(this)
         InvalidationTracker.attachToContext(this)
+        WeatherManager.attachToApplication(this)
+        TickManager.bindToContext(this)
+        VolumeManager.attachToContext(this)
+        CalendarManager.attachToContext(this)
     }
 
     fun onLauncherAppStateCreated() {

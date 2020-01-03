@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Pixel -->
     <application
-        android:name="ch.deletescape.lawnchair.awareness.AwareApp"
+        android:name="ch.deletescape.lawnchair.LawnchairApp"
         android:networkSecurityConfig="@xml/network_security_config">
         <meta-data
             android:name="xyz.paphonb.quickstepswitcher.minSdk"

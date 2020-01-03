@@ -31,8 +31,8 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.1'
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.9'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -100,7 +100,6 @@ android {
     defaultConfig {
         minSdkVersion 28
         targetSdkVersion 29
-        multiDexEnabled true
 
         if (ciBuild) {
             def ciBuildNumber = localProps.getProperty("buildNumber") ?: System.getenv("CI_BUILD_NUMBER")
@@ -363,10 +362,10 @@ allprojects {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.2.0-alpha01'
+    implementation 'com.google.android.material:material:1.2.0-alpha03'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.dynamicanimation:dynamicanimation:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.palette:palette:1.0.0'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.legacy:legacy-preference-v14:1.0.0'
@@ -374,7 +373,6 @@ dependencies {
     implementation 'info.bliki.wiki:bliki-core:3.1.0'
     implementation 'commons-io:commons-io:2.6'
     implementation 'me.weishu:free_reflection:2.1.0'
-    implementation "androidx.multidex:multidex:2.0.0"
     implementation 'net.time4j:time4j-android:4.4.3-2019c'
 
     compileOnly fileTree(dir: 'prebuilts/libs', include: '*.jar')
@@ -437,8 +435,8 @@ dependencies {
     }
     implementation 'fastily:jwiki:1.7.0'
     testImplementation 'junit:junit:4.12'
-    implementation "androidx.camera:camera-core:1.0.0-alpha06"
-    implementation "androidx.camera:camera-camera2:1.0.0-alpha06"
+    implementation "androidx.camera:camera-core:1.0.0-alpha08"
+    implementation "androidx.camera:camera-camera2:1.0.0-alpha08"
     androidTestImplementation "org.mockito:mockito-core:1.10.5"
     androidTestImplementation 'com.google.dexmaker:dexmaker:1.2'
     androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.2'
@@ -447,7 +445,7 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     androidTestImplementation 'androidx.annotation:annotation:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.3.50"
-    implementation "androidx.room:room-runtime:2.2.0-rc01"
+    implementation "androidx.room:room-runtime:2.2.3"
 
     implementation "io.reactivex.rxjava3:rxjava:3.0.0-RC3"
 
@@ -459,11 +457,11 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0'
-    annotationProcessor "androidx.room:room-compiler:2.2.0-beta01"
-    kapt "androidx.room:room-compiler:2.2.0-beta01"
+    annotationProcessor "androidx.room:room-compiler:2.2.3"
+    kapt "androidx.room:room-compiler:2.2.3"
 
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.2.0-alpha03'
-    implementation 'com.gitlab.oldosfan:lisp:5a2ee34362765e4ee8e393eaa7c119e206c81d64'
+    implementation 'androidx.lifecycle:lifecycle-livedata:2.2.0-rc03'
+    // implementation 'com.gitlab.oldosfan:lisp:5a2ee34362765e4ee8e393eaa7c119e206c81d64'
 }
 
 protobuf {
