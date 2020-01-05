@@ -19,6 +19,7 @@
 
 package ch.deletescape.lawnchair.feed.widgets
 
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
@@ -51,6 +52,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
         return OverlayWidgetView(context, appWidgetId)
     }
 
+    @SuppressLint("ViewConstructor")
     class OverlayWidgetView(context: Context, val specialId: Int) : AppWidgetHostView(context) {
 
         private val mLongPressHelper = CheckLongPressHelper(this)
@@ -198,7 +200,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                 (it as ImageView)
                 if (it.drawable != null) {
                     try {
-                        it.setImageBitmap(processDrawable(it.drawable, it.context,
+                        it.setImageBitmap(processDrawable(it.drawable,
                                 R.color.textColorPrimaryInverse.fromColorRes(
                                         it.context)))
                     } catch (e: Resources.NotFoundException) {
@@ -218,7 +220,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                         (it as ImageView)
                         if (it.drawable != null) {
                             try {
-                                it.setImageBitmap(processDrawable(it.drawable, it.context,
+                                it.setImageBitmap(processDrawable(it.drawable,
                                         R.color.textColorPrimary.fromColorRes(
                                                 it.context)))
                             } catch (e: Resources.NotFoundException) {
@@ -229,7 +231,7 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                     }
             )
 
-            fun processDrawable(drawable: Drawable, c: Context, color: Int): Bitmap {
+            fun processDrawable(drawable: Drawable, color: Int): Bitmap {
                 val src = drawable.toBitmap()!!
                 val bitmap = Bitmap.createBitmap(
                         src.width,
@@ -244,9 +246,6 @@ class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(conte
                             val r = pixel.red
                             val g = pixel.green
                             val b = pixel.blue
-
-                            d("processDrawable: pixel $x,$y is $pixel")
-
                             tgt.drawPoint(x.toFloat(), y.toFloat(),
                                     colorPaintCache[src.getPixel(x, y)]
                                             ?: Paint().apply {
