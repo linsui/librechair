@@ -23,7 +23,6 @@ import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -66,7 +65,7 @@ public class RemoteDemoService extends Service {
                 demoCard.setActionOnCardActionSelectedListener(
                         new RemoteOnCardActionSelectedListener.Stub() {
                             @Override
-                            public void onAction() throws RemoteException {
+                            public void onAction() {
                                 LawnchairUtilsKt.getMainHandler().post(
                                         () -> Toast.makeText(RemoteDemoService.this, "works for me",
                                                 Toast.LENGTH_SHORT).show());
@@ -83,7 +82,7 @@ public class RemoteDemoService extends Service {
                         Objects.requireNonNull(getDrawable(R.drawable.ic_smartspace_preferences))),
                         new IRunnable.Stub() {
                             @Override
-                            public void run() throws RemoteException {
+                            public void run() {
                                 LawnchairUtilsKt.getMainHandler().post(
                                         () -> Toast.makeText(RemoteDemoService.this, "works for me",
                                                 Toast.LENGTH_SHORT).show());
@@ -92,7 +91,7 @@ public class RemoteDemoService extends Service {
             }
 
             @Override
-            public boolean isVolatile() throws RemoteException {
+            public boolean isVolatile() {
                 return false;
             }
         });
