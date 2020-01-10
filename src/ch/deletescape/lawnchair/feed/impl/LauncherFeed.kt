@@ -1794,7 +1794,7 @@ class LauncherFeed(private val originalContext: Context,
                                     PorterDuff.Mode.DST_OVER)
                     if (context.feedPrefs.displayUnreadCount) {
                         val l = tabbedProviders[tabs[i]!!]!!.filter { it.hasUnread() }.size
-                        if (l > 1) {
+                        if (l > 5) {
                             tabView.getTabAt(i)?.orCreateBadge?.number = l
                         } else {
                             tabView.getTabAt(i)?.orCreateBadge?.clearNumber()
