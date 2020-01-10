@@ -24,33 +24,46 @@ import android.util.AttributeSet
 import androidx.preference.ListPreference
 import ch.deletescape.lawnchair.feed.images.providers.*
 import ch.deletescape.lawnchair.fromStringRes
+import ch.deletescape.lawnchair.lawnchairPrefs
 import com.android.launcher3.R
-import kotlin.reflect.KClass
+import java.util.*
 
 class ImageProviderPreference(context: Context, attrs: AttributeSet) :
         ListPreference(context, attrs) {
     init {
         entries = getAllProviders().map { getNameForProvider(it).fromStringRes(context) }
                 .toTypedArray()
-        entryValues = getAllProviders().map { it.qualifiedName }.toTypedArray()
-        setDefaultValue(ImageProvider::class.qualifiedName)
+        entryValues = getAllProviders().map { it.hashCode().toString() }.toTypedArray()
+        setDefaultValue(getAllProviders()[0].hashCode())
         setOnPreferenceChangeListener { preference, newValue ->
             notifyDependencyChange(newValue != ImageProvider::class.qualifiedName)
             true
         }
     }
 
+    override fun persistString(value: String): Boolean {
+        context.lawnchairPrefs.feedBackground =
+                getAllProviders().first { it.hashCode().toString() == value }
+        return true
+    }
+
+    override fun getPersistedString(defaultReturnValue: String?): String {
+        return context.lawnchairPrefs.feedBackground.hashCode().toString()
+    }
+
     override fun shouldDisableDependents() = value == ImageProvider::class.qualifiedName
 
     companion object {
-        fun getAllProviders(): List<KClass<out ImageProvider>> = listOf(ImageProvider::class,
+        fun getAllProviders(): List<ImageProviderContainer> = listOf(ImageProvider::class,
                 BingImageProvider::class,
                 ApodImageProvider::class,
                 WikipediaFeaturedImageProvider::class,
                 NationalGeographicImageProvider::class,
-                CustomBackgroundProvider::class)
+                CustomBackgroundProvider::class).map {
+            ImageProviderContainer(it, Collections.emptyMap())
+        }
 
-        fun getNameForProvider(clazz: KClass<out ImageProvider>) = when (clazz) {
+        fun getNameForProvider(clazz: ImageProviderContainer) = when (clazz.clazz) {
             ImageProvider::class -> R.string.none
             BingImageProvider::class -> R.string.title_feed_provider_bing_daily
             ApodImageProvider::class -> R.string.title_image_provider_apod

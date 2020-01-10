@@ -38,6 +38,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -176,5 +177,10 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
             e.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public void attachMeta(@NotNull Map<String, String> meta) {
+
     }
 }

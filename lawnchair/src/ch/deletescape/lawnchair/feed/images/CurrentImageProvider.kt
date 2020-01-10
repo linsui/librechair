@@ -53,7 +53,8 @@ class CurrentImageProvider : ContentProvider() {
         var flag = false
         FeedScope.launch {
             try {
-                ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground,
+                ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground.clazz,
+                        Utilities.getLawnchairPrefs(context).feedBackground.meta,
                         context!!)?.getBitmap(context!!)!!
                         .compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(currentBitmap))
             } catch (e: FileNotFoundException) {

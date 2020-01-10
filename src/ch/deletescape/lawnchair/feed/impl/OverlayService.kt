@@ -54,7 +54,10 @@ class OverlayService : Service(), () -> Unit {
             get() = ::feed.isInitialized
     }
 
-    private val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
+    private val imageProvider by lazy {
+        ImageProvider.inflate(lawnchairPrefs.feedBackground.clazz,
+                lawnchairPrefs.feedBackground.meta, this)
+    }
 
     override fun onBind(intent: Intent): IBinder? {
         if (!feedInitialized) {

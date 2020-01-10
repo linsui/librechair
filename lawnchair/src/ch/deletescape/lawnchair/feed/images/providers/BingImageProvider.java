@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -189,5 +190,10 @@ public class BingImageProvider extends BroadcastReceiver implements ImageProvide
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void attachMeta(@NotNull Map<String, String> meta) {
+
     }
 }
