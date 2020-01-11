@@ -34,7 +34,7 @@ class ImageProviderPreference(context: Context, attrs: AttributeSet) :
         entries = getAllProviders().map { getNameForProvider(it).fromStringRes(context) }
                 .toTypedArray()
         entryValues = getAllProviders().map { it.hashCode().toString() }.toTypedArray()
-        setDefaultValue(getAllProviders()[0].hashCode())
+        setDefaultValue(getAllProviders()[0].hashCode().toString())
         setOnPreferenceChangeListener { preference, newValue ->
             notifyDependencyChange(newValue != ImageProvider::class.qualifiedName)
             true
