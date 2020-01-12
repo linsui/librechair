@@ -55,19 +55,21 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
             val today: List<Int> = forecast.data.filter {
                 it.date.before(tomorrow())
             }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
-            forecastLow = Collections.min(today)
-            forecastHigh = Collections.max(today)
-            val condCodes = run {
-                val list = newList<Int>()
-                hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
-                        .forEach { list += it.condCode?.toList() ?: listOf(1) }
-                list
+            if (today.isNotEmpty()) {
+                forecastLow = Collections.min(today)
+                forecastHigh = Collections.max(today)
+                val condCodes = run {
+                    val list = newList<Int>()
+                    hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                            .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                    list
+                }
+                val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                        condCodes.toTypedArray())
+                val type = WeatherTypes
+                        .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+                weatherTypeResource = WeatherTypes.getStringResource(type)
             }
-            val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                    condCodes.toTypedArray())
-            val type = WeatherTypes
-                    .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-            weatherTypeResource = WeatherTypes.getStringResource(type)
             runOnMainThread {
                 markUnread()
             }
