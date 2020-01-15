@@ -64,19 +64,21 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
             val today: List<Int> = it.data.filter {
                 it.date.before(tomorrow())
             }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
-            forecastLow = Collections.min(today)
-            forecastHigh = Collections.max(today)
-            val condCodes = run {
-                val list = newList<Int>()
-                hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+            if (today.isNotEmpty()) {
+		forecastLow = Collections.min(today)
+		forecastHigh = Collections.max(today)
+		val condCodes = run {
+                    val list = newList<Int>()
+                    hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
                         .forEach { list += it.condCode?.toList() ?: listOf(1) }
-                list
-            }
-            val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                    list
+		}
+		val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
                     condCodes.toTypedArray())
-            val type = WeatherTypes
+		val type = WeatherTypes
                     .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-            weatherTypeResource = WeatherTypes.getStringResource(type)
+                weatherTypeResource = WeatherTypes.getStringResource(type)
+            }
             post {
                 onTick()
             }
@@ -199,11 +201,9 @@ class WeatherView(context: Context, attrs: AttributeSet) : ConstraintLayout(cont
                     })
                 }
 
-
         currentInformation.text =
                 weatherData?.temperature?.toString(context.lawnchairPrefs.weatherUnit)
         currentIcon.setImageBitmap(weatherData?.icon)
-
 
         if (forecastHigh != null && forecastLow != null) {
             highLow.text =
