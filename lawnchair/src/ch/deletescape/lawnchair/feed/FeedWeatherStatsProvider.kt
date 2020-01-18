@@ -30,7 +30,6 @@ import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
 import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import java.util.*
 
@@ -82,29 +81,20 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
                      object : Card.Companion.InflateHelper {
                          @SuppressLint("SetTextI18n")
                          override fun inflate(parent: ViewGroup): View {
-                             d("inflate: inflating view")
                              val v = LayoutInflater.from(parent.context)
                                      .inflate(R.layout.weather_heads_up, parent, false)
-                             d("inflate: inflated view")
                              val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                              val information =
                                      v.findViewById(R.id.weather_hud_information) as TextView
                              val currentInformation =
                                      v.findViewById(R.id.weather_hud_current_temp) as TextView
                              val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
-                             d("inflate: initialized views")
-
                              currentInformation.text =
                                      weatherData?.temperature?.toString(context.lawnchairPrefs.weatherUnit)
                              currentIcon.setImageBitmap(weatherData?.icon)
-
-                             d("inflate: set text for current data text view")
-
                              highLow.text =
                                      "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                              information.text = context.getString(weatherTypeResource!!)
-
-                             d("inflate: set thext for rest of views")
                              if (useWhiteText(backgroundColor, parent.context)) {
                                  highLow.setTextColor(
                                          context.getColor(R.color.textColorPrimary))
@@ -113,7 +103,6 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
                                  currentInformation.setTextColor(
                                          context.getColor(R.color.textColorPrimary))
                              }
-                             d("inflate: returning view")
                              return v
                          }
                      }, Card.NO_HEADER, "nosort,top"))
