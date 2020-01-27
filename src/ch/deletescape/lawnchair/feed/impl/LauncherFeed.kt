@@ -1217,13 +1217,14 @@ class LauncherFeed(private val originalContext: Context,
                             animator = ObjectAnimator.ofObject(this@apply, "clipBounds", evaluator,
                                     clipBounds, endRect)
                             alpha = 0f
-                            animate().alpha(1f).duration = 300 / 2
+                            animate().alpha(1f).duration =
+                                    if (context.feedPrefs.snappyFeedAnimations) 0 else 300 / 2
                             animator.interpolator = Interpolators.ACCEL_DEACCEL
                         }
                         translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
                         visibility = View.VISIBLE
                         animator.apply {
-                            duration = 300
+                            duration = if (context.feedPrefs.snappyFeedAnimations) 0 else 300
                             start()
                         }
                         recyclerView.suppressLayout(true)
@@ -1235,7 +1236,8 @@ class LauncherFeed(private val originalContext: Context,
                         alpha = 0f
                         scaleX = 0.7f
                         scaleY = 0.7f
-                        animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).duration = 300
+                        animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).duration =
+                                if (context.feedPrefs.snappyFeedAnimations) 0 else 300
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     }

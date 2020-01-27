@@ -809,4 +809,6 @@
     <string name="summary_pref_feed_resolve_redirects">Librechair will attempt to resolve all redirects prior to sharing an article</string>
     <string name="title_pref_feed_display_unread_indicator_count">Display unread count</string>
     <string name="summary_pref_feed_display_unread_indicator_count">The amount of unread providers will be displayed in the unread indicators</string>
+    <string name="title_pref_feed_snappy_anims">Snapy screen animations</string>
+    <string name="summary_pref_feed_snappy_anims">Overlay view animations will be snappier</string>
 </resources>

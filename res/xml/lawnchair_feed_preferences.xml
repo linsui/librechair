@@ -276,6 +276,11 @@
             android:key="pref_high_contrast_toolbar"
             android:title="@string/title_pref_high_contrast_toolbar"
             android:summary="@string/summary_pref_high_contrast_toolbar"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_snappy_anims"
+            android:title="@string/title_pref_feed_snappy_anims"
+            android:summary="@string/summary_pref_feed_snappy_anims" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="pref_display_feed_tabs_as_single_line"
