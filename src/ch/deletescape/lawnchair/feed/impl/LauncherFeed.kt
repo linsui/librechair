@@ -1309,10 +1309,12 @@ class LauncherFeed(private val originalContext: Context,
                         }
                     })
                     start()
-                    animate().setDuration(300).translationZ(0f)
+                    animate().setDuration(if (context.feedPrefs.snappyFeedAnimations) 0 else 300)
+                            .translationZ(0f)
                 }
             } else {
-                animate().translationY(120f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f).setDuration(300)
+                animate().translationY(120f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f)
+                        .setDuration(if (context.feedPrefs.snappyFeedAnimations) 0 else 300)
                         .setUpdateListener {
                             if (it.animatedFraction eqp 1f) {
                                 frame.removeView(this)
