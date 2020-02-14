@@ -1218,13 +1218,13 @@ class LauncherFeed(private val originalContext: Context,
                                     clipBounds, endRect)
                             alpha = 0f
                             animate().alpha(1f).duration =
-                                    if (context.feedPrefs.snappyFeedAnimations) 0 else 300 / 2
+                                    if (context.feedPrefs.snappyFeedAnimations) 75 else 300 / 2
                             animator.interpolator = Interpolators.ACCEL_DEACCEL
                         }
                         translationZ = 4f.applyAsDip(context) * (providerScreens.size - 1)
                         visibility = View.VISIBLE
                         animator.apply {
-                            duration = if (context.feedPrefs.snappyFeedAnimations) 0 else 300
+                            duration = if (context.feedPrefs.snappyFeedAnimations) 75 else 300
                             start()
                         }
                         recyclerView.suppressLayout(true)
@@ -1237,7 +1237,7 @@ class LauncherFeed(private val originalContext: Context,
                         scaleX = 0.7f
                         scaleY = 0.7f
                         animate().alpha(1f).translationY(0f).scaleX(1f).scaleY(1f).duration =
-                                if (context.feedPrefs.snappyFeedAnimations) 0 else 300
+                                if (context.feedPrefs.snappyFeedAnimations) 75 else 300
                         recyclerView.suppressLayout(true)
                         toolbarParent.animate().translationY(0f)
                     }
@@ -1309,12 +1309,12 @@ class LauncherFeed(private val originalContext: Context,
                         }
                     })
                     start()
-                    animate().setDuration(if (context.feedPrefs.snappyFeedAnimations) 0 else 300)
+                    animate().setDuration(if (context.feedPrefs.snappyFeedAnimations) 75 else 300)
                             .translationZ(0f)
                 }
             } else {
                 animate().translationY(120f).alpha(0.0f).scaleX(0.7f).scaleY(0.7f)
-                        .setDuration(if (context.feedPrefs.snappyFeedAnimations) 0 else 300)
+                        .setDuration(if (context.feedPrefs.snappyFeedAnimations) 75 else 300)
                         .setUpdateListener {
                             if (it.animatedFraction eqp 1f) {
                                 frame.removeView(this)
