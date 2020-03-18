@@ -92,7 +92,13 @@ public class FontRequestHelper {
             Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached path " + cachedTypeface.getAbsolutePath());
             if (cachedTypeface.exists()) {
                 Log.d(FontRequestHelper.class.getName(), "postFontRequest: cached font exists! returning that");
-                handler1.post(() -> callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface)));
+                handler1.post(() -> {
+			try {
+			    callback.onTypefaceRetrieved(Typeface.createFromFile(cachedTypeface));
+			} catch (Exception e) {
+			    callback.onTypefaceRequestFailed(FAIL_REASON_FONT_NOT_FOUND);
+			}
+		    });
                 return;
             }
             try {
