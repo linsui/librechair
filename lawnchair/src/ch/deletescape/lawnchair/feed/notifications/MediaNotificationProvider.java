@@ -267,18 +267,25 @@ public class MediaNotificationProvider extends FeedProvider {
                     mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
             AtomicBoolean paused = new AtomicBoolean(true);
             if (mnc.get() != null && mnc.get().isPlaying()) {
-                ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                LawnchairUtilsKt.runOnMainThread(() -> {
+                    ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                    return Unit.INSTANCE;
+                });
                 paused.set(false);
             } else {
-                if (Utilities.HIDDEN_APIS_ALLOWED) {
-                    try {
-                        @SuppressLint("SoonBlockedPrivateApi")
-                        Method method = AnimatedVectorDrawable.class.getDeclaredMethod("reverse");
-                        method.invoke(pause.getDrawable());
-                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                        e.printStackTrace();
+                LawnchairUtilsKt.runOnMainThread(() -> {
+                    if (Utilities.HIDDEN_APIS_ALLOWED) {
+                        try {
+                            @SuppressLint("SoonBlockedPrivateApi")
+                            Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                    "reverse");
+                            method.invoke(pause.getDrawable());
+                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
+                    return Unit.INSTANCE;
+                });
             }
             pause.setImageTintList(ColorStateList.valueOf(
                     FeedAdapter.Companion.getOverrideColor(parent.getContext())));
@@ -310,19 +317,25 @@ public class MediaNotificationProvider extends FeedProvider {
                         author.setText(
                                 mnc.get() != null ? mnc.get().getInfo().getAlbum() != null ? mnc.get().getInfo().getAlbum() : mnc.get().getInfo().getArtist() : "");
                         if (mnc.get() != null && mnc.get().isPlaying()) {
-                            ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                            LawnchairUtilsKt.runOnMainThread(() -> {
+                                ((AnimatedVectorDrawable) pause.getDrawable()).start();
+                                return Unit.INSTANCE;
+                            });
                             paused.set(false);
                         } else {
-                            if (Utilities.HIDDEN_APIS_ALLOWED) {
-                                try {
-                                    @SuppressLint("SoonBlockedPrivateApi")
-                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
-                                            "reverse");
-                                    method.invoke(pause.getDrawable());
-                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                    e.printStackTrace();
+                            LawnchairUtilsKt.runOnMainThread(() -> {
+                                if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                    try {
+                                        @SuppressLint("SoonBlockedPrivateApi")
+                                        Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                                "reverse");
+                                        method.invoke(pause.getDrawable());
+                                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
+                                return Unit.INSTANCE;
+                            });
                         }
                         icon.setVisibility(
                                 mnc.get() != null && mnc.get().getInfo().getBitmap() != null ? View.VISIBLE : View.GONE);

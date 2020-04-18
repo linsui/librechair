@@ -45,6 +45,7 @@ import ch.deletescape.lawnchair.feed.chips.ChipItemBridge;
 import ch.deletescape.lawnchair.feed.chips.ChipProvider;
 import ch.deletescape.lawnchair.feed.notifications.OMCMediaListener;
 import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import kotlin.Unit;
 
 @SuppressWarnings("ConstantConditions")
 public class MediaNotificationProvider extends ChipProvider {
@@ -55,7 +56,8 @@ public class MediaNotificationProvider extends ChipProvider {
 
     public MediaNotificationProvider(Context context) {
         this.context = context;
-        this.mediaListener = new OMCMediaListener(context, () -> {
+        this.mediaListener = new OMCMediaListener(context,
+                () -> LawnchairUtilsKt.runOnMainThread(() -> {
             synchronized (onMediaNotifChange) {
                 for (int i = 0; i < onMediaNotifChange.size(); ++i) {
                     if (i < onMediaNotifChange.size()) {
@@ -63,7 +65,8 @@ public class MediaNotificationProvider extends ChipProvider {
                     }
                 }
             }
-        });
+                    return Unit.INSTANCE;
+                }));
         this.item = new Item() {
             @Override
             public void bindVoodo(ChipItemBridge bridge) {
@@ -73,9 +76,31 @@ public class MediaNotificationProvider extends ChipProvider {
                 bridge.setIcon(drawable);
                 OMCMediaListener.MediaNotificationController currentState;
                 if ((currentState = mediaListener.getTracking()) != null) {
-                    if (currentState.isPlaying()) {
-                        drawable.start();
-                    } else {
+                    LawnchairUtilsKt.runOnMainThread(() -> {
+                        if (currentState.isPlaying()) {
+                            drawable.start();
+                        } else {
+                            if (Utilities.HIDDEN_APIS_ALLOWED) {
+                                try {
+                                    @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
+                                    Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
+                                            "reverse");
+                                    method.invoke(drawable);
+                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        bridge.setTitle(FeedUtil.truncateWithSuffix(
+                                FeedUtil.getNullsafeString(
+                                        currentState.getInfo().getTitle().toString(),
+                                        context.getString(R.string.title_chip_no_title)).toString(),
+                                50,
+                                "..."));
+                        return Unit.INSTANCE;
+                    });
+                } else {
+                    LawnchairUtilsKt.runOnMainThread(() -> {
                         if (Utilities.HIDDEN_APIS_ALLOWED) {
                             try {
                                 @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
@@ -86,23 +111,9 @@ public class MediaNotificationProvider extends ChipProvider {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                    bridge.setTitle(FeedUtil.truncateWithSuffix(
-                            FeedUtil.getNullsafeString(currentState.getInfo().getTitle().toString(),
-                                    context.getString(R.string.title_chip_no_title)).toString(), 50,
-                            "..."));
-                } else {
-                    if (Utilities.HIDDEN_APIS_ALLOWED) {
-                        try {
-                            @SuppressWarnings("JavaReflectionMemberAccess") @SuppressLint("SoonBlockedPrivateApi")
-                            Method method = AnimatedVectorDrawable.class.getDeclaredMethod(
-                                    "reverse");
-                            method.invoke(drawable);
-                        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    bridge.setTitle(context.getString(R.string.title_nothings_playing));
+                        bridge.setTitle(context.getString(R.string.title_nothings_playing));
+                        return Unit.INSTANCE;
+                    });
                 }
                 Consumer<OMCMediaListener.MediaNotificationController> tc;
                 synchronized (onMediaNotifChange) {
