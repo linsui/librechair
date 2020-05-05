@@ -52,6 +52,8 @@ jobs:
       run: |
         ./gradlew assemble${VARIANT_CAP}${FLAVOUR_CAP}
         ls ./build/outputs/apk/
+        ls ./build/outputs/apk/quickstepLawnchairL3riDevWithWebView/
+        ls ./build/outputs/apk/quickstepLawnchairL3riDevWithWebView/debug/
     - name: Create Release
       uses: actions/create-release@latest
       id: create_release
