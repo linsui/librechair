@@ -8,14 +8,15 @@ env:
   ANDROID_COMPILE_SDK: "28"
   ANDROID_BUILD_TOOLS: "28.0.3"
   ANDROID_SDK_TOOLS:   "4333796"
-  VARIANT:             "quickstepLawnchairL3riDev"
-  VARIANT_CAP:         "QuickstepLawnchairL3riDev"
-  VARIANTGO:           "quickstepLawnchairL3goDev"
-  VARIANTGO_CAP:       "QuickstepLawnchairL3goDev"
+  VARIANT:             "quickstepLawnchairL3riDevWithWebView"
+  VARIANT_CAP:         "QuickstepLawnchairL3riDevWithWebView"
+  VARIANTGO:           "quickstepLawnchairL3goDevWithWebView"
+  VARIANTGO_CAP:       "QuickstepLawnchairL3goDevWithWebView"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
-  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-debug"
-  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-debug"
+  CHAT_ID:             "librechair"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-debug"
 
 jobs:
   build:
