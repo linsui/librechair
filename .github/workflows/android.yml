@@ -1,8 +1,6 @@
 name: Android CI
 
-on:
-  push:
-    branches: [ build ]
+on: push
 
 env:
   ANDROID_COMPILE_SDK: "28"
@@ -57,4 +55,5 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: nightly
         allow_override: true
+        gzip: false
         files: ./build/outputs/apk/${{ env.VARIANT }}/${{ env.FLAVOUR }}/${{ env.APK_NAME }}.apk
