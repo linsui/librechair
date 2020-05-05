@@ -24,5 +24,5 @@ import retrofit2.http.GET;
 
 public interface ApodApi {
     @GET("/planetary/apod")
-    public Call<ApodResponse> apod();
+    Call<ApodResponse> apod();
 }

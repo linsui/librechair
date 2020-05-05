@@ -23,9 +23,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.Card;
-import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -34,10 +35,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.Card;
+import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -47,8 +50,8 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
     private final Map<Bitmap, String> images = new LinkedHashMap<>();
     private final Callback<BingPictureResponse> callback = new Callback<BingPictureResponse>() {
         @Override
-        public synchronized void onResponse(Call<BingPictureResponse> call,
-                Response<BingPictureResponse> response) {
+        public synchronized void onResponse(@NotNull Call<BingPictureResponse> call,
+                                            Response<BingPictureResponse> response) {
             Log.d(BingDailyImageProvider.this.getClass().getName(),
                     "onResponse: retrieved daily wallpaper " + response);
             images.clear();
@@ -81,7 +84,8 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
         }
 
         @Override
-        public synchronized void onFailure(Call<BingPictureResponse> call, Throwable t) {
+        public synchronized void onFailure(@NotNull Call<BingPictureResponse> call,
+                                           @NotNull Throwable t) {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try {
                     Thread.sleep(TimeUnit.MINUTES.toMillis(1));
@@ -112,7 +116,7 @@ public class BingDailyImageProvider extends AbstractImageProvider<String> {
 
     @Nullable
     @Override
-    public Card getHeaderCard() {
+    public List<Card> getHeaderCard() {
         return null;
     }
 

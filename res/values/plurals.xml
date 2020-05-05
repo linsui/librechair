@@ -12,4 +12,12 @@
         <item quantity="one">You have %s event scheduled for today</item>
         <item quantity="other">You have %s events scheduled for today</item>
     </plurals>
+    <plurals name="title_dt_time_later">
+        <item quantity="one">%d hour in the future</item>
+        <item quantity="other">%d hours in the future</item>
+    </plurals>
+    <plurals name="title_dt_time_sooner">
+        <item quantity="one">%d hour earlier</item>
+        <item quantity="other">%d hours earlier</item>
+    </plurals>
 </resources>

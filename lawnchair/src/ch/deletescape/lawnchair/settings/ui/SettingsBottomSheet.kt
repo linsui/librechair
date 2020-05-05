@@ -37,6 +37,7 @@ import ch.deletescape.lawnchair.getColorAttr
 import com.android.launcher3.*
 import com.android.launcher3.anim.Interpolators
 import com.android.launcher3.anim.Interpolators.scrollInterpolatorForVelocity
+import com.android.launcher3.anim.PropertyListBuilder
 import com.android.launcher3.graphics.ColorScrim
 import com.android.launcher3.touch.SwipeDetector
 import com.android.launcher3.util.TouchController
@@ -69,7 +70,7 @@ class SettingsBottomSheet(context: Context, attrs: AttributeSet) : LinearLayout(
         setWillNotDraw(false)
         mInsets = Rect()
 
-        openCloseAnimator = LauncherAnimUtils.ofPropertyValuesHolder(this)
+        openCloseAnimator = PropertyListBuilder().build(this)
         openCloseAnimator.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 mSwipeDetector.finishedScrolling()

@@ -21,15 +21,16 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceInputStream;
+
 import org.xml.sax.InputSource;
+
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
 
@@ -38,24 +39,22 @@ public class TheVergeFeedProvider extends AbstractRSSFeedProvider {
     }
 
     @Override
-    public void bindFeed(BindCallback callback) {
+    protected void onInit(Consumer<String> tokenCallback) {
+        tokenCallback.accept(getId());
+    }
+
+    @Override
+    protected void bindFeed(BindCallback callback, String token) {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
-            Executors.newSingleThreadExecutor().submit(() -> {
-                String feed;
+            FeedUtil.download("https://www.theverge.com/rss/index.xml", getContext(), is -> {
                 try {
-                    feed = IOUtils.toString(
-                            new URL("https://www.theverge.com/rss/index.xml")
-                                    .openConnection()
-                                    .getInputStream(), Charset
-                                    .defaultCharset());
-                    callback.onBind(new SyndFeedInput().build(new InputSource(
-                            new CharSequenceInputStream(feed, Charset.defaultCharset()))));
-                } catch (FeedException | IOException e) {
+                    callback.onBind(new SyndFeedInput().build(new InputSource(is)));
+                } catch (FeedException e) {
                     e.printStackTrace();
                 }
-            });
+            }, null);
         });
     }
 }

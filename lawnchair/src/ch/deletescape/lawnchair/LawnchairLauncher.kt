@@ -19,7 +19,6 @@ package ch.deletescape.lawnchair
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -32,21 +31,17 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.*
-import androidx.core.app.ActivityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.app.ActivityCompat
 import ch.deletescape.lawnchair.animations.LawnchairAppTransitionManagerImpl
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.feed.ClientOverlay
-import ch.deletescape.lawnchair.feed.IImageStoreCallback
 import ch.deletescape.lawnchair.feed.ProviderScreen
-import ch.deletescape.lawnchair.feed.images.ImageStore
 import ch.deletescape.lawnchair.gestures.GestureController
 import ch.deletescape.lawnchair.iconpack.EditIconActivity
 import ch.deletescape.lawnchair.iconpack.IconPackManager
@@ -54,7 +49,6 @@ import ch.deletescape.lawnchair.override.CustomInfoProvider
 import ch.deletescape.lawnchair.root.RootHelperManager
 import ch.deletescape.lawnchair.sensors.BrightnessManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
-import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.views.LawnchairBackgroundView
 import ch.deletescape.lawnchair.views.OptionsPanel
 import com.android.launcher3.*
@@ -65,12 +59,10 @@ import com.android.launcher3.util.SystemUiController
 import com.android.quickstep.views.LauncherRecentsView
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 import java.util.concurrent.Semaphore
-import java.util.concurrent.atomic.AtomicBoolean
 
 open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferenceChangeListener,
-                               ColorEngine.OnColorChangeListener {
+        ColorEngine.OnColorChangeListener {
     val hideStatusBarKey = "pref_hideStatusBar"
     val gestureController by lazy { GestureController(this) }
     val background by lazy { findViewById<LawnchairBackgroundView>(R.id.lawnchair_background)!! }
@@ -78,11 +70,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     val optionsView by lazy { findViewById<OptionsPanel>(R.id.options_view)!! }
     val launcherWorkHandlerThread = HandlerThread(javaClass.simpleName + "@" + hashCode())
     val launcherWorkHandler by lazy { Handler(launcherWorkHandlerThread.looper) }
-    val feed by lazy { findViewById(R.id.feed_recycler) as androidx.recyclerview.widget.RecyclerView }
-    val drawerLayout by lazy { (findViewById(R.id.launcher) as View).parent as androidx.drawerlayout.widget.DrawerLayout }
-    val queuedWidgetCallbacks = mutableListOf<Pair<Pair<Int, AtomicBoolean>, (i: Int) -> Unit>>()
-    val appWidgetManager by lazy { getSystemService(Context.APPWIDGET_SERVICE) as AppWidgetManager }
-    val imageResuestCallbacks = mutableMapOf<Int, (id: String?) -> Unit>()
     var overlay: ClientOverlay? = null
     protected open val isScreenshotMode = false
     private val prefCallback = LawnchairPreferencesChangeCallback(this)
@@ -119,7 +106,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
 
         ColorEngine.getInstance(this).addColorChangeListeners(this, *colorsToWatch)
         performSignatureVerification()
-        drawerLayout.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         setLauncherOverlay(overlay)
 
@@ -145,12 +131,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     .playLaunchAnimation(this, v, intent)
         }
         return success
-    }
-
-    fun selectImage(callback: IImageStoreCallback) {
-        val id = UUID.randomUUID().hashCode();
-        imageResuestCallbacks += id to { imageId -> callback.onImageRetrieved(imageId) }
-        startActivityForResult(Intent(this, ImageStore.ImageStoreActivity::class.java), id)
     }
 
     override fun onStart() {
@@ -183,8 +163,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    override fun finishBindingItems() {
-        super.finishBindingItems()
+    override fun finishBindingItems(currentScreen: Int) {
+        super.finishBindingItems(currentScreen)
         Utilities.onLauncherStart()
     }
 
@@ -237,6 +217,9 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
     }
 
     override fun onBackPressed() {
+        if (overlay?.client?.onBackPressed() == true) {
+            return
+        }
         if (isInState(LauncherState.OVERVIEW) && getOverviewPanel<LauncherRecentsView>().onBackPressed()) {
             // Handled
             return
@@ -378,11 +361,12 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?,
-                                            grantResults: IntArray?) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_PERMISSION_STORAGE_ACCESS) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            android.Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 AlertDialog.Builder(this).setTitle(R.string.title_storage_permission_required)
                         .setMessage(R.string.content_storage_permission_required)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
@@ -430,8 +414,8 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
             findViewById<LauncherRootView>(R.id.launcher).setHideContent(true)
         }
 
-        override fun finishBindingItems() {
-            super.finishBindingItems()
+        override fun finishBindingItems(currentScreen: Int) {
+            super.finishBindingItems(currentScreen)
 
             findViewById<LauncherRootView>(R.id.launcher).post(::takeScreenshot)
         }
@@ -490,9 +474,9 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
         @JvmStatic
         fun getLauncher(context: Context): LawnchairLauncher {
             return context as? LawnchairLauncher
-                   ?: (context as ContextWrapper).baseContext as? LawnchairLauncher
-                   ?: LauncherAppState.getInstance(context).launcher as? LawnchairLauncher
-                   ?: Launcher.getInstance() as LawnchairLauncher
+                    ?: (context as ContextWrapper).baseContext as? LawnchairLauncher
+                    ?: LauncherAppState.getInstance(context).launcher as? LawnchairLauncher
+                    ?: Launcher.getInstance() as LawnchairLauncher
         }
 
         fun takeScreenshotSync(context: Context): Uri? {
@@ -521,71 +505,6 @@ open class LawnchairLauncher : PluginLauncher(), LawnchairPreferences.OnPreferen
                     }
                 })
             })
-        }
-    }
-
-    fun pickWidget(callback: (i: Int) -> Unit) {
-        val id = (applicationContext as LawnchairApp).overlayWidgetHost.allocateAppWidgetId()
-        startActivityForResult(Intent(AppWidgetManager.ACTION_APPWIDGET_PICK).also {
-            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-            queuedWidgetCallbacks += id to AtomicBoolean(false) to callback
-        }, id)
-    }
-
-    fun pickWidget(callback: WidgetSelectionCallback) {
-        pickWidget {
-            callback.onWidgetSelected(it)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        d("onActivityResult: image selector requests are $imageResuestCallbacks")
-
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get().not() } && resultCode == Activity.RESULT_OK) {
-            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
-                it.second.let { callback ->
-                    val id = requestCode
-                    val widgetInfo = appWidgetManager.getAppWidgetInfo(id)
-                    d("onActivityResult: requested widget info: $widgetInfo")
-                    if (widgetInfo?.configure != null) {
-                        startActivityForResult(Intent().setComponent(widgetInfo.configure).also {
-                            it.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id)
-                        }, id)
-                        it.first.second.set(true)
-                    } else {
-                        callback(id)
-                    }
-                }
-            }
-        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode && it.first.second.get() }) {
-            queuedWidgetCallbacks.filter { it.first.first == requestCode }.forEach {
-                it.second.let {
-                    if (resultCode == Activity.RESULT_OK) {
-                        it(requestCode)
-                    } else {
-                        (applicationContext as LawnchairApp).overlayWidgetHost
-                                .deleteAppWidgetId(requestCode)
-                        it(-1)
-                    }
-                }
-            }
-        } else if (queuedWidgetCallbacks.any { it.first.first == requestCode }) {
-            (applicationContext as LawnchairApp).overlayWidgetHost
-                    .deleteAppWidgetId(requestCode shr 1)
-        }
-
-        if (imageResuestCallbacks.containsKey(requestCode)) {
-            d("onActivityResult: image selector activity returned with data ${data?.extras}, $data")
-            if (data == null) {
-                imageResuestCallbacks[requestCode]!!(null)
-            } else if (data.hasExtra(ImageStore.ImageStoreActivity.IMAGE_UUID)) {
-                imageResuestCallbacks[requestCode]!!(data.extras!![ImageStore.ImageStoreActivity.IMAGE_UUID] as String);
-            } else {
-                imageResuestCallbacks[requestCode]!!(null)
-            }
-            imageResuestCallbacks.remove(requestCode)
         }
     }
 }

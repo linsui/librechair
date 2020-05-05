@@ -20,15 +20,14 @@
 package ch.deletescape.lawnchair.location;
 
 import android.content.Context;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.location.LocationManager.LocationProvider;
-import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider.ForecastException;
-import com.android.launcher3.Utilities;
-import java.util.concurrent.Executors;
-import kotlin.Pair;
+
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.awareness.WeatherManager;
+import ch.deletescape.lawnchair.location.LocationManager.LocationProvider;
+import kotlin.Pair;
+import kotlin.Unit;
 
 public class WeatherCityLocationProvider extends LocationProvider implements
         LawnchairPreferences.OnPreferenceChangeListener {
@@ -38,34 +37,24 @@ public class WeatherCityLocationProvider extends LocationProvider implements
     public WeatherCityLocationProvider(
             @NotNull Context context) {
         super(context);
-        Utilities.getLawnchairPrefs(context)
-                .addOnPreferenceChangeListener("pref_weather_city", this);
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try {
-                LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
-                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
-            } catch (ForecastException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
-    @Nullable
     @Override
-    public Pair<Double, Double> getLocation() {
-        return location;
+    public void refresh() {
+
+        WeatherManager.INSTANCE.subscribeGeo(geo -> {
+            if (!LawnchairPreferences.Companion.getInstance(getContext()).getWeatherCity().equals(
+                    "##Auto")) {
+                location = geo;
+                updateLocation(geo.getFirst(), geo.getSecond(), true);
+            }
+            return Unit.INSTANCE;
+        });
     }
 
     @Override
     public void onValueChanged(@NotNull String key, @NotNull LawnchairPreferences prefs,
-            boolean force) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try {
-                LawnchairUtilsKt.getForecastProvider(getContext()).getGeolocation(
-                        Utilities.getLawnchairPrefs(getContext()).getWeatherCity());
-            } catch (ForecastException e) {
-                e.printStackTrace();
-            }
-        });
+                               boolean force) {
+        refresh();
     }
 }

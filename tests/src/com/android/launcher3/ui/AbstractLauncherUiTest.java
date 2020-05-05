@@ -15,9 +15,6 @@
  */
 package com.android.launcher3.ui;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import android.app.Instrumentation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -29,15 +26,16 @@ import android.graphics.Point;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import androidx.test.platform.app.InstrumentationRegistry;
-import androidx.test.uiautomator.By;
-import androidx.test.uiautomator.BySelector;
-import androidx.test.uiautomator.Direction;
-import androidx.test.uiautomator.UiDevice;
-import androidx.test.uiautomator.UiObject2;
-import androidx.test.uiautomator.Until;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.Direction;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.Until;
 import android.util.Log;
 import android.view.MotionEvent;
+
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherAppWidgetProviderInfo;
 import com.android.launcher3.LauncherSettings;
@@ -45,13 +43,17 @@ import com.android.launcher3.MainThreadExecutor;
 import com.android.launcher3.R;
 import com.android.launcher3.compat.AppWidgetManagerCompat;
 import com.android.launcher3.compat.LauncherAppsCompat;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.testcomponent.AppWidgetNoConfig;
 import com.android.launcher3.testcomponent.AppWidgetWithConfig;
+
+import org.junit.Before;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.junit.Before;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Base class for all instrumentation tests providing various utility methods.
@@ -97,19 +99,12 @@ public abstract class AbstractLauncherUiTest {
      */
     protected UiObject2 openAllApps() {
         mDevice.waitForIdle();
-        if (FeatureFlags.NO_ALL_APPS_ICON) {
-            UiObject2 hotseat = mDevice.wait(
-                    Until.findObject(getSelectorForId(R.id.hotseat)), 2500);
-            Point start = hotseat.getVisibleCenter();
-            int endY = (int) (mDevice.getDisplayHeight() * 0.1f);
-            // 100 px/step
-            mDevice.swipe(start.x, start.y, start.x, endY, (start.y - endY) / 100);
-
-        } else {
-            mDevice.wait(Until.findObject(
-                    By.desc(mTargetContext.getString(R.string.all_apps_button_label))),
-                    DEFAULT_UI_TIMEOUT).click();
-        }
+        UiObject2 hotseat = mDevice.wait(
+                Until.findObject(getSelectorForId(R.id.hotseat)), 2500);
+        Point start = hotseat.getVisibleCenter();
+        int endY = (int) (mDevice.getDisplayHeight() * 0.1f);
+        // 100 px/step
+        mDevice.swipe(start.x, start.y, start.x, endY, (start.y - endY) / 100);
         return findViewById(R.id.apps_list_view);
     }
 
@@ -140,8 +135,8 @@ public abstract class AbstractLauncherUiTest {
     }
 
     /**
-     * Drags an iconView to the center of homescreen.
-     * @param icon  object that is either app iconView or shortcut iconView
+     * Drags an icon to the center of homescreen.
+     * @param icon  object that is either app icon or shortcut icon
      */
     protected void dragToWorkspace(UiObject2 icon, boolean expectedToShowShortcuts) {
         Point center = icon.getVisibleCenter();

@@ -2,9 +2,11 @@ package ch.deletescape.lawnchair.globalsearch
 
 import android.content.Context
 import androidx.appcompat.view.ContextThemeWrapper
+import ch.deletescape.lawnchair.LawnchairConfig
 import ch.deletescape.lawnchair.colors.ColorEngine
 import ch.deletescape.lawnchair.ensureOnMainThread
 import ch.deletescape.lawnchair.globalsearch.providers.*
+import ch.deletescape.lawnchair.globalsearch.providers.web.*
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.theme.ThemeOverride
 import ch.deletescape.lawnchair.useApplicationContext
@@ -22,7 +24,7 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
 
     private val listeners = HashSet<OnProviderChangeListener>()
 
-    val isGoogle get() = false
+    val isOverlay get() = searchProvider is OverlaySearchProvider
 
     init {
         ThemeManager.getInstance(context).addOverride(themeOverride)
@@ -50,21 +52,30 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
         get() {
             val curr = prefs.searchProvider
             if (cache == null || cached != curr) {
-                cache = null
-                try {
-                    val constructor = Class.forName(prefs.searchProvider).getConstructor(Context::class.java)
-                    val themedContext = ContextThemeWrapper(context, themeRes)
-                    val prov = constructor.newInstance(themedContext) as SearchProvider
-                    if (prov.isAvailable) {
-                        cache = prov
-                    }
-                } catch (ignored: Exception) { }
-                if (cache == null) cache = AppSearchSearchProvider(context)
+                cache = createProvider(prefs.searchProvider) {
+                    val lcConfig = LawnchairConfig.getInstance(context)
+                    createProvider(lcConfig.defaultSearchProvider) { AppSearchSearchProvider(context) }
+                }
                 cached = cache!!::class.java.name
+                if (prefs.searchProvider != cached) {
+                    prefs.searchProvider = cached
+                }
                 notifyProviderChanged()
             }
             return cache!!
         }
+
+    private fun createProvider(providerName: String, fallback: () -> SearchProvider): SearchProvider {
+        try {
+            val constructor = Class.forName(providerName).getConstructor(Context::class.java)
+            val themedContext = ContextThemeWrapper(context, themeRes)
+            val prov = constructor.newInstance(themedContext) as SearchProvider
+            if (prov.isAvailable) {
+                return prov
+            }
+        } catch (ignored: Exception) { }
+        return fallback()
+    }
 
     override fun onColorChange(resolveInfo: ColorEngine.ResolveInfo) {
         if (resolveInfo.key == ColorEngine.Resolvers.ACCENT) {
@@ -93,7 +104,8 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
         fun onSearchProviderChanged()
     }
 
-    companion object : SingletonHolder<SearchProviderController, Context>(ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
+    companion object : SingletonHolder<SearchProviderController, Context>(
+            ensureOnMainThread(useApplicationContext(::SearchProviderController))) {
         fun getSearchProviders(context: Context) = listOf(
                 AppSearchSearchProvider(context),
                 JustSearchSearchProvider(context),
@@ -101,7 +113,16 @@ class SearchProviderController(private val context: Context) : ColorEngine.OnCol
                 KISSLauncherSearchProvider(context),
                 ChromiumBromiteSearchProvider.BromiteSearchProvider(context),
                 ChromiumBromiteSearchProvider.ChromiumSearchProvider(context),
-                FennecSearchProvider(context)
+                FennecSearchProvider(context),
+                OverlaySearchProvider(context),
+                DDGWebSearchProvider(context),
+                BingWebSearchProvider(context),
+                StartpageWebSearchProvider(context),
+                BaiduWebSearchProvider(context),
+                YandexWebSearchProvider(context),
+                QwantWebSearchProvider(context),
+                EcosiaWebSearchProvider(context),
+                NaverWebSearchProvider(context)
         ).filter { it.isAvailable }
     }
 }

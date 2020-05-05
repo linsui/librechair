@@ -26,6 +26,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -34,7 +35,7 @@ import androidx.core.graphics.ColorUtils;
 import android.util.Property;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import ch.deletescape.lawnchair.folder.FolderShape;
+import com.android.launcher3.graphics.IconShape;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.Launcher;
@@ -155,6 +156,7 @@ public class FolderAnimationManager {
         final int finalColor = Themes.getAttrColor(mContext, android.R.attr.colorPrimary);
         final int initialColor =
                 ColorUtils.setAlphaComponent(finalColor, mPreviewBackground.getBackgroundAlpha());
+        mFolderBackground.mutate();
         mFolderBackground.setColor(mIsOpening ? initialColor : finalColor);
 
         // Set up the reveal animation that clips the Folder.
@@ -169,7 +171,7 @@ public class FolderAnimationManager {
         float finalRadius = Utilities.pxFromDp(8, mContext.getResources().getDisplayMetrics());
 
         // Create the animators.
-        AnimatorSet a = LauncherAnimUtils.createAnimatorSet();
+        AnimatorSet a = new AnimatorSet();
 
         // Initialize the Folder items' text.
         PropertyResetListener colorResetListener =
@@ -191,7 +193,7 @@ public class FolderAnimationManager {
         play(a, getAnimator(mFolder, SCALE_PROPERTY, initialScale, finalScale));
         play(a, getAnimator(mFolderBackground, "color", initialColor, finalColor));
         play(a, mFolderIcon.mFolderName.createTextAlphaAnimator(!mIsOpening));
-        play(a, FolderShape.sInstance.createRevealAnimator(mFolder, startRect, endRect, finalRadius, !mIsOpening));
+        play(a, IconShape.getShape().createRevealAnimator(mFolder, startRect, endRect, finalRadius, !mIsOpening));
 
         // Animate the elevation midway so that the shadow is not noticeable in the background.
         int midDuration = mDuration / 2;

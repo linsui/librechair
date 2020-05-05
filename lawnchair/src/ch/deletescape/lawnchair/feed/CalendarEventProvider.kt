@@ -17,204 +17,251 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NestedLambdaShadowedImplicitParameter")
+
 package ch.deletescape.lawnchair.feed
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.database.CursorIndexOutOfBoundsException
 import android.graphics.Color
-import android.net.Uri
+import android.graphics.Typeface
 import android.provider.CalendarContract
-import android.util.Log
+import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.awareness.CalendarManager
+import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
+import kotlinx.android.synthetic.main.calendar_event.view.*
+import kotlinx.coroutines.launch
+import okhttp3.internal.toImmutableList
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 
-@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+
+@Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS", "NAME_SHADOWING")
 class CalendarEventProvider(context: Context) : FeedProvider(context) {
     private val calendarDrawable by lazy {
         context.getDrawable(R.drawable.ic_event_black_24dp)!!.tint(
                 if (useWhiteText(backgroundColor, context)) Color.WHITE else Color.DKGRAY)
     }
-    private val calendarDrawableColoured by lazy {
-        context.getDrawable(R.drawable.ic_event_black_24dp)!!
-                .tint(FeedAdapter.getOverrideColor(context))
+    private var ec = true
+        set(value) {
+            field = value
+            runOnMainThread {
+                markUnread()
+            }
+        }
+    private val events = mutableListOf<CalendarManager.CalendarEvent>()
+    private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
+
+    init {
+        CalendarManager.subscribe {
+            ec = true
+            val lastEvents = events.toImmutableList()
+            val lastOngoing = ongoingEvents.toImmutableList()
+            events.clear()
+            events += it.filter {
+                it.startTime >= LocalDateTime.now() &&
+                        it.startTime <= LocalDateTime.now()
+                        .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+            }
+            ongoingEvents.clear()
+            ongoingEvents += it.filter {
+                it.startTime <= LocalDateTime.now() &&
+                        it.endTime >= LocalDateTime.now()
+            }
+            if (ongoingEvents != lastOngoing ||
+                    events != lastEvents) {
+                FeedScope.launch {
+                    if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
+                        runOnMainThread {
+                            requestRefreshFeed()
+                        }
+                    }
+                }
+            } else {
+                runOnMainThread {
+                    markUnread()
+                }
+            }
+        }
+
+        TickManager.subscribe {
+            CalendarScope.launch {
+                val lastEvents = events.toImmutableList()
+                val lastOngoing = ongoingEvents.toImmutableList()
+                val backup = listOf(* events.toTypedArray())
+                events.clear()
+                events += backup.filter {
+                    it.startTime >= LocalDateTime.now() &&
+                            it.startTime <= LocalDateTime.now()
+                            .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+                }
+                val ongoingBackup = listOf(* ongoingEvents.toTypedArray())
+                ongoingEvents += ongoingBackup.filter {
+                    it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                            Instant.now())) <= System.currentTimeMillis() / 1000 &&
+                            it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                                    Instant.now())) >= System.currentTimeMillis() / 1000
+                }
+                if (ongoingEvents != lastOngoing ||
+                        events != lastEvents) {
+                    FeedScope.launch {
+                        if (adapter?.providers?.contains(this@CalendarEventProvider) == true) {
+                            runOnMainThread {
+                                requestRefreshFeed()
+                            }
+                        }
+                    }
+                    ec = true
+                }
+            }
+        }
     }
 
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
+    override fun isVolatile() = ec
 
     override fun getCards(): List<Card> {
-        d("getCards: retrieving calendar cards...")
-        if (context.checkSelfPermission(
-                        android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-            return emptyList()
-        }
         val cards = ArrayList<Card>()
-        run {
-            val currentTime = GregorianCalendar()
-            val endTime = GregorianCalendar()
-            endTime.add(Calendar.DAY_OF_MONTH,
-                        context.lawnchairPrefs.feedCalendarEventThreshold)
-            Log.v(javaClass.name,
-                  "getCards: searching for events between " + currentTime + " and " + endTime.toString())
-            val query =
-                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTSTART + " <= " + endTime.getTimeInMillis() + " ))"
-            val eventCursorNullable: Cursor? = context.contentResolver
-                    .query(CalendarContract.Events.CONTENT_URI,
-                           arrayOf(CalendarContract.Instances.TITLE,
-                                   CalendarContract.Instances.DTSTART,
-                                   CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Events._ID,
-                                   CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                   CalendarContract.Events.EVENT_LOCATION,
-                                   CalendarContract.Calendars.CALENDAR_COLOR), query, null,
-                           CalendarContract.Instances.DTSTART + " ASC")
-            if (eventCursorNullable == null) {
-                Log.v(javaClass.name,
-                      "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return emptyList()
-            }
-            try {
-                val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst()
-                while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0).take(25)
-                    Log.v(javaClass.name, "getCards: query found event")
-                    Log.v(javaClass.name, "getCards:     title: " + title)
-                    val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1)
-                    Log.v(javaClass.name, "getCards:     startTime: " + startTime)
-                    val eventEndTime = GregorianCalendar()
-                    eventEndTime.timeInMillis = eventCursor.getLong(2)
-                    Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
-                    val description = eventCursor.getString(3)
-                    val diff = startTime.timeInMillis - currentTime.timeInMillis
-                    Log.v(javaClass.name, "getCards: difference in milliseconds: " + diff)
-                    val diffSeconds = diff / 1000
-                    val diffMinutes = diff / (60 * 1000)
-                    val diffHours = diff / (60 * 60 * 1000)
-                    val diffDays = diff / (24 * 60 * 60 * 1000)
-                    var text: String
-                    if (diffDays > 20) {
-                        text = IcuDateTextView.getDateFormat(context, true, null, false)
-                                .format(Date.from(Instant.ofEpochMilli(startTime.timeInMillis)))
-                    } else if (diffDays >= 1) {
-                        text = if (diffDays < 1 || diffDays > 1) context.getString(
-                                R.string.title_text_calendar_feed_provider_in_d_days,
-                                diffDays) else context.getString(R.string.tomorrow)
-                    } else if (diffHours > 4) {
-                        text = context
-                                .getString(R.string.title_text_calendar_feed_in_d_hours, diffHours)
-                    } else {
-                        text = if (diffMinutes <= 0) context.getString(
-                                R.string.reusable_str_now) else context.getString(
-                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
-                                diffMinutes)
-                    }
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    if (eventCursor.getString(5) != null) {
-                        if (context.packageManager.getApplicationEnabledSetting(
-                                        eventCursor.getString(
-                                                5)!!) != PackageManager.COMPONENT_ENABLED_STATE_DISABLED) {
-                            intent.`package` = eventCursor.getString(5)!!
-                        }
-                    }
-                    val address = eventCursor.getString(6)
-                    intent.data = Uri
-                            .parse("content://com.android.calendar/events/" + eventCursor.getLong(
-                                    4).toString())
-                    cards.add(Card(
-                            if (context.lawnchairPrefs.feedShowCalendarColour) calendarDrawableColoured.tint(
-                                    eventCursor.getInt(7).setAlpha(
-                                            255)) else calendarDrawableColoured,
-                            (if (title.trim().isEmpty()) context.getString(
-                                    R.string.placeholder_empty_title) else "$title • ") + text,
-                            object : Card.Companion.InflateHelper {
-                                override fun inflate(parent: ViewGroup): View {
-                                    return if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) getCalendarFeedView(
-                                            description, address, parent.context, parent) else View(
-                                            parent.getContext())
-                                }
-                            },
-                            if (address?.isNotEmpty() != false || description?.isNotEmpty() != false) Card.RAISE else Card.RAISE or Card.TEXT_ONLY,
-                            if (diffMinutes < 120) "nosort,top" else ""))
-                    eventCursor.moveToNext()
-                }
-                eventCursor.close()
-            } catch (e: Throwable) {
-            }
-        }
-        run {
-            val currentTime = GregorianCalendar()
-            Log.v(javaClass.name,
-                  "getCards: searching for events that are active at ${currentTime}")
-            val query =
-                    "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
-            val eventCursorNullable: Cursor? = context.contentResolver
-                    .query(CalendarContract.Events.CONTENT_URI,
-                           arrayOf(CalendarContract.Instances.TITLE,
-                                   CalendarContract.Instances.DTSTART,
-                                   CalendarContract.Instances.DTEND,
-                                   CalendarContract.Instances.DESCRIPTION,
-                                   CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
-                           query, null, CalendarContract.Instances.DTSTART + " ASC")
-            if (eventCursorNullable == null) {
-                Log.v(javaClass.name,
-                      "getCards: query is null, probably since there are no events that meet the specified criteria")
-                return cards
-            }
-            try {
-                val eventCursor = eventCursorNullable
-                eventCursor.moveToFirst()
-                while (!eventCursor.isAfterLast) {
-                    val title = eventCursor.getString(0).take(25)
-                    Log.v(javaClass.name, "getCards: query found event")
-                    Log.v(javaClass.name, "getCards:     title: " + title)
-                    val startTime = GregorianCalendar()
-                    startTime.timeInMillis = eventCursor.getLong(1)
-                    Log.v(javaClass.name, "getCards:     startTime: " + startTime)
-                    val eventEndTime = GregorianCalendar()
-                    eventEndTime.timeInMillis = eventCursor.getLong(2)
-                    Log.v(javaClass.name, "getCards:     eventEndTime: " + eventEndTime)
-                    val text = if (title == null || title.trim().isEmpty()) context.getString(
-                            R.string.placeholder_empty_title) else "$title • ${context.getString(
-                            if (eventCursor.getInt(
-                                            4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing)}"
-
-                    eventCursor.moveToNext()
-                    cards.add(Card(calendarDrawable, text, object : Card.Companion.InflateHelper {
+        ec = false
+        cards.addAll(events.map {
+            Card(null, null,
+                    object : Card.Companion.InflateHelper {
                         override fun inflate(parent: ViewGroup): View {
-                            return View(parent.context)
+                            return if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) getCalendarFeedView(
+                                    it.description, it.address, parent.context, parent,
+                                    this@CalendarEventProvider).apply {
+                                calendar_event_title.text =
+                                        (if (it.title.trim().isEmpty()) context.getString(
+                                                R.string.placeholder_empty_title) else it.title)
+                                calendar_event_title.marqueeRepeatLimit = -1
+                                calendar_event_title.ellipsize = TextUtils.TruncateAt.MARQUEE
+                                calendar_event_title.isSelected = true
+                                calendar_event_title.maxLines = 1
+                                calendar_event_title.focusable = View.FOCUSABLE
+
+                                if (it.address == null) {
+                                    viewTreeObserver.addOnGlobalLayoutListener {
+                                        layoutParams.height =
+                                                ViewGroup.LayoutParams.WRAP_CONTENT
+                                    }
+                                }
+
+                                if (context.lawnchairPrefs.feedShowCalendarColour && it.colour != null && it.colour != 0) {
+                                    calendar_event_title.setTextColor(it.colour)
+                                }
+                                calendar_event_title.typeface = Typeface.DEFAULT_BOLD
+                                TickManager.subscribe {
+                                    val diff = it.startTime.toEpochSecond(
+                                            ZoneOffset.systemDefault().rules.getOffset(
+                                                    Instant.now())) * 1000 - System.currentTimeMillis()
+                                    val diffMinutes = diff / (60 * 1000)
+                                    val diffHours = diff / (60 * 60 * 1000)
+                                    val diffDays = diff / (24 * 60 * 60 * 1000)
+                                    val text: String
+                                    when {
+                                        diffDays > 20 -> text =
+                                                IcuDateTextView.getDateFormat(context, true,
+                                                        null, false)
+                                                        .format(Date.from(Instant.ofEpochMilli(
+                                                                it.startTime.toEpochSecond(
+                                                                        ZoneOffset.ofHours(
+                                                                                0)) * 1000)))
+                                        diffDays >= 1 -> text =
+                                                if (diffDays < 1 || diffDays > 1) context.getString(
+                                                        R.string.title_text_calendar_feed_provider_in_d_days,
+                                                        diffDays) else context.getString(
+                                                        R.string.tomorrow)
+                                        diffHours > 4 -> text = context
+                                                .getString(
+                                                        R.string.title_text_calendar_feed_in_d_hours,
+                                                        diffHours)
+                                        else -> text = if (diffMinutes <= 0) context.getString(
+                                                R.string.reusable_str_now) else context.getString(
+                                                if (diffMinutes < 1 || diffMinutes > 1) R.string.subtitle_smartspace_in_minutes else R.string.subtitle_smartspace_in_minute,
+                                                diffMinutes)
+                                    }
+                                    calendar_event_time_remaining.text = text
+                                }
+                            } else View(parent.context)
                         }
-                    }, Card.TEXT_ONLY, "nosort,top"))
+                    },
+                    if (it.address?.isNotEmpty() != false || it.description?.isNotEmpty() != false) Card.RAISE or
+                            Card.NO_HEADER else Card.RAISE or Card.TEXT_ONLY,
+                    if ((it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(
+                                    Instant.now())) - System.currentTimeMillis() / 1000) / 60 < 120) "nosort,top" else "").apply {
+                globalClickListener = { v ->
+                    FeedUtil.startActivity(context, it.intent, v)
                 }
-                eventCursor.close()
-            } catch (e: CursorIndexOutOfBoundsException) {
+                actionName = R.string.action_share.fromStringRes(context)
+                actionListener = { v ->
+                    val shareIntent = Intent(Intent.ACTION_SEND)
+                    shareIntent.type = "text/plain"
+                    shareIntent.putExtra(Intent.EXTRA_TEXT,
+                            "${it.title}\n${it.description?.plus("\n") ?: ""}")
+                    try {
+                        v.context.startActivity(shareIntent)
+                    } catch (e: ActivityNotFoundException) {
+                        e.printStackTrace()
+                    }
+                }
             }
-        }
+        })
+        cards.addAll(ongoingEvents.map {
+            Card(calendarDrawable, it.title.take(25), object : Card.Companion.InflateHelper {
+                override fun inflate(parent: ViewGroup): View {
+                    return View(parent.context)
+                }
+            }, Card.TEXT_ONLY, "nosort,top")
+        })
         return cards
+    }
+
+    override fun getActions(exclusive: Boolean): List<Action> {
+        return listOf(
+                Action((if (exclusive) R.drawable.ic_add else R.drawable.ic_event_black_24dp).fromDrawableRes(
+                        context),
+                        context.getString(
+                                R.string.title_action_new_calendar_event), Runnable {
+                    val intent = Intent(Intent.ACTION_INSERT)
+                    val pkg = calendarApps.firstOrNull {
+                        try {
+                            context.packageManager.getPackageInfo(it, 0)
+                            true
+                        } catch (e: PackageManager.NameNotFoundException) {
+                            false
+                        }
+                    } ?: return@Runnable
+                    intent.setPackage(pkg)
+                    intent.data = CalendarContract.Events.CONTENT_URI
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        val intent = Intent.makeMainSelectorActivity(Intent.ACTION_INSERT,
+                                Intent.CATEGORY_APP_CALENDAR)
+                        intent.data = CalendarContract.Events.CONTENT_URI
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+
+                        }
+                    }
+                }))
+    }
+
+    companion object {
+        val calendarApps =
+                listOf("com.android.calendar", "ws.xsoh.etar", "com.google.android.apps.calendar")
     }
 }

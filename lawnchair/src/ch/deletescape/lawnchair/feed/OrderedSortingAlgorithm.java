@@ -19,15 +19,17 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class OrderedSortingAlgorithm extends AbstractFeedSortingAlgorithm {
 
+    @SafeVarargs
     @NotNull
     @Override
-    public List<Card> sort(@NotNull List<? extends Card>... cards) {
+    public final List<Card> sort(@NotNull List<? extends Card>... cards) {
         List<Card> cards1 = new ArrayList<>();
         for (List<? extends Card> card2 : cards) {
             cards1.addAll(card2);

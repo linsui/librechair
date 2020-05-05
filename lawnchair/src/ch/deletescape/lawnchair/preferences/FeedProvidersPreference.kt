@@ -40,38 +40,50 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
+import androidx.databinding.ObservableList
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.LawnchairPreferences
 import ch.deletescape.lawnchair.feed.FeedProviderContainer
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.MainFeedController
-import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.settings.ui.ControlledPreference
 import com.android.launcher3.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
         DialogPreference(context, attrs),
         ControlledPreference by ControlledPreference.Delegate(context, attrs),
         LawnchairPreferences.MutableListPrefChangeListener {
 
-    private val providersPref = context.lawnchairPrefs.feedProviders
-
     init {
         updateSummary()
     }
 
     fun setProviders(providers: List<FeedProviderContainer>) {
-        context.lawnchairPrefs.feedProviders.setAll(providers)
+        context.feedPrefs.feedProviders.apply {
+            clear()
+            FeedScope.launch {
+                delay(100)
+                runOnMainThread {
+                    addAll(providers)
+                }
+            }
+        }
     }
 
     private fun updateSummary() {
-        val providerNames = providersPref.getAll()
-                .map { MainFeedController.getDisplayName(it, context) }
-        if (providerNames.isNotEmpty()) {
-            summary = TextUtils.join(", ", providerNames)
-        } else {
-            setSummary(R.string.weather_provider_disabled)
+        runOnMainThread {
+            val providerNames = context.feedPrefs.feedProviders
+                    .map { MainFeedController.getDisplayName(it, context) }
+            if (providerNames.isNotEmpty()) {
+                summary = TextUtils.join(", ", providerNames)
+            } else {
+                setSummary(R.string.weather_provider_disabled)
+            }
         }
     }
 
@@ -85,12 +97,31 @@ class FeedProvidersPreference(context: Context, attrs: AttributeSet?) :
 
     override fun onAttached() {
         super.onAttached()
-        providersPref.addListener(this)
-    }
+        context.feedPrefs.feedProviders.addOnListChangedCallback(object : ObservableList.OnListChangedCallback<ObservableList<FeedProviderContainer>>() {
+            override fun onChanged(sender: ObservableList<FeedProviderContainer>?) {
+                updateSummary()
+            }
 
-    override fun onDetached() {
-        super.onDetached()
-        providersPref.removeListener(this)
+            override fun onItemRangeRemoved(sender: ObservableList<FeedProviderContainer>?,
+                                            positionStart: Int, itemCount: Int) {
+                updateSummary()
+            }
+
+            override fun onItemRangeMoved(sender: ObservableList<FeedProviderContainer>?, fromPosition: Int,
+                                          toPosition: Int, itemCount: Int) {
+                updateSummary()
+            }
+
+            override fun onItemRangeInserted(sender: ObservableList<FeedProviderContainer>?,
+                                             positionStart: Int, itemCount: Int) {
+                updateSummary()
+            }
+
+            override fun onItemRangeChanged(sender: ObservableList<FeedProviderContainer>?,
+                                            positionStart: Int, itemCount: Int) {
+                updateSummary()
+            }
+        })
     }
 
     override fun onListPrefChanged(key: String) {

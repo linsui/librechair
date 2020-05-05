@@ -35,76 +35,80 @@
 
 package ch.deletescape.lawnchair.smartspace
 
-import android.content.pm.PackageManager
-import android.database.Cursor
-import android.database.CursorIndexOutOfBoundsException
-import android.provider.CalendarContract
-import androidx.annotation.Keep
 import android.text.TextUtils
+import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.CalendarManager
+import ch.deletescape.lawnchair.awareness.TickManager
 import ch.deletescape.lawnchair.drawableToBitmap
+import ch.deletescape.lawnchair.feed.CalendarScope
+import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Keep
 class OngoingEventsProvider(controller: LawnchairSmartspaceController) :
-        LawnchairSmartspaceController.PeriodicDataProvider(controller) {
-    private var silentlyFail: Boolean = false
-    private var card: LawnchairSmartspaceController.CardData? = null
-    private val contentResolver
-        get() = context.contentResolver
-    override val timeout = TimeUnit.SECONDS.toMillis(5)
+        LawnchairSmartspaceController.DataProvider(controller) {
+    private val events = mutableListOf<CalendarManager.CalendarEvent>()
+    private val ongoingEvents = mutableListOf<CalendarManager.CalendarEvent>()
+
+    init {
+        CalendarManager.subscribe {
+            events.clear()
+            events += it.filter {
+                it.startTime >= LocalDateTime.now() &&
+                        it.startTime <= LocalDateTime.now()
+                        .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+            }
+            d("init: events are $events")
+            ongoingEvents.clear()
+            ongoingEvents += it.filter {
+                it.startTime <= LocalDateTime.now() &&
+                        it.endTime >= LocalDateTime.now()
+            }
+            d("init: ongoing events are $ongoingEvents")
+            updateInformation()
+        }
+
+        TickManager.subscribe {
+            CalendarScope.launch {
+                val backup = listOf(* events.toTypedArray())
+                events.clear()
+                events += backup.filter {
+                    it.startTime >= LocalDateTime.now() &&
+                            it.startTime <= LocalDateTime.now()
+                            .plusDays(context.lawnchairPrefs.feedCalendarEventThreshold.toLong())
+                }
+                val ongoingBackup = listOf(* ongoingEvents.toTypedArray())
+                ongoingEvents += ongoingBackup.filter {
+                    d("init: (tick) ongoing event: $it currentTime: ${LocalDateTime.now()}")
+                    it.startTime.toEpochSecond(ZoneOffset.systemDefault().rules.getOffset(Instant.now())) <= System.currentTimeMillis() / 1000 &&
+                            it.startTime.toEpochSecond(
+                                    ZoneOffset.systemDefault().rules.getOffset(Instant.now())) >= System.currentTimeMillis() / 1000
+                }
+                d("init: (tick) ongoing events are $ongoingEvents")
+                updateInformation()
+            }
+        }
+    }
     private fun updateInformation() {
-        silentlyFail = controller.context.checkSelfPermission(
-                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED
-        if (silentlyFail) {
-            updateData(null, null);
-            return;
-        }
-        val currentTime = GregorianCalendar();
-        val query =
-                "(( " + CalendarContract.Events.DTSTART + " <= " + currentTime.getTimeInMillis() + " ) AND ( " + CalendarContract.Events.DTEND + " >= " + currentTime.getTimeInMillis() + " ))"
-        val eventCursorNullable: Cursor? = contentResolver
-                .query(CalendarContract.Events.CONTENT_URI,
-                       arrayOf(CalendarContract.Instances.TITLE, CalendarContract.Instances.DTSTART,
-                               CalendarContract.Instances.DTEND,
-                               CalendarContract.Instances.DESCRIPTION,
-                               CalendarContract.Instances.ALL_DAY, CalendarContract.Events._ID),
-                       query, null, CalendarContract.Instances.DTSTART + " ASC")
-        if (eventCursorNullable == null) {
-            card = null
-            updateData(null, card = null);
-            return;
-        }
-        try {
-            val eventCursor = eventCursorNullable
-            eventCursor.moveToFirst();
-            val title = eventCursor.getString(0);
-            val startTime = GregorianCalendar()
-            startTime.timeInMillis = eventCursor.getLong(1);
-            val eventEndTime = GregorianCalendar()
-            eventEndTime.timeInMillis = eventCursor.getLong(2)
+        if (ongoingEvents.isNotEmpty()) {
+            val title = ongoingEvents.first().title
             val lines = listOf(LawnchairSmartspaceController.Line(
-                    if (title == null || title.trim().isEmpty()) controller.context.getString(
+                    if (title.trim().isEmpty()) controller.context.getString(
                             R.string.placeholder_empty_title) else title,
                     TextUtils.TruncateAt.MARQUEE), LawnchairSmartspaceController.Line(
-                    controller.context.getString(if (eventCursor.getInt(
-                                    4) != 0) R.string.reusable_string_all_day_event else R.string.ongoing),
+                    controller.context.getString(if (ongoingEvents.first().isAllDay) R.string.reusable_string_all_day_event else R.string.ongoing),
                     TextUtils.TruncateAt.END))
-            val description = eventCursor.getString(3);
-            card = LawnchairSmartspaceController.CardData(drawableToBitmap(
-                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)), lines, true)
-            eventCursor.close();
-            updateData(null, card)
-            return;
-        } catch (e: CursorIndexOutOfBoundsException) {
-            updateData(null, card = null)
+            updateData(null, LawnchairSmartspaceController.CardData(drawableToBitmap(
+                    controller.context.getDrawable(R.drawable.ic_event_black_24dp)!!), lines, true))
+            return
+        } else {
+            updateData(null, null)
         }
-        updateData(null, null)
-    }
-
-    override fun updateData() {
-        updateInformation()
     }
 
     override fun forceUpdate() {

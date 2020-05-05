@@ -27,16 +27,25 @@ import kotlin.reflect.KClass
 interface ImageProvider {
     val expiryTime: Long
     suspend fun getBitmap(context: Context): Bitmap?
+    suspend fun getDescription(context: Context): String? = null
+    suspend fun getUrl(context: Context): String? = null
     fun registerOnChangeListener(listener: () -> Unit)
+    fun attachMeta(meta: Map<String, String>) {
+
+    }
 
     companion object {
-        fun inflate(clazz: KClass<out ImageProvider>, c: Context): ImageProvider? {
+        fun inflate(clazz: KClass<out ImageProvider>,
+                    meta: Map<String, String>, c: Context): ImageProvider? {
             d("inflate: class constructors ${clazz.constructors}")
             if (clazz.constructors.isNotEmpty()) {
-                return clazz.constructors.toList()[0].call(c)
+                return clazz.constructors.toList()[0].call(c).also { it.attachMeta(meta) }
             } else {
                 return null
             }
         }
     }
 }
+
+data class ImageProviderContainer(val clazz: KClass<out ImageProvider>,
+                                  val meta: Map<String, String>)

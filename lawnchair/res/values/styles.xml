@@ -250,6 +250,57 @@
         <item name="actionBarTabStyle">@style/Widget.Settings.Tabs</item>
         <item name="android:tabWidgetStyle">@style/Widget.Settings.Tabs</item>
     </style>
+
+    <style name="FeedTheme.Dark" parent="@style/Theme.MaterialComponents">
+        <item name="android:windowBackground">@color/settings_background_dark</item>
+        <item name="colorPrimary">?android:windowBackground</item>
+        <item name="colorPrimaryDark">?android:windowBackground</item>
+        <item name="colorAccent">@color/colorAccentDark</item>
+        <item name="actionBarTheme">@style/SettingsTheme.V2.Dark.ActionBar</item>
+        <item name="android:colorEdgeEffect">?colorAccent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="useLightSystemBars">false</item>
+        <item name="alertDialogTheme">@style/SettingsTheme.V2.Dark.Dialog</item>
+        <item name="buttonStyle">@style/SettingsTheme.V2.Button</item>
+        <item name="settingsBackground">@color/settings_background_dark</item>
+        <item name="settingsSearchBackground">@color/settings_background_dark_2dp</item>
+        <item name="settingsPopupBackground">@color/settings_background_dark_8dp</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog</item>
+        <item name="bottomSheetNavBarColor">@android:color/transparent</item>
+        <item name="bottomSheetScrimColor">@android:color/black</item>
+        <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
+        <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
+        <item name="actionBarTabStyle">@style/Widget.Settings.Tabs</item>
+        <item name="android:tabWidgetStyle">@style/Widget.Settings.Tabs</item>
+    </style>
+
+    <style name="FeedTheme.Light" parent="@style/Theme.MaterialComponents.Light">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="settingsBackground">@android:color/white</item>
+        <item name="settingsSearchBackground">?settingsBackground</item>
+        <item name="settingsPopupBackground">?settingsBackground</item>
+        <item name="colorPrimary">?android:windowBackground</item>
+        <item name="colorPrimaryDark">?android:windowBackground</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionBarTheme">@style/SettingsTheme.V2.ActionBar</item>
+        <item name="preferenceTheme">@style/SettingsTheme.PreferenceTheme</item>
+        <item name="android:colorEdgeEffect">?colorAccent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:ignore="NewApi">true</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">true</item>
+        <item name="useLightSystemBars">true</item>
+        <item name="alertDialogTheme">@style/SettingsTheme.V2.Dialog</item>
+        <item name="buttonStyle">@style/SettingsTheme.V2.Button</item>
+        <item name="bottomSheetDialogTheme">@style/SettingsTheme.BottomSheetDialog.Light</item>
+        <item name="bottomSheetNavBarColor">@color/all_apps_navbar_color</item>
+        <item name="bottomSheetScrimColor">#F9FAFC</item>
+        <item name="actionOverflowMenuStyle">@style/SettingsTheme.PopupMenu.Overflow</item>
+        <item name="popupMenuStyle">@style/SettingsTheme.PopupMenu</item>
+        <item name="actionBarTabStyle">@style/Widget.Settings.Tabs</item>
+        <item name="android:tabWidgetStyle">@style/Widget.Settings.Tabs</item>
+    </style>
+
     <style name="SettingsTheme.V2.Dark.ActionBar" parent="SettingsTheme.V2.Dark">
         <item name="titleTextAppearance">@style/SettingsTheme.V2.ActionBar.Title</item>
     </style>
@@ -331,13 +382,13 @@
         <item name="alertDialogTheme">@style/SettingsTheme.V2.Dialog</item>
     </style>
 
-    <style name="TextAppearance.Settings.Tab" parent="@style/TextAppearance.MaterialComponents.Tab">
+    <style name="TextAppearance.Settings.Tab" parent="@style/TextAppearance.AppCompat.Button">
         <item name="customFontType">settingsTab</item>
         <item name="android:textColor">@color/tab_text</item>
         <item name="textAllCaps">false</item>
     </style>
 
-    <style name="TextAppearance.Feed.Tab" parent="@style/TextAppearance.MaterialComponents.Tab">
+    <style name="TextAppearance.Feed.Tab" parent="@style/TextAppearance.MaterialComponents.Button">
         <item name="customFontType">settingsTab</item>
         <item name="android:textColor">@color/textColorPrimary</item>
         <item name="textAllCaps">false</item>

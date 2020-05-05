@@ -18,6 +18,7 @@ package com.android.launcher3;
 
 import android.Manifest;
 import android.Manifest.permission;
+import android.annotation.ColorInt;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -33,7 +34,9 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -54,14 +57,6 @@ import android.os.PowerManager;
 import android.os.Process;
 import android.os.TransactionTooLargeException;
 import android.os.UserHandle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.graphics.drawable.IconCompat;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -79,12 +74,31 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.ShortcutInfoCompat;
+import androidx.core.content.pm.ShortcutManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
+
 import com.android.launcher3.compat.LauncherAppsCompat;
+import com.android.launcher3.compat.ShortcutConfigActivityInfo;
 import com.android.launcher3.config.FeatureFlags;
+import com.android.launcher3.dragndrop.DragLayer;
+import com.android.launcher3.dragndrop.FolderAdaptiveIcon;
+import com.android.launcher3.folder.FolderIcon;
 import com.android.launcher3.graphics.BitmapInfo;
 import com.android.launcher3.graphics.LauncherIcons;
+import com.android.launcher3.graphics.RotationMode;
+import com.android.launcher3.shortcuts.DeepShortcutManager;
+import com.android.launcher3.shortcuts.DeepShortcutView;
+import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.uioverrides.OverviewState;
 import com.android.launcher3.util.PackageManagerHelper;
+import com.android.launcher3.views.Transposable;
+import com.android.launcher3.widget.PendingAddShortcutInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -92,6 +106,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -108,8 +123,10 @@ import ch.deletescape.lawnchair.LawnchairAppKt;
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.backup.RestoreBackupActivity;
-import ch.deletescape.lawnchair.feed.impl.OverlayService;
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity;
+
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_DESKTOP;
+import static com.android.launcher3.LauncherSettings.Favorites.CONTAINER_HOTSEAT;
 
 /**
  * Various utilities shared amongst the Launcher's classes.
@@ -193,10 +210,10 @@ public final class Utilities {
      * @param ancestor The root view to make the coordinates relative to.
      * @param coord The coordinate that we want mapped.
      * @param includeRootScroll Whether or not to account for the scroll of the descendant:
-     * sometimes this is relevant as in a child's coordinates within the descendant.
+     *          sometimes this is relevant as in a child's coordinates within the descendant.
      * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
-     * this scale factor is assumed to be equal in X and Y, and so if at any point this assumption
-     * fails, we will need to return a pair of scale factors.
+     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
+     *         assumption fails, we will need to return a pair of scale factors.
      */
     public static float getDescendantCoordRelativeToAncestor(
             View descendant, View ancestor, int[] coord, boolean includeRootScroll) {
@@ -227,6 +244,76 @@ public final class Utilities {
     }
 
     /**
+     * Given a coordinate relative to the descendant, find the coordinate in a parent view's
+     * coordinates.
+     *
+     * @param descendant The descendant to which the passed coordinate is relative.
+     * @param ancestor The root view to make the coordinates relative to.
+     * @param coord The coordinate that we want mapped.
+     * @param includeRootScroll Whether or not to account for the scroll of the descendant:
+     *          sometimes this is relevant as in a child's coordinates within the descendant.
+     * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
+     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
+     *         assumption fails, we will need to return a pair of scale factors.
+     */
+    public static float getDescendantCoordRelativeToAncestor(
+            View descendant, View ancestor, float[] coord, boolean includeRootScroll) {
+        return getDescendantCoordRelativeToAncestor(descendant, ancestor, coord, includeRootScroll,
+                false, null);
+    }
+
+    /**
+     * Given a coordinate relative to the descendant, find the coordinate in a parent view's
+     * coordinates.
+     *
+     * @param descendant The descendant to which the passed coordinate is relative.
+     * @param ancestor The root view to make the coordinates relative to.
+     * @param coord The coordinate that we want mapped.
+     * @param includeRootScroll Whether or not to account for the scroll of the descendant:
+     *          sometimes this is relevant as in a child's coordinates within the descendant.
+     * @param ignoreTransform If true, view transform is ignored
+     * @param outRotation If not null, and {@param ignoreTransform} is true, this is set to the
+     *                   overall rotation of the view in degrees.
+     * @return The factor by which this descendant is scaled relative to this DragLayer. Caution
+     *         this scale factor is assumed to be equal in X and Y, and so if at any point this
+     *         assumption fails, we will need to return a pair of scale factors.
+     */
+    public static float getDescendantCoordRelativeToAncestor(View descendant, View ancestor,
+            float[] coord, boolean includeRootScroll, boolean ignoreTransform,
+            float[] outRotation) {
+        float scale = 1.0f;
+        View v = descendant;
+        while(v != ancestor && v != null) {
+            // For TextViews, scroll has a meaning which relates to the text position
+            // which is very strange... ignore the scroll.
+            if (v != descendant || includeRootScroll) {
+                offsetPoints(coord, -v.getScrollX(), -v.getScrollY());
+            }
+
+            if (ignoreTransform) {
+                if (v instanceof Transposable) {
+                    RotationMode m = ((Transposable) v).getRotationMode();
+                    if (m.isTransposed) {
+                        sMatrix.setRotate(m.surfaceRotation, v.getPivotX(), v.getPivotY());
+                        sMatrix.mapPoints(coord);
+
+                        if (outRotation != null) {
+                            outRotation[0] += m.surfaceRotation;
+                        }
+                    }
+                }
+            } else {
+                v.getMatrix().mapPoints(coord);
+            }
+            offsetPoints(coord, v.getLeft(), v.getTop());
+            scale *= v.getScaleX();
+
+            v = (View) v.getParent();
+        }
+        return scale;
+    }
+
+    /**
      * Inverse of {@link #getDescendantCoordRelativeToAncestor(View, View, int[], boolean)}.
      */
     public static void mapCoordInSelfToDescendant(View descendant, View root, int[] coord) {
@@ -248,10 +335,18 @@ public final class Utilities {
         coord[1] = Math.round(sPoint[1]);
     }
 
+    public static void offsetPoints(float[] points, float offsetX, float offsetY) {
+        for (int i = 0; i < points.length; i += 2) {
+            points[i] += offsetX;
+            points[i + 1] += offsetY;
+        }
+    }
+
     /**
-     * Utility method to determine whether the given point, in local coordinates, is inside the
-     * view, where the area of the view is expanded by the slop factor. This method is called while
-     * processing touch-move events to determine if the event is still within the view.
+     * Utility method to determine whether the given point, in local coordinates,
+     * is inside the view, where the area of the view is expanded by the slop factor.
+     * This method is called while processing touch-move events to determine if the event
+     * is still within the view.
      */
     public static boolean pointInView(View v, float localX, float localY, float slop) {
         return localX >= -slop && localY >= -slop && localX < (v.getWidth() + slop) &&
@@ -266,7 +361,7 @@ public final class Utilities {
         sLoc0[1] += (v0.getMeasuredHeight() * v0.getScaleY()) / 2;
         sLoc1[0] += (v1.getMeasuredWidth() * v1.getScaleX()) / 2;
         sLoc1[1] += (v1.getMeasuredHeight() * v1.getScaleY()) / 2;
-        return new int[]{sLoc1[0] - sLoc0[0], sLoc1[1] - sLoc0[1]};
+        return new int[] {sLoc1[0] - sLoc0[0], sLoc1[1] - sLoc0[1]};
     }
 
     public static void scaleRectFAboutCenter(RectF r, float scale) {
@@ -324,7 +419,6 @@ public final class Utilities {
 
     /**
      * Maps t from one range to another range.
-     *
      * @param t The value to map.
      * @param fromMin The lower bound of the range that t is being mapped from.
      * @param fromMax The upper bound of the range that t is being mapped from.
@@ -401,7 +495,7 @@ public final class Utilities {
      * Compresses the bitmap to a byte array for serialization.
      */
     public static byte[] flattenBitmap(Bitmap bitmap) {
-        // Try go guesstimate how much space the iconView will take when serialized
+        // Try go guesstimate how much space the icon will take when serialized
         // to avoid unnecessary allocations/copies during the write.
         int size = bitmap.getWidth() * bitmap.getHeight() * 4;
         ByteArrayOutputStream out = new ByteArrayOutputStream(size);
@@ -464,9 +558,9 @@ public final class Utilities {
     }
 
     /**
-     * Returns true if the intent is a valid launch intent for a launcher activity of an app. This
-     * is used to identify shortcuts which are different from the ones exposed by the applications'
-     * manifest file.
+     * Returns true if the intent is a valid launch intent for a launcher activity of an app.
+     * This is used to identify shortcuts which are different from the ones exposed by the
+     * applications' manifest file.
      *
      * @param launchIntent The intent that will be launched when the shortcut is clicked.
      */
@@ -485,24 +579,21 @@ public final class Utilities {
         return false;
     }
 
-    public static float dpiFromPx(int size, DisplayMetrics metrics) {
+    public static float dpiFromPx(int size, DisplayMetrics metrics){
         float densityRatio = (float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT;
         return (size / densityRatio);
     }
-
     public static int pxFromDp(float size, DisplayMetrics metrics) {
         return (int) Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 size, metrics));
     }
-
     public static int pxFromSp(float size, DisplayMetrics metrics) {
         return (int) Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
                 size, metrics));
     }
 
     public static String createDbSelectionQuery(String columnName, Iterable<?> values) {
-        return String
-                .format(Locale.ENGLISH, "%s IN (%s)", columnName, TextUtils.join(", ", values));
+        return String.format(Locale.ENGLISH, "%s IN (%s)", columnName, TextUtils.join(", ", values));
     }
 
     public static boolean isBootCompleted() {
@@ -524,9 +615,9 @@ public final class Utilities {
     }
 
     /**
-     * Ensures that a value is within given bounds. Specifically: If value is less than lowerBound,
-     * return lowerBound; else if value is greater than upperBound, return upperBound; else return
-     * value unchanged.
+     * Ensures that a value is within given bounds. Specifically:
+     * If value is less than lowerBound, return lowerBound; else if value is greater than upperBound,
+     * return upperBound; else return value unchanged.
      */
     public static int boundToRange(int value, int lowerBound, int upperBound) {
         return Math.max(lowerBound, Math.min(value, upperBound));
@@ -547,9 +638,8 @@ public final class Utilities {
     }
 
     /**
-     * Wraps a message with a TTS span, so that a different message is spoken than what is getting
-     * displayed.
-     *
+     * Wraps a message with a TTS span, so that a different message is spoken than
+     * what is getting displayed.
      * @param msg original message
      * @param ttsMsg message to be spoken
      */
@@ -614,8 +704,9 @@ public final class Utilities {
     }
 
     /**
-     * Returns true if {@param original} contains all entries defined in {@param updates} and have
-     * the same value. The comparison uses {@link Object#equals(Object)} to compare the values.
+     * Returns true if {@param original} contains all entries defined in {@param updates} and
+     * have the same value.
+     * The comparison uses {@link Object#equals(Object)} to compare the values.
      */
     public static boolean containsAll(Bundle original, Bundle updates) {
         for (String key : updates.keySet()) {
@@ -632,9 +723,7 @@ public final class Utilities {
         return true;
     }
 
-    /**
-     * Returns whether the collection is null or empty.
-     */
+    /** Returns whether the collection is null or empty. */
     public static boolean isEmpty(Collection c) {
         return c == null || c.isEmpty();
     }
@@ -685,7 +774,9 @@ public final class Utilities {
      */
     public /* private */ static void onLauncherStart() {
         Log.d(TAG, "onLauncherStart: " + onStart.size());
-        for (Runnable r : onStart) { r.run(); }
+        for (Runnable r : onStart) {
+            r.run();
+        }
         onStart.clear();
     }
 
@@ -747,9 +838,6 @@ public final class Utilities {
     }
 
     public static void killLauncher(Context context) {
-        if (context != null) {
-            context.stopService(new Intent(context, OverlayService.class));
-        }
         System.exit(0);
     }
 
@@ -768,18 +856,26 @@ public final class Utilities {
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate) {
+        return drawableToBitmap(drawable, forceCreate, 0);
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable, boolean forceCreate, int fallbackSize) {
         if (!forceCreate && drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
 
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            return null;
+        int width = drawable.getIntrinsicWidth();
+        int height = drawable.getIntrinsicHeight();
+
+        if (width <= 0 || height <= 0) {
+            if (fallbackSize > 0) {
+                width = height = fallbackSize;
+            } else {
+                return null;
+            }
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(
-                drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(),
-                Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -789,8 +885,10 @@ public final class Utilities {
 
     public static void setLightUi(Window window) {
         int flags = window.getDecorView().getSystemUiVisibility();
-        if (ATLEAST_MARSHMALLOW) { flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR; }
-        if (ATLEAST_OREO) { flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR; }
+        if (ATLEAST_MARSHMALLOW)
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        if (ATLEAST_OREO)
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
@@ -826,15 +924,13 @@ public final class Utilities {
     }
 
     public static void pinSettingsShortcut(Context context) {
-        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) { return; }
-        ShortcutManagerCompat
-                .requestPinShortcut(context, new ShortcutInfoCompat.Builder(context, "settings")
-                        .setIntent(new Intent(context, SettingsActivity.class)
-                                .setAction(Intent.ACTION_MAIN))
-                        .setIcon(IconCompat.createWithResource(context, R.drawable.ic_setting))
-                        .setShortLabel(context.getString(R.string.settings_button_text))
-                        .setAlwaysBadged()
-                        .build(), null);
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) return;
+        ShortcutManagerCompat.requestPinShortcut(context, new ShortcutInfoCompat.Builder(context, "settings")
+                .setIntent(new Intent(context, SettingsActivity.class).setAction(Intent.ACTION_MAIN))
+                .setIcon(IconCompat.createWithResource(context, R.drawable.ic_setting))
+                .setShortLabel(context.getString(R.string.settings_button_text))
+                .setAlwaysBadged()
+                .build(), null);
     }
 
     public static boolean hasStoragePermission(Context context) {
@@ -858,7 +954,7 @@ public final class Utilities {
     }
 
     public static int parseResourceIdentifier(Resources res, String identifier,
-            String packageName) {
+                                              String packageName) {
         try {
             return Integer.parseInt(identifier.substring(1));
         } catch (NumberFormatException e) {
@@ -897,13 +993,15 @@ public final class Utilities {
     }
 
     public static void openURLinBrowser(Context context, String url, Rect sourceBounds,
-            Bundle options) {
+                                        Bundle options) {
         if (url == null) {
             return;
         }
         try {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (!(context instanceof Activity)){
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             intent.setSourceBounds(sourceBounds);
             if (options == null) {
                 context.startActivity(intent);
@@ -911,6 +1009,7 @@ public final class Utilities {
                 context.startActivity(intent, options);
             }
         } catch (ActivityNotFoundException exc) {
+            // Believe me, this actually happens.
             Toast.makeText(context, R.string.error_no_browser, Toast.LENGTH_SHORT).show();
         }
     }
@@ -918,14 +1017,12 @@ public final class Utilities {
     /**
      * @param bitmap the Bitmap to be scaled
      * @param threshold the maxium dimension (either width or height) of the scaled bitmap
-     * @param isNecessaryToKeepOrig is it necessary to keep the original bitmap? If not recycle the
-     * original bitmap to prevent memory leak.
+     * @param isNecessaryToKeepOrig is it necessary to keep the original bitmap? If not recycle the original bitmap to prevent memory leak.
      *
      * Credit: https://gist.github.com/vxhviet/873d142b41217739a1302d337b7285ba
-     */
-    public static Bitmap getScaledDownBitmap(Bitmap bitmap, int threshold,
-            boolean isNecessaryToKeepOrig) {
-        if (bitmap == null) { return null; }
+     * */
+    public static Bitmap getScaledDownBitmap(Bitmap bitmap, int threshold, boolean isNecessaryToKeepOrig) {
+        if (bitmap == null) return null;
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -966,7 +1063,7 @@ public final class Utilities {
     }
 
     private static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight,
-            boolean isNecessaryToKeepOrig) {
+                                           boolean isNecessaryToKeepOrig) {
         int width = bm.getWidth();
         int height = bm.getHeight();
         float scaleWidth = ((float) newWidth) / width;
@@ -991,6 +1088,10 @@ public final class Utilities {
         Message msg = Message.obtain(handler, callback);
         msg.setAsynchronous(true);
         handler.sendMessage(msg);
+    }
+
+    public interface Consumer<T> {
+        void accept(T var1);
     }
 
     public static boolean isRecentsEnabled() {
@@ -1028,8 +1129,10 @@ public final class Utilities {
     }
 
     public static float getScrimProgress(Launcher launcher, LauncherState toState,
-            float targetProgress) {
-        if (Utilities.getLawnchairPrefs(launcher).getDockGradientStyle()) { return targetProgress; }
+                                         float targetProgress) {
+        if (Utilities.getLawnchairPrefs(launcher).getDockGradientStyle()) {
+            return targetProgress;
+        }
         if (toState == LauncherState.OVERVIEW) {
             return OverviewState.getNormalVerticalProgress(launcher);
         }
@@ -1063,6 +1166,20 @@ public final class Utilities {
         throw new IllegalArgumentException(message);
     }
 
+    public static Bitmap scaleToSize(Bitmap source, int newHeight, int newWidth) {
+        if (source.getWidth() >= newWidth &&
+                source.getHeight() >= newHeight) {
+            return cropToCenter(source, newHeight, newWidth);
+        } else {
+            int scale = Math.max(newWidth / source.getWidth(), newHeight / source.getHeight());
+            int targetHeight = source.getHeight() * scale;
+            int targetWidth = source.getWidth() * scale;
+
+            return cropToCenter(Bitmap.createScaledBitmap(source, targetWidth, targetHeight, true),
+                    newHeight, newWidth);
+        }
+    }
+
     public static Bitmap cropToCenter(Bitmap source, int newHeight, int newWidth) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
@@ -1072,11 +1189,119 @@ public final class Utilities {
         float scaledWidth = scale * sourceWidth;
         float scaledHeight = scale * sourceHeight;
         float left = (newWidth - scaledWidth) / 2;
-        float top = (newHeight - scaledHeight) / 2;
+        float top = newHeight <= scaledHeight ? 0 :
+                (newHeight - scaledHeight) / 2;
         RectF targetRect = new RectF(left, top, left + scaledWidth, top + scaledHeight);
         Bitmap dest = Bitmap.createBitmap(newWidth, newHeight, source.getConfig());
         Canvas canvas = new Canvas(dest);
         canvas.drawBitmap(source, null, targetRect, null);
         return dest;
+    }
+
+    @ColorInt
+    public static int getColorStateListDefaultColor(Context context, int resId) {
+        final ColorStateList list =
+                context.getResources().getColorStateList(resId, context.getTheme());
+        return list.getDefaultColor();
+    }
+
+    @ColorInt
+    public static int getColorAttrDefaultColor(Context context, int attr) {
+        TypedArray ta = context.obtainStyledAttributes(new int[]{attr});
+        @ColorInt int colorAccent = ta.getColor(0, 0);
+        ta.recycle();
+        return colorAccent;
+    }
+
+    /**
+     * Returns the location bounds of a view.
+     * - For DeepShortcutView, we return the bounds of the icon view.
+     * - For BubbleTextView, we return the icon bounds.
+     */
+    public static void getLocationBoundsForView(Launcher launcher, View v, Rect outRect) {
+        final DragLayer dragLayer = launcher.getDragLayer();
+        final boolean isBubbleTextView = v instanceof BubbleTextView;
+        final boolean isFolderIcon = v instanceof FolderIcon;
+        final Rect rect = new Rect();
+
+        // Deep shortcut views have their icon drawn in a separate view.
+        final boolean fromDeepShortcutView = v.getParent() instanceof DeepShortcutView;
+        if (v instanceof DeepShortcutView) {
+            dragLayer.getDescendantRectRelativeToSelf(((DeepShortcutView) v).getIconView(), rect);
+        } else if (fromDeepShortcutView) {
+            DeepShortcutView view = (DeepShortcutView) v.getParent();
+            dragLayer.getDescendantRectRelativeToSelf(view.getIconView(), rect);
+        } else if ((isBubbleTextView || isFolderIcon) && v.getTag() instanceof ItemInfo
+                && (((ItemInfo) v.getTag()).container == CONTAINER_DESKTOP
+                || ((ItemInfo) v.getTag()).container == CONTAINER_HOTSEAT)) {
+            CellLayout pageViewIsOn = ((CellLayout) v.getParent().getParent());
+            int pageNum = launcher.getWorkspace().indexOfChild(pageViewIsOn);
+
+            DeviceProfile dp = launcher.getDeviceProfile();
+            ItemInfo info = ((ItemInfo) v.getTag());
+            dp.getItemLocation(info.cellX, info.cellY, info.spanX, info.spanY,
+                    info.container, pageNum - launcher.getCurrentWorkspaceScreen(), rect);
+        } else {
+            dragLayer.getDescendantRectRelativeToSelf(v, rect);
+        }
+        int viewLocationLeft = rect.left;
+        int viewLocationTop = rect.top;
+
+        if (isBubbleTextView && !fromDeepShortcutView) {
+            ((BubbleTextView) v).getIconBounds(rect);
+        } else if (isFolderIcon) {
+            ((FolderIcon) v).getPreviewBounds(rect);
+        } else {
+            rect.set(0, 0, rect.width(), rect.height());
+        }
+        viewLocationLeft += rect.left;
+        viewLocationTop += rect.top;
+        outRect.set(viewLocationLeft, viewLocationTop, viewLocationLeft + rect.width(),
+                viewLocationTop + rect.height());
+    }
+
+    /**
+     * Returns the full drawable for {@param info}.
+     * @param outObj this is set to the internal data associated with {@param info},
+     *               eg {@link LauncherActivityInfo} or {@link ShortcutInfoCompat}.
+     */
+    public static Drawable getFullDrawable(Launcher launcher, ItemInfo info, int width, int height,
+            boolean flattenDrawable, Object[] outObj) {
+        LauncherAppState appState = LauncherAppState.getInstance(launcher);
+        if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION) {
+            LauncherActivityInfo activityInfo = LauncherAppsCompat.getInstance(launcher)
+                    .resolveActivity(info.getIntent(), info.user);
+            outObj[0] = activityInfo;
+            return (activityInfo != null) ? appState.getIconCache()
+                    .getFullResIcon(activityInfo, flattenDrawable) : null;
+        } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_DEEP_SHORTCUT) {
+            if (info instanceof PendingAddShortcutInfo) {
+                ShortcutConfigActivityInfo activityInfo =
+                        ((PendingAddShortcutInfo) info).activityInfo;
+                outObj[0] = activityInfo;
+                return activityInfo.getFullResIcon(appState.getIconCache());
+            }
+            ShortcutKey key = ShortcutKey.fromItemInfo(info);
+            DeepShortcutManager sm = DeepShortcutManager.getInstance(launcher);
+            List<com.android.launcher3.shortcuts.ShortcutInfoCompat> si = sm.queryForFullDetails(
+                    key.componentName.getPackageName(), Arrays.asList(key.getId()), key.user);
+            if (si.isEmpty()) {
+                return null;
+            } else {
+                outObj[0] = si.get(0);
+                return sm.getShortcutIconDrawable(si.get(0),
+                        appState.getInvariantDeviceProfile().fillResIconDpi);
+            }
+        } else if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_FOLDER) {
+            FolderAdaptiveIcon icon = FolderAdaptiveIcon.createFolderAdaptiveIcon(
+                    launcher, info.id, new Point(width, height));
+            if (icon == null) {
+                return null;
+            }
+            outObj[0] = icon;
+            return icon;
+        } else {
+            return null;
+        }
     }
 }

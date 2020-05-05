@@ -17,72 +17,95 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("NestedLambdaShadowedImplicitParameter")
+
 package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.HorizontalScrollView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.feed.util.FeedUtil
+import ch.deletescape.lawnchair.feed.views.ExpandFillLinearLayout
+import ch.deletescape.lawnchair.feed.web.WebViewScreen
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
-import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
-class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
-    private var weatherData: WeatherData? = null
+class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c) {
+    private var weatherData: ForecastProvider.CurrentWeather? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
     private var dailyForecast: ForecastProvider.DailyForecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
-    private val refreshExecutor = Executors.newSingleThreadExecutor()
+    private var handled = false
 
     init {
-        c.applicationContext.lawnchairApp.smartspace.addListener(this)
+        WeatherManager.subscribeWeather {
+            weatherData = it
+            runOnMainThread {
+                markUnread()
+            }
+            handled = false
+        }
+        WeatherManager.subscribeHourly {
+            runOnMainThread {
+                markUnread()
+            }
+            hourlyWeatherForecast = it
+            val today: List<Int> = it.data.filter {
+                it.date.before(tomorrow())
+            }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
+            forecastLow = Collections.min(today)
+            forecastHigh = Collections.max(today)
+            val condCodes = run {
+                val list = newList<Int>()
+                hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                        .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                list
+            }
+            val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                    condCodes.toTypedArray())
+            val type = WeatherTypes
+                    .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+            weatherTypeResource = WeatherTypes.getStringResource(type)
+            handled = false
+        }
+        WeatherManager.subscribeDaily {
+            runOnMainThread {
+                markUnread()
+            }
+            dailyForecast = it
+            handled = false
+        }
     }
 
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
-    }
-
+    @Suppress("ClickableViewAccessibility")
     override fun getCards(): List<Card> {
+        handled = true
         return if (weatherData != null) listOf(
                 Card(null, null, object : Card.Companion.InflateHelper {
                     @SuppressLint("SetTextI18n")
                     override fun inflate(parent: ViewGroup): View {
-                        d("inflate: inflating view")
-                        val v = LayoutInflater.from(parent.getContext())
+                        val v = LayoutInflater.from(parent.context)
                                 .inflate(R.layout.unified_weather, parent, false)
-                        d("inflate: inflated view")
                         val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                         val information = v.findViewById(R.id.weather_hud_information) as TextView
                         val currentInformation =
@@ -92,37 +115,168 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                 v.findViewById(R.id.unified_weather_forecast) as LinearLayout
                         val dailyLayout = v.findViewById(R.id.unified_weather_daily) as LinearLayout
 
+                        val gd = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (currentIcon.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (currentIcon.getPositionOnScreen().second + e.y).roundToInt())
+                                            } else {
+                                                FeedUtil.openUrl(context, url, currentIcon)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        currentIcon.setOnTouchListener { _, ev ->
+                            gd.onTouchEvent(ev)
+                            true
+                        }
+
+
+                        val gd2 = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (currentInformation.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (currentInformation.getPositionOnScreen().second + e.y).roundToInt())
+                                            } else {
+                                                FeedUtil.openUrl(context, url, currentInformation)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        currentInformation.setOnTouchListener { _, ev ->
+                            gd2.onTouchEvent(ev)
+                            true
+                        }
+
+                        val gd3 = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (highLow.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (highLow.getPositionOnScreen().second + e.y).roundToInt())
+                                            } else {
+                                                FeedUtil.openUrl(context, url, highLow)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        highLow.setOnTouchListener { _, ev ->
+                            gd3.onTouchEvent(ev)
+                            true
+                        }
+
+                        val gd4 = GestureDetector(context,
+                                object : GestureDetector.SimpleOnGestureListener() {
+                                    override fun onSingleTapUp(e: MotionEvent): Boolean {
+                                        val url = weatherData?.url
+                                        if (url != null) {
+                                            if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                WebViewScreen.obtain(context,
+                                                        url.replace("http://", "https://"))
+                                                        .display(this@FeedJoinedWeatherProvider,
+                                                                (information.getPositionOnScreen().first + e.x).roundToInt(),
+                                                                (information.getPositionOnScreen().second + e.y).roundToInt())
+                                            } else {
+                                                FeedUtil.openUrl(context, url, information)
+                                            }
+                                        }
+                                        return true
+                                    }
+                                })
+
+                        information.setOnTouchListener { _, ev ->
+                            gd4.onTouchEvent(ev)
+                            true
+                        }
+
                         if (context.lawnchairPrefs.showVerticalDailyForecast) {
                             dailyLayout.orientation = LinearLayout.VERTICAL
+                            dailyLayout.viewTreeObserver.addOnGlobalLayoutListener {
+                                dailyLayout.layoutParams.width = MATCH_PARENT
+                            }
                         }
                         if (context.lawnchairPrefs.showVerticalHourlyForecast) {
                             hourlyLayout.orientation = LinearLayout.VERTICAL
+                            hourlyLayout.viewTreeObserver.addOnGlobalLayoutListener {
+                                dailyLayout.layoutParams.width = MATCH_PARENT
+                            }
                         }
+                        (hourlyLayout.parent as View).apply {
+                            setOnTouchListener { _, _ ->
+                                controllerView?.disallowInterceptCurrentTouchEvent =
+                                        context.lawnchairPrefs.showVerticalHourlyForecast.not()
+                                false
+                            }
+                        }
+                        (dailyLayout.parent as View).apply {
+                            setOnTouchListener { _, _ ->
+                                controllerView?.disallowInterceptCurrentTouchEvent =
+                                        context.lawnchairPrefs.showVerticalDailyForecast.not()
+                                false
+                            }
+                        }
+                        (hourlyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled =
+                                false
+                        (dailyLayout.parent as HorizontalScrollView).isHorizontalScrollBarEnabled =
+                                false
                         hourlyWeatherForecast?.data
-                                ?.take(context.lawnchairPrefs.feedForecastItemCount.roundToInt())
+                                ?.take(if (context.lawnchairPrefs.showVerticalHourlyForecast) context.lawnchairPrefs.feedForecastItemCount.roundToInt()
+                                else hourlyWeatherForecast!!.data.size)
                                 ?.forEach {
                                     hourlyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
-                                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item, parent,
+                                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) R.layout.narrow_forecast_item else R.layout.straight_forecast_item,
+                                                    parent,
                                                     false).apply {
-                                                val temperature = findViewById(
-                                                        R.id.forecast_current_temperature) as TextView
-                                                val time = findViewById(
-                                                        R.id.forecast_current_time) as TextView
-                                                val icon = findViewById(
-                                                        R.id.forecast_weather_icon) as ImageView
-
-                                                viewTreeObserver.addOnPreDrawListener {
-                                                    if (context.lawnchairPrefs.showVerticalHourlyForecast) {
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {
-                                                                    it.measure(
-                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                                                                }.width, WRAP_CONTENT)
+                                                val url = hourlyWeatherForecast?.url
+                                                if (url != null) {
+                                                    setOnClickListener {
+                                                        if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                                            WebViewScreen.obtain(context,
+                                                                    url.replace("http://",
+                                                                            "https://"))
+                                                                    .display(
+                                                                            this@FeedJoinedWeatherProvider,
+                                                                            0, 0, it)
+                                                        } else {
+                                                            FeedUtil.openUrl(context, url, it)
+                                                        }
                                                     }
-                                                    true
+                                                    setOnTouchListener { _, _ ->
+                                                        controllerView?.disallowInterceptCurrentTouchEvent =
+                                                                context.lawnchairPrefs.showVerticalHourlyForecast.not()
+                                                        false
+                                                    }
                                                 }
-
+                                                val temperature = findViewById<TextView>(
+                                                        R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(
+                                                        R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(
+                                                        R.id.forecast_weather_icon)
                                                 icon.setImageBitmap(it.data.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
@@ -132,7 +286,8 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                 temperature.text = it.data.temperature.toString(
                                                         context.lawnchairPrefs.weatherUnit)
 
-                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                if (useWhiteText(backgroundColor,
+                                                                context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
                                                 }
@@ -144,50 +299,130 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                             })
                                 }
 
+                        v.apply {
+                            viewTreeObserver.addOnPreDrawListener(object :
+                                    ViewTreeObserver.OnPreDrawListener {
+                                override fun onPreDraw(): Boolean {
+                                    if (!context.lawnchairPrefs.showVerticalDailyForecast) {
+                                        val w = (dailyLayout.parent as View).measuredWidth
+                                        (dailyLayout as ExpandFillLinearLayout).childWidth =
+                                                (w / context.lawnchairPrefs.feedDailyForecastItemCount).roundToInt()
+                                        dailyLayout.requestLayout()
+                                    }
+                                    if (!context.lawnchairPrefs.showVerticalHourlyForecast) {
+                                        val w2 = (hourlyLayout.parent as View).measuredWidth
+                                        (hourlyLayout as ExpandFillLinearLayout).childWidth =
+                                                (w2 / context.lawnchairPrefs.feedForecastItemCount).roundToInt()
+                                        hourlyLayout.requestLayout()
+                                    }
+                                    viewTreeObserver.removeOnPreDrawListener(this)
+                                    return true
+                                }
+                            })
+                        }
+                        if (forecastHigh != null && forecastLow != null) {
+                            highLow.text =
+                                    "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
+                        }
                         dailyForecast?.dailyForecastData
-                                ?.take(context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt())
+                                ?.take(if (context.lawnchairPrefs.showVerticalDailyForecast) context.lawnchairPrefs.feedDailyForecastItemCount.roundToInt()
+                                else dailyForecast!!.dailyForecastData.size)
                                 ?.forEach {
                                     dailyLayout.addView(
                                             LayoutInflater.from(hourlyLayout.context).inflate(
                                                     if (context.lawnchairPrefs.showVerticalDailyForecast) R.layout.straight_forecast_item else R.layout.narrow_forecast_item,
                                                     dailyLayout, false).apply {
-                                                viewTreeObserver.addOnPreDrawListener {
-                                                    if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                        layoutParams = LinearLayout.LayoutParams(
-                                                                dailyLayout.also {
-                                                                    it.measure(
-                                                                            View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-                                                                }.width, WRAP_CONTENT)
-                                                    }
-                                                    true
-                                                }
-                                                val temperature = findViewById(
-                                                        R.id.forecast_current_temperature) as TextView
-                                                val time = findViewById(
-                                                        R.id.forecast_current_time) as TextView
-                                                val icon = findViewById(
-                                                        R.id.forecast_weather_icon) as ImageView
+                                                val temperature = findViewById<TextView>(
+                                                        R.id.forecast_current_temperature)
+                                                val time = findViewById<TextView>(
+                                                        R.id.forecast_current_time)
+                                                val icon = findViewById<ImageView>(
+                                                        R.id.forecast_weather_icon)
 
                                                 icon.setImageBitmap(it.icon)
                                                 val zonedDateTime = ZonedDateTime
                                                         .ofInstant(it.date.toInstant(),
                                                                 ZoneId.of("UTC"))
                                                         .withZoneSameInstant(ZoneId.systemDefault())
+                                                val today = ZonedDateTime.now()
+                                                        .toLocalDate()
+
+                                                val tomorrowDate = ZonedDateTime.now()
+                                                        .plusDays(1).toLocalDate()
+                                                val nextDayAfterTomorrow = tomorrowDate.plusDays(1)
+
+
+
                                                 if (context.lawnchairPrefs.showVerticalDailyForecast) {
-                                                    time.text = IcuDateTextView.getDateFormat(context, false, null, false).format(Date.from(
-                                                            Instant.ofEpochSecond(zonedDateTime.toEpochSecond())))
+                                                    if (zonedDateTime.toLocalDate().isEqual(
+                                                                    tomorrowDate) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    tomorrowDate) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    nextDayAfterTomorrow)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_weather_item_tomorrow)
+                                                    } else if (zonedDateTime.toLocalDate().isEqual(
+                                                                    today) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    today) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    tomorrowDate)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_text_today)
+                                                        highLow.text = "${it.high.toString(
+                                                                context.lawnchairPrefs.weatherUnit)} / ${it.low.toString(
+                                                                context.lawnchairPrefs.weatherUnit)}"
+                                                    } else {
+                                                        time.text =
+                                                                IcuDateTextView.getDateFormat(
+                                                                        context,
+                                                                        false, null, false)
+                                                                        .format(Date.from(
+                                                                                Instant.ofEpochSecond(
+                                                                                        zonedDateTime.toEpochSecond())))
+                                                    }
 
                                                 } else {
-                                                    time.text =
-                                                            "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                    if (zonedDateTime.toLocalDate().isEqual(
+                                                                    tomorrowDate) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    tomorrowDate) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    nextDayAfterTomorrow)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_weather_item_tomorrow)
+                                                    } else if (zonedDateTime.toLocalDate().isEqual(
+                                                                    today) ||
+                                                            zonedDateTime.toLocalDate().isAfter(
+                                                                    today) &&
+                                                            zonedDateTime.toLocalDate().isBefore(
+                                                                    tomorrowDate)) {
+                                                        time.text = context.getString(
+                                                                R.string.title_text_today)
+                                                    } else {
+                                                        time.text =
+                                                                "${zonedDateTime.month.value} / ${zonedDateTime.dayOfMonth}"
+                                                    }
                                                 }
                                                 temperature.text = "${it.low.toString(
                                                         context.lawnchairPrefs.weatherUnit)} / ${it.high.toString(
                                                         context.lawnchairPrefs.weatherUnit)}"
 
-                                                if (useWhiteText(backgroundColor, context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                if (useWhiteText(backgroundColor,
+                                                                context) && !context.lawnchairPrefs.elevateWeatherCard) {
                                                     time.setTextColor(Color.WHITE)
                                                     temperature.setTextColor(Color.WHITE)
+                                                } else {
+                                                    if (useWhiteText(backgroundColor,
+                                                                    context) && !context.lawnchairPrefs.elevateWeatherCard) {
+                                                        time.setTextColor(
+                                                                R.color.primary_text_material_dark.fromColorRes(
+                                                                        context))
+                                                        temperature.setTextColor(
+                                                                R.color.primary_text_material_dark.fromColorRes(
+                                                                        context))
+                                                    }
                                                 }
                                                 layoutParams = LinearLayout
                                                         .LayoutParams(WRAP_CONTENT, WRAP_CONTENT)
@@ -196,111 +431,48 @@ class FeedJoinedWeatherProvider(c: Context) : FeedProvider(c), Listener {
                                                         }
                                             })
                                 }
-
-                        d("inflate: initialized views")
-
                         currentInformation.text =
-                                weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
+                                weatherData?.temperature?.toString(
+                                        context.lawnchairPrefs.weatherUnit)
                         currentIcon.setImageBitmap(weatherData?.icon)
 
-                        d("inflate: set text for current data text view")
+                        val url = hourlyWeatherForecast?.url
 
-                        if (forecastHigh != null && forecastLow != null) {
-                            highLow.text =
-                                    "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
+                        if (url != null) {
+                            hourlyLayout.setOnClickListener {
+                                if (!context.feedPrefs.directlyOpenLinksInBrowser) {
+                                    WebViewScreen.obtain(context,
+                                            url.replace("http://", "https://"))
+                                            .display(this@FeedJoinedWeatherProvider, 0, 0, it)
+                                } else {
+                                    FeedUtil.openUrl(context, url, it)
+                                }
+                            }
                         }
+
                         information.text = weatherTypeResource?.let { context.getString(it) }
-
-                        d("inflate: set thext for rest of views")
-                        if (useWhiteText(backgroundColor, parent.context)) {
-                            highLow.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
-                            information.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
-                            currentInformation.setTextColor(
-                                    context.resources.getColor(R.color.textColorPrimary))
+                        if (!context.lawnchairPrefs.elevateWeatherCard) {
+                            if (useWhiteText(backgroundColor, parent.context)) {
+                                highLow.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                                information.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                                currentInformation.setTextColor(
+                                        context.getColor(R.color.textColorPrimary))
+                            } else {
+                                highLow.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
+                                information.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
+                                currentInformation.setTextColor(
+                                        R.color.primary_text_material_light.fromColorRes(context))
+                            }
                         }
-                        d("inflate: returning view")
                         return v
                     }
-                }, Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT, "nosort,top"))
+                },
+                        Card.NO_HEADER or if (context.lawnchairPrefs.elevateWeatherCard) Card.RAISE else Card.DEFAULT,
+                        "nosort,top"))
         else mutableListOf()
-    }
-
-    override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
-        if (weatherData?.coordLat != null && weatherData.coordLon != null) {
-            d("onDataUpdated: updating forcast HUD", Throwable())
-            refreshExecutor.submit {
-                this.weatherData = weatherData;
-
-                try {
-                    d("onDataUpdated: fetching weather data")
-                    try {
-                        hourlyWeatherForecast = context.forecastProvider
-                                .getHourlyForecast(weatherData.coordLat, weatherData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    try {
-                        dailyForecast = context.forecastProvider
-                                .getDailyForecast(weatherData.coordLat, weatherData.coordLon)
-                    } catch (e: ForecastProvider.ForecastException) {
-                        e.printStackTrace()
-                    }
-                    d("onDataUpdated: data retrieved")
-                    val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
-                        if (it.date.before(tomorrow())) {
-                            it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
-                        } else {
-                            null
-                        }
-                    }
-
-                    d("tomorrow is: ${tomorrow()}")
-                    d("today is: ${Date()}")
-
-                    d("onDataUpdated: temp list: $tempList")
-                    val today = ArrayList<Int>()
-                    tempList.forEach {
-                        if (it != null) {
-                            today.add(it)
-                        }
-                    }
-
-                    d("onDataUpdated: today's weather: $today")
-
-                    forecastLow = Collections.min(today)
-                    forecastHigh = Collections.max(today)
-
-                    d("onDataUpdated: hi: $forecastHigh lo: $forecastLow")
-                    val condCodes = run {
-                        val list = newList<Int>()
-                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
-                                .forEach { list += it.condCode?.toList() ?: listOf(1) }
-                        list
-                    }
-
-                    d("onDataUpdated: classifying weather")
-
-                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                            condCodes.toTypedArray())
-
-
-                    d("onDataUpdated: sending classification statsitics to statistics function")
-                    val type = WeatherTypes
-                            .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-
-                    d("onDataUpdated: weather type is ${type.name}")
-
-                    weatherTypeResource = WeatherTypes.getStringResource(type)
-
-                    d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
-                } catch (e: ForecastProvider.ForecastException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

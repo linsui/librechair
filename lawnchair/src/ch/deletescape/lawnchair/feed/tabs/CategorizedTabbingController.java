@@ -20,6 +20,20 @@
 package ch.deletescape.lawnchair.feed.tabs;
 
 import android.content.Context;
+
+import com.android.launcher3.R;
+import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
 import ch.deletescape.lawnchair.feed.AlarmEventProvider;
 import ch.deletescape.lawnchair.feed.CalendarEventProvider;
@@ -31,24 +45,20 @@ import ch.deletescape.lawnchair.feed.FeedProvider;
 import ch.deletescape.lawnchair.feed.FeedSearchboxProvider;
 import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider;
 import ch.deletescape.lawnchair.feed.NoteListProvider;
+import ch.deletescape.lawnchair.feed.PredictedAppsProvider;
 import ch.deletescape.lawnchair.feed.RemoteFeedProvider;
 import ch.deletescape.lawnchair.feed.WeatherBarFeedProvider;
 import ch.deletescape.lawnchair.feed.WebApplicationsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaFunFactsProvider;
 import ch.deletescape.lawnchair.feed.WikipediaNewsProvider;
+import ch.deletescape.lawnchair.feed.chips.ChipCardProvider;
 import ch.deletescape.lawnchair.feed.images.AbstractImageProvider;
+import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider;
+import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider;
+import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider;
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider;
-import com.android.launcher3.R;
-import com.android.launcher3.Utilities;
-import com.android.launcher3.config.FeatureFlags;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("WeakerAccess")
 public class CategorizedTabbingController extends TabController {
 
     public Item TOOLS_TAB;
@@ -107,6 +117,11 @@ public class CategorizedTabbingController extends TabController {
                 || it instanceof WeatherBarFeedProvider
                 || it instanceof AbstractImageProvider
                 || it instanceof FeedSearchboxProvider
+                || it instanceof ChipCardProvider
+                || it instanceof PredictedAppsProvider
+                || it instanceof FeedLocationSearchProvider
+                || it instanceof NotificationFeedProvider
+                || it instanceof MediaNotificationProvider
                 || Objects
                 .equals(it.getContainer().arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY),
                         "tools")).collect(Collectors.toList());

@@ -35,12 +35,13 @@ interface ForecastProvider {
     @Throws(ForecastException::class) fun getCurrentWeather(lat: Double, lon: Double): CurrentWeather
     @Throws(ForecastException::class) fun getGeolocation(query: String): Pair<Double, Double>
 
-    class Forecast(val data: Array<ForecastData>) {
+    data class Forecast @JvmOverloads constructor(val data: Array<ForecastData>, val url: String? = null) {
         constructor(dataList: List<ForecastData>) : this(dataList.toTypedArray())
+        constructor(dataList: List<ForecastData>, url: String?) : this(dataList.toTypedArray(), url)
     }
 
-    data class CurrentWeather(val condCodes: Array<Int>, val date: Date,
-                              val temperature: Temperature, val icon: Bitmap, val precip: Double?) {
+    data class CurrentWeather @JvmOverloads constructor(val condCodes: Array<Int>, val date: Date,
+                              val temperature: Temperature, val icon: Bitmap, val precip: Double?, val url: String? = null) {
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true

@@ -16,34 +16,44 @@
 
 package com.android.launcher3;
 
-import static java.lang.Math.max;
-
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
 import android.graphics.Point;
-import androidx.annotation.VisibleForTesting;
 import android.util.DisplayMetrics;
 import android.util.Xml;
 import android.view.Display;
 import android.view.WindowManager;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.settings.IconScale;
-import com.android.launcher3.config.FeatureFlags;
+
+import androidx.annotation.VisibleForTesting;
+
+import com.android.launcher3.util.ConfigMonitor;
+import com.android.launcher3.util.MainThreadInitializedObject;
 import com.android.launcher3.util.Thunk;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.settings.IconScale;
+
+import static java.lang.Math.max;
 
 public class InvariantDeviceProfile {
 
-    // This is a static that we use for the default iconView size on a 4/5-inch phone
-    private static float DEFAULT_ICON_SIZE_DP = 60;
+    // We do not need any synchronization for this variable as its only written on UI thread.
+    public static final MainThreadInitializedObject<InvariantDeviceProfile> INSTANCE =
+            new MainThreadInitializedObject<>((c) -> {
+                new ConfigMonitor(c).register();
+                return new InvariantDeviceProfile(c);
+            });
 
     private static final float ICON_SIZE_DEFINED_IN_APP_DP = 48;
 
@@ -354,17 +364,6 @@ public class InvariantDeviceProfile {
         landscapeAllAppsIconSize *= w;
         iconTextSize *= w;
         return this;
-    }
-
-    public int getAllAppsButtonRank() {
-        if (FeatureFlags.IS_DOGFOOD_BUILD && FeatureFlags.NO_ALL_APPS_ICON) {
-            throw new IllegalAccessError("Accessing all apps rank when all-apps is disabled");
-        }
-        return numHotseatIcons / 2;
-    }
-
-    public boolean isAllAppsButtonRank(int rank) {
-        return rank == getAllAppsButtonRank();
     }
 
     public DeviceProfile getDeviceProfile(Context context) {

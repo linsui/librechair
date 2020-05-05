@@ -20,30 +20,28 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
+import ch.deletescape.lawnchair.feed.util.FeedUtil
 import ch.deletescape.lawnchair.twoLetterCountryCode
-import ch.deletescape.lawnchair.util.extensions.d
 import com.rometools.rome.feed.synd.SyndFeed
 import com.rometools.rome.io.SyndFeedInput
 import org.apache.commons.io.IOUtils
 import org.apache.commons.io.input.CharSequenceInputStream
 import org.xml.sax.InputSource
-import java.net.HttpURLConnection
-import java.net.URL
+import java.io.IOException
 import java.nio.charset.Charset
 import java.util.*
 
 class GSyndicationFeedProvider(c: Context) : AbstractLocationAwareRSSProvider(c) {
-    override fun getLocationAwareFeed(location: Pair<Double, Double>, country: String): SyndFeed {
-        val feed = IOUtils.toString(URL("https://news.google.com/rss?gl=${Locale("",
-                                                                                 country).twoLetterCountryCode}").openConnection().also {
-            (it as HttpURLConnection).instanceFollowRedirects = true
-            d("getLocationAwareFeed: URL is ${it.url.toExternalForm()}")
-        }.getInputStream(), Charset.defaultCharset())
+    override fun getLocationAwareFeed(country: String): SyndFeed {
+        val fdd = FeedUtil.downloadDirect("https://news.google.com/rss?gl=${Locale("",
+                country).twoLetterCountryCode}", context, null)
+                ?: throw IOException("")
+        val feed = IOUtils.toString(fdd, Charset.defaultCharset())
         return SyndFeedInput()
                 .build(InputSource(CharSequenceInputStream(feed, Charset.defaultCharset())))
     }
 
     override fun getFallbackFeed(): SyndFeed {
-        return getLocationAwareFeed(0.toDouble() to 0.toDouble(), "US");
+        return getLocationAwareFeed("US")
     }
 }

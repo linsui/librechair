@@ -21,6 +21,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Property;
@@ -33,6 +34,7 @@ import com.android.launcher3.Launcher;
 import com.android.launcher3.LauncherAnimUtils;
 import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.Interpolators;
+import com.android.launcher3.anim.PropertyListBuilder;
 import com.android.launcher3.touch.SwipeDetector;
 
 /**
@@ -76,7 +78,7 @@ public abstract class AbstractSlideInView extends AbstractFloatingView
         mScrollInterpolator = Interpolators.SCROLL_CUBIC;
         mSwipeDetector = new SwipeDetector(context, this, SwipeDetector.VERTICAL);
 
-        mOpenCloseAnimator = LauncherAnimUtils.ofPropertyValuesHolder(this);
+        mOpenCloseAnimator = ObjectAnimator.ofPropertyValuesHolder(this);
         mOpenCloseAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {

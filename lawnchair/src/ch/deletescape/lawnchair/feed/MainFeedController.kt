@@ -21,39 +21,47 @@ package ch.deletescape.lawnchair.feed
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Resources
 import ch.deletescape.lawnchair.LawnchairApp
-import ch.deletescape.lawnchair.feed.RemoteFeedProvider.METADATA_CATEGORY
+import ch.deletescape.lawnchair.feed.chips.ChipCardProvider
+import ch.deletescape.lawnchair.feed.contacts.FeedContactsProvider
+import ch.deletescape.lawnchair.feed.dt.I18nDtClocksProvider
+import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.images.ImageProvider
 import ch.deletescape.lawnchair.feed.images.bing.BingDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.nasa.ApodDailyImageProvider
 import ch.deletescape.lawnchair.feed.images.ng.NgDailyImageProvider
+import ch.deletescape.lawnchair.feed.maps.FeedLocationSearchProvider
+import ch.deletescape.lawnchair.feed.news.NPRFeedProvider
+import ch.deletescape.lawnchair.feed.notifications.MediaNotificationProvider
+import ch.deletescape.lawnchair.feed.notifications.NotificationFeedProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
 import ch.deletescape.lawnchair.feed.wikipedia.news.ItnSyndicationProvider
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.util.extensions.d
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import com.android.launcher3.R
 
 @SuppressLint("StaticFieldLeak")
 private var theController: MainFeedController? = null
-const val METADATA_CONTROLLER_PACKAGE = "special::controller_package";
+const val METADATA_CONTROLLER_PACKAGE = "special::controller_package"
 fun getFeedController(c: Context): MainFeedController {
     if (theController == null) {
         theController = MainFeedController(c)
     }
-    return theController!!;
+    return theController!!
 }
 
 class MainFeedController(val context: Context) {
     fun getProviders(): List<FeedProvider> {
-        migrateToContainerSystem(context);
-        return (context.applicationContext as LawnchairApp).lawnchairPrefs.feedProviders.getList()
+        migrateToContainerSystem(context)
+        migrateToPersistenceSystem(context)
+
+        return (context.applicationContext as LawnchairApp).feedPrefs.feedProviders
                 .map { it.instantiate(context) }
     }
 
     companion object {
-        val substitutions =
+        private val substitutions =
                 mapOf("ch.deletescape.lawnchair.feed.FeedWeatherProvider" to WeatherBarFeedProvider::class.qualifiedName)
 
         fun getDisplayName(provider: FeedProviderContainer, context: Context): String {
@@ -72,6 +80,8 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_remote_feeds)
                     WikipediaNewsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news)
+                    MediaNotificationProvider::class.qualifiedName -> context.getString(
+                            R.string.event_provider_now_playing)
                     ItnSyndicationProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_wikipedia_news_synd)
                     WikipediaFunFactsProvider::class.qualifiedName -> context.getString(
@@ -82,10 +92,14 @@ class MainFeedController(val context: Context) {
                             R.string.title_feed_provider_the_guardian)
                     BBCFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_bbc)
+                    I18nDtClocksProvider::class.qualifiedName -> R.string.title_pref_feed_world_clocks.fromStringRes(
+                            context)
                     GSyndicationFeedProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_google_news)
                     CustomizableRSSProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_customizable_rss)
+                    FeedLocationSearchProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_location_search)
                     DeviceStateProvider::class.qualifiedName -> R.string.title_feed_provider_device_state.fromStringRes(
                             context)
                     FeedSearchboxProvider::class.qualifiedName -> R.string.search.fromStringRes(
@@ -95,6 +109,8 @@ class MainFeedController(val context: Context) {
                     DailySummaryFeedProvider::class.qualifiedName -> R.string.title_feed_provider_daily_summary.fromStringRes(
                             context)
                     PredictedAppsProvider::class.qualifiedName -> R.string.title_card_suggested_apps.fromStringRes(
+                            context)
+                    NotificationFeedProvider::class.qualifiedName -> R.string.event_provider_unread_notifications.fromStringRes(
                             context)
                     WebApplicationsProvider::class.qualifiedName -> context.getString(
                             R.string.title_feed_provider_web_applications)
@@ -116,6 +132,12 @@ class MainFeedController(val context: Context) {
                             context)
                     NgDailyImageProvider::class.qualifiedName -> R.string.title_image_provider_national_geographic.fromStringRes(
                             context)
+                    FeedContactsProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_feed_contacts)
+                    ChipCardProvider::class.qualifiedName -> R.string.pref_category_chips.fromStringRes(
+                            context)
+                    NPRFeedProvider::class.qualifiedName -> context.getString(
+                            R.string.title_feed_provider_npr)
                     else -> error("no default or override name for provider ${provider.clazz}")
                 }
             }
@@ -124,7 +146,7 @@ class MainFeedController(val context: Context) {
         fun migrateToContainerSystem(context: Context) {
             context.lawnchairPrefs.beginBlockingEdit()
             if (context.lawnchairPrefs.feedProvidersLegacy.getAll().isNotEmpty()) {
-                context.lawnchairPrefs.feedProviders
+                context.lawnchairPrefs.feedProvidersLegacy2
                         .setAll(context.lawnchairPrefs.feedProvidersLegacy.getAll().mapNotNull {
                             if (it != RemoteFeedProvider::class.qualifiedName) substitutions[it]
                                     ?: it else null
@@ -133,61 +155,22 @@ class MainFeedController(val context: Context) {
             }
         }
 
+        fun migrateToPersistenceSystem(context: Context) {
+            if (context.lawnchairPrefs.feedProvidersLegacy2.getAll().isNotEmpty()) {
+                context.feedPrefs.feedProviders.clear()
+                context.feedPrefs.feedProviders.addAll(
+                        context.lawnchairPrefs.feedProvidersLegacy2.getAll())
+                context.lawnchairPrefs.feedProvidersLegacy2.setAll(listOf())
+            }
+        }
+
         fun getFeedProviders(context: Context,
                              calledFromPrefs: Boolean = false): List<FeedProviderContainer> {
             if (!calledFromPrefs) {
                 migrateToContainerSystem(context)
+                migrateToPersistenceSystem(context)
             }
-            return listOf(CalendarEventProvider::class.qualifiedName,
-                    FeedWeatherStatsProvider::class.qualifiedName,
-                    FeedJoinedWeatherProvider::class.qualifiedName,
-                    FeedDailyForecastProvider::class.qualifiedName,
-                    FeedForecastProvider::class.qualifiedName,
-                    FeedSearchboxProvider::class.qualifiedName,
-                    ImageProvider::class.qualifiedName,
-                    BingDailyImageProvider::class.qualifiedName,
-                    ApodDailyImageProvider::class.qualifiedName,
-                    NgDailyImageProvider::class.qualifiedName,
-                    NoteListProvider::class.qualifiedName,
-                    WeatherBarFeedProvider::class.qualifiedName,
-                    WikipediaNewsProvider::class.qualifiedName,
-                    ItnSyndicationProvider::class.qualifiedName,
-                    WikipediaFunFactsProvider::class.qualifiedName,
-                    WikinewsFeedProvider::class.qualifiedName,
-                    TheGuardianFeedProvider::class.qualifiedName,
-                    BBCFeedProvider::class.qualifiedName,
-                    TheVergeFeedProvider::class.qualifiedName,
-                    CustomizableRSSProvider::class.qualifiedName,
-                    GSyndicationFeedProvider::class.qualifiedName,
-                    DeviceStateProvider::class.qualifiedName,
-                    FeedWidgetsProvider::class.qualifiedName,
-                    DailySummaryFeedProvider::class.qualifiedName,
-                    PredictedAppsProvider::class.qualifiedName,
-                    WebApplicationsProvider::class.qualifiedName,
-                    AlarmEventProvider::class.qualifiedName).map {
-                FeedProviderContainer(it, null)
-            } + RemoteFeedProvider.allProviders(context).map {
-                FeedProviderContainer(RemoteFeedProvider::class.qualifiedName,
-                        mapOf(RemoteFeedProvider.COMPONENT_KEY to it.flattenToString(),
-                                METADATA_CONTROLLER_PACKAGE to it.packageName,
-                                RemoteFeedProvider.COMPONENT_CATEGORY to run {
-                                    try {
-                                        return@run context.packageManager.getServiceInfo(
-                                                it, 0)?.metaData?.getString(
-                                                METADATA_CATEGORY) ?: "other"
-                                    } catch (e: Resources.NotFoundException) {
-                                        return@run "other"
-                                    } catch (e: ClassCastException) {
-                                        e.printStackTrace()
-                                        return@run "other"
-                                    } catch (e: NullPointerException) {
-                                        e.printStackTrace()
-                                        return@run "other"
-                                    }
-                                }),
-                        context.packageManager.getServiceInfo(it, 0).loadLabel(
-                                context.packageManager).toString())
-            }.also { d("getFeedProvidersLegacy: feed providers are $it ") }
+            return DynamicProviderController.getProviders()
         }
     }
 }

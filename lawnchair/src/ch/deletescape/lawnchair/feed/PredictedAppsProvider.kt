@@ -19,81 +19,54 @@
 
 package ch.deletescape.lawnchair.feed
 
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
-import ch.deletescape.lawnchair.allapps.PredictionsProvider
+import android.graphics.Rect
+import android.view.View
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ch.deletescape.lawnchair.applyAsDip
+import ch.deletescape.lawnchair.feed.impl.OverlayService
 import ch.deletescape.lawnchair.fromStringRes
 import ch.deletescape.lawnchair.predictions.PredictedApplicationsAdapter
-import ch.deletescape.lawnchair.predictions.PredictionsProviderService
-import ch.deletescape.lawnchair.runOnNewThread
-import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.BuildConfig
 import com.android.launcher3.R
-import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
+import kotlin.math.roundToInt
+
 
 class PredictedAppsProvider(c: Context) : FeedProvider(c) {
-    private val recyclerView = androidx.recyclerview.widget.RecyclerView(context)
-    private val adapter = PredictedApplicationsAdapter()
-    private var predictions: List<ComponentKeyMapper> = emptyList()
+    private val recyclerView = RecyclerView(context)
+    private val adapter = PredictedApplicationsAdapter(c)
 
     init {
         recyclerView.adapter = adapter
-        adapter.predictions = predictions
-        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(context, adapter.gridSize)
+        recyclerView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                                              LinearLayout.LayoutParams.WRAP_CONTENT)
+        recyclerView.layoutManager = GridLayoutManager(context, adapter.gridSize)
+        recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView,
+                                        state: RecyclerView.State) {
+                super.getItemOffsets(outRect, view, parent, state)
+                outRect.top = 8f.applyAsDip(context).roundToInt()
+                outRect.bottom = 8f.applyAsDip(context).roundToInt()
+                outRect.left = 8f.applyAsDip(context).roundToInt()
+                outRect.right = 8f.applyAsDip(context).roundToInt()
+            }
+        })
         adapter.notifyDataSetChanged()
-        d("init: refreshing predictions")
-        refreshPredictions()
     }
 
-    fun refreshPredictions() {
-        d("refreshPredictions: refreshing predictions")
-        runOnNewThread {
-            context.startService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
-                                                                     PredictionsProviderService::class.java.name)))
-            context.bindService(Intent().setComponent(ComponentName(BuildConfig.APPLICATION_ID,
-                                                                    PredictionsProviderService::class.java.name)),
-                                object : ServiceConnection {
-                                    override fun onServiceDisconnected(name: ComponentName) {
-                                        d("onServiceDisconnected: predictions service disconnected")
-                                    }
-
-                                    override fun onServiceConnected(name: ComponentName,
-                                                                    service: IBinder) {
-                                        d("onServiceConnected: connected to prediction service")
-                                        predictions = PredictionsProvider.Stub.asInterface(service)
-                                                .predictions.map {
-                                            ComponentKeyMapper(context, it.componentKey)
-                                        }.also {
-                                            it.forEach {
-                                                d("refreshPredictions: got prediction $it")
-                                            }
-                                        }
-                                        adapter.predictions = predictions
-                                        adapter.notifyDataSetChanged()
-                                    }
-                                }, Context.BIND_AUTO_CREATE)
-        }
+    private fun refreshPredictions() {
+        adapter.predictions = OverlayService.CompanionService.InterfaceHolder.getPredictions(adapter.gridSize)
+        adapter.notifyDataSetChanged()
     }
 
-    override fun onFeedShown() {
-    }
+    override fun isVolatile() = true
 
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
 
     override fun getCards(): List<Card> {
         refreshPredictions()
         return listOf(
-                Card(null, R.string.title_card_suggested_apps.fromStringRes(context), { v, _ ->
+                Card(null, R.string.title_card_suggested_apps.fromStringRes(context), { _, _ ->
                     recyclerView
                 }, Card.RAISE, "nosort, top", "predictedApps".hashCode()))
     }

@@ -235,20 +235,11 @@ public class AppSearchProvider extends ContentProvider {
                 for (final AppInfo appInfo : data) {
                     if (DefaultAppSearchAlgorithm.matches(appInfo, this.mQuery, instance)) {
                         list.add(appInfo);
-                        if (!appInfo.usingLowResIcon) {
-                            continue;
-                        }
-                        this.mApp.getIconCache().getTitleAndIcon(appInfo, false);
                     }
                 }
                 return list;
             }
             final List<AppInfo> results = FuzzyAppSearchAlgorithm.query(mApp.getContext(), mQuery, mAllAppsList.data, getBaseFilter());
-            for (AppInfo appInfo : results) {
-                if (appInfo.usingLowResIcon) {
-                    mApp.getIconCache().getTitleAndIcon(appInfo, false);
-                }
-            }
             return results;
         }
 

@@ -6,7 +6,7 @@ You can download directly from CI / CD or [join the Telegram releases channel](h
   The original project Lawnchair can be found [here](https://github.com/LawnchairLauncher/Lawnchair)^Warning: ^LibreJS ^Incompatible.
   This project is a fork of Lawnchair that aims to remove non-free (proprietary) blobs from Lawnchair, and make it completely free (libre) software.
   Apart from features that require non-free blobs (Sesame) and features that require interfacing with non-free software (Google Feed),
-  Librechair aims to track upstream Lawnchair. What this means is that new Lawnchair features will eventually show up in Lawnchair, sans those
+  Librechair aims to track upstream Lawnchair. What this means is that new Lawnchair features will eventually show up in Librechair, sans those
   that require non-free blobs.
 
 ## Librechair is not yet complete
@@ -55,8 +55,11 @@ After registering it in `ch.deletescape.lawnchair.globalsearch.SearchProviderCon
 
 ### Building
 
-Alright, I admit it, our build variants are a bit of a mess right now. Make sure to choose one of the variants prefixed `quickstepLawnchair*`
-from the "Build Variants" menu in IntelliJ. Our team is usually always on the latest stable version of IntelliJ IDEA.
+Alright, I admit it, our build variants are a bit of a mess right now. Make sure to choose one of the variants prefixed `quickstepLawnchairDev*`
+from the "Build Variants" menu in Android Studio / IntelliJ. Our team is usually always on the latest stable version of Android Studio.
+
+If you're redistributing Lawnchair, please avoid using the package name `ch.deletescape.lawnchair.plah` and `ch.deletescape.lawnchair.ci`
+as that will prevents users from updating to the official builds.
 
 ## Translations
 
@@ -77,7 +80,7 @@ make sure to inform yourself before creating your own project based on Lawnchair
 (I am not a Lawyer, don't take this as legally binding advice):
 
  * We will ALWAYS use all our legal options if you simply rename our app, strip it of all credit and upload it anywhere as your own, be this with or without monetization.
- * We usually do not enforce the GPL clause which would force you to release the source of your entire project, but do however ask you to release any direct modifications to Lawnchair code.
+ * Librechair does enforce the GPL clause which would force you to release the source of your entire project
  * You are required to give us full credits for any work you may be using from us.
  * If you're simply using Lawnchair as a reference for minor implementation details or utility functions (not entire features of our app) you can treat that as if it were licensed under Apache2 and properly credit us.
  * We kindly ask you to use common sense and don't profit entirely off the work of others.

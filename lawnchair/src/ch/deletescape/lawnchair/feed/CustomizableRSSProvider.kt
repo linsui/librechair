@@ -20,38 +20,7 @@
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
-import ch.deletescape.lawnchair.LawnchairPreferences
-import ch.deletescape.lawnchair.newList
-import com.rometools.rome.feed.synd.SyndFeed
-import com.rometools.rome.io.FeedException
-import com.rometools.rome.io.SyndFeedInput
-import org.apache.commons.io.IOUtils
-import org.apache.commons.io.input.CharSequenceInputStream
-import org.xml.sax.InputSource
-import java.io.IOException
-import java.net.URL
-import java.nio.charset.Charset
-import java.util.concurrent.Executors
 
-class CustomizableRSSProvider(c: Context) : AbstractMultipleSyndicationProvider(c) {
-    override fun bindFeeds(handler: OnBindHandler) {
-        Executors.newSingleThreadExecutor().submit {
-            val rssProviders = LawnchairPreferences.getInstance(context).feedRSSSources.getAll()
-            val syndicationFeeds = newList<SyndFeed>();
-            rssProviders.forEach {
-                val feed: String
-                try {
-                    feed = IOUtils.toString(URL(it).openConnection().getInputStream(),
-                                            Charset.defaultCharset())
-                    syndicationFeeds += SyndFeedInput().build(InputSource(
-                            CharSequenceInputStream(feed, Charset.defaultCharset())))
-                    handler.bindFeed(syndicationFeeds)
-                } catch (e: FeedException) {
-                    e.printStackTrace()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                }
-            }
-        }
-    }
+class CustomizableRSSProvider(c: Context) : FeedProvider(c) {
+    override fun getCards() = emptyList<Card>()
 }

@@ -1,18 +1,5 @@
 package com.android.launcher3.allapps;
 
-import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
-import static com.android.launcher3.LauncherState.ALL_APPS_HEADER;
-import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
-import static com.android.launcher3.LauncherState.OVERVIEW;
-import static com.android.launcher3.LauncherState.VERTICAL_SWIPE_INDICATOR;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_OVERVIEW_SCALE;
-import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
-import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
-import static com.android.launcher3.anim.Interpolators.LINEAR;
-import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
-import static com.android.launcher3.util.SystemUiController.UI_STATE_ALL_APPS;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -20,12 +7,7 @@ import android.util.Property;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.animation.Interpolator;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.colors.ColorEngine;
-import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
-import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
-import ch.deletescape.lawnchair.views.BlurScrimView;
+
 import com.android.launcher3.DeviceProfile;
 import com.android.launcher3.DeviceProfile.OnDeviceProfileChangeListener;
 import com.android.launcher3.Launcher;
@@ -40,7 +22,28 @@ import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.anim.PropertySetter;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.views.ScrimView;
+
 import org.jetbrains.annotations.NotNull;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
+import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
+import ch.deletescape.lawnchair.views.BlurScrimView;
+
+import static com.android.launcher3.LauncherState.ALL_APPS_CONTENT;
+import static com.android.launcher3.LauncherState.ALL_APPS_HEADER;
+import static com.android.launcher3.LauncherState.ALL_APPS_HEADER_EXTRA;
+import static com.android.launcher3.LauncherState.OVERVIEW;
+import static com.android.launcher3.LauncherState.VERTICAL_SWIPE_INDICATOR;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_ALL_APPS_FADE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_OVERVIEW_SCALE;
+import static com.android.launcher3.anim.AnimatorSetBuilder.ANIM_VERTICAL_PROGRESS;
+import static com.android.launcher3.anim.Interpolators.FAST_OUT_SLOW_IN;
+import static com.android.launcher3.anim.Interpolators.LINEAR;
+import static com.android.launcher3.anim.PropertySetter.NO_ANIM_PROPERTY_SETTER;
+import static com.android.launcher3.util.SystemUiController.UI_STATE_ALL_APPS;
 
 /**
  * Handles AllApps view transition.
@@ -267,9 +270,13 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
 
     private void setAlphas(LauncherState toState, AnimationConfig config,
             AnimatorSetBuilder builder) {
+        setAlphas(toState.getVisibleElements(mLauncher), config, builder);
+    }
+
+    public void setAlphas(int visibleElements, AnimationConfig config,
+            AnimatorSetBuilder builder) {
         PropertySetter setter = config == null ? NO_ANIM_PROPERTY_SETTER
                 : config.getPropertySetter(builder);
-        int visibleElements = toState.getVisibleElements(mLauncher);
         LawnchairPreferences prefs = LawnchairPreferences.Companion.getInstanceNoCreate();
         boolean hasHeader = (visibleElements & ALL_APPS_HEADER) != 0 && prefs.getAllAppsSearch();
         boolean hasHeaderExtra = (visibleElements & ALL_APPS_HEADER_EXTRA) != 0;
@@ -325,11 +332,21 @@ public class AllAppsTransitionController implements StateHandler, OnDeviceProfil
         if (Float.compare(mProgress, 1f) == 0) {
             mAppsView.setVisibility(View.INVISIBLE);
             mAppsView.reset(false /* animate */);
-        } else if (Float.compare(mProgress, 0f) == 0) {
+        } else if (isAllAppsExpanded()) {
             mAppsView.setVisibility(View.VISIBLE);
             mAppsView.onScrollUpEnd();
         } else {
             mAppsView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private boolean isAllAppsExpanded() {
+        return Float.compare(mProgress, 0f) == 0;
+    }
+
+    public void highlightWorkTabIfNecessary() {
+        if (isAllAppsExpanded()) {
+            mAppsView.highlightWorkTabIfNecessary();
         }
     }
 

@@ -19,18 +19,25 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.widget.RemoteViews;
 import android.widget.Toast;
-import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
-import ch.deletescape.lawnchair.feed.RemoteCard.Types;
+
 import com.android.launcher3.R;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.IFeedProvider.Stub;
+import ch.deletescape.lawnchair.feed.RemoteCard.Types;
+import ch.deletescape.lawnchair.util.IRunnable;
+
+@SuppressLint("Registered")
 public class RemoteDemoService extends Service {
 
     private IBinder binder;
@@ -42,11 +49,11 @@ public class RemoteDemoService extends Service {
     public IBinder onBind(Intent intent) {
         return binder != null ? binder : (binder = new Stub() {
             @Override
-            public List<RemoteCard> getCards() throws RemoteException {
+            public List<RemoteCard> getCards() {
                 RemoteCard demoCard = new RemoteCard(null, "feed provider demo",
                         new RemoteInflateHelper.Stub() {
                             @Override
-                            public RemoteViews inflate(boolean darkText) throws RemoteException {
+                            public RemoteViews inflate(boolean darkText) {
                                 RemoteViews views = new RemoteViews(
                                         getApplicationContext().getPackageName(),
                                         R.layout.appwidget_error);
@@ -54,18 +61,38 @@ public class RemoteDemoService extends Service {
                                         "This is a demonstration feed provider that you should not pay attention to. It serves to demonstrate the remote feed provider API.");
                                 return views;
                             }
-                        }, Types.INSTANCE.getRAISE(), "nosort,top", "remoteFeedDemo".hashCode());
+                        }, Types.RAISE, "nosort,top", "remoteFeedDemo".hashCode());
                 demoCard.setActionOnCardActionSelectedListener(
                         new RemoteOnCardActionSelectedListener.Stub() {
                             @Override
-                            public void onAction() throws RemoteException {
-                                Toast.makeText(getApplicationContext(),
-                                        "demonstration action clicked", Toast.LENGTH_SHORT).show();
+                            public void onAction() {
+                                LawnchairUtilsKt.getMainHandler().post(
+                                        () -> Toast.makeText(RemoteDemoService.this, "works for me",
+                                                Toast.LENGTH_SHORT).show());
                             }
                         });
                 demoCard.setActionName("Action demo");
                 demoCard.setCanHide(true);
                 return Collections.singletonList(demoCard);
+            }
+
+            @Override
+            public List<RemoteAction> getActions(boolean exclusive) {
+                return Collections.singletonList(new RemoteAction("Demo", LawnchairUtilsKt.drawableToBitmap(
+                        Objects.requireNonNull(getDrawable(R.drawable.ic_smartspace_preferences))),
+                        new IRunnable.Stub() {
+                            @Override
+                            public void run() {
+                                LawnchairUtilsKt.getMainHandler().post(
+                                        () -> Toast.makeText(RemoteDemoService.this, "works for me",
+                                                Toast.LENGTH_SHORT).show());
+                            }
+                        }));
+            }
+
+            @Override
+            public boolean isVolatile() {
+                return false;
             }
         });
     }

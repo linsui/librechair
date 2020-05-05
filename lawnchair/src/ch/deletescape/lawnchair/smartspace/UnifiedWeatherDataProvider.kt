@@ -19,84 +19,33 @@
 
 package ch.deletescape.lawnchair.smartspace
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.location.Location
-import android.location.LocationManager
-import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.PeriodicDataProvider
-import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
-import ch.deletescape.lawnchair.util.extensions.w
-import com.google.gson.Gson
-import java.util.concurrent.TimeUnit
+import ch.deletescape.lawnchair.awareness.WeatherManager
+import ch.deletescape.lawnchair.runOnMainThread
 
 class UnifiedWeatherDataProvider(
-        controller: LawnchairSmartspaceController) : PeriodicDataProvider(controller) {
+        controller: LawnchairSmartspaceController) :
+        LawnchairSmartspaceController.DataProvider(controller) {
+    private lateinit var location: Pair<Double, Double>
 
-    override val timeout: Long
-        get() = TimeUnit.MINUTES.toMillis(10)
-
-    private val locationManager: LocationManager? by lazy {
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun updateData() {
-        try {
-            runOnNewThread {
-                if (context.lawnchairPrefs.weatherCity != "##Auto") {
-                    d("updateData: retrieving current geolocation")
-                    val (lat, lon) =
-                            context.forecastProvider.getGeolocation(
-                                    context.lawnchairPrefs.weatherCity)
-                    d("updateData: geolocation is $lat, $lon")
-                    val currentWeather = context.forecastProvider.getCurrentWeather(lat, lon)
-                    d("updateData: current weather is ${Gson().toJson(currentWeather)}")
-                    runOnMainThread {
-                        updateData(
-                                LawnchairSmartspaceController.WeatherData(currentWeather.icon,
-                                                                          currentWeather.temperature,
-                                                                          null,
-                                                                          null, null, lat, lon,
-                                                                          "-1d"),
-                                null)
-                    }
-                } else {
-                    val updateWeather = {
-                        val (lat, lon) = context.lawnchairLocationManager.location ?: null to null
-                        val currentWeather = context.forecastProvider
-                                .getCurrentWeather(lat ?: (-1).toDouble(), lon ?: (-1).toDouble());
-                        d("updateData: current weather is ${Gson().toJson(currentWeather)}")
-                        runOnMainThread {
-                            updateData(
-                                    LawnchairSmartspaceController.WeatherData(currentWeather.icon,
-                                                                              currentWeather.temperature,
-                                                                              null,
-                                                                              null, null, lat, lon,
-                                                                              "-1d"),
-                                    null)
-                        }
-                    }
-                    if (!context.checkLocationAccess()) {
-                        runOnMainThread {
-                            BlankActivity.requestPermission(context,
-                                                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                                                            LawnchairLauncher.REQUEST_PERMISSION_LOCATION_ACCESS) {
-                                runOnNewThread {
-                                    updateWeather()
-                                }
-                            }
-                        }
-                    } else {
-                        updateWeather()
-                    }
-                }
-            }
-        } catch (e: ForecastProvider.ForecastException) {
-            w("updateData: update failed", e)
+    init {
+        WeatherManager.subscribeGeo {
+            location = it
         }
-
+        WeatherManager.subscribeWeather {
+            runOnMainThread {
+                updateData(
+                        LawnchairSmartspaceController.WeatherData(it.icon,
+                                it.temperature,
+                                it.url,
+                                null,
+                                null,
+                                location.first,
+                                location.second,
+                                "-1d"),
+                        null)
+            }
+        }
     }
 }
 

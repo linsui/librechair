@@ -30,7 +30,7 @@ inline val currentStackTrace get() = Throwable().stackTrace
 // Let's assume stack array is never empty
 inline val callingClass get() = currentStackTrace[0].className.substringAfterLast('.')
 
-inline val <reified T> T.TAG: String get() = T::class.java.simpleName
+inline val <reified T> T.TAG: String get() = T::class.qualifiedName ?: "${T::class.qualifiedName ?: "unknown?"}?subclazz!"
 
 inline fun v(message: String, t: Throwable) = Log.v(callingClass, message, t)
 
@@ -53,6 +53,13 @@ inline fun <reified T> T.d(): T{
     Log.d(callingClass, Gson().toJson(this))
     return this
 }
+
+
+inline fun <reified T> T.dI(message: String, t: Throwable) = Log.d(TAG, message, t)
+
+inline fun <reified T> T.dI(message: String) = Log.d(TAG, message)
+
+
 
 inline fun <reified T> T.d(message: String, t: Throwable) = Log.d(TAG, message, t)
 

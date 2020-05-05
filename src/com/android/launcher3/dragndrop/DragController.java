@@ -19,6 +19,7 @@ package com.android.launcher3.dragndrop;
 import static com.android.launcher3.LauncherAnimUtils.SPRING_LOADED_EXIT_DELAY;
 import static com.android.launcher3.LauncherState.NORMAL;
 
+import android.animation.ValueAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.res.Resources;
@@ -225,6 +226,12 @@ public class DragController implements DragDriver.EventListener, TouchController
         }
     }
 
+    public void addFirstFrameAnimationHelper(ValueAnimator anim) {
+        if (mDragObject != null && mDragObject.dragView != null) {
+            mDragObject.dragView.mFirstFrameAnimatorHelper.addTo(anim);
+        }
+    }
+
     /**
      * Call this from a drag source view like this:
      *
@@ -387,7 +394,7 @@ public class DragController implements DragDriver.EventListener, TouchController
     @Override
     public void onDriverDragEnd(float x, float y) {
         DropTarget dropTarget;
-        Runnable flingAnimation = mFlingToDeleteHelper.getFlingAnimation(mDragObject);
+        Runnable flingAnimation = mFlingToDeleteHelper.getFlingAnimation(mDragObject, mOptions);
         if (flingAnimation != null) {
             dropTarget = mFlingToDeleteHelper.getDropTarget();
         } else {

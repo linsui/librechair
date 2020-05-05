@@ -19,28 +19,35 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.text.Html;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
-import io.github.cdimascio.essence.Essence;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import io.github.cdimascio.essence.Essence;
 
 public class ArticleViewerScreen extends ProviderScreen {
 
@@ -48,6 +55,7 @@ public class ArticleViewerScreen extends ProviderScreen {
     private final String categories;
     private final String url;
     private final String desc;
+    private ScrollView sv;
 
     public ArticleViewerScreen(Context base, String title, String categories, String url,
                                String desc) {
@@ -56,6 +64,17 @@ public class ArticleViewerScreen extends ProviderScreen {
         this.categories = categories;
         this.url = url;
         this.desc = desc;
+
+        addAction(new FeedProvider.Action(getDrawable(R.drawable.ic_share_black_24dp),
+                getString(getResources()
+                        .getIdentifier("whichSendApplicationLabel", "string", "android")), () -> {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_TEXT,
+                    (FeedPersistence.Companion.getInstance(this).getShowTitleInSharedArticles() ? title + (char) 10 : "") + url);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        }));
     }
 
     @Override
@@ -63,41 +82,98 @@ public class ArticleViewerScreen extends ProviderScreen {
         return LawnchairUtilsKt.inflate(parent, R.layout.overlay_article);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void bindView(View articleView) {
         TextView titleView = articleView.findViewById(R.id.title);
         TextView contentView = articleView.findViewById(R.id.content);
+        contentView.setFocusable(View.NOT_FOCUSABLE);
+        sv = (ScrollView) contentView.getParent();
+        sv.setFocusable(View.NOT_FOCUSABLE);
+        SwipeRefreshLayout swipeRefreshLayout = articleView.findViewById(
+                R.id.article_refresh_layout);
+        if (getBoundFeed() != null) {
+            swipeRefreshLayout.setColorSchemeColors(getBoundFeed()
+                    .getTabColours()
+                    .stream()
+                    .mapToInt(it -> it)
+                    .toArray());
+        }
+        swipeRefreshLayout.setRefreshing(true);
         Button openInBrowser = articleView.findViewById(R.id.open_externally);
-        openInBrowser.setOnClickListener(v3 -> Utilities
-                .openURLinBrowser(this, url));
+        GestureDetector detector = new GestureDetector(this,
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onSingleTapUp(MotionEvent e) {
+                        try {
+                            WebViewScreen screen = WebViewScreen.obtain(ArticleViewerScreen.this,
+                                    url);
+                            screen.display(ArticleViewerScreen.this,
+                                    StrictMath.round(LawnchairUtilsKt.getPositionOnScreen(
+                                            openInBrowser).getFirst() + e.getX()),
+                                    StrictMath.round(LawnchairUtilsKt.getPositionOnScreen(
+                                            openInBrowser).getSecond() + e.getY()));
+                        } catch (IllegalStateException e2) {
+                            Utilities.openURLinBrowser(ArticleViewerScreen.this, url);
+                        }
+                        return super.onSingleTapUp(e);
+                    }
+                });
+        openInBrowser.setOnTouchListener((v, event) -> detector.onTouchEvent(event));
         openInBrowser.setTextColor(FeedAdapter.Companion.getOverrideColor(articleView.getContext(),
                 LawnchairUtilsKt.getColorEngineAccent(this)));
         titleView.setText(title);
         TextView categoriesView = articleView
                 .findViewById(R.id.article_categories);
         categoriesView.setText(categories);
-        Executors.newSingleThreadExecutor().submit(() -> {
+        FeedUtil.download(url, this, is -> {
             try {
-                URLConnection urlConnection = new URL(
-                        url.replace("http://", "https://"))
-                        .openConnection();
-                if (urlConnection instanceof HttpURLConnection) {
-                    ((HttpURLConnection) urlConnection)
-                            .setInstanceFollowRedirects(true);
-                }
                 CharSequence text = Essence
-                        .extract(IOUtils.toString(urlConnection
-                                .getInputStream(), Charset
-                                .defaultCharset())).getText();
+                        .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
                 if (text.toString().trim().isEmpty()) {
-                    text = Html
-                            .fromHtml(desc, 0);
+                    text = Html.fromHtml(desc, 0);
                 }
                 CharSequence finalText = text;
-                contentView.post(() -> contentView.setText(finalText));
+                contentView.post(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    contentView.setText(finalText);
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }, throwable -> {
+            articleView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
         });
+        swipeRefreshLayout.setOnRefreshListener(() -> FeedUtil.download(url, this, is -> {
+            try {
+                CharSequence text = Essence
+                        .extract(IOUtils.toString(is, Charset.defaultCharset())).getText();
+                if (text.toString().trim().isEmpty()) {
+                    text = Html.fromHtml(desc, 0);
+                }
+                CharSequence finalText = text;
+                contentView.post(() -> {
+                    swipeRefreshLayout.setRefreshing(false);
+                    contentView.setText(finalText);
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }, throwable -> {
+            articleView.findViewById(R.id.article_viewer_error).setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setRefreshing(false);
+        }));
+        ((ImageView) articleView.findViewById(R.id.article_viewer_error_icon)).setImageTintList(
+                ColorStateList.valueOf(FeedAdapter.Companion.getOverrideColor(this)));
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (sv.getScrollY() != 0) {
+            sv.smoothScrollTo(0, 0);
+            return true;
+        }
+        return false;
     }
 }

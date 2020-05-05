@@ -66,7 +66,7 @@ class BugReportClient(private val context: Context) {
     }
 
     fun sendReport(report: BugReport) {
-        bugReportService?.sendReport(report) ?: throw RuntimeException("Bug report service is null")
+        bugReportService?.sendReport(report) ?: e("bug report service is null")
     }
 
     fun setAutoUploadEnabled() {

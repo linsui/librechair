@@ -56,17 +56,18 @@ class IconMask {
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
 
-        // Draw the app iconView
-        var bb = baseIcon.toBitmap()!!
+        // Draw the app icon
+        val iconBitmapSize = LauncherAppState.getIDP(context).iconBitmapSize
+        var bb = baseIcon.toBitmap(fallbackSize = iconBitmapSize)!!
         if (!bb.isMutable) bb = bb.copy(bb.config, true)
         matrix.setScale((size * scale) / bb.width, (size * scale) / bb.height)
         matrix.postTranslate((size / 2) * (1 - scale), (size / 2) * (1 - scale))
         canvas.drawBitmap(bb, matrix, paint)
         matrix.reset()
 
-        // Mask the app iconView
+        // Mask the app icon
         if (iconMask != null && iconMask.drawableId != 0) {
-            iconMask.drawable.toBitmap()?.let {
+            iconMask.drawable.toBitmap(fallbackSize = iconBitmapSize)?.let {
                 paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
                 matrix.setScale(size.toFloat() / it.width, size.toFloat() / it.height)
                 canvas.drawBitmap(it, matrix, paint)

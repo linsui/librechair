@@ -19,270 +19,366 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.AnyThread;
+import android.annotation.SuppressLint;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.icu.util.Output;
+import android.database.sqlite.SQLiteConstraintException;
+import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
-
 import com.android.launcher3.R;
-import com.rometools.rome.feed.synd.SyndEntry;
+import com.android.launcher3.Utilities;
+import com.rometools.rome.feed.synd.SyndCategory;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
-import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.SyndFeedOutput;
 import com.squareup.picasso.Picasso.Builder;
 
-import org.xml.sax.InputSource;
+import org.jetbrains.annotations.Contract;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import ch.deletescape.lawnchair.feed.cache.CacheManager;
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.clickbait.ClickbaitRanker;
+import ch.deletescape.lawnchair.feed.jobs.JobSchedulerService;
+import ch.deletescape.lawnchair.feed.news.NewsDb;
+import ch.deletescape.lawnchair.feed.news.NewsEntry;
+import ch.deletescape.lawnchair.feed.notifications.NotificationManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.util.NetworkUtil;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import ch.deletescape.lawnchair.persistence.FeedPersistenceKt;
+import kotlin.Pair;
 import kotlin.Unit;
 
 public abstract class AbstractRSSFeedProvider extends FeedProvider {
 
-    private SyndFeed articles;
+    private List<NewsEntry> articles;
+    private JobScheduler scheduler;
+    private static final int REFRESH_TASK = 1000;
     private long lastUpdate;
+    private boolean minicard;
 
     public AbstractRSSFeedProvider(Context c) {
         super(c);
-        Executors.newSingleThreadExecutor().submit(() -> {
-            byte[] cache;
-            if ((cache = CacheManager.Companion.getInstance(c).getCachedBytes(getClass().getName(),
-                    "cached_feed")).length >= 1) {
-                try {
-                    articles = new SyndFeedInput().build(
-                            new InputSource(new ByteArrayInputStream(cache)));
-                } catch (FeedException e) {
-                    bindFeed(feed1 -> {
-                        Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                                "constructor: bound to feed");
+        scheduler = (JobScheduler) c.getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        refresh(c, () -> {
+                },
+                FeedPersistenceKt.getFeedPrefs(c).getNotifyUsersAboutNewArticlesOnFirstRun());
+        JobSchedulerService.Companion.getIdCallbacks().add(
+                new Pair<>(REFRESH_TASK, unitFunction1 -> {
+                    refresh(c, () -> unitFunction1.invoke(false), true);
+                    return Unit.INSTANCE;
+                }));
+        if (scheduler.getPendingJob(REFRESH_TASK) == null) {
+            scheduler.schedule(
+                    new JobInfo.Builder(REFRESH_TASK,
+                            new ComponentName(c, JobSchedulerService.class))
+                            .setPersisted(true)
+                            .setRequiresBatteryNotLow(false)
+                            .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                            .setPeriodic(TimeUnit.HOURS.toMillis(1),
+                                    TimeUnit.MINUTES.toMillis(10))
+                            .build());
+        }
+    }
+
+    @AnyThread
+    @Contract("null, null, _ -> fail")
+    protected void refresh(Context c, Runnable finished, boolean diff) {
+        Executors.newSingleThreadExecutor().submit(() -> onInit(token -> {
+            synchronized (AbstractRSSFeedProvider.class) {
+                List<NewsEntry> entries = NewsDb.getDatabase(c, token).open().all();
+                articles = entries.stream().distinct().collect(Collectors.toList());
+                if (entries.isEmpty() || entries.stream().allMatch(it -> it.date == null)
+                        || (entries.stream().anyMatch(
+                        it -> it.lastUpdate == null || System.currentTimeMillis() - it.lastUpdate.getTime() >= TimeUnit.HOURS.toMillis(
+                                2)))) {
+                    bindFeed(feed -> {
                         lastUpdate = System.currentTimeMillis();
-                        articles = feed1;
-                        ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
-                        SyndFeedOutput output = new SyndFeedOutput();
-                        try {
-                            output.output(feed1, new OutputStreamWriter(cachedFeed));
-                            CacheManager.Companion.getInstance(
-                                    AbstractRSSFeedProvider.this.getContext()).writeCache(
-                                    cachedFeed.toByteArray(),
-                                    AbstractRSSFeedProvider.this.getClass().getName(),
-                                    "cache_feed", TimeUnit.HOURS.toMillis(1));
-                        } catch (IOException | FeedException e2) {
-                            e.printStackTrace();
+                        List<NewsEntry> old = articles;
+                        articles = feed.getEntries().stream().map(entry -> {
+                            NewsEntry newsEntry = new NewsEntry();
+                            newsEntry.date = entry.getPublishedDate();
+                            if (entry.getDescription() != null) {
+                                newsEntry.content = entry.getDescription().getValue();
+                            }
+                            newsEntry.url = entry.getLink();
+                            newsEntry.title = entry.getTitle();
+                            newsEntry.categories = entry.getCategories()
+                                    .stream()
+                                    .map(SyndCategory::getName)
+                                    .collect(Collectors.toList());
+                            newsEntry.lastUpdate = new Date();
+                            newsEntry.thumbnail = LawnchairUtilsKt.getThumbnailURL(entry);
+                            return newsEntry;
+                        }).collect(Collectors.toList());
+                        synchronized (AbstractRSSFeedProvider.class) {
+                            try {
+                                NewsDb.getDatabase(c, token).open().purge();
+                                articles.stream()
+                                        .peek(it -> it.order = articles.indexOf(it))
+                                        .forEach(it -> NewsDb.getDatabase(c, token).open().insert(
+                                                it));
+                            } catch (SQLiteConstraintException e) {
+                                e.printStackTrace();
+                            }
+                            if (!articles.isEmpty()) {
+                                FeedUtil.runOnMainThread(this::markUnread);
+                            }
                         }
-                    });
-                    e.printStackTrace();
+                        if (diff) {
+                            showNotifications(old != null ? old : Collections.emptyList());
+                        }
+                        finished.run();
+                    }, token);
                 }
             }
-            bindFeed(feed -> {
-                Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                        "constructor: bound to feed");
-                lastUpdate = System.currentTimeMillis();
-                articles = feed;
-                ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
-                SyndFeedOutput output = new SyndFeedOutput();
-                try {
-                    output.output(feed, new OutputStreamWriter(cachedFeed));
-                    CacheManager.Companion.getInstance(
-                            AbstractRSSFeedProvider.this.getContext()).writeCache(
-                            cachedFeed.toByteArray(),
-                            AbstractRSSFeedProvider.this.getClass().getName(), "cache_feed",
-                            TimeUnit.HOURS.toMillis(1));
-                } catch (IOException | FeedException e) {
-                    e.printStackTrace();
+        }));
+    }
+
+    @Override
+    public boolean isSearchable() {
+        return true;
+    }
+
+    private void showNotifications(List<NewsEntry> original) {
+        if (FeedPersistence.Companion.getInstance(getContext()).getArticleNotifications()) {
+            if (!articles.isEmpty()) {
+                for (NewsEntry notif : articles.subList(
+                        articles.size() < (int) Math.round(
+                                FeedPersistence.Companion.getInstance(
+                                        getContext()).getNotificationCount()) ? articles.size() : articles.size() - (int) Math.round(
+                                FeedPersistence.Companion.getInstance(
+                                        getContext()).getNotificationCount())
+                        , articles.size() - 1)) {
+                    if (original.stream().noneMatch(entry -> entry.title.equals(
+                            notif.title)) && notif != null) {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(notif.url));
+                        PendingIntent intent2 = PendingIntent.getActivity(getContext(), 0, intent,
+                                0);
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        share.setType("text/plain");
+                        share.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
+                                getContext()).getShowTitleInSharedArticles() ? notif.title + (char) 10 : "") + notif.url);
+                        Intent choose = Intent.createChooser(share,
+                                getContext().getString(R.string.title_share));
+                        List<android.util.Pair<String, PendingIntent>> actions = Collections.singletonList(
+                                new android.util.Pair<>(getContext().getString(
+                                        R.string.title_share),
+                                        PendingIntent.getActivity(getContext(), 0, choose, 0)));
+                        if (Html.fromHtml(notif.content,
+                                0).toString().length() > 250) {
+                            NotificationManager.getInstance(getContext())
+                                    .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                            notif.title,
+                                            Html.fromHtml(notif.content,
+                                                    0).toString().substring(0, 250) + "...",
+                                            intent2, actions);
+                        } else {
+                            NotificationManager.getInstance(getContext())
+                                    .postNotification(this, R.drawable.ic_newspaper_24dp,
+                                            notif.title,
+                                            Html.fromHtml(notif.content,
+                                                    0).toString(), intent2, actions);
+                        }
+                    }
                 }
-            });
-        });
+            }
+        }
     }
 
     @Override
-    public void onFeedShown() {
-
+    public boolean isVolatile() {
+        return articles == null || articles.isEmpty() || minicard != FeedPersistenceKt.getFeedPrefs(
+                getContext()).getUseRSSMinicard();
     }
 
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
+    protected String getId() {
+        return getClass().getName();
     }
 
     @Override
     public List<Card> getCards() {
-        if (System.currentTimeMillis() - lastUpdate > TimeUnit.MINUTES.toMinutes(15)) {
-            Executors.newSingleThreadExecutor().submit(() -> {
-                byte[] cache;
-                if ((cache = CacheManager.Companion.getInstance(getContext()).getCachedBytes(
-                        getClass().getName(),
-                        "cached_feed")).length >= 1) {
-                    try {
-                        articles = new SyndFeedInput().build(
-                                new InputSource(new ByteArrayInputStream(cache)));
-                    } catch (FeedException e) {
-                        bindFeed(feed1 -> {
-                            Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                                    "constructor: bound to feed");
-                            lastUpdate = System.currentTimeMillis();
-                            articles = feed1;
-                            ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
-                            SyndFeedOutput output = new SyndFeedOutput();
-                            try {
-                                output.output(feed1, new OutputStreamWriter(cachedFeed));
-                                CacheManager.Companion.getInstance(
-                                        AbstractRSSFeedProvider.this.getContext()).writeCache(
-                                        cachedFeed.toByteArray(),
-                                        AbstractRSSFeedProvider.this.getClass().getName(),
-                                        "cache_feed", TimeUnit.HOURS.toMillis(1));
-                            } catch (IOException | FeedException e2) {
-                                e.printStackTrace();
-                            }
-                        });
-                        e.printStackTrace();
-                    }
-                }
-                bindFeed(feed -> {
-                    Log.d(AbstractRSSFeedProvider.this.getClass().getName(),
-                            "constructor: bound to feed");
-                    lastUpdate = System.currentTimeMillis();
-                    articles = feed;
-                    ByteArrayOutputStream cachedFeed = new ByteArrayOutputStream();
-                    SyndFeedOutput output = new SyndFeedOutput();
-                    try {
-                        output.output(feed, new OutputStreamWriter(cachedFeed));
-                        CacheManager.Companion.getInstance(
-                                AbstractRSSFeedProvider.this.getContext()).writeCache(
-                                cachedFeed.toByteArray(),
-                                AbstractRSSFeedProvider.this.getClass().getName(), "cache_feed",
-                                TimeUnit.HOURS.toMillis(1));
-                    } catch (IOException | FeedException e) {
-                        e.printStackTrace();
-                    }
-                });
-            });
-        }
         if (articles == null) {
-            Log.d(getClass().getName(), "getCards: feed is null; returning empty list");
             return Collections.emptyList();
         } else {
             List<Card> cards = LawnchairUtilsKt.newList();
-            Log.d(getClass().getName(),
-                    "getCards: iterating through entries: " + articles.toString());
-            for (SyndEntry entry : articles.getEntries()) {
-                Log.d(getClass().getName(), "getCards: syndication entry: " + entry);
-                Card card = new Card(null, null, parent -> {
-                    Log.d(getClass().getName(), "getCards: inflate syndication: " + entry);
-                    View v = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.rss_item, parent, false);
-                    TextView title, description, date, categories;
-                    ImageView icon;
-                    Button readMore;
+            minicard = FeedPersistenceKt.getFeedPrefs(
+                    getContext()).getUseRSSMinicard();
+            for (NewsEntry entry : articles) {
+                @SuppressLint("ClickableViewAccessibility") Card card = new Card(null, entry.title,
+                        parent -> {
+                            View v = LayoutInflater.from(parent.getContext())
+                                    .inflate(minicard ? R.layout.rss_miniitem : R.layout.rss_item,
+                                            parent, false);
+                            TextView title, description, date, categories;
+                            ImageView icon;
+                            Button readMore;
 
-                    title = v.findViewById(R.id.rss_item_title);
-                    description = v.findViewById(R.id.rss_item_description);
-                    categories = v.findViewById(R.id.rss_item_categories);
-                    icon = v.findViewById(R.id.rss_item_icon);
-                    date = v.findViewById(R.id.rss_item_date);
-                    readMore = v.findViewById(R.id.rss_item_read_more);
+                            title = v.findViewById(R.id.rss_item_title);
+                            description = v.findViewById(R.id.rss_item_description);
+                            categories = v.findViewById(R.id.rss_item_categories);
+                            icon = v.findViewById(R.id.rss_item_icon);
+                            date = v.findViewById(R.id.rss_item_date);
+                            readMore = v.findViewById(R.id.rss_item_read_more);
 
-                    readMore.setTextColor(FeedAdapter.Companion.getOverrideColor(parent.getContext()));
+                            if (!minicard) {
+                                readMore.setTextColor(
+                                        FeedAdapter.Companion.getOverrideColor(
+                                                parent.getContext()));
+                            }
 
-                    Log.d(getClass().getSimpleName(),
-                            "inflate: Image URL is " + LawnchairUtilsKt.getThumbnailURL(entry));
+                            if (entry.thumbnail != null && Objects.requireNonNull(
+                                    entry.thumbnail).startsWith("http")) {
+                                new Builder(parent.getContext()).build()
+                                        .load(entry.thumbnail)
+                                        .placeholder(R.drawable.work_tab_user_education).into(
+                                        icon);
+                            } else {
+                                new Builder(parent.getContext()).build()
+                                        .load("https:" + entry.thumbnail)
+                                        .placeholder(R.drawable.work_tab_user_education).into(
+                                        icon);
+                            }
 
-                    if (LawnchairUtilsKt.getThumbnailURL(entry) != null && LawnchairUtilsKt
-                            .getThumbnailURL(entry).startsWith("http")) {
-                        new Builder(parent.getContext()).build()
-                                .load(LawnchairUtilsKt.getThumbnailURL(entry))
-                                .placeholder(R.drawable.work_tab_user_education).into(icon);
-                    } else {
-                        new Builder(parent.getContext()).build()
-                                .load("https:" + LawnchairUtilsKt.getThumbnailURL(entry))
-                                .placeholder(R.drawable.work_tab_user_education).into(icon);
-                    }
+                            title.setText(ClickbaitRanker.completePipeline(entry.title));
+                            String spanned = entry.content != null ? Html.fromHtml(
+                                    entry.content, 0).toString() : "";
+                            if (spanned.length() > 256) {
+                                spanned = spanned.subSequence(0, 256).toString() + "...";
+                            }
+                            description.setText(spanned);
+                            GestureDetector detector = new GestureDetector(getContext(),
+                                    new GestureDetector.SimpleOnGestureListener() {
+                                        @Override
+                                        public boolean onSingleTapUp(MotionEvent e) {
+                                            if (!FeedPersistence.Companion.getInstance(
+                                                    getContext()).getDirectlyOpenLinksInBrowser()) {
+                                                new ArticleViewerScreen(getContext(),
+                                                        entry.title,
+                                                        entry.categories != null ?
+                                                                String.join(", ",
+                                                                        entry.categories) :
+                                                                "",
+                                                        entry.url,
+                                                        entry.content != null ? entry.content : "")
+                                                        .display(AbstractRSSFeedProvider.this,
+                                                                (LawnchairUtilsKt.getPositionOnScreen(
+                                                                        readMore).getFirst() + Math.round(
+                                                                        e.getX())),
+                                                                (LawnchairUtilsKt.getPositionOnScreen(
+                                                                        readMore).getSecond() + Math.round(
+                                                                        e.getY())));
+                                            } else {
+                                                FeedUtil.openUrl(getContext(), entry.url, readMore);
+                                            }
+                                            return true;
+                                        }
+                                    });
+                            (minicard ? v : readMore).setOnTouchListener(
+                                    (_v, e) -> detector.onTouchEvent(e));
 
-                    title.setText(ClickbaitRanker.completePipeline(entry.getTitle()));
-                    String spanned = entry.getDescription() != null ? Html.fromHtml(
-                            entry.getDescription().getValue(), 0).toString() : "";
-                    if (spanned.length() > 256) {
-                        spanned = spanned.subSequence(0, 256).toString() + "...";
-                    }
-                    description.setText(spanned);
-                    readMore.setOnClickListener(v2 -> {
-                        new ArticleViewerScreen(getContext(), entry.getTitle(),
-                                entry.getCategories().stream().map(it -> it.getName())
-                                        .collect(Collectors.joining(", ")),
-                                entry.getUri(),
-                                entry.getDescription() != null ? entry.getDescription().getValue() : "")
-                                .display(this, (LawnchairUtilsKt.getPostionOnScreen(v2).getFirst()
-                                                + v2.getWidth() / 2),
-                                        (LawnchairUtilsKt.getPostionOnScreen(v2).getSecond()
-                                                + v2.getHeight() / 2));
-                    });
+                            if (!minicard) {
+                                if (entry.categories == null ||
+                                        entry.categories.isEmpty()) {
+                                    categories.setText("");
+                                } else {
+                                    categories.setText(
+                                            String.join(", ", entry.categories));
+                                }
 
-                    if (entry.getCategories().isEmpty()) {
-                        categories.setText("");
-                    } else {
-                        categories.setText(String.join(", ",
-                                entry.getCategories().stream().map(entry2 -> entry2.getName())
-                                        .collect(
-                                                Collectors.toList())));
-                    }
-
-                    if (entry.getPublishedDate() != null) {
-                        date.setText(entry.getPublishedDate().toLocaleString());
-                    } else {
-                        date.setText(null);
-                    }
-                    return v;
-                }, Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(), null,
+                                if (entry.date != null) {
+                                    date.setText(entry.date.toString());
+                                } else {
+                                    date.setText(null);
+                                }
+                            }
+                            return v;
+                        }, Card.RAISE | Card.NO_HEADER, null,
                         entry.hashCode(), true,
-                        entry.getCategories().stream().map(entry2 -> entry2.getName()).collect(
-                                Collectors.toList()));
+                        entry.categories != null ? entry.categories : Collections.emptyList());
+                card.setIndexData(entry.content);
                 cards.add(card);
                 card.setActionName(getContext().getString(getContext().getResources()
                         .getIdentifier("whichSendApplicationLabel", "string", "android")));
-                card.setActionListener(context -> {
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_TEXT, entry.getLink());
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(i);
+                card.setActionListener(view -> {
+                    Executors.newSingleThreadExecutor().submit(() -> {
+                        String url = entry.url;
+                        if (FeedPersistenceKt.getFeedPrefs(getContext())
+                                .getResolveRedirectsBeforeSharing()) {
+                            try {
+                                url = NetworkUtil.resolveRedirects(url);
+                            } catch (IOException e) {
+                                Log.d(getClass().getName(), "getCards: failed to resolve redirects",
+                                        e);
+                            }
+                        }
+                        Intent i = new Intent(Intent.ACTION_SEND);
+                        i.setType("text/plain");
+                        i.putExtra(Intent.EXTRA_TEXT, (FeedPersistence.Companion.getInstance(
+                                getContext()).getShowTitleInSharedArticles() ? entry.title + (char) 10 : "") + url);
+                        FeedUtil.runOnMainThread(() -> FeedUtil.startActivity(view.getContext(),
+                                Intent.createChooser(i,
+                                        getContext().getString(getContext().getResources()
+                                                .getIdentifier("whichSendApplicationLabel",
+                                                        "string",
+                                                        "android"))), view));
+                    });
                     return Unit.INSTANCE;
                 });
+                if (minicard) {
+                    card.globalClickListener = v -> {
+                        if (!FeedPersistence.Companion.getInstance(
+                                getContext()).getDirectlyOpenLinksInBrowser()) {
+                            new ArticleViewerScreen(getContext(),
+                                    entry.title,
+                                    entry.categories != null ?
+                                            String.join(", ",
+                                                    entry.categories) :
+                                            "",
+                                    entry.url,
+                                    entry.content != null ? entry.content : "")
+                                    .display(AbstractRSSFeedProvider.this,
+                                            (LawnchairUtilsKt.getPositionOnScreen(
+                                                    v).getFirst() + v.getMeasuredWidth() / 2),
+                                            (LawnchairUtilsKt.getPositionOnScreen(
+                                                    v).getSecond() + v.getMeasuredHeight() / 2), v);
+                        } else {
+                            Utilities.openURLinBrowser(getContext(),
+                                    entry.url);
+                        }
+                        return Unit.INSTANCE;
+                    };
+                }
             }
             return cards;
         }
     }
 
-    protected abstract void bindFeed(BindCallback callback);
+    protected abstract void onInit(Consumer<String> tokenCallback);
+
+    protected abstract void bindFeed(BindCallback callback, String token);
 
     protected interface BindCallback {
         void onBind(SyndFeed feed);

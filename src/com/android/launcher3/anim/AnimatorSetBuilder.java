@@ -57,7 +57,7 @@ public class AnimatorSetBuilder {
     }
 
     public AnimatorSet build() {
-        AnimatorSet anim = LauncherAnimUtils.createAnimatorSet();
+        AnimatorSet anim = new AnimatorSet();
         anim.playTogether(mAnims);
         if (!mOnFinishRunnables.isEmpty()) {
             anim.addListener(new AnimationSuccessListener() {

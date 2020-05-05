@@ -33,16 +33,6 @@ public final class AllAppsFromOverview {
     }
 
     /**
-     * Asserts that we are in all apps.
-     *
-     * @return All apps container.
-     */
-    @NonNull
-    private UiObject2 assertState() {
-        return mLauncher.assertState(Launcher.State.ALL_APPS);
-    }
-
-    /**
      * Swipes down to switch back to Overview whence we came from.
      *
      * @return the overview panel.

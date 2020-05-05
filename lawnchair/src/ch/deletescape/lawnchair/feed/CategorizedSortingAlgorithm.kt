@@ -19,50 +19,41 @@
 
 package ch.deletescape.lawnchair.feed
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import ch.deletescape.lawnchair.newList
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
 
 class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
-    init {
-        d("init: sorting algorithm initializer called")
-    }
+    @SuppressLint("DefaultLocale")
     override fun sort(vararg ts: List<Card>): List<Card> {
-        d("sort: sorting $ts")
         val map: MutableMap<String, MutableList<Card>> = mutableMapOf()
         ts.forEach {
-            d("sort: categories for card provider $it")
-            it.forEach {
-                d("sort: locating categories for card $it")
-                val cardRef = it
-                if (it.categories.isNullOrEmpty()) {
-                    d("sort: no categories for card $it! classifying card as uncategorized (categories: ${it.categories}")
-                    if (map.get(CATEGORY_NONE) == null) {
+            it.forEach { card ->
+                if (card.categories.isNullOrEmpty()) {
+                    if (map[CATEGORY_NONE] == null) {
                         map += CATEGORY_NONE to mutableListOf()
                     }
-                    map.get(CATEGORY_NONE)!!.add(it)
+                    map[CATEGORY_NONE]!!.add(card)
                 } else {
-                    it.categories!!.forEach {
-                        d("sort: card $cardRef can be assigned to category $it")
-                        if (map.get(it.toLowerCase()) == null) {
-                            map += it.toLowerCase() to mutableListOf()
+                    card.categories!!.forEach { cards ->
+                        if (map[cards.toLowerCase()] == null) {
+                            map += cards.toLowerCase() to mutableListOf()
                         }
-                        map.get(it.toLowerCase())!!.add(cardRef)
+                        map[cards.toLowerCase()]!!.add(card)
                     }
                 }
             }
         }
         val keys = map.keys.filter { it != CATEGORY_NONE }.sortedBy { it }
         val result = mutableListOf<Card>()
-        result.addAll(map.get(CATEGORY_NONE)?.filter { it.algoFlags?.contains("top") == true } ?: newList())
+        result.addAll(map[CATEGORY_NONE]?.filter { it.algoFlags?.contains("top") == true } ?: newList())
         keys.forEach {
             result.add(Card(null, null, object : Card.Companion.InflateHelper {
                 override fun inflate(parent: ViewGroup): View {
-                    d("inflate: inflating category header view")
                     return LayoutInflater.from(parent.context)
                             .inflate(R.layout.category_header, parent, false).also { it2 ->
                         it2.findViewById<TextView>(R.id.category_header_category_name).text = it
@@ -70,14 +61,14 @@ class CategorizedSortingAlgorithm : AbstractFeedSortingAlgorithm() {
                 }
 
             }, Card.NO_HEADER, ""))
-            result.addAll(map.get(it) ?: emptyList())
+            result.addAll(map[it] ?: emptyList())
         }
-        result.addAll(map.get(CATEGORY_NONE)?.filter { it.algoFlags?.contains("top") == false } ?: newList())
+        result.addAll(map[CATEGORY_NONE]?.filter { it.algoFlags?.contains("top") == false } ?: newList())
         return result
     }
 
     companion object {
-        val CATEGORY_NONE = "Uncategorized"
+        const val CATEGORY_NONE = "Uncategorized"
     }
 
 }

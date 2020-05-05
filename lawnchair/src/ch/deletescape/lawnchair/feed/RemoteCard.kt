@@ -17,6 +17,8 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package ch.deletescape.lawnchair.feed
 
 import android.content.Context
@@ -26,7 +28,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.ViewGroup
 import ch.deletescape.lawnchair.theme.ThemeManager
+import ch.deletescape.lawnchair.util.IRunnable
 
+@Suppress("unused")
 data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: RemoteInflateHelper,
                       val type: Int, val algoFlags: String? = null,
                       val identifier: Int = title.hashCode()) : Parcelable {
@@ -35,6 +39,9 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     var actionName: String? = null
     var actionOnCardActionSelectedListener: RemoteOnCardActionSelectedListener? = null
     var onRemoveListener: OnRemoveListener? = null
+    var globalClickListener: IRunnable? = null
+    var overrideOpacity: Float? = null
+    var indexData: String? = null
 
     constructor(parcel: Parcel) : this(parcel.readParcelable(Bitmap::class.java.classLoader),
                                        parcel.readString(), RemoteInflateHelper.Stub.asInterface(
@@ -45,6 +52,9 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         actionOnCardActionSelectedListener =
                 RemoteOnCardActionSelectedListener.Stub.asInterface(parcel.readStrongBinder())
         onRemoveListener = OnRemoveListener.Stub.asInterface(parcel.readStrongBinder())
+        globalClickListener = IRunnable.Stub.asInterface(parcel.readStrongBinder())
+        overrideOpacity = parcel.readString()?.toFloatOrNull()
+        indexData = parcel.readString()
     }
 
     constructor(icon: Bitmap?, title: String?, inflateHelper: RemoteInflateHelper, type: Int,
@@ -62,17 +72,17 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
     }
 
     object Types {
-        val DEFAULT = 0
-        val RAISE = 1 shl 1
-        val NARROW = 1 shl 2
-        val TEXT_ONLY = 1 shl 3
-        val NO_HEADER = 1 shl 4;
+        const val DEFAULT = 0
+        const val RAISE = 1 shl 1
+        const val NARROW = 1 shl 2
+        const val TEXT_ONLY = 1 shl 3
+        const val NO_HEADER = 1 shl 4
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(icon, flags)
         parcel.writeString(title)
-        parcel.writeStrongBinder(inflateHelper.asBinder());
+        parcel.writeStrongBinder(inflateHelper.asBinder())
         parcel.writeInt(type)
         parcel.writeString(algoFlags)
         parcel.writeInt(identifier)
@@ -81,6 +91,9 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
         parcel.writeString(actionName)
         parcel.writeStrongBinder(actionOnCardActionSelectedListener?.asBinder())
         parcel.writeStrongBinder(onRemoveListener?.asBinder())
+        parcel.writeStrongBinder(globalClickListener?.asBinder())
+        parcel.writeString(overrideOpacity?.toString())
+        parcel.writeString(indexData)
     }
 
     override fun describeContents(): Int {
@@ -108,8 +121,15 @@ data class RemoteCard(val icon: Bitmap?, val title: String?, val inflateHelper: 
                 actionListener = { actionOnCardActionSelectedListener?.onAction() }
                 actionName = this@RemoteCard.actionName
             }
-            onRemoveListener = {
-                this@RemoteCard.onRemoveListener?.onRemove()
+            if (this@RemoteCard.onRemoveListener != null) {
+                onRemoveListener = {
+                    this@RemoteCard.onRemoveListener?.onRemove()
+                }
+            }
+            if (this@RemoteCard.globalClickListener != null) {
+                globalClickListener = {
+                    this@RemoteCard.globalClickListener?.run()
+                }
             }
         }
     }

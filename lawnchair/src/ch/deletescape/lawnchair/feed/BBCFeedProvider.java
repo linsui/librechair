@@ -20,18 +20,19 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.HashMap;
-import kotlin.Pair;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.CharSequenceInputStream;
+
 import org.jetbrains.annotations.NotNull;
 import org.xml.sax.InputSource;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Objects;
+
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
@@ -54,6 +55,7 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
         feeds.put("KOR", AS);
         feeds.put("KEN", AF);
         feeds.put("ZAF", AF);
+        feeds.put("CAF", AF);
         feeds.put("DZA", AF);
         feeds.put("WORLD", WD);
     }
@@ -64,23 +66,22 @@ public class BBCFeedProvider extends AbstractLocationAwareRSSProvider {
 
     @NotNull
     @Override
-    public SyndFeed getLocationAwareFeed(@NotNull Pair<Double, Double> location,
-            @NotNull String country) {
-        try {
-            String feed = IOUtils.toString(
-                    new URL(feeds.get(country)).openConnection()
-                            .getInputStream(), Charset
-                            .defaultCharset());
-            return new SyndFeedInput().build(new InputSource(
-                    new CharSequenceInputStream(feed, Charset.defaultCharset())));
-        } catch (FeedException | IOException e) {
-            throw new RuntimeException(e);
+    public SyndFeed getLocationAwareFeed(@NotNull String country) {
+        InputStream is = FeedUtil.downloadDirect(Objects.requireNonNull(feeds.get(country)), getContext(), null);
+        if (is == null) {
+            throw new RuntimeException("no available feed");
+        } else {
+            try {
+                return new SyndFeedInput().build(new InputSource(is));
+            } catch (FeedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
     @NotNull
     @Override
     public SyndFeed getFallbackFeed() {
-        return getLocationAwareFeed(new Pair<>(0d, 0d), "WORLD");
+        return getLocationAwareFeed("WORLD");
     }
 }

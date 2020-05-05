@@ -21,14 +21,21 @@ package ch.deletescape.lawnchair.feed;
 
 import android.app.AlarmManager;
 import android.app.AlarmManager.AlarmClockInfo;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
+
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import kotlin.Unit;
 
 public class AlarmEventProvider extends FeedProvider {
 
@@ -37,38 +44,38 @@ public class AlarmEventProvider extends FeedProvider {
     }
 
     @Override
-    public void onFeedShown() {
-
+    public boolean isActionFree() {
+        return true;
     }
 
     @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
+    public boolean isVolatile() {
+        return true;
     }
 
     @Override
     public List<Card> getCards() {
         AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        if (manager == null) {
+            return Collections.emptyList();
+        }
         AlarmClockInfo info = manager.getNextAlarmClock();
         if (info != null) {
-            Drawable alarm = getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp);
-            alarm = LawnchairUtilsKt.tint(alarm,
+            Drawable alarm = LawnchairUtilsKt.tint(Objects.requireNonNull(
+                    getContext().getDrawable(R.drawable.ic_alarm_on_black_24dp)),
                     FeedAdapter.Companion.getOverrideColor(getContext()));
-            return Collections.singletonList(new Card(alarm,
+            return Collections.singletonList(FeedUtil.apply(new Card(alarm,
                     LawnchairUtilsKt.formatTime(new Date(info.getTriggerTime()), getContext()),
                     parent -> new View(getContext()),
-                    Card.Companion.getRAISE() | Card.Companion.getTEXT_ONLY(),
-                    "nosort,top", "alarmEvent".hashCode()));
+                    Card.RAISE | Card.TEXT_ONLY,
+                    "nosort,top", "alarmEvent".hashCode()), it -> it.globalClickListener = view -> {
+                try {
+                    info.getShowIntent().send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
+                return Unit.INSTANCE;
+            }));
         }
         return Collections.emptyList();
     }

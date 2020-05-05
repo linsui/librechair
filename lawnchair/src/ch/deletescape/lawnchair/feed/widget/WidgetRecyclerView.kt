@@ -19,64 +19,39 @@
 
 package ch.deletescape.lawnchair.feed.widget
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import androidx.recyclerview.widget.RecyclerView
 import ch.deletescape.lawnchair.colors.ColorEngine
-import ch.deletescape.lawnchair.feed.CalendarEventProvider
-import ch.deletescape.lawnchair.feed.FeedAdapter
-import ch.deletescape.lawnchair.feed.FeedWeatherStatsProvider
-import ch.deletescape.lawnchair.feed.TheGuardianFeedProvider
+import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.lawnchairPrefs
-import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.setAlpha
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 class WidgetRecyclerView(context: Context, attrs: AttributeSet?) : RecyclerView(context, attrs) {
     init {
-            background = ColorDrawable(
-                    ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
-                            (context.lawnchairPrefs.feedBackgroundOpacity * (255f / 100f)).roundToInt()))
-            adapter = FeedAdapter(listOf(FeedWeatherStatsProvider(context), CalendarEventProvider(context), TheGuardianFeedProvider(context)),
-                                  ColorEngine.getInstance(
-                                          context).feedBackground.value.resolveColor().setAlpha(
-                                          (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
-                                  context, null);
-            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
+        background = ColorDrawable(
+                ColorEngine.getInstance(context).feedBackground.value.resolveColor().setAlpha(
+                        (context.lawnchairPrefs.feedBackgroundOpacity * (255f / 100f)).roundToInt()))
+        adapter = FeedAdapter(
+                listOf(FeedWeatherStatsProvider(context), CalendarEventProvider(context),
+                        TheGuardianFeedProvider(context)),
+                ColorEngine.getInstance(
+                        context).feedBackground.value.resolveColor().setAlpha(
+                        (context.lawnchairPrefs.feedBackgroundOpacity * (255 / 100)).roundToInt()),
+                context, null)
+        layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
-            postDelayed({
-                            runOnNewThread {
-                                (adapter as? FeedAdapter)?.refresh()
-                                post {
-                                    adapter?.notifyDataSetChanged()
-                                }
-                            }
-                        }, 4000)
-    }
-
-    val tickReciever = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            runOnNewThread {
+        postDelayed({
+            FeedScope.launch {
                 (adapter as? FeedAdapter)?.refresh()
                 post {
-                    scrollToPosition(0)
-                    isLayoutFrozen = true
-                    postDelayed({
-                                    adapter?.notifyDataSetChanged()
-                                    isLayoutFrozen = false
-                                }, 100)
+                    adapter?.notifyDataSetChanged()
                 }
             }
-        }
-    }.also {
-        val intentFilter = IntentFilter()
-        intentFilter.addAction(Intent.ACTION_TIME_TICK)
-        intentFilter.addAction(Intent.ACTION_TIME_CHANGED)
-        intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED)
-        context.registerReceiver(it, intentFilter)
+        }, 4000)
     }
+
 }

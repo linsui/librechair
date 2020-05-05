@@ -44,6 +44,7 @@
             android:id="@+id/delete_item_action"
             style="@style/Widget.AppCompat.ButtonBar"
             tools:text="Action"
+            android:backgroundTint="@color/qsb_background_hotseat_white"
             android:textColor="@color/primary_text_material_dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -51,6 +52,7 @@
             android:id="@+id/remove_action"
             style="@style/Widget.AppCompat.ButtonBar"
             android:text="@string/delete"
+            android:backgroundTint="@color/qsb_background_hotseat_white"
             android:textColor="@color/primary_text_material_dark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

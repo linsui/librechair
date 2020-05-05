@@ -76,7 +76,7 @@
 
         <ch.deletescape.lawnchair.preferences.ForecastProviderPreference
             android:defaultValue="ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider"
-            android:key="pref_forecast_provider"
+            android:key="smartspace_weather_provider"
             android:summary="%s"
             android:title="@string/title_pref_forecast_provider" />
 

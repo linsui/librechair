@@ -20,21 +20,31 @@
 package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.WindowManager;
-import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
+import ch.deletescape.lawnchair.feed.impl.FeedController;
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+
+@SuppressWarnings("unchecked")
 public abstract class FeedProvider {
 
     private Context context;
     private Map<String, String> arguments;
     private FeedAdapter adapter;
     private LauncherFeed feed;
-    private boolean requestedRefresh;
     private FeedProviderContainer container;
     private WindowManager windowService;
+    private boolean hasUnread;
+
 
     public FeedProvider(Context c) {
         this(c, new HashMap<>());
@@ -50,18 +60,21 @@ public abstract class FeedProvider {
         return context;
     }
 
+    public boolean isVolatile() {
+        return false;
+    }
 
-    public abstract void onFeedShown();
+    public boolean isActionFree() {
+        return false;
+    }
 
+    public boolean isSearchable() {
+        return false;
+    }
 
-    public abstract void onFeedHidden();
-
-
-    public abstract void onCreate();
-
-
-    public abstract void onDestroy();
-
+    public FeedAdapter getAdapter() {
+        return adapter;
+    }
 
     public abstract List<Card> getCards();
 
@@ -69,28 +82,25 @@ public abstract class FeedProvider {
         this.adapter = adapter;
     }
 
-    @SuppressWarnings("WeakerAccess")
-    protected void requestRefresh() {
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     public int getBackgroundColor() {
-        return adapter == null ? 0 : adapter.getBackgroundColor();
+        return feed != null ? feed.getBackgroundColor() :
+                adapter == null ? 0 : adapter.getBackgroundColor();
     }
 
     public LauncherFeed getFeed() {
         return feed;
     }
 
+    void setContext(Context context) {
+        this.context = context;
+    }
+
     public void setFeed(LauncherFeed feed) {
         this.feed = feed;
     }
 
-    protected void displayScreen(ProviderScreen screen, float x,
-            float y) {
-        screen.display(this, (int) x, (int) y);
+    public List<Card> getPreviewItems() {
+        return Collections.EMPTY_LIST;
     }
 
     public Map<String, String> getArguments() {
@@ -105,7 +115,60 @@ public abstract class FeedProvider {
         this.container = container;
     }
 
+    public List<Action> getActions(boolean exclusive) {
+        return Collections.EMPTY_LIST;
+    }
+
+    public void markRead() {
+        this.hasUnread = false;
+        if (feed != null) {
+            feed.onUnreadStateChanged();
+        }
+    }
+
+    public void markUnread() {
+        this.hasUnread = true;
+        if (feed != null) {
+            feed.onUnreadStateChanged();
+        }
+    }
+
+    public boolean hasUnread() {
+        return hasUnread;
+    }
+
+    protected void requestRefreshFeed() {
+        if (feed != null) {
+            Executors.newSingleThreadExecutor().submit(() -> feed.refresh(0, 0, true, true));
+        } else if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    @SuppressWarnings("WeakerAccess")
     public WindowManager getWindowService() {
         return windowService;
     }
+
+    @Nullable
+    public FeedController getControllerView() {
+        if (getFeed() != null) {
+            return getFeed().getFeedController();
+        } else {
+            return null;
+        }
+    }
+
+    public static class Action {
+        public Action(Drawable item, String name, Runnable onClick) {
+            this.icon = item;
+            this.name = name;
+            this.onClick = onClick;
+        }
+
+        public String name;
+        public Runnable onClick;
+        public Drawable icon;
+    }
+
 }

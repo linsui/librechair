@@ -30,6 +30,8 @@ import com.android.launcher3.Utilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairPreferences.OnPreferenceChangeListener;
 import ch.deletescape.lawnchair.feed.images.providers.CustomBackgroundProvider;
@@ -39,8 +41,9 @@ public class FeedCustomBackgroundPreference extends Preference implements OnPref
     public FeedCustomBackgroundPreference(@NotNull Context context,
             @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setVisible(Utilities.getLawnchairPrefs(context).getFeedBackground().getQualifiedName()
-                .equals(CustomBackgroundProvider.class.getName()));
+        setVisible(Objects.equals(Utilities.getLawnchairPrefs(
+                context).getFeedBackground().getClazz().getQualifiedName(),
+                CustomBackgroundProvider.class.getName()));
         Utilities.getLawnchairPrefs(context).addOnPreferenceChangeListener("pref_feed_background", this);
     }
 
@@ -57,7 +60,7 @@ public class FeedCustomBackgroundPreference extends Preference implements OnPref
     @Override
     public void onValueChanged(@NotNull String key, @NotNull LawnchairPreferences prefs,
             boolean force) {
-        setVisible(prefs.getFeedBackground().getQualifiedName()
+        setVisible(prefs.getFeedBackground().getClazz().getQualifiedName()
                 .equals(CustomBackgroundProvider.class.getName()));
     }
 }

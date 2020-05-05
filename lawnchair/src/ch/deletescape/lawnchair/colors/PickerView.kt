@@ -38,7 +38,9 @@ package ch.deletescape.lawnchair.colors
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
@@ -48,7 +50,9 @@ import ch.deletescape.lawnchair.ViewPagerAdapter
 import ch.deletescape.lawnchair.colors.preferences.ColorPreviewView
 import ch.deletescape.lawnchair.colors.preferences.ExpandFillLinearLayout
 import ch.deletescape.lawnchair.colors.preferences.mapToResolvers
+import ch.deletescape.lawnchair.feed.go.isDark
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.fromColorRes
 import ch.deletescape.lawnchair.getTabRipple
 import ch.deletescape.lawnchair.setCustomFont
 import com.android.launcher3.R
@@ -94,7 +98,9 @@ class PickerView(context: Context, initialColor: Int,
     }
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.tabbed_color_picker, this)
+        val ctx = ContextThemeWrapper(context, if (!context.isDark) R.style.Theme_MaterialComponents_Light else R.style.FeedTheme_Dark)
+        LayoutInflater.from(ctx)
+                .inflate(R.layout.tabbed_color_picker, this)
         measure(MeasureSpec.EXACTLY, 0)
         viewPager.adapter = ViewPagerAdapter(
                 listOf(Pair(context.getString(R.string.color_presets), initPresetList()),
@@ -107,6 +113,10 @@ class PickerView(context: Context, initialColor: Int,
         viewPager.childFilter = { it is ChromaView }
         tabLayout.setupWithViewPager(viewPager)
         val color = engine.accent
+        tabLayout.tabTextColors = ColorStateList(arrayOf(intArrayOf(android.R.attr.state_selected),
+                intArrayOf()), intArrayOf(color,
+                if (context.isDark) R.color.textColorPrimary.fromColorRes(
+                        context) else R.color.textColorPrimaryInverse.fromColorRes(context)))
         tabLayout.tabRippleColor = getTabRipple(context, color)
         tabLayout.setSelectedTabIndicatorColor(color)
         tabLayout.setCustomFont(CustomFontManager.FONT_BUTTON, false)

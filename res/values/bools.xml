@@ -20,4 +20,6 @@
     <bool name="notification_badging_enabled">true</bool>
 
     <bool name="enable_install_shortcut_api">true</bool>
+
+    <bool name="geckoview_available">true</bool>
 </resources>

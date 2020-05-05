@@ -46,6 +46,8 @@
         <item name="workspaceKeyShadowColor">#44000000</item>
         <item name="workspaceStatusBarScrim">@drawable/workspace_bg</item>
         <item name="widgetsTheme">@style/WidgetContainerTheme</item>
+        <item name="folderBadgeColor">?android:attr/colorPrimary</item>
+        <item name="loadingIconColor">#FFF</item>
 
         <!-- Backports -->
         <item name="android:textColorPrimary">@color/primary_text_material_light</item>
@@ -86,6 +88,7 @@
         <item name="popupColorTertiary">#757575</item> <!-- Gray 600 -->
         <item name="widgetsTheme">@style/WidgetContainerTheme.Dark</item>
         <item name="isMainColorDark">true</item>
+        <item name="loadingIconColor">#000</item>
         <item name="workspaceStatusBarScrim">@drawable/workspace_bg_dark</item>
         <item name="android:alertDialogTheme">@style/SettingsTheme.V2.Dark.Dialog</item>
         <item name="android:colorAccent">@color/colorAccentDark</item>

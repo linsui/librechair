@@ -6,14 +6,18 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.icu.text.DateFormat;
 import android.icu.text.DisplayContext;
-import androidx.annotation.RequiresApi;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
-import ch.deletescape.lawnchair.LawnchairPreferences;
+
+import androidx.annotation.RequiresApi;
+
 import com.android.launcher3.R;
 import com.android.launcher3.Utilities;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
 
 public class IcuDateTextView extends DoubleShadowTextView {
     private DateFormat mDateFormat;
@@ -67,6 +71,11 @@ public class IcuDateTextView extends DoubleShadowTextView {
                     .setContext(DisplayContext.CAPITALIZATION_FOR_STANDALONE);
         }
         return oldFormat;
+    }
+
+    public static DateTimeFormatter getDateTimeFormat(Context context) {
+        return DateTimeFormatter.ofPattern(context
+                .getString(R.string.icu_abbrev_wday_month_day_no_year_jstdicu), Locale.getDefault());
     }
 
     private void registerReceiver() {

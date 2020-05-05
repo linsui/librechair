@@ -18,12 +18,12 @@
   ~     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout android:layout_margin="@dimen/dimen_feed_card_padding"
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/dimen_feed_card_padding">
+    android:layout_margin="@dimen/dimen_feed_card_padding">
     <ImageView
         android:id="@+id/card_provider_small_icon"
         android:layout_width="24dp"

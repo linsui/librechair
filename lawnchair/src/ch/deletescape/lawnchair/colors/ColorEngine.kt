@@ -65,7 +65,7 @@ class ColorEngine private constructor(val context: Context) :
                 prefs.addOnPreferenceChangeListener(this, key)
             }
             colorListeners[key]?.add(listener)
-            listener.onColorChange(ResolveInfo(key, getResolver(key)))
+                listener.onColorChange(ResolveInfo(key, getResolver(key)).apply { init = true })
         }
     }
 
@@ -160,7 +160,9 @@ class ColorEngine private constructor(val context: Context) :
             const val ALLAPPS_BACKGROUND = "pref_allAppsBackgroundColorResolver"
             const val SUPERG_BACKGROUND = "pref_superGBackgroundColorResolver"
             const val FEED_BACKGROUND = "pref_feedBackgroundColorResolver"
+            const val FEED_CHIP = "pref_feedChipColorResolver"
             const val FEED_CARD = "pref_feedCardColorResolver"
+            const val FEED_UNREAD_INDICATOR = "pref_feedUnreadIndicator"
             fun getDefaultResolver(key: String, engine: ColorEngine): ColorResolver {
                 val context = engine.context
                 return when (key) {
@@ -170,7 +172,7 @@ class ColorEngine private constructor(val context: Context) :
                     ALLAPPS_QSB_BG -> {
                         DrawerQsbAutoResolver(createConfig(key, engine))
                     }
-                    ALLAPPS_ICON_LABEL -> {
+                    ALLAPPS_ICON_LABEL, FEED_UNREAD_INDICATOR -> {
                         DrawerLabelAutoResolver(createConfig(key, engine))
                     }
                     WORKSPACE_ICON_LABEL -> {
@@ -186,6 +188,7 @@ class ColorEngine private constructor(val context: Context) :
                     SUPERG_BACKGROUND -> {
                         SuperGAutoResolver(createConfig(key, engine))
                     }
+                    FEED_CHIP-> FeedCardResolver(createConfig(key, engine))
                     else -> {
                         engine.createColorResolverNullable(key, LawnchairConfig.getInstance(
                                 context).defaultColorResolver) ?: PixelAccentResolver(
@@ -292,5 +295,8 @@ class ColorEngine private constructor(val context: Context) :
         val luminance = color.luminance
         val isDark = luminance < 0.5f
         val resolverClass = resolver::class.java
+
+        @Transient
+        var init: Boolean = false
     }
 }

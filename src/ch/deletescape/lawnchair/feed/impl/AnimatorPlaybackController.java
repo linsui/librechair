@@ -15,18 +15,20 @@
  */
 package ch.deletescape.lawnchair.feed.impl;
 
-import static ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+
 import com.android.launcher3.anim.AnimationSuccessListener;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static ch.deletescape.lawnchair.feed.impl.Interpolators.LINEAR;
 
 /**
  * Helper class to control the playback of an {@link AnimatorSet}, with custom interpolators and
@@ -37,12 +39,12 @@ import java.util.List;
  */
 public abstract class AnimatorPlaybackController implements ValueAnimator.AnimatorUpdateListener {
 
-    protected final AnimatorSet mAnim;
+    final AnimatorSet mAnim;
     private final ValueAnimator mAnimationPlayer;
     private final long mDuration;
-    protected float mCurrentFraction;
-    protected boolean mTargetCancelled = false;
-    protected Runnable mOnCancelRunnable;
+    float mCurrentFraction;
+    boolean mTargetCancelled = false;
+    private Runnable mOnCancelRunnable;
     private Runnable mEndAction;
 
     protected AnimatorPlaybackController(AnimatorSet anim, long duration,
@@ -91,10 +93,6 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
      */
     public static AnimatorPlaybackController wrap(AnimatorSet anim, long duration,
             Runnable onCancelRunnable) {
-
-        /**
-         * TODO: use {@link AnimatorSet#setCurrentPlayTime(long)} once b/68382377 is fixed.
-         */
         return new AnimatorPlaybackControllerVL(anim, duration, onCancelRunnable);
     }
 
@@ -168,7 +166,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
         setPlayFraction((float) valueAnimator.getAnimatedValue());
     }
 
-    protected long clampDuration(float fraction) {
+    long clampDuration(float fraction) {
         float playPos = mDuration * fraction;
         if (playPos <= 0) {
             return 0;
@@ -241,7 +239,7 @@ public abstract class AnimatorPlaybackController implements ValueAnimator.Animat
             // Build animation list
             ArrayList<ValueAnimator> childAnims = new ArrayList<>();
             getAnimationsRecur(mAnim, childAnims);
-            mChildAnimations = childAnims.toArray(new ValueAnimator[childAnims.size()]);
+            mChildAnimations = childAnims.toArray(new ValueAnimator[0]);
         }
 
         private void getAnimationsRecur(AnimatorSet anim, ArrayList<ValueAnimator> out) {

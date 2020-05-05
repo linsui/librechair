@@ -19,10 +19,11 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 public class MixerSortingAlgorithm extends AbstractFeedSortingAlgorithm {
 
@@ -49,8 +50,7 @@ public class MixerSortingAlgorithm extends AbstractFeedSortingAlgorithm {
             }
             shouldMix.add(mixQueue);
         }
-        List<Card> cards = new ArrayList<>();
-        cards.addAll(top);
+        List<Card> cards = new ArrayList<>(top);
         while (true) {
             int empty = 0;
             for (List<Card> iter : shouldMix) {

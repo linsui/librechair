@@ -19,11 +19,13 @@
 
 package ch.deletescape.lawnchair.feed.widgets
 
+import android.annotation.SuppressLint
 import android.appwidget.AppWidgetHost
 import android.appwidget.AppWidgetHostView
 import android.appwidget.AppWidgetProviderInfo
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -42,13 +44,15 @@ import kotlin.math.abs
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
 
-class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
+@Suppress("RedundantLambdaArrow")
+class OverlayWidgetHost(val context: Context, hostId: Int) : AppWidgetHost(context, hostId) {
 
     override fun onCreateView(context: Context, appWidgetId: Int,
                               appWidget: AppWidgetProviderInfo?): AppWidgetHostView {
         return OverlayWidgetView(context, appWidgetId)
     }
 
+    @SuppressLint("ViewConstructor")
     class OverlayWidgetView(context: Context, val specialId: Int) : AppWidgetHostView(context) {
 
         private val mLongPressHelper = CheckLongPressHelper(this)
@@ -112,12 +116,14 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         fun forceStyle() {
             allChildren[0].let {
                 if (it.background != null) {
-                    it.background = GradientDrawable(GradientDrawable.Orientation.BL_TR, intArrayOf(if (dark)
-                        R.color.qsb_background_dark.fromColorRes(context) else R.color.qsb_background.fromColorRes(context),
-                            if (dark)
-                                R.color.qsb_background_dark.fromColorRes(context)
-                            else
-                                R.color.qsb_background.fromColorRes(context))).apply {
+                    it.background = GradientDrawable(GradientDrawable.Orientation.BL_TR,
+                            intArrayOf(if (dark)
+                                R.color.qsb_background_dark.fromColorRes(
+                                        context) else R.color.qsb_background.fromColorRes(context),
+                                    if (dark)
+                                        R.color.qsb_background_dark.fromColorRes(context)
+                                    else
+                                        R.color.qsb_background.fromColorRes(context))).apply {
 
                     }.apply {
                         elevation = 16f.applyAsDip(context)
@@ -127,7 +133,7 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                             context.lawnchairPrefs.searchBarRadius
                     }
                 }
-                background?.setColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC)
+                background?.setColorFilter(PorterDuffColorFilter(Color.DKGRAY, PorterDuff.Mode.SRC))
             }
             allChildren.forEach { view ->
                 if (dark && darkSubst.keys.any { it.isSuperclassOf(view::class) }) {
@@ -185,40 +191,47 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         private companion object {
-            var lightSubst = mapOf(
-                    (TextView::class as KClass<out View>) to { it: View ->
-                        (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_light
-                                .fromColorRes(it.context)));
-                        Unit
-                    },
-                    (ImageView::class as KClass<out View>) to { it: View ->
-                        (it as ImageView)
-                        if (it.drawable != null) {
-                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_light.fromColorRes(it.context)))
-                        }
-                        Unit
+            var lightSubst = mapOf((TextView::class as KClass<out View>) to { it: View ->
+                (it as TextView)
+                it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimaryInverse
+                        .fromColorRes(it.context)))
+                Unit
+            }, (ImageView::class as KClass<out View>) to { it: View ->
+                (it as ImageView)
+                if (it.drawable != null) {
+                    try {
+                        it.setImageBitmap(processDrawable(it.drawable,
+                                R.color.textColorPrimaryInverse.fromColorRes(
+                                        it.context)))
+                    } catch (e: Resources.NotFoundException) {
+                        // TODO why COSP throw random notfoundexception
                     }
-            )
+                }
+                Unit
+            })
             var darkSubst = mapOf(
                     (TextView::class as KClass<out View>) to { it: View ->
                         (it as TextView)
-                        it.setTextColor(ColorStateList.valueOf(R.color.primary_text_material_dark
-                                .fromColorRes(it.context)));
+                        it.setTextColor(ColorStateList.valueOf(R.color.textColorPrimary
+                                .fromColorRes(it.context)))
                         Unit
                     },
                     (ImageView::class as KClass<out View>) to { it: View ->
                         (it as ImageView)
                         if (it.drawable != null) {
-                            it.setImageBitmap(processDrawable(it.drawable, it.context, R.color.primary_text_material_dark.fromColorRes(it.context)))
+                            try {
+                                it.setImageBitmap(processDrawable(it.drawable,
+                                        R.color.textColorPrimary.fromColorRes(
+                                                it.context)))
+                            } catch (e: Resources.NotFoundException) {
+                                // TODO why COSP throw random notfoundexception
+                            }
                         }
                         Unit
                     }
             )
 
-            val SUBST_MASK = arrayOf(3, 3, 3)
-
-            fun processDrawable(drawable: Drawable, c: Context, color: Int): Bitmap {
+            fun processDrawable(drawable: Drawable, color: Int): Bitmap {
                 val src = drawable.toBitmap()!!
                 val bitmap = Bitmap.createBitmap(
                         src.width,
@@ -233,18 +246,16 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
                             val r = pixel.red
                             val g = pixel.green
                             val b = pixel.blue
-
-                            d("processDrawable: pixel $x,$y is $pixel")
-
-                            tgt.drawPoint(x.toFloat(), y.toFloat(), colorPaintCache[src.getPixel(x, y)]
-                                    ?: Paint().apply {
-                                        if (abs(r - g) <= 32
-                                                && abs(r - b) <= 32) {
-                                            this.color = color
-                                        } else {
-                                            this.color = pixel
-                                        }
-                                    }.also { colorPaintCache[src.getPixel(x, y)] = it })
+                            tgt.drawPoint(x.toFloat(), y.toFloat(),
+                                    colorPaintCache[src.getPixel(x, y)]
+                                            ?: Paint().apply {
+                                                if (abs(r - g) <= 32
+                                                        && abs(r - b) <= 32) {
+                                                    this.color = color
+                                                } else {
+                                                    this.color = pixel
+                                                }
+                                            }.also { colorPaintCache[src.getPixel(x, y)] = it })
                         }
                     }
                 }
@@ -260,7 +271,8 @@ class OverlayWidgetHost(context: Context, hostId: Int) : AppWidgetHost(context, 
         }
 
         init {
-            viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            viewTreeObserver.addOnGlobalLayoutListener(object :
+                    ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
                     d("onGlobalLayout: specialId: $specialId")
                     if (specialId == SPECIAL_SMARTSPACE) {

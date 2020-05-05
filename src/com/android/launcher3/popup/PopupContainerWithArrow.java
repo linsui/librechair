@@ -16,13 +16,6 @@
 
 package com.android.launcher3.popup;
 
-import static com.android.launcher3.notification.NotificationMainView.NOTIFICATION_ITEM_INFO;
-import static com.android.launcher3.popup.PopupPopulator.MAX_SHORTCUTS;
-import static com.android.launcher3.popup.PopupPopulator.MAX_SHORTCUTS_IF_NOTIFICATIONS;
-import static com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
-import static com.android.launcher3.userevent.nano.LauncherLogProto.ItemType;
-import static com.android.launcher3.userevent.nano.LauncherLogProto.Target;
-
 import android.animation.AnimatorSet;
 import android.animation.LayoutTransition;
 import android.annotation.TargetApi;
@@ -40,6 +33,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.android.launcher3.AbstractFloatingView;
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.DragSource;
@@ -55,7 +49,6 @@ import com.android.launcher3.accessibility.LauncherAccessibilityDelegate;
 import com.android.launcher3.accessibility.ShortcutMenuAccessibilityDelegate;
 import com.android.launcher3.badge.BadgeInfo;
 import com.android.launcher3.dragndrop.DragController;
-import com.android.launcher3.dragndrop.DragLayer;
 import com.android.launcher3.dragndrop.DragOptions;
 import com.android.launcher3.dragndrop.DragView;
 import com.android.launcher3.folder.FolderIcon;
@@ -66,13 +59,23 @@ import com.android.launcher3.notification.NotificationKeyData;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.DeepShortcutView;
 import com.android.launcher3.shortcuts.ShortcutDragPreviewProvider;
+import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.touch.ItemLongClickListener;
 import com.android.launcher3.util.PackageUserKey;
+import com.android.launcher3.views.BaseDragLayer;
 import com.google.android.apps.nexuslauncher.allapps.ActionView;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.android.launcher3.notification.NotificationMainView.NOTIFICATION_ITEM_INFO;
+import static com.android.launcher3.popup.PopupPopulator.MAX_SHORTCUTS;
+import static com.android.launcher3.popup.PopupPopulator.MAX_SHORTCUTS_IF_NOTIFICATIONS;
+import static com.android.launcher3.userevent.nano.LauncherLogProto.ContainerType;
+import static com.android.launcher3.userevent.nano.LauncherLogProto.ItemType;
+import static com.android.launcher3.userevent.nano.LauncherLogProto.Target;
 
 /**
  * A container for shortcuts to deep links and notifications associated with an app.
@@ -147,10 +150,14 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
                 command, mOriginalIcon, ContainerType.DEEPSHORTCUTS);
     }
 
+    public OnClickListener getItemClickListener() {
+        return ItemClickHandler.INSTANCE;
+    }
+
     @Override
     public boolean onControllerInterceptTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-            DragLayer dl = mLauncher.getDragLayer();
+            BaseDragLayer dl = getPopupContainer();
             if (!dl.isEventOverView(this, ev)) {
                 mLauncher.getUserEventDispatcher().logActionTapOutside(
                         LoggerUtils.newContainerTarget(ContainerType.DEEPSHORTCUTS));
@@ -216,7 +223,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
     }
 
     @TargetApi(Build.VERSION_CODES.P)
-    private void populateAndShow(final BubbleTextView originalIcon, final List<String> shortcutIds,
+    protected void populateAndShow(final BubbleTextView originalIcon, final List<String> shortcutIds,
                                  final List<NotificationKeyData> notificationKeys, List<SystemShortcut> systemShortcuts) {
         mNumNotifications = notificationKeys.size();
         mOriginalIcon = originalIcon;
@@ -298,7 +305,7 @@ public class PopupContainerWithArrow extends ArrowPopup implements DragSource,
 
     @Override
     protected void getTargetObjectLocation(Rect outPos) {
-        mLauncher.getDragLayer().getDescendantRectRelativeToSelf(mOriginalIcon, outPos);
+        getPopupContainer().getDescendantRectRelativeToSelf(mOriginalIcon, outPos);
         outPos.top += mOriginalIcon.getPaddingTop();
         outPos.left += mOriginalIcon.getPaddingLeft();
         outPos.right -= mOriginalIcon.getPaddingRight();

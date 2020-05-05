@@ -33,18 +33,22 @@ import com.android.launcher3.R
 
 class NoteListProvider(c: Context) : FeedProvider(c) {
     private val providerMap: MutableMap<Intent, INoteProvider> = mutableMapOf()
-    fun updateBindings(intent: Intent? = null) {
+    fun updateBindings(intent: Intent? = null): Unit = synchronized(this) {
         if (intent != null) {
             try {
                 context.bindService(intent, object : ServiceConnection {
                     override fun onServiceDisconnected(name: ComponentName?) {
-                        providerMap.remove(intent)
+                        synchronized(providerMap) {
+                            providerMap.remove(intent)
+                        }
                         updateBindings(intent)
                     }
 
                     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                         try {
-                            providerMap += intent to INoteProvider.Stub.asInterface(service)
+                            synchronized(providerMap) {
+                                providerMap += intent to INoteProvider.Stub.asInterface(service)
+                            }
                         } catch (e: RuntimeException) {
                             e.printStackTrace()
                         }
@@ -59,41 +63,33 @@ class NoteListProvider(c: Context) : FeedProvider(c) {
             }
         }
     }
-
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
+    override fun isVolatile() = true
 
     override fun getCards(): List<Card> {
         if (providerMap.isEmpty()) {
             updateBindings()
         }
-        return listOf(Card(null, null, { parent, _ ->
-            (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
-                setOnClickListener {
-                    NoteProviderScreen(context).display(this@NoteListProvider, it.getPostionOnScreen().first,
-                                                        it.getPostionOnScreen().second)
+        synchronized(providerMap) {
+            return listOf(Card(null, null, { parent, _ ->
+                (parent as ViewGroup).inflate(R.layout.manage_notes).apply {
+                    setOnClickListener {
+                        NoteProviderScreen(context).display(this@NoteListProvider,
+                                it.getPositionOnScreen().first,
+                                it.getPositionOnScreen().second)
+                    }
                 }
+            }, Card.RAISE or Card.NO_HEADER, "nosort, top",
+                    "manageNotes".hashCode())) + providerMap.map {
+                it.value.notes
+            }.flatten().map {
+                Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).tint(
+                        if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
+                        it.title, { parent, _ ->
+                    TextView(parent.context).apply {
+                        text = it.content
+                    }
+                }, Card.RAISE, "")
             }
-        }, Card.RAISE or Card.NO_HEADER, "nosort, top",
-                           "manageNotes".hashCode())) + providerMap.map {
-            it.value.notes
-        }.flatten().map {
-            Card(R.drawable.ic_note_black_24dp.fromDrawableRes(context).tint(
-                    if (it.color == 0) context.getColorAttr(R.attr.colorAccent) else it.color),
-                 it.title, { parent, _ ->
-                     TextView(parent.context).apply {
-                         text = it.content
-                     }
-                 }, Card.RAISE, "")
         }
     }
 }

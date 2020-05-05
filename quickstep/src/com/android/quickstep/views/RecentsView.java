@@ -269,7 +269,7 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
     public RecentsView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setPageSpacing(getResources().getDimensionPixelSize(R.dimen.recents_page_spacing));
-        enableFreeScroll(true);
+        setEnableFreeScroll(true);
 
         mFastFlingVelocity = getResources()
                 .getDimensionPixelSize(R.dimen.recents_fast_fling_velocity);
@@ -655,7 +655,7 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
         startHome();
     }
 
-    protected abstract void startHome();
+    public abstract void startHome();
 
     public void reset() {
         mRunningTaskId = -1;
@@ -701,6 +701,15 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
             taskView.bind(mTmpRunningTask);
         }
         setCurrentTask(runningTaskId);
+    }
+
+    public @Nullable TaskView getRunningTaskView() {
+        return getTaskView(mRunningTaskId);
+    }
+
+    public int getRunningTaskIndex() {
+        TaskView tv = getRunningTaskView();
+        return tv == null ? -1 : indexOfChild(tv);
     }
 
     /**
@@ -1102,10 +1111,6 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
         child.setAlpha(mContentAlpha);
     }
 
-    public TaskView getRunningTaskView() {
-        return getTaskView(mRunningTaskId);
-    }
-
     /**
      * @return The most recent task that is older than the currently running task. If there is
      * currently no running task or there is no task older than it, then return null.
@@ -1257,11 +1262,10 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
 
             int otherAdjacentTaskIndex = centerTaskIndex + (centerTaskIndex - taskIndex);
             if (otherAdjacentTaskIndex >= 0 && otherAdjacentTaskIndex < getPageCount()) {
-                anim.play(ObjectAnimator.ofPropertyValuesHolder(getPageAt(otherAdjacentTaskIndex),
-                        new PropertyListBuilder()
-                                .translationX(mIsRtl ? -displacementX : displacementX)
-                                .scale(1)
-                                .build()));
+                anim.play(new PropertyListBuilder()
+                        .translationX(mIsRtl ? -displacementX : displacementX)
+                        .scale(1)
+                        .build(getPageAt(otherAdjacentTaskIndex)));
             }
         }
         return anim;
@@ -1270,11 +1274,10 @@ public abstract class RecentsView<T extends BaseDraggingActivity> extends PagedV
     private Animator createAnimForChild(TaskView child, float[] toScaleAndTranslation) {
         AnimatorSet anim = new AnimatorSet();
         anim.play(ObjectAnimator.ofFloat(child, TaskView.ZOOM_SCALE, toScaleAndTranslation[0]));
-        anim.play(ObjectAnimator.ofPropertyValuesHolder(child,
-                        new PropertyListBuilder()
-                                .translationX(toScaleAndTranslation[1])
-                                .translationY(toScaleAndTranslation[2])
-                                .build()));
+        anim.play(new PropertyListBuilder()
+                .translationX(toScaleAndTranslation[1])
+                .translationY(toScaleAndTranslation[2])
+                .build(child));
         return anim;
     }
 

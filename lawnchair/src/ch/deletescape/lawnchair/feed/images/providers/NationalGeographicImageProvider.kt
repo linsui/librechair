@@ -23,28 +23,35 @@ package ch.deletescape.lawnchair.feed.images.providers
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Handler
 import android.os.SystemClock
+import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.ng.NationalGeographicRetrofitServiceFactory
-import ch.deletescape.lawnchair.tomorrow
-import kotlinx.coroutines.GlobalScope
+import ch.deletescape.lawnchair.mainHandler
 import kotlinx.coroutines.async
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
-import java.util.*
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     override val expiryTime: Long
         get() = TimeUnit.DAYS.toMillis(1)
 
-    val cache: File
-        get() = File(c.cacheDir, "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+    var cache: File = File(c.cacheDir,
+            "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
 
-    override suspend fun getBitmap(context: Context): Bitmap? = GlobalScope.async {
+    init {
+        TickManager.subscribe {
+            cache = File(c.cacheDir,
+                    "ng_epoch_${TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())}_.png")
+        }
+    }
+
+    override suspend fun getBitmap(context: Context): Bitmap? = FeedScope.async {
         if (cache.exists()) {
             return@async BitmapFactory.decodeStream(FileInputStream(cache))
         } else {
@@ -55,7 +62,8 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
                     return@async null
                 } else {
                     return@async BitmapFactory
-                            .decodeStream(URL(response.body()!!.items[0].originalUrl).openStream())
+                            .decodeStream(
+                                    URL(response.body()!!.items[0].image.originalUrl).openStream())
                             .also {
                                 it.compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(cache))
                             }
@@ -68,13 +76,24 @@ class NationalGeographicImageProvider(val c: Context) : ImageProvider {
     }.await()
 
     override fun registerOnChangeListener(listener: () -> Unit) {
-        Handler(c.mainLooper).postAtTime(object : Function0<Unit> {
-            override fun invoke() {
-                listener()
-                Handler(c.mainLooper).postAtTime(this, SystemClock.uptimeMillis() + tomorrow(
-                        Date()).time - System.currentTimeMillis())
+        val runnable = object : Runnable {
+            override fun run() {
+                mainHandler.postAtTime(this, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                        .plusDays(1)
+                        .withHour(0)
+                        .withSecond(0)
+                        .withMinute(0)
+                        .withNano(0)
+                        .toEpochSecond() * 1000 - System.currentTimeMillis()))
+                listener.invoke()
             }
-        }, SystemClock.uptimeMillis() + tomorrow(
-                Date()).time - System.currentTimeMillis())
+        }
+        mainHandler.postAtTime(runnable, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                .plusDays(1)
+                .withHour(0)
+                .withSecond(0)
+                .withMinute(0)
+                .withNano(0)
+                .toEpochSecond() * 1000 - System.currentTimeMillis()))
     }
 }

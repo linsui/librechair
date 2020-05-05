@@ -51,6 +51,9 @@ class OkHttpClientBuilder {
             }
         })
         builder.addInterceptor {
+            if (it.request().isHttps.not()) {
+                error("Plain-text traffic via OKHTTP is disabled for security reasons")
+            }
             it.proceed(it.request()
                     .newBuilder()
                     .header("Cache-Control", "public, max-age=${TimeUnit.MINUTES.toSeconds(30)}").build())

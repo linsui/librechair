@@ -1,5 +1,6 @@
 package ch.deletescape.lawnchair.feed.images
 
+import android.annotation.SuppressLint
 import android.content.ContentProvider
 import android.content.ContentValues
 import android.database.Cursor
@@ -7,18 +8,19 @@ import android.database.MatrixCursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
 import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.Utilities
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 
+@SuppressLint("Registered")
 class CurrentImageProvider : ContentProvider() {
     companion object {
-        val AUTHORITY = "ch.deletescape.lawnchair.feed.FEED_BACKGROUND_IMAGE"
+        const val AUTHORITY = "ch.deletescape.lawnchair.feed.FEED_BACKGROUND_IMAGE"
         val SHARE_QUERIES = mutableListOf<String>()
     }
 
@@ -31,7 +33,7 @@ class CurrentImageProvider : ContentProvider() {
         d("query: query called. lastPathSegment: ${uri.lastPathSegment} shareQueries: $SHARE_QUERIES")
         val c = MatrixCursor(
                 arrayOf("_id", "_data", "orientation", "mime_type", "datetaken", "_display_name"))
-        c.addRow(arrayOf<Any?>(0, uri.lastPathSegment, 0, "image/png", System.currentTimeMillis(), ""))
+        c.addRow(arrayOf(0, uri.lastPathSegment, 0, "image/png", System.currentTimeMillis(), ""))
         return c
     }
 
@@ -39,19 +41,21 @@ class CurrentImageProvider : ContentProvider() {
         return "image/png"
     }
 
+    @Suppress("ControlFlowWithEmptyBody")
     @Throws(FileNotFoundException::class)
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor? = synchronized(this) {
         if (!SHARE_QUERIES.contains(uri.lastPathSegment!!)) {
             return null
         }
         d("openFile: openFile called. lastPathSegment: ${uri.lastPathSegment} shareQueries: $SHARE_QUERIES")
-        val currentBitmap = File(context!!.cacheDir, uri.lastPathSegment)
+        val currentBitmap = File(context!!.cacheDir, uri.lastPathSegment!!)
         currentBitmap.delete()
         var flag = false
-        GlobalScope.launch {
+        FeedScope.launch {
             try {
-                ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground,
-                                      context!!)?.getBitmap(context!!)!!
+                ImageProvider.inflate(Utilities.getLawnchairPrefs(context).feedBackground.clazz,
+                        Utilities.getLawnchairPrefs(context).feedBackground.meta,
+                        context!!)?.getBitmap(context!!)!!
                         .compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(currentBitmap))
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
@@ -60,7 +64,7 @@ class CurrentImageProvider : ContentProvider() {
         }
         while (!flag);
         val descriptor = ParcelFileDescriptor.open(
-                File(context!!.cacheDir, uri.lastPathSegment),
+                File(context!!.cacheDir, uri.lastPathSegment!!),
                 ParcelFileDescriptor.MODE_READ_ONLY)
         d("openFile: descriptor ${uri.lastPathSegment} is $descriptor")
         return descriptor

@@ -52,6 +52,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentManager.OnBackStackChangedListener;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceFragmentCompat.OnPreferenceDisplayDialogCallback;
@@ -61,7 +62,6 @@ import androidx.preference.PreferenceRecyclerViewAccessibilityDelegate;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SwitchPreference;
 import androidx.preference.TwoStatePreference;
-import androidx.preference.internal.AbstractMultiSelectListPreference;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
@@ -117,6 +117,7 @@ import ch.deletescape.lawnchair.preferences.CustomizableTabsPreference;
 import ch.deletescape.lawnchair.preferences.FeedProvidersFragment;
 import ch.deletescape.lawnchair.preferences.FeedProvidersPreference;
 import ch.deletescape.lawnchair.preferences.FeedWidgetsListPreference;
+import ch.deletescape.lawnchair.preferences.FragmentInitializer;
 import ch.deletescape.lawnchair.preferences.RSSSourcesFragment;
 import ch.deletescape.lawnchair.preferences.RSSSourcesPreference;
 import ch.deletescape.lawnchair.preferences.ResumablePreference;
@@ -672,7 +673,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
 
             getPreferenceManager().setSharedPreferencesName(LauncherFiles.SHARED_PREFERENCES_KEY);
 
-            disableReservedIconSpace(getPreferenceScreen());
+            transformPreferenceScreen(getPreferenceScreen());
 
             if (getContent() == R.xml.lawnchair_desktop_preferences) {
                 if (getResources().getBoolean(R.bool.notification_badging_enabled)) {
@@ -805,7 +806,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                     Intent shareIntent = new Intent();
                     shareIntent.setAction(Intent.ACTION_SEND);
                     shareIntent.setType("image/png");
-                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CurrentImageProvider.Companion.getAUTHORITY() + "/" + shareId));
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(
+                            "content://" + CurrentImageProvider.AUTHORITY + "/" + shareId));
                     shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     getActivity().startActivity(shareIntent);
                     return true;
@@ -852,12 +854,12 @@ public class SettingsActivity extends SettingsBaseActivity implements
             super.onDestroy();
         }
 
-        private void disableReservedIconSpace(PreferenceGroup group) {
+        private void transformPreferenceScreen(PreferenceGroup group) {
             group.setIconSpaceReserved(false);
             for (int i = 0; i < group.getPreferenceCount(); ++i) {
                 group.getPreference(i).setIconSpaceReserved(false);
                 if (group.getPreference(i) instanceof PreferenceGroup) {
-                    disableReservedIconSpace((PreferenceGroup) group.getPreference(i));
+                    transformPreferenceScreen((PreferenceGroup) group.getPreference(i));
                 }
             }
         }
@@ -887,7 +889,7 @@ public class SettingsActivity extends SettingsBaseActivity implements
             } else if (preference instanceof EditTextPreference) {
                 f = ThemedEditTextPreferenceDialogFragmentCompat.Companion
                         .newInstance(preference.getKey());
-            } else if (preference instanceof AbstractMultiSelectListPreference) {
+            } else if (preference instanceof MultiSelectListPreference) {
                 f = ThemedMultiSelectListPreferenceDialogFragmentCompat.Companion
                         .newInstance(preference.getKey());
             } else if (preference instanceof SmartspaceEventProvidersPreference) {
@@ -906,6 +908,8 @@ public class SettingsActivity extends SettingsBaseActivity implements
                 f = WebApplicationsPreference.Fragment.Companion.make();
             } else if (preference instanceof CustomizableTabsPreference) {
                 f = CustomizableTabsPreference.Fragment.Companion.make();
+            } else if (preference instanceof FragmentInitializer) {
+                f = ((FragmentInitializer) preference).getPrefFragment(preference.getKey());
             } else {
                 super.onDisplayPreferenceDialog(preference);
                 return;

@@ -12,23 +12,27 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+
 public final class News {
     private static final Executor fetchExecutor = Executors.newSingleThreadExecutor();
     private static final List<Consumer<List<NewsItem>>> onChangeListeners = new ArrayList<>();
-    private static List<NewsItem> currentItem;
+    private static volatile List<NewsItem> currentItem;
     private static final String API_URL = "https://en.wikipedia.org/api/rest_v1/feed/featured/2496/04/01";
 
     static {
         requestRefresh();
     }
 
-    public static synchronized void requestRefresh() {
+    private static synchronized void requestRefresh() {
         fetchExecutor.execute(() -> {
             try {
                 URLConnection connection = new URL(API_URL).openConnection();
@@ -44,8 +48,18 @@ public final class News {
                     item.title = links.getAsJsonPrimitive("displaytitle").getAsString();
                     item.contentUrl = links.getAsJsonObject("content_urls").getAsJsonObject(
                             "desktop").getAsJsonPrimitive("page").getAsString();
-                    item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
-                            "source").getAsString();
+                    try {
+                        item.thumbnail = links.getAsJsonObject("thumbnail").getAsJsonPrimitive(
+                                "source").getAsString();
+                    } catch (NullPointerException e) {
+                        item.thumbnail = null;
+                    }
+                    try {
+                        item.dt = DateFormat.getDateInstance().parse(
+                                links.getAsJsonPrimitive("timestamp").getAsString());
+                    } catch (ParseException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
                     item.lang = links.getAsJsonPrimitive("lang").getAsString();
                     item.story = newsItem.getAsJsonPrimitive("story").getAsString();
                     list.add(item);
@@ -60,22 +74,26 @@ public final class News {
         });
     }
 
+    @SuppressWarnings("WeakerAccess")
     @NotNull
     public static synchronized List<NewsItem> requireEntries() {
         if (currentItem != null) {
             return currentItem;
         } else {
             requestRefresh();
+            //noinspection StatementWithEmptyBody
             while (currentItem == null);
             return currentItem;
         }
     }
 
-    public static synchronized void addListener(Consumer<List<NewsItem>> consumer) {
-        if (currentItem != null) {
-            consumer.accept(currentItem);
-        }
-        onChangeListeners.add(consumer);
+    public static void addListener(Consumer<List<NewsItem>> consumer) {
+        FeedUtil.runOnMainThread(() -> {
+            if (currentItem != null) {
+                consumer.accept(currentItem);
+            }
+            onChangeListeners.add(consumer);
+        });
     }
 
     private News() {

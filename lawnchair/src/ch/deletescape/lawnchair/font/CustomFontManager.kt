@@ -29,7 +29,6 @@ import ch.deletescape.lawnchair.useApplicationContext
 import ch.deletescape.lawnchair.util.SingletonHolder
 import com.android.launcher3.R
 import com.android.launcher3.util.TraceHelper
-import java.lang.Exception
 
 class CustomFontManager(private val context: Context) {
 
@@ -52,6 +51,10 @@ class CustomFontManager(private val context: Context) {
 
     var enableGlobalFont by prefs.BooleanPref("enable_global_font", false, prefs.recreate)
     private val globalFont = FontPref("pref_font_global", launcherRegular)
+    private val feedFont = FontPref("pref_font_feed", launcherRegular)
+    private val feedTitleFont = FontPref("pref_font_feed_titles", uiMedium)
+    private val feedChipsFont = FontPref("pref_font_feed_chips", uiMedium)
+
 
     private val workspaceFont = FontPref("pref_font_workspace", launcherCondensed)
     private val folderFont = workspaceFont
@@ -93,6 +96,9 @@ class CustomFontManager(private val context: Context) {
         map[FONT_TASK_OPTION] = FontSpec(taskOptionFont, sansSerif)
         map[FONT_DRAWER_TAB] = FontSpec(drawerTab, sansSerifMedium)
         map[FONT_DRAWER_FOLDER] = FontSpec(drawerFolderFont, sansSerifCondensed)
+        map[FONT_FEED] = FontSpec(feedFont, sansSerif)
+        map[FONT_FEED_TITLES] = FontSpec(feedTitleFont, sansSerifMedium)
+        map[FONT_FEED_CHIPS] = FontSpec(feedChipsFont, sansSerifMedium)
 
         TraceHelper.endSection("createFontMap")
         return map
@@ -120,6 +126,11 @@ class CustomFontManager(private val context: Context) {
         if (fontType != -1) {
             setCustomFont(textView, fontType, fontWeight)
         }
+    }
+
+    fun loadFont(type: Int, style: Int = -1, into: (typeface: Typeface) -> Unit) {
+        val spec = specMap[type] ?: return
+        loaderManager.loadFont(spec.font.createWithWeight(style)).into(into, spec.fallback)
     }
 
     @JvmOverloads
@@ -221,6 +232,9 @@ class CustomFontManager(private val context: Context) {
         const val FONT_TASK_OPTION = 16
         const val FONT_DRAWER_TAB = 17
         const val FONT_DRAWER_FOLDER = 18
+        const val FONT_FEED = 19
+        const val FONT_FEED_TITLES = 20
+        const val FONT_FEED_CHIPS = 21
 
         const val VARIANT_MEDIUM = "500"
     }

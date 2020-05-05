@@ -26,6 +26,7 @@ import android.view.View
 import android.widget.TextView
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.FeedProvider
 import ch.deletescape.lawnchair.fromColorRes
 import ch.deletescape.lawnchair.fromDrawableRes
 import ch.deletescape.lawnchair.tint
@@ -40,9 +41,9 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
                             context)) R.color.textColorPrimaryInverse.fromColorRes(
                     context) else R.color.textColorPrimary.fromColorRes(context)),
             context.getString(R.string.title_card_feed_preview_header), { v, _ -> View(context) },
-            Card.NO_HEADER, "nosort,top"),
+            Card.TEXT_ONLY, "nosort,top"),
             Card(R.drawable.ic_information.fromDrawableRes(context).tint(
-                    FeedAdapter.getOverrideColor(context)),
+                    getOverrideColor(context)),
                     context.getString(R.string.title_card_feed_preview_header),
                     { v, _ ->
                         TextView(v.context).apply {
@@ -54,9 +55,10 @@ class FeedPreviewAdapter(backgroundColor: Int, context: Context)
                     },
                     Card.RAISE, "nosort,top"))
 
-    override fun refresh(): Int {
-        cards.clear()
-        cards.addAll(previewCards)
-        return previewCards.size
+    override val cards
+        get() = previewCards
+
+    override suspend fun refresh(): List<Pair<Int, FeedProvider>> {
+        return emptyList()
     }
 }

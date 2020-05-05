@@ -22,56 +22,47 @@ package ch.deletescape.lawnchair.feed;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
-import ch.deletescape.lawnchair.LawnchairApp;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.CardData;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.Listener;
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.WeatherData;
+
 import com.android.launcher3.Utilities;
+
 import java.util.Collections;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
-public class WeatherBarFeedProvider extends FeedProvider implements Listener {
+import ch.deletescape.lawnchair.awareness.WeatherManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.web.WebViewScreen;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
+import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider;
+import kotlin.Unit;
 
-    private Card card;
+public class WeatherBarFeedProvider extends FeedProvider {
+
+    private ForecastProvider.CurrentWeather weather;
 
     public WeatherBarFeedProvider(Context c) {
         super(c);
-        ((LawnchairApp) c.getApplicationContext()).getSmartspace().addListener(this);
+        WeatherManager.INSTANCE.subscribeWeather(currentWeather -> {
+            weather = currentWeather;
+            return Unit.INSTANCE;
+        });
     }
-
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
     @Override
     public List<Card> getCards() {
-        return card == null ? Collections.emptyList() : Collections.singletonList(card);
-    }
-
-    @Override
-    public void onDataUpdated(@Nullable WeatherData weather, @Nullable CardData card) {
-        if (weather != null) {
-            this.card = new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
-                    weather.getTitle(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
-                    parent -> new View(parent.getContext()), Card.Companion.getTEXT_ONLY(),
-                    "nosort,top", "weatherBar".hashCode());
-        }
+        return weather == null ? Collections.emptyList() : Collections.singletonList(
+                FeedUtil.apply(new Card(new BitmapDrawable(getContext().getResources(), weather.getIcon()),
+                weather.getTemperature().toString(Utilities.getLawnchairPrefs(getContext()).getWeatherUnit()),
+                parent -> new View(parent.getContext()), Card.TEXT_ONLY,
+                "nosort,top", "weatherBar".hashCode()), it -> {
+            if (weather.getUrl() != null) {
+                it.setGlobalClickListener(v -> {
+                    if (!FeedPersistence.Companion.getInstance(getContext()).getDirectlyOpenLinksInBrowser()) {
+                        WebViewScreen.obtain(getContext(), weather.getUrl()).display(this, 0, 0, v);
+                    } else {
+                        FeedUtil.openUrl(getContext(), weather.getUrl(), v);
+                    }
+                    return Unit.INSTANCE;
+                });
+            }
+        }));
     }
 }

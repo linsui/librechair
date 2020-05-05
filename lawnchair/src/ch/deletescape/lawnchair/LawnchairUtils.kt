@@ -20,10 +20,7 @@ package ch.deletescape.lawnchair
 import android.app.Activity
 import android.app.ActivityManager
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.PackageInfo.REQUESTED_PERMISSION_GRANTED
@@ -47,9 +44,7 @@ import android.text.format.DateFormat
 import android.util.AttributeSet
 import android.util.Property
 import android.util.TypedValue
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Interpolator
 import android.widget.*
 import androidx.annotation.ColorInt
@@ -63,7 +58,17 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceGroup
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.colors.ColorEngine
+import ch.deletescape.lawnchair.feed.FeedAdapter
+import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.i18n.UnitLocale
+import ch.deletescape.lawnchair.feed.maps.MapProvider
+import ch.deletescape.lawnchair.feed.maps.MapScreen
+import ch.deletescape.lawnchair.feed.maps.TextOverlay
+import ch.deletescape.lawnchair.feed.maps.locationsearch.LocationSearchManager
 import ch.deletescape.lawnchair.font.CustomFontManager
+import ch.deletescape.lawnchair.persistence.feedPrefs
+import ch.deletescape.lawnchair.persistence.generalPrefs
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.JSONMap
@@ -86,9 +91,16 @@ import com.google.android.material.tabs.TabLayout
 import com.hoko.blur.HokoBlur
 import com.hoko.blur.processor.BlurProcessor
 import com.rometools.rome.feed.synd.SyndEntry
+import kotlinx.android.synthetic.main.calendar_event.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
 import org.xmlpull.v1.XmlPullParser
+import java.io.IOException
 import java.lang.reflect.Field
 import java.security.MessageDigest
 import java.time.ZonedDateTime
@@ -96,10 +108,13 @@ import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import kotlin.random.Random
+import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
@@ -119,6 +134,8 @@ import kotlin.reflect.KProperty
  * limitations under the License.
  */
 
+private val forecastProviders = mutableMapOf<KClass<out ForecastProvider>, ForecastProvider>()
+
 val Context.launcherAppState get() = LauncherAppState.getInstance(this)
 val Context.lawnchairPrefs get() = Utilities.getLawnchairPrefs(this)
 
@@ -126,29 +143,33 @@ val Context.hasStoragePermission
     get() = PackageManager.PERMISSION_GRANTED == ContextCompat.checkSelfPermission(this,
                                                                                    android.Manifest.permission.READ_EXTERNAL_STORAGE)
 val Context.forecastProvider: ForecastProvider
-    get() = run {
-        if (forecastProviderNoCreate != null && forecastProviderNoCreate?.javaClass?.name == lawnchairPrefs.weatherForecastProvider) {
-            return@run forecastProviderNoCreate!!
-        } else {
-            forecastProviderNoCreate = ForecastProvider.Controller
-                    .inflateForecastProvider(this, this.lawnchairPrefs.weatherForecastProvider)
-            return@run forecastProviderNoCreate!!
-        }
-    }
-
-var forecastProviderNoCreate: ForecastProvider? = null
+    get() = forecastProviders[Class.forName(
+            generalPrefs.weatherProvider).kotlin as KClass<out ForecastProvider>]
+            ?: ForecastProvider.Controller
+                    .inflateForecastProvider(this, this.generalPrefs.weatherProvider).also {
+                        forecastProviders += Class.forName(
+                                generalPrefs.weatherProvider).kotlin as KClass<out ForecastProvider> to it
+                    }
 
 fun nothing() {
 
 }
 
+@SuppressWarnings("Deprecation")
 fun tomorrow(current: Date = Date()): Date {
     val date = current.clone() as Date
     val oneDayMillis = 1000 * 60 * 60 * 24
     date.time += oneDayMillis
-    date.minutes = 0
+    date.time = date.time - (date.time % oneDayMillis)
     date.hours = 0
+    date.seconds = 0
     return date
+}
+
+fun tomorrowL(current: Long = System.currentTimeMillis()): Long {
+    val oneDayMillis = TimeUnit.DAYS.toMillis(1)
+    val tp = current + oneDayMillis
+    return tp - (tp % oneDayMillis)
 }
 
 @ColorInt fun Context.getColorEngineAccent(): Int {
@@ -424,6 +445,8 @@ fun Context.getLauncherOrNull(): Launcher? {
         Launcher.getLauncher(this)
     } catch (e: ClassCastException) {
         null
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }
 
@@ -431,6 +454,8 @@ fun Context.getBaseDraggingActivityOrNull(): BaseDraggingActivity? {
     return try {
         BaseDraggingActivity.fromContext(this)
     } catch (e: ClassCastException) {
+        null
+    } catch (e: IllegalArgumentException) {
         null
     }
 }
@@ -554,8 +579,8 @@ fun pxToDp(size: Float): Float {
     return size / dpToPx(1f)
 }
 
-fun Drawable.toBitmap(): Bitmap? {
-    return Utilities.drawableToBitmap(this)
+fun Drawable.toBitmap(forceCreate: Boolean = true, fallbackSize: Int = 0): Bitmap? {
+    return Utilities.drawableToBitmap(this, forceCreate, fallbackSize)
 }
 
 fun AlertDialog.applyAccent() {
@@ -860,8 +885,7 @@ inline fun avg(vararg of: Long) = of.average()
 inline fun avg(vararg of: Double) = of.average()
 
 fun Context.checkLocationAccess(): Boolean {
-    return Utilities.hasPermission(this,
-                                   android.Manifest.permission.ACCESS_COARSE_LOCATION) || Utilities.hasPermission(
+    return Utilities.hasPermission(
         this, android.Manifest.permission.ACCESS_FINE_LOCATION)
 }
 
@@ -981,20 +1005,101 @@ fun formatTime(zonedDateTime: ZonedDateTime, context: Context? = null): String {
 }
 
 fun getCalendarFeedView(descriptionNullable: String?, addressNullable: String?, context: Context,
-                        parentView: ViewGroup): View {
+                        parentView: ViewGroup, provider: FeedProvider): View {
     val v = LayoutInflater.from(parentView.context).inflate(R.layout.calendar_event, parentView, false)
-    var description = v.findViewById(R.id.calendar_event_title) as TextView
-    var address = v.findViewById(R.id.calendar_event_address) as TextView
-    var directions = v.findViewById(R.id.calendar_event_directions) as TextView
+    val description = v.findViewById(R.id.calendar_event_description) as TextView
+    val address = v.findViewById(R.id.calendar_event_address) as TextView
+    val directions = v.findViewById(R.id.calendar_event_directions) as TextView
+    val maps = v.findViewById<MapView>(R.id.maps_view)
+
+    v.maps_more_btn.rippleColor = ColorStateList.valueOf(FeedAdapter.getOverrideColor(context))
+
+    directions.setTextColor(FeedAdapter.getOverrideColor(context))
+    v.findViewById<Button>(R.id.maps_more_btn).setTextColor(FeedAdapter.getOverrideColor(context))
     if (addressNullable == null || addressNullable.trim().isEmpty()) {
         address.visibility = View.GONE
         directions.visibility = View.GONE
+        (maps.parent as View).visibility = View.GONE
+        v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
     } else {
         address.text = addressNullable
+        @Suppress("UNCHECKED_CAST")
+        maps.tileProvider.tileSource = MapProvider
+                .inflate(Class.forName(context.feedPrefs.mapProvider) as Class<out MapProvider>).tileSource
+        maps.onResume()
+        maps.visibility = View.INVISIBLE
+        maps.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
+        FeedScope.launch(Dispatchers.IO) {
+            try {
+                val loc = LocationSearchManager.getInstance(context).get(addressNullable!!)
+                if (loc == null) {
+                    maps.post {
+                        maps.visibility = View.GONE
+                        v.findViewById<View>(R.id.maps_more_btn).visibility = View.GONE
+                    }
+                } else {
+                    val (lat, lon) = loc.first to loc.second
+                    maps.post {
+
+                        val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
+                            override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                                if (ch.deletescape.lawnchair.location.LocationManager.location != null) {
+                                    MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon, GeoPoint(ch.deletescape.lawnchair.location.LocationManager.location!!.first,
+                                            ch.deletescape.lawnchair.location.LocationManager.location!!.second), GeoPoint(lat, lon))
+                                            .display(provider,
+                                                    v.maps_more_btn.getPositionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPositionOnScreen().second + e.y.roundToInt())
+                                } else {
+                                    MapScreen(context, provider.feed, lat, lon, 15.0, lat, lon)
+                                            .display(provider,
+                                                    v.maps_more_btn.getPositionOnScreen().first + e.x.roundToInt(),
+                                                    v.maps_more_btn.getPositionOnScreen().second + e.y.roundToInt())
+                                }
+                                return true;
+                            }
+                        })
+                        v.maps_more_btn.setOnTouchListener { v, event ->
+                            gestureDetector.onTouchEvent(event)
+                        }
+                        maps.apply {
+                            controller.apply {
+                                setZoom(13.0)
+                                alpha = 0f
+                                visibility = View.VISIBLE
+                                animate().alpha(1f).duration = 250
+                                if (ch.deletescape.lawnchair.location.LocationManager.location != null) {
+                                    overlayManager.add(TextOverlay(context).apply {
+                                        val here = ch.deletescape.lawnchair.location.LocationManager.location.let {
+                                            Location("").apply {
+                                                latitude = it!!.first
+                                                longitude = it.second
+                                            }
+                                        }
+                                        val there = Location("").apply {
+                                            latitude = lat
+                                            longitude = lon
+                                        }
+                                        setText(UnitLocale.getDefault().formatDistanceKm((there.distanceTo(here) / 1000).roundToLong()))
+                                    })
+                                }
+                                setCenter(GeoPoint(lat, lon))
+                            }
+                        }
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+                maps.post { maps.visibility = View.GONE }
+            }
+        }
         directions.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            parentView.context.startActivity(intent)
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:0,0?q=$addressNullable"));
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                parentView.context.startActivity(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+            }
         }
     }
     if (descriptionNullable == null || descriptionNullable.trim().isEmpty()) {
@@ -1023,7 +1128,7 @@ fun useWhiteText(color: Int, c: Context): Boolean {
     if (ColorUtils.calculateLuminance(color) < 0.5) {
         return !ThemeManager.getInstance(c).supportsDarkText
     } else {
-        return alpha(color) < 50
+        return color.alpha < 35
     }
 }
 
@@ -1068,7 +1173,8 @@ fun Int.fromDrawableRes(c: Context): Drawable {
 }
 
 fun Drawable.tint(colour: Int): Drawable {
-    return constantState!!.newDrawable().mutate().also { it.setTint(colour) }
+    return constantState?.newDrawable()?.mutate()?.also { it.setTint(colour) } ?:
+    this.also { setTint(colour) }
 }
 
 fun Int.fromDimenRes(c: Context): Float {
@@ -1096,7 +1202,7 @@ inline val SyndEntry.thumbnailURL: String?
             d("get: parsing foreign markup element ${element.namespacePrefix} ${element.name} ${element.attributes} ${element.getAttribute(
                     "url")} for image url")
             if (element.getAttributeValue("url")?.contains(
-                            Regex("(img|image|png|jpeg|bmp)")) == true || element.getAttributeValue(
+                            Regex("(img|image|png|jpeg|jpg|bmp)")) == true || element.getAttributeValue(
                             "url")?.matches(
                             Regex("https://.+\\.googleusercontent.com/proxy/.+")) == true) {
                 d("get: attribute \"url\" is a valid image URL. using that!")
@@ -1148,10 +1254,10 @@ fun Bitmap.withContrastAndBrightness(contrast: Float, brightness: Float): Bitmap
     return duplicate
 }
 
-fun Bitmap.toDrawable(c: Context? = null) = if (c == null) BitmapDrawable(this) else BitmapDrawable(
+fun Bitmap?.toDrawable(c: Context? = null) = if (this == null) null else if (c == null) BitmapDrawable(this) else BitmapDrawable(
         c.resources, this)
 
-fun View.getPostionOnScreen(): Pair<Int, Int> {
+fun View.getPositionOnScreen(): Pair<Int, Int> {
     val array = intArrayOf(0, 0)
     getLocationOnScreen(array)
     return array[0] to array[1]
@@ -1203,7 +1309,8 @@ fun Float.applyAsSip(c: Context): Float {
 }
 
 fun Bitmap.blur(c: Context): Bitmap = BlurProcessor.Builder(c)
-            .mode(HokoBlur.MODE_STACK)
+            .mode(if (c.feedPrefs.useBoxBackgroundBlur)
+                HokoBlur.MODE_BOX else HokoBlur.MODE_STACK)
             .scheme(HokoBlur.SCHEME_OPENGL)
             .context(c)
             .radius(c.lawnchairPrefs.feedBlurStrength.roundToInt() / (BlurWallpaperProvider.DOWNSAMPLE_FACTOR / 2))
@@ -1227,3 +1334,8 @@ val ViewGroup.allChildren: List<View>
 
 val ViewGroup.rtl
     get() = layoutDirection == ViewGroup.LAYOUT_DIRECTION_RTL
+
+val Context.eightF
+    get() = 8f.applyAsDip(this)
+val Context.eightI
+    get() = eightF.roundToInt()

@@ -24,8 +24,10 @@
 
 package ch.deletescape.lawnchair.feed;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
@@ -36,7 +38,11 @@ import com.android.launcher3.R;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.Executors;
 
+import ch.deletescape.lawnchair.feed.impl.LauncherFeed;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 import ch.deletescape.lawnchair.feed.wikipedia.news.ITNAdapter;
 import ch.deletescape.lawnchair.feed.wikipedia.news.News;
 
@@ -44,39 +50,36 @@ public class WikipediaNewsProvider extends FeedProvider {
 
     private Drawable newsIcon;
     private ITNAdapter adapter;
+    private boolean init;
 
     public WikipediaNewsProvider(Context c) {
         super(c);
-        this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
+        this.newsIcon = Objects.requireNonNull(
+                Objects.requireNonNull(
+                        c.getDrawable(R.drawable.ic_assessment_black_24dp)).getConstantState())
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
-        News.addListener(items -> {
-            adapter = new ITNAdapter(items);
+    }
+
+    @Override
+    public void setFeed(LauncherFeed feed) {
+        super.setFeed(feed);
+        Executors.newSingleThreadExecutor().submit(() -> {
+            if (!init) {
+                News.addListener(items -> {
+                    this.adapter = new ITNAdapter(items, getControllerView());
+                    FeedUtil.runOnMainThread(this::markUnread);
+                });
+                init = true;
+            }
         });
     }
 
-    @Override
-    public void onFeedShown() {
 
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public List<Card> getCards() {
+        Log.d(getClass().getName(), "getCards: procedure invoked");
         return adapter == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon, getContext().getString(R.string.title_feed_card_wikipedia_news),
                         item -> {
@@ -85,7 +88,18 @@ public class WikipediaNewsProvider extends FeedProvider {
                             view.setLayoutManager(new LinearLayoutManager(view.getContext(), LinearLayoutManager.HORIZONTAL, false));
                             view.setLayoutParams(new LinearLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                            view.setOnTouchListener((v, e) -> {
+                                if (getControllerView() != null) {
+                                    getControllerView().setDisallowInterceptCurrentTouchEvent(true);
+                                }
+                                return false;
+                            });
                             return view;
-                        }, Card.Companion.getRAISE(), null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
+                        }, Card.RAISE, null, getContext().getString(R.string.title_feed_card_wikipedia_news).hashCode()));
+    }
+
+    @Override
+    public boolean isVolatile() {
+        return true;
     }
 }

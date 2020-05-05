@@ -52,6 +52,7 @@ public class NoteProviderScreen extends ProviderScreen {
         RecyclerView recyclerView = view.findViewById(R.id.notes_recycler);
         TabLayout tabLayout = view.findViewById(R.id.note_tabs);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
+        tabLayout.setVisibility(View.GONE);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

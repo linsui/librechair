@@ -26,6 +26,8 @@ import kotlin.reflect.KClass
 
 interface AnimationDelegate {
     fun animate(content: View, background: View, width: Float, progress: Float)
+    val shouldScroll
+        get() = true
 
     companion object {
         fun inflate(clazz: KClass<out AnimationDelegate>): AnimationDelegate =
@@ -33,16 +35,26 @@ interface AnimationDelegate {
 
         val allDelegates =
                 listOf(DefaultFeedTransitionDelegate::class,
+                        DefaultDrawerFeedTransitionDelegate::class,
                         SlidingFeedTransitionDelegate::class,
+                        GlidingFeedTransitionDelegate::class,
+                        GlidingDrawerFeedTransitionDelegate::class,
                         FadingFeedTransitionDelegate::class,
+                        ScalingFeedTransitionDelegate::class,
                         SlideTopFeedTransitionDelegate::class,
-                        SlideUpFeedTransitionDelegate::class)
+                        SlideUpFeedTransitionDelegate::class,
+                        DrawerFeedTransitionDelegate::class)
         val delegateNames =
                 mapOf(DefaultFeedTransitionDelegate::class to R.string.title_animation_delegate_default,
+                        DefaultDrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_default_drawer,
                         SlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_slide,
+                        GlidingFeedTransitionDelegate::class to R.string.title_animation_delegate_glide,
+                        GlidingDrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_gliding_drawer,
+                        ScalingFeedTransitionDelegate::class to R.string.title_animation_delegate_scale,
                         FadingFeedTransitionDelegate::class to R.string.title_animation_delegate_fading,
                         SlideTopFeedTransitionDelegate::class to R.string.title_animation_delegate_slide_top,
-                        SlideUpFeedTransitionDelegate::class to R.string.title_animation_delegate_slide_up)
+                        SlideUpFeedTransitionDelegate::class to R.string.title_animation_delegate_slide_up,
+                        DrawerFeedTransitionDelegate::class to R.string.title_animation_delegate_drawer)
     }
 }
 

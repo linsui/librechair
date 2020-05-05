@@ -25,37 +25,61 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.provider.Settings
-import androidx.annotation.Keep
 import android.webkit.WebView
+import androidx.annotation.Keep
+import ch.deletescape.lawnchair.awareness.CalendarManager
+import ch.deletescape.lawnchair.awareness.TickManager
+import ch.deletescape.lawnchair.awareness.VolumeManager
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.blur.BlurWallpaperProvider
 import ch.deletescape.lawnchair.bugreport.BugReportClient
 import ch.deletescape.lawnchair.bugreport.BugReportService
 import ch.deletescape.lawnchair.clipart.ClipartCache
 import ch.deletescape.lawnchair.clipart.FancyClipartResolver
 import ch.deletescape.lawnchair.clipart.ResourceClipartResolver
+import ch.deletescape.lawnchair.feed.FeedScope
+import ch.deletescape.lawnchair.feed.adblock.WebSafety
+import ch.deletescape.lawnchair.feed.chips.ChipStyleRegistry
+import ch.deletescape.lawnchair.feed.dynamic.DynamicProviderController
 import ch.deletescape.lawnchair.feed.getFeedController
+import ch.deletescape.lawnchair.feed.shape.CardStyleRegistry
 import ch.deletescape.lawnchair.feed.widgets.OverlayWidgetHost
 import ch.deletescape.lawnchair.flowerpot.Flowerpot
+import ch.deletescape.lawnchair.persistence.InvalidationTracker
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
-import com.android.launcher3.LauncherAppWidgetHost
+import com.android.launcher3.BuildConfig
 import com.android.launcher3.Utilities
 import com.android.quickstep.RecentsActivity
 import com.squareup.leakcanary.LeakCanary
+import geocode.GeocoderCompat
+import kg.net.bazi.gsb4j.Gsb4j
+import kotlinx.coroutines.launch
+import me.weishu.reflection.Reflection
+import net.time4j.android.ApplicationStarter
+import java.io.File
+import java.io.IOException
+import java.util.*
+import kotlin.collections.HashSet
 
-class LawnchairApp : Application(), () -> Unit {
-    override fun invoke() {
-        lawnchairPrefs.restartOverlay()
-    }
-
+class LawnchairApp : Application() {
+    val weatherLooper = Handler(HandlerThread("weather-1", Thread.NORM_PRIORITY).also {
+        it.isDaemon = true
+        it.start()
+    }.looper)
     val activityHandler = ActivityHandler()
     val smartspace by lazy { LawnchairSmartspaceController(this) }
     val bugReporter = LawnchairBugReporter(this, Thread.getDefaultUncaughtExceptionHandler())
     val recentsEnabled by lazy { checkRecentsComponent() }
     var accessibilityService: LawnchairAccessibilityService? = null
     val feedController by lazy { getFeedController(this) }
+    val geocoder by lazy { GeocoderCompat(this, true) }
+    lateinit var gsb4j: Gsb4j
 
     lateinit var overlayWidgetHost: OverlayWidgetHost
 
@@ -63,13 +87,38 @@ class LawnchairApp : Application(), () -> Unit {
         d("Hidden APIs allowed: ${Utilities.HIDDEN_APIS_ALLOWED}")
     }
 
+    fun isGsb4jAvailable() = ::gsb4j.isInitialized && feedPrefs.enableGsb
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        Reflection.unseal(base)
+        Utilities.HIDDEN_APIS_ALLOWED = !Utilities.ATLEAST_P || HiddenApiCompat.checkIfAllowed()
+        d("Hidden APIs allowed after unseal: ${Utilities.HIDDEN_APIS_ALLOWED}")
+    }
+
     override fun onCreate() {
         super.onCreate()
+        ApplicationStarter.initialize(this, true)
+        FeedScope.launch {
+            if (Utilities.ATLEAST_P && feedPrefs.enableGsb) {
+                try {
+                    gsb4j = Gsb4j.bootstrap(Properties().apply {
+                        put("api.key", WebSafety.GSB_API_KEY)
+                        put("data.dir", cacheDir.absolutePath)
+                    })
+                } catch (e: RuntimeException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        localizationContext = this
+        ch.deletescape.lawnchair.location.LocationManager.location
         d("Current process: " + getCurrentProcessName(this))
         if (getCurrentProcessName(this).contains("overlay")) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 WebView.setDataDirectorySuffix("_overlay")
             }
+            Thread.setDefaultUncaughtExceptionHandler(bugReporter)
         }
         if (lawnchairPrefs.leakCanary) {
             if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -79,12 +128,33 @@ class LawnchairApp : Application(), () -> Unit {
             }
             LeakCanary.install(this)
         }
-        overlayWidgetHost = OverlayWidgetHost(this, LauncherAppWidgetHost.APPWIDGET_HOST_ID)
+        overlayWidgetHost = OverlayWidgetHost(this, 1027)
                 .also { it.startListening() }
         ClipartCache.providers += ResourceClipartResolver(this)
         ClipartCache.providers += FancyClipartResolver(this)
 
-        ThemeManager.getInstance(this).changeCallbacks += this
+        org.osmdroid.config.Configuration.getInstance().osmdroidBasePath =
+                File(filesDir, "osmdroid")
+        org.osmdroid.config.Configuration.getInstance().userAgentValue =
+                "Librechair-" + BuildConfig.VERSION_CODE
+        if (getCurrentProcessName(this).contains("overlay")) {
+            WebSafety.context = this
+            FeedScope.launch {
+                try {
+                    WebSafety.initialize()
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+        }
+        DynamicProviderController.attachContext(this)
+        ChipStyleRegistry.populateWithContext(this)
+        CardStyleRegistry.populateWithContext(this)
+        InvalidationTracker.attachToContext(this)
+        WeatherManager.attachToApplication(this)
+        TickManager.bindToContext(this)
+        VolumeManager.attachToContext(this)
+        CalendarManager.attachToContext(this)
     }
 
     fun onLauncherAppStateCreated() {
@@ -191,6 +261,10 @@ class LawnchairApp : Application(), () -> Unit {
             return false
         }
         return true
+    }
+
+    companion object {
+        lateinit var localizationContext: Context
     }
 }
 

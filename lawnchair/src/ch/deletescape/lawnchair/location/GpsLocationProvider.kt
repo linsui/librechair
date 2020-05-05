@@ -19,13 +19,41 @@
 
 package ch.deletescape.lawnchair.location
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Criteria
+import android.location.Location
+import android.location.LocationListener
+import android.os.Bundle
 import ch.deletescape.lawnchair.checkLocationAccess
 import ch.deletescape.lawnchair.lastKnownPosition
 import ch.deletescape.lawnchair.locationManager
+import ch.deletescape.lawnchair.util.extensions.d
+import java.util.concurrent.TimeUnit
 
-class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c) {
-    override val location: Pair<Double, Double>?
+class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c), LocationListener {
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+
+    }
+
+    override fun onProviderEnabled(provider: String?) {
+
+    }
+
+    override fun onProviderDisabled(provider: String?) {
+
+    }
+
+    override fun onLocationChanged(location: Location?) {
+        d("onLocationChanged: new location is $location")
+        updateLocation(location?.latitude, location?.longitude)
+    }
+
+    override fun refresh() {
+        updateLocation(location?.first, location?.second)
+    }
+
+    val location: Pair<Double, Double>?
         get() = run {
             try {
                 if (context.checkLocationAccess()) {
@@ -41,4 +69,16 @@ class GpsLocationProvider(c: Context) : LocationManager.LocationProvider(c) {
                 return@run null;
             }
         }
+
+    @SuppressLint("MissingPermission")
+    override fun onInitialAttach() {
+        if (context.checkLocationAccess()) {
+            val provider = context.locationManager.getBestProvider(
+                    Criteria(), true)
+            if (provider != null) {
+                context.locationManager.requestLocationUpdates(provider, TimeUnit.MINUTES.toMillis(1),
+                        100f, this)
+            }
+        }
+    }
 }

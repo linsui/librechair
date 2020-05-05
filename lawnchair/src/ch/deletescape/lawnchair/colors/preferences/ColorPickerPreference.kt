@@ -71,7 +71,9 @@ open class ColorPickerPreference(context: Context, attrs: AttributeSet?)
                 icon = context.resources.getDrawable(R.drawable.color_preview, null)
             }
             icon.setColorFilter(resolveInfo.color, PorterDuff.Mode.SRC)
-            if (key == ColorEngine.Resolvers.FEED_BACKGROUND || key == ColorEngine.Resolvers.FEED_CARD) {
+            if ((key == ColorEngine.Resolvers.FEED_BACKGROUND ||
+                    key == ColorEngine.Resolvers.FEED_CARD ||
+                            key == ColorEngine.Resolvers.FEED_CHIP) && !resolveInfo.init) {
                 LawnchairPreferences.getInstance(context).restartOverlay()
             }
         }

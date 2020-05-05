@@ -33,35 +33,15 @@ import com.android.launcher3.*
 import com.android.launcher3.graphics.LauncherIcons
 import com.android.launcher3.shortcuts.DeepShortcutManager
 import com.android.launcher3.util.ComponentKey
-import com.android.launcher3.util.PackageManagerHelper
 import com.google.android.apps.nexuslauncher.CustomAppPredictor
 import com.google.android.apps.nexuslauncher.allapps.Action
 import com.google.android.apps.nexuslauncher.allapps.ActionView
-import com.google.android.apps.nexuslauncher.allapps.ActionsController
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.android.apps.nexuslauncher.util.ComponentKeyMapper
 import org.json.JSONObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-import kotlin.collections.MutableList
-import kotlin.collections.Set
-import kotlin.collections.count
-import kotlin.collections.distinct
-import kotlin.collections.drop
-import kotlin.collections.filterNot
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.map
-import kotlin.collections.mapIndexedNotNull
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableListOf
-import kotlin.collections.removeAll
-import kotlin.collections.reversed
-import kotlin.collections.sortedBy
-import kotlin.collections.take
-import kotlin.collections.toMutableList
-import kotlin.collections.toSet
 
 // TODO: Fix action icons being loaded too early, leading to f*cked icons when using sesame
 /**
@@ -83,11 +63,9 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     private val appsList = CountRankedArrayPreference(devicePrefs, "recent_app_launches", 250)
     private val phonesList = CountRankedArrayPreference(devicePrefs, "plugged_app_launches", 20)
     private val actionList = CountRankedArrayPreference(devicePrefs, "recent_shortcut_launches", 100)
-    open val isActionsEnabled get() = !(PackageManagerHelper.isAppEnabled(context.packageManager, ACTIONS_PACKAGE, 0) && ActionsController.get(context).actions.size > 0) && prefs.showActions
+    open val isActionsEnabled get() = prefs.showActions
 
     private var actionsCache = listOf<String>()
-
-    private val sesameComponent = ComponentName.unflattenFromString("ninja.sesame.app.edge/.activities.MainActivity")
 
     /**
      * Time at which headphones have been plugged in / connected. 0 if disconnected, -1 before initialized
@@ -225,7 +203,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
 
                     val badge = info.shortcutInfo.getBadgePackage(context)
                     actionList.add(actionToString(info.shortcutInfo.id, badge, badge))
-                    val new = actionList.getRanked().take(ActionsController.MAX_ITEMS)
+                    val new = actionList.getRanked().take(MAX_ACTIONS)
                     if (new != actionsCache) {
                         actionsCache = new
                         runOnMainThread {
@@ -326,7 +304,6 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
         }
         runOnUiWorkerThread {
             callback(getFilteredActionList(ArrayList(actionList.getRanked()
-                                                             .take(ActionsController.MAX_ITEMS)
                                                              .mapIndexedNotNull { index, s ->
                                                                  actionFromString(s, index.toLong())
                                                              })))
@@ -446,8 +423,7 @@ open class LawnchairEventPredictor(private val context: Context): CustomAppPredi
     }
 
     companion object {
-        const val ACTIONS_PACKAGE = "com.google.android.as"
-
+        const val MAX_ACTIONS = 2
         const val KEY_ID = "id"
         const val KEY_EXPIRATION = "expiration"
         const val KEY_PUBLISHER = "publisher"

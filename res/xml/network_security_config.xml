@@ -19,5 +19,7 @@
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">api.openweathermap.org</domain>
+        <domain includeSubdomains="true">virtualearth.net</domain>
+        <domain includeSubdomains="true">router.project-osrm.org</domain>
     </domain-config>
 </network-security-config>

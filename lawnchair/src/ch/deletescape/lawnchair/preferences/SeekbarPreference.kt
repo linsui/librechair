@@ -21,14 +21,14 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Handler
 import android.os.HandlerThread
-import androidx.preference.Preference
-import androidx.preference.PreferenceViewHolder
 import android.util.AttributeSet
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.preference.Preference
+import androidx.preference.PreferenceViewHolder
 import ch.deletescape.lawnchair.colors.ColorEngine
 import com.android.launcher3.R
 
@@ -42,8 +42,8 @@ open class SeekbarPreference @JvmOverloads constructor(context: Context, attrs: 
     protected var max: Float = 0.toFloat()
     protected var current: Float = 0.toFloat()
     protected var defaultValue: Float = 0.toFloat()
-    private var multiplier: Int = 0
-    private var format: String? = null
+    protected var multiplier: Int = 0
+    protected var format: String? = null
     protected var steps: Int = 100
     private var lastPersist = Float.NaN
 

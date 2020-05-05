@@ -19,23 +19,14 @@ public class DynamicDrawableFactory extends DrawableFactory {
     }
 
     @Override
-    public FastBitmapDrawable newIcon(ItemInfoWithIcon info) {
+    public FastBitmapDrawable newIcon(Context c, ItemInfoWithIcon info) {
         if (info == null || info.itemType != 0 ||
                 !DynamicClock.DESK_CLOCK.equals(info.getTargetComponent()) ||
                 !info.user.equals(Process.myUserHandle())) {
-            return super.newIcon(info);
+            return super.newIcon(c, info);
         }
         FastBitmapDrawable dVar = mDynamicClockDrawer.drawIcon(info.iconBitmap);
         dVar.setIsDisabled(info.isDisabled());
         return dVar;
-    }
-
-    @Override
-    public FastBitmapDrawable newIcon(BitmapInfo icon, ActivityInfo info) {
-        if (DynamicClock.DESK_CLOCK.getPackageName().equals(info.packageName) &&
-                (!Utilities.ATLEAST_NOUGAT || UserHandle.getUserHandleForUid(info.applicationInfo.uid).equals(Process.myUserHandle()))) {
-            return mDynamicClockDrawer.drawIcon(icon.icon);
-        }
-        return super.newIcon(icon, info);
     }
 }

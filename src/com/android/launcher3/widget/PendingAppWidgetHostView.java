@@ -132,19 +132,19 @@ public class PendingAppWidgetHostView extends LauncherAppWidgetHostView
             //   1) App iconView in the center
             //   2) Preload iconView in the center
             //   3) Setup iconView in the center and app iconView in the top right corner.
-            DrawableFactory drawableFactory = DrawableFactory.get(getContext());
+            DrawableFactory drawableFactory = DrawableFactory.INSTANCE.get(getContext());
             if (mDisabledForSafeMode) {
-                FastBitmapDrawable disabledIcon = drawableFactory.newIcon(info);
+                FastBitmapDrawable disabledIcon = drawableFactory.newIcon(getContext(), info);
                 disabledIcon.setIsDisabled(true);
                 mCenterDrawable = disabledIcon;
                 mSettingIconDrawable = null;
             } else if (isReadyForClickSetup()) {
-                mCenterDrawable = drawableFactory.newIcon(info);
+                mCenterDrawable = drawableFactory.newIcon(getContext(), info);
                 mSettingIconDrawable = getResources().getDrawable(R.drawable.ic_setting).mutate();
                 updateSettingColor(info.iconColor);
             } else {
-                mCenterDrawable = DrawableFactory.get(getContext())
-                        .newPendingIcon(info, getContext());
+                mCenterDrawable = DrawableFactory.INSTANCE.get(getContext())
+                        .newPendingIcon(getContext(), info);
                 mSettingIconDrawable = null;
                 applyState();
             }

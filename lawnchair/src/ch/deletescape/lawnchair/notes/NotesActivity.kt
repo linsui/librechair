@@ -108,7 +108,7 @@ class NotesActivity : SettingsBaseActivity() {
         if (data?.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE) != null) {
             d("onActivityResult: creating note ${Gson().toJson(
                     data.getParcelableExtra<Note>(NewNoteActivity.RETURN_NOTE))}")
-            adapter.add(data.getParcelableExtra(NewNoteActivity.RETURN_NOTE))
+            adapter.add(data.getParcelableExtra(NewNoteActivity.RETURN_NOTE)!!)
         }
     }
 

@@ -22,31 +22,64 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
+import android.os.RemoteException;
+import android.service.notification.StatusBarNotification;
+import android.util.Log;
 
 import com.android.launcher3.Launcher;
+import com.android.launcher3.LauncherAppState;
+import com.android.launcher3.LauncherNotifications;
 import com.android.launcher3.Utilities;
-import com.android.overlayclient.OverlayCallback;
-import com.android.overlayclient.ServiceClient;
-import com.android.overlayclient.ServiceFactory;
+import com.android.launcher3.logging.UserEventDispatcher;
+import com.android.launcher3.notification.NotificationKeyData;
+import com.android.launcher3.notification.NotificationListener;
+import com.android.launcher3.uioverrides.WallpaperColorInfo;
+import com.android.launcher3.util.PackageUserKey;
+import com.android.launcher3.util.ParcelablePair;
+import com.android.overlayclient.client.CompanionServiceFactory;
+import com.android.overlayclient.client.CustomServiceClient;
+import com.android.overlayclient.client.OverlayCallback;
+import com.android.overlayclient.client.ServiceMode;
+import com.android.overlayclient.compat.ColorDelegate;
+import com.android.overlayclient.compat.FloatDelegate;
+import com.google.android.apps.nexuslauncher.CustomAppPredictor;
+import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader;
+import com.google.android.libraries.launcherclient.ILauncherInterface;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper;
+import ch.deletescape.lawnchair.colors.ColorEngine;
+import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener;
+import ch.deletescape.lawnchair.persistence.FeedPersistence;
 
 public class ClientOverlay implements Launcher.LauncherOverlay {
     private Launcher.LauncherOverlayCallbacks callbacks;
-    private ServiceClient client;
+    private CustomServiceClient client;
+    private Handler mainThread;
+
+    public FloatDelegate cardCornerRadius;
 
     public ClientOverlay(Launcher launcher) {
-        client = new ServiceClient(launcher, new ServiceFactory(launcher) {
+        mainThread = new Handler(Looper.getMainLooper());
+        client = new CustomServiceClient(launcher, new CompanionServiceFactory(launcher) {
             @Override
             protected Intent getService() {
                 String pkg = Utilities.getLawnchairPrefs(launcher).getFeedProviderPackage();
                 return new Intent("com.android.launcher3.WINDOW_OVERLAY")
-                        .setPackage(launcher.getPackageName())
-                        .setData(Uri.parse(new StringBuilder(pkg.length() + 18)
-                                .append("app://")
-                                .append(pkg)
-                                .append(":")
-                                .append(Process.myUid())
-                                .toString())
+                        .setPackage(pkg)
+                        .setData(Uri.parse("app://" +
+                                launcher.getPackageName() +
+                                ":" +
+                                Process.myUid())
                                 .buildUpon()
                                 .appendQueryParameter("v", Integer.toString(7))
                                 .appendQueryParameter("cv", Integer.toString(9))
@@ -55,7 +88,13 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         }, new OverlayCallback() {
             @Override
             public void overlayScrollChanged(float progress) {
-                callbacks.onScrollChanged(progress);
+                if (Looper.myLooper() != Looper.getMainLooper()) {
+                    Log.w(ClientOverlay.this.getClass().getSimpleName(),
+                            "overlayScrollChanged: scroll changed from non-main thread");
+                    mainThread.post(() -> callbacks.onScrollChanged(progress));
+                } else {
+                    callbacks.onScrollChanged(progress);
+                }
             }
 
             @Override
@@ -63,8 +102,151 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
 
             }
         }, () -> {
+            launcher.setLauncherOverlay(null);
             callbacks.onScrollChanged(0);
+        }, () -> {
+            launcher.setLauncherOverlay(this);
+            client.attachInterface(new ILauncherInterface.Stub() {
+                @Override
+                public List<String> getSupportedCalls() {
+                    return Arrays.asList(CustomServiceClient.PREDICTIONS_CALL,
+                            CustomServiceClient.ACTIONS_CALL,
+                            CustomServiceClient.NOTIFICATIONS_CALL);
+                }
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public Bundle call(String callName, Bundle opt) {
+                    switch (callName) {
+                        case CustomServiceClient.PREDICTIONS_CALL:
+                            UserEventDispatcher dispatcher = launcher.getUserEventDispatcher();
+                            if (dispatcher instanceof CustomAppPredictor) {
+                                Bundle bundle = new Bundle();
+                                bundle.putParcelableArrayList("retval", new ArrayList<>(
+                                        ((CustomAppPredictor) dispatcher).getPredictions().stream().limit(
+                                                opt.getInt("amt", -1) != -1 ? opt.getInt(
+                                                        "amt") : 10).map(
+                                                it -> new ParcelableComponentKeyMapper(
+                                                        it.getComponentKey(), it.getApp(
+                                                        launcher.getAllAppsController().getAppsView().getAppsStore()).iconBitmap)).collect(
+                                                Collectors.toList())));
+                                return bundle;
+                            }
+                            break;
+                        case CustomServiceClient.ACTIONS_CALL:
+                            Bundle bundle = new Bundle();
+                            bundle.putParcelableArrayList("retval", new ArrayList<>(
+                                    ((PredictionsFloatingHeader) LauncherAppState
+                                            .getInstanceNoCreate()
+                                            .getLauncher()
+                                            .getAppsView()
+                                            .getFloatingHeaderView())
+                                            .getActionsRowView()
+                                            .getActions()
+                                            .stream()
+                                            .limit(opt.getInt("amt", -1) != -1 ? opt.getInt(
+                                                    "amt") : 10)
+                                            .map(it -> new ParcelablePair(
+                                                    it.shortcutInfo.iconBitmap,
+                                                    it.shortcut.getShortcutInfo()))
+                                            .collect(Collectors.toList())));
+                            return bundle;
+                        case CustomServiceClient.NOTIFICATIONS_CALL:
+                            INotificationsChangedListener listener =
+                                    INotificationsChangedListener.Stub.asInterface(
+                                            opt.getBinder("listener"));
+                            if (listener != null) {
+                                LauncherNotifications.getInstance().addListener(
+                                        new NotificationListener.NotificationsChangedListener() {
+                                            @Override
+                                            public synchronized void onNotificationPosted(
+                                                    PackageUserKey postedPackageUserKey,
+                                                    NotificationKeyData notificationKey,
+                                                    boolean shouldBeFilteredOut) {
+                                                NotificationListener ll = NotificationListener.getInstanceIfConnected();
+                                                if (ll != null) {
+                                                    List<StatusBarNotification> sbn;
+                                                    if ((sbn = ll.getNotificationsForKeys(
+                                                            Collections.singletonList(
+                                                                    notificationKey))) != null && sbn.size() > 0) {
+                                                        sbn.forEach(posted -> {
+                                                            try {
+                                                                listener.notificationPosted(posted);
+                                                            } catch (RemoteException e) {
+                                                                e.printStackTrace();
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+
+                                            @Override
+                                            public synchronized void onNotificationRemoved(
+                                                    PackageUserKey removedPackageUserKey,
+                                                    NotificationKeyData notificationKey) {
+                                                try {
+                                                    listener.notificationRemoved(
+                                                            notificationKey.notificationKey);
+                                                } catch (RemoteException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public synchronized void onNotificationFullRefresh(
+                                                    List<StatusBarNotification> activeNotifications) {
+                                                try {
+                                                    listener.notificationsChanged(
+                                                            activeNotifications);
+                                                } catch (RemoteException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                            }
+                            return new Bundle();
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putString("err", "e_unsupported");
+                    return bundle;
+                }
+            });
+        }, ServiceMode.OVERLAY);
+        ColorDelegate primary = new ColorDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualMainColor(),
+                ColorDelegate.PRIMARY);
+        ColorDelegate secondary = new ColorDelegate(
+                WallpaperColorInfo.getInstance(launcher).getSecondaryColor(),
+                ColorDelegate.SECONDARY);
+        ColorDelegate primaryActual = new ColorDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
+                ColorDelegate.PRIMARY + "_actual");
+        ColorDelegate secondaryActual = new ColorDelegate(
+                WallpaperColorInfo.getInstance(launcher).getActualSecondaryColor(),
+                ColorDelegate.SECONDARY + "_actual");
+        ColorDelegate tertiary = new ColorDelegate(
+                WallpaperColorInfo.getInstance(launcher).getTertiaryColor(),
+                ColorDelegate.TERTIARY);
+        ColorDelegate accent = new ColorDelegate(
+                ColorEngine.getInstance(launcher).getAccentResolver().resolveColor(),
+                ColorDelegate.ACCENT_COLOR);
+        cardCornerRadius = new FloatDelegate(
+                (float) FeedPersistence.Companion.getInstance(launcher).getCardCornerRadius(),
+                FloatDelegate.CARD_CORNER_RADIUS);
+        WallpaperColorInfo.getInstance(launcher).addOnChangeListener(wallpaperColorInfo -> {
+            primary.set(wallpaperColorInfo.getActualMainColor());
+            secondary.set(wallpaperColorInfo.getSecondaryColor());
+            tertiary.set(wallpaperColorInfo.getTertiaryColor());
         });
+        ColorEngine.getInstance(launcher).addColorChangeListeners(resolveInfo ->
+                accent.set(resolveInfo.getColor()), ColorEngine.Resolvers.ACCENT);
+        client.addConfigurationDelegate(primary);
+        client.addConfigurationDelegate(secondary);
+        client.addConfigurationDelegate(tertiary);
+        client.addConfigurationDelegate(primaryActual);
+        client.addConfigurationDelegate(secondaryActual);
+        client.addConfigurationDelegate(accent);
+        client.addConfigurationDelegate(cardCornerRadius);
     }
 
     @Override
@@ -87,7 +269,17 @@ public class ClientOverlay implements Launcher.LauncherOverlay {
         this.callbacks = callbacks;
     }
 
-    public ServiceClient getClient() {
+    @Override
+    public boolean shouldFadeWorkspaceDuringScroll() {
+        return client.shouldFadeWorkspaceDuringScroll();
+    }
+
+    @Override
+    public boolean shouldScrollLauncher() {
+        return client.shouldScrollLauncher();
+    }
+
+    public CustomServiceClient getClient() {
         return client;
     }
 }

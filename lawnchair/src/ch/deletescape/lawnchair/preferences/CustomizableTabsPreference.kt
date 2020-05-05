@@ -53,7 +53,8 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
         isVisible =
                 context.lawnchairPrefs.feedTabController == CustomTabbingController::class.qualifiedName
         context.lawnchairPrefs
-                .addOnPreferenceChangeListener(this, "pref_feed_tab_controller", "pref_feed_custom_tabs")
+                .addOnPreferenceChangeListener(this, "pref_feed_tab_controller",
+                        "pref_feed_custom_tabs")
     }
 
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
@@ -79,20 +80,20 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                 val context = context!!
                 val view = LinearLayout(context).apply {
                     setPadding(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f,
-                                                         context.resources.displayMetrics).toInt(),
-                               0, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f,
-                                                            context.resources.displayMetrics).toInt(),
-                               0)
+                            context.resources.displayMetrics).toInt(),
+                            0, TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16f,
+                            context.resources.displayMetrics).toInt(),
+                            0)
                 }
                 view.addView(EditText(context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                             ViewGroup.LayoutParams.WRAP_CONTENT)
+                            ViewGroup.LayoutParams.WRAP_CONTENT)
                     id = R.id.name
                 })
                 dialog.setTitle(getString(R.string.title_dialog_new_tab))
                 dialog.setView(view)
                 dialog.setButton(Dialog.BUTTON_POSITIVE,
-                                 android.R.string.ok.fromStringRes(context)) { _, _ ->
+                        android.R.string.ok.fromStringRes(context)) { _, _ ->
                     val title = dialog.findViewById<TextView>(R.id.name).text
                     if (title.isEmpty()) {
                         return@setButton
@@ -124,19 +125,25 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
             }
         }
 
-        inner class Adapter : androidx.recyclerview.widget.RecyclerView.Adapter<ProviderItemViewHolder>() {
+        inner class Adapter :
+                androidx.recyclerview.widget.RecyclerView.Adapter<ProviderItemViewHolder>() {
             private lateinit var itemTouchHelper: ItemTouchHelper
+            private val tabs = context?.lawnchairPrefs?.feedCustomTabs?.getAll()?.toMutableList()
+                    ?: mutableListOf()
+
             override fun getItemCount(): Int {
-                return context?.lawnchairPrefs?.feedCustomTabs?.getAll()?.size ?: 0
+                return tabs.size
             }
 
-            override fun onAttachedToRecyclerView(recyclerView: androidx.recyclerview.widget.RecyclerView) {
+            override fun onAttachedToRecyclerView(
+                    recyclerView: androidx.recyclerview.widget.RecyclerView) {
                 super.onAttachedToRecyclerView(recyclerView)
                 ItemTouchHelper(object : ItemTouchHelper.Callback() {
-                    override fun getMovementFlags(recyclerView: androidx.recyclerview.widget.RecyclerView,
-                                                  viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
+                    override fun getMovementFlags(
+                            recyclerView: androidx.recyclerview.widget.RecyclerView,
+                            viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder): Int {
                         return makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN,
-                                                 ItemTouchHelper.START)
+                                ItemTouchHelper.START)
                     }
 
                     override fun onMove(recyclerView: androidx.recyclerview.widget.RecyclerView,
@@ -144,28 +151,28 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                                         target: androidx.recyclerview.widget.RecyclerView.ViewHolder): Boolean {
                         val fromPosition = target.adapterPosition
                         val toPosition = viewHolder.adapterPosition
-                        val prefList = context!!.lawnchairPrefs.feedCustomTabs.getAll()
 
                         if (fromPosition < toPosition) {
                             for (i in fromPosition until toPosition) {
-                                Collections.swap(prefList, i, i + 1)
+                                Collections.swap(tabs, i, i + 1)
                             }
                         } else {
                             for (i in fromPosition downTo toPosition + 1) {
-                                Collections.swap(prefList, i, i - 1)
+                                Collections.swap(tabs, i, i - 1)
                             }
                         }
 
-                        context!!.lawnchairPrefs.feedCustomTabs.setAll(prefList)
+                        context!!.lawnchairPrefs.feedCustomTabs.setAll(tabs)
+
                         notifyItemMoved(fromPosition, toPosition)
                         return true
                     }
 
-                    override fun onSwiped(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder, direction: Int) {
-                        context?.lawnchairPrefs?.feedCustomTabs?.setAll(
-                                context?.lawnchairPrefs?.feedCustomTabs?.getAll()?.toMutableList()?.apply {
-                                    this.removeAt(viewHolder.adapterPosition)
-                                } ?: emptyList())
+                    override fun onSwiped(
+                            viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+                            direction: Int) {
+                        tabs.removeAt(viewHolder.adapterPosition)
+                        context?.lawnchairPrefs?.feedCustomTabs?.setAll(tabs)
                         notifyItemRemoved(viewHolder.adapterPosition)
                     }
 
@@ -208,20 +215,21 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
                                                     context!!)[which]
                                 }
 
-                                context!!.lawnchairPrefs.feedCustomTabs.setAll(context!!.lawnchairPrefs.feedCustomTabs.getAll().toMutableList()
+                                context!!.lawnchairPrefs.feedCustomTabs.setAll(
+                                        context!!.lawnchairPrefs.feedCustomTabs.getAll().toMutableList()
                                                 .apply {
                                                     set(holder.adapterPosition, app)
                                                 })
                             }.setPositiveButton(android.R.string.ok) { dialog, which -> }
                             .setNeutralButton(R.string.dialog_button_select_icon) { dialog, which ->
                                 AlertDialog.Builder(context!!,
-                                                    ThemeOverride.AlertDialog().getTheme(context!!))
+                                        ThemeOverride.AlertDialog().getTheme(context!!))
                                         .setTitle(R.string.dialog_button_select_icon)
                                         .setSingleChoiceItems((listOf(R.string.none.fromStringRes(
                                                 context!!)) + ClipartCache.all.map {
                                             it.userFacingName
                                         }).toTypedArray(),
-                                                              ClipartCache.all.indexOfFirst { it.token == app.iconToken } + 1) { dialog2, which2 ->
+                                                ClipartCache.all.indexOfFirst { it.token == app.iconToken } + 1) { dialog2, which2 ->
                                             if (which2 > 1) {
                                                 app.iconToken = ClipartCache.all[which2 - 1].token
                                             } else {
@@ -240,7 +248,7 @@ class CustomizableTabsPreference(context: Context, attrs: AttributeSet) :
             override fun onCreateViewHolder(parent: ViewGroup,
                                             viewType: Int) = ProviderItemViewHolder(
                     LayoutInflater.from(context).inflate(R.layout.event_provider_dialog_item,
-                                                         parent, false))
+                            parent, false))
         }
     }
 }

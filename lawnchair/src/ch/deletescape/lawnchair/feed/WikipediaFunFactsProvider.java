@@ -30,14 +30,17 @@ import android.text.Html;
 import android.text.Spanned;
 import android.view.View;
 import android.widget.TextView;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
+
 import com.android.launcher3.R;
-import fastily.jwiki.core.Wiki;
-import info.bliki.wiki.model.WikiModel;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Executors;
+
+import fastily.jwiki.core.Wiki;
+import info.bliki.wiki.model.WikiModel;
 
 public class WikipediaFunFactsProvider extends FeedProvider {
 
@@ -47,7 +50,8 @@ public class WikipediaFunFactsProvider extends FeedProvider {
 
     public WikipediaFunFactsProvider(Context c) {
         super(c);
-        this.newsIcon = c.getDrawable(R.drawable.ic_assessment_black_24dp).getConstantState()
+        this.newsIcon = Objects.requireNonNull(Objects.requireNonNull(
+                c.getDrawable(R.drawable.ic_assessment_black_24dp)).getConstantState())
                 .newDrawable().mutate();
         this.newsIcon.setTint(FeedAdapter.Companion.getOverrideColor(c));
         Executors.newSingleThreadExecutor().submit(() -> {
@@ -71,26 +75,6 @@ public class WikipediaFunFactsProvider extends FeedProvider {
     }
 
     @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
-    }
-
-    @Override
     public List<Card> getCards() {
         return wikiText == null ? Collections.emptyList() : Collections.singletonList(
                 new Card(newsIcon,
@@ -102,7 +86,7 @@ public class WikipediaFunFactsProvider extends FeedProvider {
                                 return view;
                             }
                             return new View(getContext());
-                        }, Card.Companion.getRAISE(), null,
+                        }, Card.RAISE, null,
                         getContext().getString(R.string.title_feed_card_wikipedia_news)
                                 .hashCode()));
     }

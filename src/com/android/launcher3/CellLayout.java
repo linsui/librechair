@@ -16,6 +16,8 @@
 
 package com.android.launcher3;
 
+import static com.android.launcher3.anim.Interpolators.DEACCEL_1_5;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
@@ -910,7 +912,7 @@ public class CellLayout extends ViewGroup {
                 return true;
             }
 
-            ValueAnimator va = LauncherAnimUtils.ofFloat(0f, 1f);
+            ValueAnimator va = ValueAnimator.ofFloat(0f, 1f);
             va.setDuration(duration);
             mReorderAnimators.put(lp, va);
 
@@ -1942,7 +1944,8 @@ public class CellLayout extends ViewGroup {
         public static final int MODE_HINT = 0;
         public static final int MODE_PREVIEW = 1;
 
-        Animator a;
+        float animationProgress = 0;
+        ValueAnimator a;
 
         public ReorderPreviewAnimation(View child, int mode, int cellX0, int cellY0, int cellX1,
                 int cellY1, int spanX, int spanY) {
@@ -2012,7 +2015,7 @@ public class CellLayout extends ViewGroup {
             if (noMovement) {
                 return;
             }
-            ValueAnimator va = LauncherAnimUtils.ofFloat(0f, 1f);
+            ValueAnimator va = ValueAnimator.ofFloat(0f, 1f);
             a = va;
 
             // Animations are disabled in power save mode, causing the repeated animation to jump
@@ -2062,14 +2065,14 @@ public class CellLayout extends ViewGroup {
             }
 
             setInitialAnimationValues(true);
-            a = LauncherAnimUtils.ofPropertyValuesHolder(child,
-                    new PropertyListBuilder()
-                            .scale(initScale)
-                            .translationX(initDeltaX)
-                            .translationY(initDeltaY)
-                            .build())
+            a = new PropertyListBuilder()
+                    .scale(initScale)
+                    .translationX(initDeltaX)
+                    .translationY(initDeltaY)
+                    .build(child)
                     .setDuration(REORDER_ANIMATION_DURATION);
-            a.setInterpolator(new android.view.animation.DecelerateInterpolator(1.5f));
+            mLauncher.getDragController().addFirstFrameAnimationHelper(a);
+            a.setInterpolator(DEACCEL_1_5);
             a.start();
         }
     }

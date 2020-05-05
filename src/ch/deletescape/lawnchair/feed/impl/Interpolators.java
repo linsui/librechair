@@ -16,8 +16,6 @@
 
 package ch.deletescape.lawnchair.feed.impl;
 
-import static ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS;
-
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
@@ -25,6 +23,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.view.animation.PathInterpolator;
+
+import static ch.deletescape.lawnchair.feed.impl.Utilities.SINGLE_FRAME_MS;
 
 
 /**
@@ -41,10 +41,10 @@ public class Interpolators {
     public static final Interpolator DEACCEL = new DecelerateInterpolator();
     public static final Interpolator DEACCEL_1_5 = new DecelerateInterpolator(1.5f);
     public static final Interpolator DEACCEL_1_7 = new DecelerateInterpolator(
-            1.7f); /* Did pap just decompile the Google app? */
+            1.7f);
     public static final Interpolator DEACCEL_2 = new DecelerateInterpolator(2);
     public static final Interpolator DEACCEL_2_5 = new DecelerateInterpolator(2.5f);
-    public static final Interpolator DEACCEL_3 = new DecelerateInterpolator(3f);
+    private static final Interpolator DEACCEL_3 = new DecelerateInterpolator(3f);
 
     public static final Interpolator ACCEL_DEACCEL = new AccelerateDecelerateInterpolator();
 
@@ -56,7 +56,7 @@ public class Interpolators {
     public static final Interpolator OVERSHOOT_1_2 = new OvershootInterpolator(1.2f);
     public static final Interpolator TOUCH_RESPONSE_INTERPOLATOR =
             new PathInterpolator(0.3f, 0f, 0.1f, 1f);
-    public static final Interpolator ZOOM_OUT = new Interpolator() {
+    private static final Interpolator ZOOM_OUT = new Interpolator() {
 
         private static final float FOCAL_LENGTH = 0.35f;
 
@@ -79,25 +79,15 @@ public class Interpolators {
     /**
      * Inversion of ZOOM_OUT, compounded with an ease-out.
      */
-    public static final Interpolator ZOOM_IN = new Interpolator() {
-        @Override
-        public float getInterpolation(float v) {
-            return DEACCEL_3.getInterpolation(1 - ZOOM_OUT.getInterpolation(1 - v));
-        }
+    public static final Interpolator ZOOM_IN = v -> DEACCEL_3.getInterpolation(
+            1 - ZOOM_OUT.getInterpolation(1 - v));
+    private static final Interpolator SCROLL = t -> {
+        t -= 1.0f;
+        return t * t * t * t * t + 1;
     };
-    public static final Interpolator SCROLL = new Interpolator() {
-        @Override
-        public float getInterpolation(float t) {
-            t -= 1.0f;
-            return t * t * t * t * t + 1;
-        }
-    };
-    public static final Interpolator SCROLL_CUBIC = new Interpolator() {
-        @Override
-        public float getInterpolation(float t) {
-            t -= 1.0f;
-            return t * t * t + 1;
-        }
+    private static final Interpolator SCROLL_CUBIC = t -> {
+        t -= 1.0f;
+        return t * t * t + 1;
     };
     private static final int MIN_SETTLE_DURATION = 200;
     private static final float OVERSHOOT_FACTOR = 0.9f;
@@ -120,8 +110,8 @@ public class Interpolators {
      * Runs the given interpolator such that the entire progress is set between the given bounds.
      * That is, we set the interpolation to 0 until lowerBound and reach 1 by upperBound.
      */
-    public static Interpolator clampToProgress(Interpolator interpolator, float lowerBound,
-            float upperBound) {
+    private static Interpolator clampToProgress(Interpolator interpolator, float lowerBound,
+                                                float upperBound) {
         if (upperBound <= lowerBound) {
             throw new IllegalArgumentException("lowerBound must be less than upperBound");
         }
@@ -141,9 +131,10 @@ public class Interpolators {
      * This is useful, for example, if we only use this interpolator for part of the animation, such
      * as to take over a user-controlled animation when they let go.
      */
-    public static Interpolator mapToProgress(Interpolator interpolator, float lowerBound,
-            float upperBound) {
-        return t -> Utilities.mapRange(interpolator.getInterpolation(t), lowerBound, upperBound);
+    private static Interpolator mapToProgress(float lowerBound,
+                                              float upperBound) {
+        return t -> Utilities.mapRange(Interpolators.ACCEL_DEACCEL.getInterpolation(t), lowerBound,
+                upperBound);
     }
 
     public static Interpolator constant(float value) {
@@ -216,7 +207,7 @@ public class Interpolators {
             // such that final progress is endProgress. For example, if we overshot to 1.1 but want
             // to end at 1, we need to map to 1/1.1.
             Interpolator settle = Interpolators.clampToProgress(Interpolators.mapToProgress(
-                    ACCEL_DEACCEL, 1, (endProgress - start) / (end - start)), overshootFraction, 1);
+                    1, (endProgress - start) / (end - start)), overshootFraction, 1);
             interpolator = t -> t <= overshootFraction
                     ? overshoot.getInterpolation(t)
                     : settle.getInterpolation(t);

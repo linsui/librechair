@@ -24,6 +24,11 @@
         android:key="pref_swipe_feed"
         android:summary="@string/summary_preference_swipe_feed"
         android:title="@string/title_preference_swipe_feed" />
+    <ch.deletescape.lawnchair.preferences.FeedProviderPreference
+        android:key="pref_feed_provider_package"
+        android:title="@string/title_pref_feed_provider_package"
+        android:defaultValue="{applicationId}"
+        android:summary="%s"/>
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:dependency="pref_swipe_feed"
         android:title="@string/drawer_tabs">
@@ -48,6 +53,15 @@
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
         android:dependency="pref_swipe_feed"
         android:title="@string/pref_category_theme">
+        <ch.deletescape.lawnchair.font.settingsui.FontPreference
+            android:key="pref_font_feed"
+            android:title="@string/title_pref_font_feed" />
+        <ch.deletescape.lawnchair.font.settingsui.FontPreference
+            android:key="pref_font_feed_titles"
+            android:title="@string/title_pref_font_feed_titles" />
+        <ch.deletescape.lawnchair.font.settingsui.FontPreference
+            android:key="pref_font_feed_chips"
+            android:title="@string/title_pref_font_feed_chips" />
         <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
             android:key="pref_feedBackgroundColorResolver"
             android:title="@string/background_color"
@@ -56,10 +70,33 @@
             android:key="pref_feedCardColorResolver"
             android:title="@string/title_pref_card_background"
             app:resolvers="@array/resolvers_feed_card_background" />
+        <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
+            android:key="pref_feedChipColorResolver"
+            android:title="@string/title_pref_feed_chip_color_resolver"
+            app:resolvers="@array/resolvers_feed_card_background" />
+        <ch.deletescape.lawnchair.colors.preferences.ColorPickerPreference
+            android:key="pref_feedUnreadIndicator"
+            android:title="@string/title_pref_feedUnreadIndicators"
+            app:resolvers="@array/resolvers_drawer_labels" />
         <ch.deletescape.lawnchair.preferences.ImageProviderPreference
             android:key="pref_feed_background"
             android:title="@string/title_pref_feed_background"
             android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_display_unread_indicators"
+            android:defaultValue="true"
+            android:summary="@string/summary_pref_feed_display_unread_indicators"
+            android:title="@string/title_pref_feed_display_unread_indicators" />
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_display_unread_indicator_count"
+            android:defaultValue="true"
+            android:summary="@string/summary_pref_feed_display_unread_indicator_count"
+            android:title="@string/title_pref_feed_display_unread_indicator_count" />
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:key="pref_feed_infobox"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_infobox"
+            android:summary="@string/summary_pref_feed_infobox"/>
         <ch.deletescape.lawnchair.preferences.Preference
             android:dependency="pref_feed_background"
             android:key="pref_share_background_image"
@@ -84,11 +121,33 @@
             android:title="@string/title_pref_feed_show_event_color"
             android:summary="@string/summary_pref_feed_show_event_color"
             android:defaultValue="true" />
+        <ch.deletescape.lawnchair.preferences.FeedColorProviderPreference
+            android:key="pref_feed_color_provider"
+            android:title="@string/title_pref_feed_color_provider"
+            android:summary="%s"/>
+        <ch.deletescape.lawnchair.preferences.FeedTabColorsPreference
+            android:key="pref_feed_tab_colors"
+            android:title="@string/title_pref_feed_tab_colors"/>
         <ch.deletescape.lawnchair.preferences.FeedAnimationDelegatePreference
             android:key="pref_feed_animation"
             android:title="@string/title_pref_feed_animation"
             android:summary="%s"
             android:defaultValue="ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate"/>
+        <ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
+            android:key="pref_feed_card_title_alignment"
+            android:summary="%s"
+            android:title="@string/title_pref_feed_card_title_alignment"
+            android:defaultValue="c"/>
+        <ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
+            android:key="pref_feed_header_only_card_title_alignment"
+            android:summary="%s"
+            android:title="@string/title_pref_feed_header_only_card_title_alignment"
+            android:defaultValue="e"/>
+        <ch.deletescape.lawnchair.preferences.TabIndicatorPreference
+            android:key="pref_feed_indicator_provider"
+            android:title="@string/title_pref_feed_indicator_provider"
+            android:defaultValue="ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider"
+            android:summary="%s"/>
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_opacity"
             android:persistent="true"
@@ -109,8 +168,8 @@
             app:steps="255"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="1" />
-        <ch.deletescape.lawnchair.preferences.SeekbarPreference
-            android:key="pref_feed_corner_rounding"
+        <ch.deletescape.lawnchair.persistence.prefs.CardCornerRadiusSeekbarPreference
+            android:key="feed_card_corner_radius"
             android:persistent="true"
             android:title="@string/title_pref_feed_corner_rounding"
             app:defaultSeekbarValue="0"
@@ -149,6 +208,24 @@
             app:steps="128"
             app:summaryFormat="%.0fdp"
             app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_flat_card_vertical_margin"
+            android:title="@string/title_pref_feed_flat_card_vertical_margin"
+            app:defaultSeekbarValue="16"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_flat_card_horizontal_margin"
+            android:title="@string/title_pref_feed_flat_card_horizontal_margin"
+            app:defaultSeekbarValue="16"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_feed_card_elevation"
             android:persistent="true"
@@ -159,6 +236,16 @@
             app:steps="128"
             app:summaryFormat="%.0fdp"
             app:summaryMultiplier="1" />
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_opening_animation_speed"
+            android:persistent="true"
+            android:title="@string/title_pref_feed_opening_animation_speed"
+            app:defaultSeekbarValue="0.5"
+            app:maxValue="1"
+            app:minValue="0.1"
+            app:steps="100"
+            app:summaryFormat="%.01f%%"
+            app:summaryMultiplier="200" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="pref_blur_feed_cards"
@@ -189,6 +276,11 @@
             android:key="pref_high_contrast_toolbar"
             android:title="@string/title_pref_high_contrast_toolbar"
             android:summary="@string/summary_pref_high_contrast_toolbar"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_snappy_anims"
+            android:title="@string/title_pref_feed_snappy_anims"
+            android:summary="@string/summary_pref_feed_snappy_anims" />
         <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
             android:defaultValue="false"
             android:key="pref_display_feed_tabs_as_single_line"
@@ -199,6 +291,144 @@
             android:key="pref_feed_hide_tab_text"
             android:title="@string/title_pref_feed_hide_tab_text"
             android:summary="@string/summary_pref_feed_hide_tab_text"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_hide_title_bar"
+            android:title="@string/title_pref_feed_hide_title_bar"
+            android:summary="@string/summary_pref_feed_hide_title_bar"/>
+        <ch.deletescape.lawnchair.preferences.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="pref_feed_hide_unused_tabs"
+            android:title="@string/title_pref_feed_hide_unused_tabs"
+            android:summary="@string/summary_pref_feed_hide_unused_tabs"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_background_as_screen_background"
+            android:title="@string/title_pref_feed_background_as_screen_background"
+            android:summary="@string/summary_pref_feed_background_as_screen_background"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_boxed_background_blur"
+            android:title="@string/title_pref_feed_boxed_background_blur"
+            android:summary="@string/summary_pref_feed_boxed_background_blur"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_actions_as_menu"
+            android:title="@string/title_pref_feed_actions_as_menu"
+            android:summary="@string/summary_pref_feed_actions_as_menu"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_pull_down_to_refresh"
+            android:title="@string/title_pref_feed_pull_down_to_refresh"
+            android:summary="@string/summary_pref_feed_pull_down_to_refresh"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_toolbar_opacity"
+            android:title="@string/title_pref_feed_toolbar_opacity"
+            app:defaultSeekbarValue="0.5"
+            app:maxValue="1"
+            app:minValue="0"
+            app:steps="100"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="100"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_toolbar_elevation"
+            android:title="@string/title_pref_feed_toolbar_elevation"
+            app:defaultSeekbarValue="8"
+            app:maxValue="64"
+            app:minValue="0"
+            app:steps="64"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_hide_toolbar_actions2"
+            android:title="@string/title_pref_feed_hide_toolbar_actions"
+            android:summary="@string/summary_pref_feed_hide_toolbar_actions"/>
+        <ch.deletescape.lawnchair.persistence.prefs.CardCornerPreference
+            android:key="feed_card_corner_treatment"
+            android:title="@string/title_pref_feed_card_corner_treatment"
+            android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.InterpolatorPreference
+            android:key="feed_animation_interpolator"
+            android:title="@string/title_pref_feed_animation_interpolator"
+            android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_disable_rv_springs"
+            android:title="@string/title_pref_feed_disable_rv_springs"
+            android:summary="@string/summary_pref_feed_disable_rv_springs" />
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:dependency="pref_swipe_feed"
+        android:title="@string/pref_category_chips">
+        <ch.deletescape.lawnchair.preferences.ChipProvidersPreference
+            android:key="pref_feed_chips_dummy_key"
+            android:title="@string/title_pref_feed_chips_dummy_key"
+            android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_opacity"
+            android:title="@string/title_pref_feed_chip_opacity"
+            app:defaultSeekbarValue="1"
+            app:maxValue="1"
+            app:minValue="0"
+            app:steps="100"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="100"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_weather_item_count"
+            android:title="@string/title_pref_feed_chip_weather_item_count"
+            app:defaultSeekbarValue="5"
+            app:maxValue="10"
+            app:minValue="1"
+            app:steps="9"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_corner_radius"
+            android:title="@string/title_pref_feed_chip_corner_radius"
+            app:defaultSeekbarValue="64"
+            app:maxValue="128"
+            app:minValue="0"
+            app:steps="128"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_elevation"
+            android:title="@string/title_pref_feed_chip_elevation"
+            app:defaultSeekbarValue="8"
+            app:maxValue="32"
+            app:minValue="0"
+            app:steps="32"
+            app:summaryFormat="%.0fdp"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_chip_max_predictions"
+            android:title="@string/title_pref_chip_max_predictions"
+            app:defaultSeekbarValue="4"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_chips_on_top"
+            android:defaultValue="false"
+            android:title="@string/title_pref_feed_chips_on_top"
+            android:summary="@string/summary_pref_feed_chips_on_top"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_outline_chips"
+            android:defaultValue="false"
+            android:title="@string/title_pref_feed_outline_chips"
+            android:summary="@string/summary_pref_feed_outline_chips"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_mix_chips"
+            android:defaultValue="false"
+            android:title="@string/title_pref_feed_mix_chips"
+            android:summary="@string/summary_pref_feed_mix_chips"/>
+        <ch.deletescape.lawnchair.persistence.prefs.ChipCornerPreference
+            android:key="feed_chip_corner_treatment2"
+            android:title="@string/title_pref_feed_chip_corner_treatment"
+            android:summary="%s"/>
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 
     <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
@@ -220,6 +450,12 @@
             app:steps="20"
             app:summaryFormat="%.0f"
             app:summaryMultiplier="1" />
+
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_rss_minicard"
+            android:title="@string/title_pref_feed_rss_minicard"
+            android:summary="@string/summary_pref_feed_rss_minicard"/>
 
         <ch.deletescape.lawnchair.preferences.SeekbarPreference
             android:key="pref_daily_forecast_item_count"
@@ -275,5 +511,80 @@
             android:defaultValue="https://example.com/search?q=%s"
             android:key="pref_feed_search_url_template"
             android:title="@string/title_pref_feed_search_url_template"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_javascript_in_search_screen"
+            android:title="@string/title_pref_feed_javascript_in_search_screen"
+            android:summary="@string/summary_pref_feed_javascript_in_search_screen"/>
+        <ch.deletescape.lawnchair.persistence.prefs.MapProviderPreference
+            android:key="feed_map_provider"
+            android:title="@string/title_pref_feed_map_provider"
+            android:summary="%s"/>
+        <ch.deletescape.lawnchair.persistence.prefs.I18nDtClocksPreference/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_use_analog_clock"
+            android:title="@string/title_pref_feed_use_analog_clock"
+            android:summary="@string/summary_pref_feed_use_analog_clock"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_chip_provider_compact_card"
+            android:title="@string/title_pref_feed_chip_provider_compact_card"
+            android:summary="@string/summary_pref_feed_chip_provider_compact_card"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_hide_image_operator_cards"
+            android:summary="@string/summary_pref_feed_hide_image_operator_cards"
+            android:title="@string/title_pref_feed_hide_image_operator_cards"/>
+    </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
+
+    <ch.deletescape.lawnchair.preferences.StyledPreferenceCategory
+        android:title="@string/pref_category_misc">
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_hosts_filtering"
+            android:title="@string/title_pref_feed_hosts_filtering"
+            android:summary="@string/summary_pref_feed_hosts_filtering"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="feed_gecko"
+            android:enabled="@bool/geckoview_available"
+            android:title="@string/title_pref_feed_gecko"
+            android:summary="@string/summary_pref_feed_gecko"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_directly_open_links"
+            android:title="@string/title_pref_feed_directly_open_links"
+            android:summary="@string/summary_pref_feed_directly_open_links"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="feed_notify_articles_on_first_run"
+            android:title="@string/title_pref_feed_notify_articles_on_first_run"
+            android:summary="@string/summary_pref_feed_notify_articles_on_first_run"/>
+        <ch.deletescape.lawnchair.persistence.prefs.SeekbarPreference
+            android:key="feed_synd_notification_count"
+            android:title="@string/title_pref_feed_synd_notification_count"
+            app:defaultSeekbarValue="5"
+            app:maxValue="16"
+            app:minValue="0"
+            app:steps="16"
+            app:summaryFormat="%.0f"
+            app:summaryMultiplier="1"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_article_notifications"
+            android:title="@string/title_pref_feed_article_notifications"
+            android:summary="@string/summary_pref_feed_article_notifications"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_enable_gsb"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_enable_gsb"
+            android:summary="@string/summary_pref_feed_enable_gsb"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_show_title_in_shared_articles"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_show_title_in_shared_articles"
+            android:summary="@string/summary_pref_feed_show_title_in_shared_articles"/>
+        <ch.deletescape.lawnchair.persistence.prefs.StyledSwitchPreferenceCompat
+            android:key="feed_resolve_redirects"
+            android:defaultValue="true"
+            android:title="@string/title_pref_feed_resolve_redirects"
+            android:summary="@string/summary_pref_feed_resolve_redirects" />
     </ch.deletescape.lawnchair.preferences.StyledPreferenceCategory>
 </androidx.preference.PreferenceScreen>

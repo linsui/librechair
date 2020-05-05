@@ -71,6 +71,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import ch.deletescape.lawnchair.feed.widgets.WidgetDatabase;
+
 public class LauncherProvider extends ContentProvider {
     private static final String TAG = "LauncherProvider";
     private static final boolean LOGD = false;
@@ -862,10 +864,11 @@ public class LauncherProvider extends ContentProvider {
             }
             for (int widgetId : allWidgets) {
                 if (!validWidgets.contains(widgetId)
-                        && Utilities.getLawnchairPrefs(mContext).getFeedWidgetList()
+                        && WidgetDatabase.Companion.getInstance(mContext)
+                            .dao()
                             .getAll()
                             .stream()
-                            .noneMatch(it -> it == widgetId)
+                            .noneMatch(it -> it.getId() == widgetId)
                         && Utilities.getLawnchairPrefs(mContext).getFeedToolbarWidget() != widgetId) {
                     try {
                         FileLog.d(TAG, "Deleting invalid widget " + widgetId);

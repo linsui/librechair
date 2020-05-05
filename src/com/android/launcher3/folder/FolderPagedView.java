@@ -27,6 +27,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewDebug;
+
 import com.android.launcher3.BubbleTextView;
 import com.android.launcher3.CellLayout;
 import com.android.launcher3.DeviceProfile;
@@ -45,6 +46,7 @@ import com.android.launcher3.keyboard.ViewGroupFocusHelper;
 import com.android.launcher3.pageindicators.PageIndicatorDots;
 import com.android.launcher3.touch.ItemClickHandler;
 import com.android.launcher3.util.Thunk;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -496,7 +498,7 @@ public class FolderPagedView extends PagedView<PageIndicatorDots> {
         int delta = scroll - getScrollX();
         if (delta != 0) {
             mScroller.setInterpolator(Interpolators.DEACCEL);
-            mScroller.startScroll(getScrollX(), 0, delta, 0, Folder.SCROLL_HINT_DURATION);
+            mScroller.startScroll(getScrollX(), delta, Folder.SCROLL_HINT_DURATION);
             invalidate();
         }
     }

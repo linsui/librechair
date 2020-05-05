@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 public class ClickbaitRanker {
 
-    public static String[] COMMON_VOCAB = new String[]{
+    private static String[] COMMON_VOCAB = new String[]{
             "Why", "Who", "What", "When",
             "He", "She", "Will", "The",
             "Were", "Was", "Sleep", "iPhone",
@@ -36,15 +36,15 @@ public class ClickbaitRanker {
     };
 
 
-    public static final int CAPS_PRIZE = 1;
-    public static final int COMMON_VOCAB_PRIZE = 2;
-    public static final int SYMBOL_PRIZE = -1;
-    public static final int TITLE_MATCH_PRIZE = 5;
+    private static final int CAPS_PRIZE = 1;
+    private static final int COMMON_VOCAB_PRIZE = 2;
+    private static final int SYMBOL_PRIZE = -1;
+    private static final int TITLE_MATCH_PRIZE = 5;
 
     public static class Token {
-
+        boolean retainCase;
         public String text;
-        public int confidence;
+        int confidence;
     }
 
     public static List<Token> rank(String string) {
@@ -77,11 +77,21 @@ public class ClickbaitRanker {
                     token.confidence += CAPS_PRIZE;
                 }
             }
+            int upper = 0;
+            for (char iter : token.text.toCharArray()) {
+                if (Character.isUpperCase(iter)) {
+                    ++upper;
+                }
+            }
+
+            if ((token.text.length() / (float) upper) > 0.7) {
+                token.retainCase = true;
+            }
         });
         return tokens;
     }
 
-    public static List<Token> assemble(List<Token> tokens) {
+    private static List<Token> assemble(List<Token> tokens) {
         int confidence = 0;
         for (Token token : tokens) {
             confidence += token.confidence;
@@ -90,12 +100,14 @@ public class ClickbaitRanker {
         return tokens.stream()
                 .map(it -> tokens.indexOf(it) == 0 || finalConfidence < 15 ? it
                         : ((Function<Token, Token>) tok -> {
-                            tok.text = tok.text.toLowerCase();
+                            if (!tok.retainCase) {
+                                tok.text = tok.text.toLowerCase();
+                            }
                             return tok;
                         }).apply(it)).collect(Collectors.toList());
     }
 
-    public static String assembleToString(List<Token> tokens) {
+    private static String assembleToString(List<Token> tokens) {
         return assemble(tokens).stream().map(it -> it.text).collect(Collectors.joining(" "));
     }
 

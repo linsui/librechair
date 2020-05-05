@@ -31,8 +31,10 @@ import com.rometools.rome.feed.synd.SyndFeedImpl;
 import org.jdom2.Element;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import ch.deletescape.lawnchair.feed.AbstractRSSFeedProvider;
 
@@ -43,7 +45,12 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
     }
 
     @Override
-    protected void bindFeed(BindCallback callback) {
+    protected void onInit(Consumer<String> tokenCallback) {
+        tokenCallback.accept(getId());
+    }
+
+    @Override
+    protected void bindFeed(BindCallback callback, String token) {
         Executors.newSingleThreadExecutor().submit(() -> {
             SyndFeedImpl feed = new SyndFeedImpl();
             feed.setTitle("Wikipedia");
@@ -52,11 +59,15 @@ public class ItnSyndicationProvider extends AbstractRSSFeedProvider {
             for (NewsItem item : News.requireEntries()) {
                 SyndEntry entry = new SyndEntryImpl();
                 entry.setUri(item.contentUrl);
+                entry.setLink(item.contentUrl);
                 entry.setTitle(item.title);
                 SyndContent content = new SyndContentImpl();
                 content.setValue(item.story);
                 entry.setDescription(content);
-                entry.setForeignMarkup(Arrays.asList(new Element("media", "thumbnail", "https://xml/res-auto").setAttribute("url", item.contentUrl)));
+                entry.setPublishedDate(new Date());
+                entry.setForeignMarkup(Collections.singletonList(
+                        new Element("media", "thumbnail", "https://xml/res-auto").setAttribute(
+                                "url", item.thumbnail)));
                 entries.add(entry);
             }
             feed.setEntries(entries);

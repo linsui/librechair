@@ -27,7 +27,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.core.graphics.ColorUtils;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.util.AttributeSet;
@@ -39,6 +38,25 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewDebug;
 import android.widget.TextView;
+
+import androidx.core.graphics.ColorUtils;
+
+import com.android.launcher3.IconCache.IconLoadRequest;
+import com.android.launcher3.IconCache.ItemInfoUpdateReceiver;
+import com.android.launcher3.Launcher.OnResumeCallback;
+import com.android.launcher3.badge.BadgeInfo;
+import com.android.launcher3.badge.BadgeRenderer;
+import com.android.launcher3.folder.FolderIcon;
+import com.android.launcher3.graphics.BitmapInfo;
+import com.android.launcher3.graphics.DrawableFactory;
+import com.android.launcher3.graphics.IconPalette;
+import com.android.launcher3.graphics.PreloadIconDrawable;
+import com.android.launcher3.model.PackageItemInfo;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.text.NumberFormat;
+
 import ch.deletescape.lawnchair.LawnchairLauncher;
 import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
@@ -51,19 +69,6 @@ import ch.deletescape.lawnchair.gestures.GestureController;
 import ch.deletescape.lawnchair.gestures.GestureHandler;
 import ch.deletescape.lawnchair.gestures.handlers.ViewSwipeUpGestureHandler;
 import ch.deletescape.lawnchair.override.CustomInfoProvider;
-import com.android.launcher3.IconCache.IconLoadRequest;
-import com.android.launcher3.IconCache.ItemInfoUpdateReceiver;
-import com.android.launcher3.Launcher.OnResumeCallback;
-import com.android.launcher3.badge.BadgeInfo;
-import com.android.launcher3.badge.BadgeRenderer;
-import com.android.launcher3.folder.FolderIcon;
-import com.android.launcher3.graphics.BitmapInfo;
-import com.android.launcher3.graphics.DrawableFactory;
-import com.android.launcher3.graphics.IconPalette;
-import com.android.launcher3.graphics.PreloadIconDrawable;
-import com.android.launcher3.model.PackageItemInfo;
-import java.text.NumberFormat;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * TextView that draws a bubble behind the text. We cannot use a LineBackgroundSpan
@@ -111,7 +116,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     };
 
     private final BaseDraggingActivity mActivity;
-    private Drawable mIcon;
+    public Drawable mIcon;
     private final boolean mCenterVertically;
 
     private final CheckLongPressHelper mLongPressHelper;
@@ -316,7 +321,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     private void applyIconAndLabel(ItemInfoWithIcon info) {
-        FastBitmapDrawable iconDrawable = DrawableFactory.get(getContext()).newIcon(info);
+        FastBitmapDrawable iconDrawable = DrawableFactory.INSTANCE.get(getContext())
+                .newIcon(getContext(), info);
         mBadgeColor = IconPalette.getMutedColor(getContext(), info.iconColor, 0.54f);
 
         setIcon(iconDrawable);
@@ -330,7 +336,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
     }
 
     public void applyIcon(ItemInfoWithIcon info) {
-        FastBitmapDrawable iconDrawable = DrawableFactory.get(getContext()).newIcon(info);
+        FastBitmapDrawable iconDrawable = DrawableFactory.INSTANCE.get(getContext()).newIcon(getContext(), info);
         mBadgeColor = IconPalette.getMutedColor(getContext(), info.iconColor, 0.54f);
 
         setIcon(iconDrawable);
@@ -405,7 +411,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         boolean result = super.onTouchEvent(event);
 
         // Check for a stylus button press, if it occurs cancel any long press checks.
-        if (mStylusEventHelper.onMotionEvent(event)) {
+        if (mStylusEventHelper != null &&
+                mStylusEventHelper.onMotionEvent(event)) {
             mLongPressHelper.cancelLongPress();
             result = true;
         }
@@ -413,7 +420,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // If we're in a stylus button press, don't check for long press.
-                if (!mStylusEventHelper.inStylusButtonPressed()) {
+                if (mStylusEventHelper != null &&
+                        !mStylusEventHelper.inStylusButtonPressed()) {
                     mLongPressHelper.postCheckForLongPress();
                 }
                 break;
@@ -632,8 +640,8 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
                     preloadDrawable = (PreloadIconDrawable) mIcon;
                     preloadDrawable.setLevel(progressLevel);
                 } else {
-                    preloadDrawable = DrawableFactory.get(getContext())
-                            .newPendingIcon(info, getContext());
+                    preloadDrawable = DrawableFactory.INSTANCE.get(getContext())
+                            .newPendingIcon(getContext(), info);
                     preloadDrawable.setLevel(progressLevel);
                     setIcon(preloadDrawable);
                 }
@@ -754,7 +762,7 @@ public class BubbleTextView extends TextView implements ItemInfoUpdateReceiver, 
         }
         if (getTag() instanceof ItemInfoWithIcon) {
             ItemInfoWithIcon info = (ItemInfoWithIcon) getTag();
-            if (info.usingLowResIcon) {
+            if (info.usingLowResIcon()) {
                 mIconLoadRequest = LauncherAppState.getInstance(getContext()).getIconCache()
                         .updateIconInBackground(callback, info);
             }

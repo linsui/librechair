@@ -27,22 +27,27 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.os.Handler;
 import android.os.SystemClock;
-import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import ch.deletescape.lawnchair.feed.images.nasa.ApodResponse;
-import ch.deletescape.lawnchair.feed.images.nasa.ApodRetrofitServiceFactory;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
+import java.time.ZonedDateTime;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import ch.deletescape.lawnchair.LawnchairUtilsKt;
+import ch.deletescape.lawnchair.feed.images.nasa.ApodResponse;
+import ch.deletescape.lawnchair.feed.images.nasa.ApodRetrofitServiceFactory;
 import kotlin.Unit;
 import kotlin.coroutines.Continuation;
 import kotlin.jvm.functions.Function0;
-import org.jetbrains.annotations.NotNull;
 import retrofit2.Response;
 
 public class ApodImageProvider extends BroadcastReceiver implements ImageProvider {
@@ -67,13 +72,14 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
 
 
     @Override
-    public Object getBitmap(@NotNull Context context, Continuation<? super Bitmap> o) {
+    public Object getBitmap(@NotNull Context context, @NotNull Continuation<? super Bitmap> o) {
         if (cache.exists()) {
             Bitmap cachedBitmap = BitmapFactory.decodeFile(cache.getAbsolutePath());
             if (cachedBitmap == null) {
                 Bitmap map = internalGetBitmap(context);
                 try {
-                    map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
+                    Objects.requireNonNull(map).compress(CompressFormat.PNG, 100,
+                            new FileOutputStream(cache));
                 } catch (FileNotFoundException | NullPointerException e) {
                     e.printStackTrace();
                 }
@@ -84,7 +90,8 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
         } else {
             Bitmap map = internalGetBitmap(context);
             try {
-                map.compress(CompressFormat.PNG, 100, new FileOutputStream(cache));
+                Objects.requireNonNull(map).compress(CompressFormat.PNG, 100,
+                        new FileOutputStream(cache));
             } catch (FileNotFoundException | NullPointerException e) {
                 e.printStackTrace();
             }
@@ -95,6 +102,7 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
     private Bitmap internalGetBitmap(Context context) {
         try {
             Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            assert response.body() != null;
             if (response.body().media_type.equals("image")) {
                 return BitmapFactory.decodeStream(new URL(response.body().hdurl).openStream());
             } else {
@@ -116,17 +124,63 @@ public class ApodImageProvider extends BroadcastReceiver implements ImageProvide
 
     @Override
     public void registerOnChangeListener(@NotNull Function0<Unit> listener) {
-        new Handler(context.getMainLooper()).postAtTime(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                listener.invoke();
-                                                                new Handler(context.getMainLooper()).postAtTime(this,
-                                                                        SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date())
-                                                                                .toInstant()
-                                                                                .toEpochMilli() - System.currentTimeMillis());
-                                                            }
-                                                        },
-                SystemClock.uptimeMillis() + LawnchairUtilsKt.tomorrow(new Date()).toInstant()
-                        .toEpochMilli() - System.currentTimeMillis());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                LawnchairUtilsKt.getMainHandler().postAtTime(this,SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                        .plusDays(1)
+                        .withHour(0)
+                        .withSecond(0)
+                        .withMinute(0)
+                        .withNano(0)
+                        .toEpochSecond() * 1000 - System.currentTimeMillis()));
+                listener.invoke();
+            }
+        };
+        LawnchairUtilsKt.getMainHandler().postAtTime(runnable, SystemClock.uptimeMillis() + (ZonedDateTime.now()
+                .plusDays(1)
+                .withHour(0)
+                .withSecond(0)
+                .withMinute(0)
+                .withNano(0)
+                .toEpochSecond() * 1000 - System.currentTimeMillis()));
+    }
+
+    @Nullable
+    @Override
+    public Object getDescription(@NotNull Context context,
+                                 @NotNull Continuation<? super String> o) {
+        try {
+            Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            if (Objects.requireNonNull(response.body()).media_type.equals("image")) {
+                return response.body().explanation;
+            } else {
+                return null;
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public Object getUrl(@NotNull Context context, @NotNull Continuation<? super String> o) {
+        try {
+            Response<ApodResponse> response = ApodRetrofitServiceFactory.manufacture(context).apod().execute();
+            if (Objects.requireNonNull(response.body()).media_type.equals("image")) {
+                return response.body().url;
+            } else {
+                return null;
+            }
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public void attachMeta(@NotNull Map<String, String> meta) {
+
     }
 }

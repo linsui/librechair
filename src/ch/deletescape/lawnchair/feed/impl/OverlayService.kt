@@ -19,30 +19,54 @@
 
 package ch.deletescape.lawnchair.feed.impl
 
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.graphics.Bitmap
+import android.os.Bundle
 import android.os.IBinder
 import android.os.Process
+import android.service.notification.StatusBarNotification
+import ch.deletescape.lawnchair.allapps.ParcelableComponentKeyMapper
+import ch.deletescape.lawnchair.feed.FeedScope
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
+import ch.deletescape.lawnchair.feed.notifications.INotificationsChangedListener
 import ch.deletescape.lawnchair.lawnchairPrefs
+import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.extensions.d
-import kotlinx.coroutines.GlobalScope
+import com.android.launcher3.util.ParcelablePair
+import com.android.overlayclient.client.CustomOverscrollClient.ACTIONS_CALL
+import com.android.overlayclient.client.CustomOverscrollClient.PREDICTIONS_CALL
+import com.android.overlayclient.client.CustomServiceClient
+import com.google.android.libraries.launcherclient.ILauncherInterface
+import com.google.android.libraries.launcherclient.ILauncherOverlayCompanion
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("Registered")
 class OverlayService : Service(), () -> Unit {
-    lateinit var feed: LauncherFeed;
-    val imageProvider by lazy { ImageProvider.inflate(lawnchairPrefs.feedBackground, this) }
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        lateinit var feed: LauncherFeed
+        val feedInitialized
+            get() = ::feed.isInitialized
+    }
+
+    private val imageProvider by lazy {
+        ImageProvider.inflate(lawnchairPrefs.feedBackground.clazz,
+                lawnchairPrefs.feedBackground.meta, this)
+    }
 
     override fun onBind(intent: Intent): IBinder? {
-        if (!::feed.isInitialized) {
+        if (!feedInitialized) {
             this()
         }
-        return if (::feed.isInitialized) feed else null
+        return if (feedInitialized) feed else null
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Process.killProcess(Process.myPid());
-        onDestroy()
         return true
     }
 
@@ -50,26 +74,143 @@ class OverlayService : Service(), () -> Unit {
         if (imageProvider == null) {
             feed = LauncherFeed(this)
         } else {
-                feed = LauncherFeed(this@OverlayService) {
-                    GlobalScope.launch {
-                        val refreshBitmap = {
-                            GlobalScope.launch {
-                                val bitmap = imageProvider?.getBitmap(this@OverlayService)
-                                if (bitmap != null) {
-                                    it(bitmap)
-                                }
+            feed = LauncherFeed(this@OverlayService) {
+                FeedScope.launch(Dispatchers.IO) {
+                    val refreshBitmap = {
+                        FeedScope.launch {
+                            val bitmap = imageProvider?.getBitmap(this@OverlayService)
+                            if (bitmap != null) {
+                                it(bitmap)
                             }
-                            Unit
+                            val desc = imageProvider?.getDescription(this@OverlayService)
+                            val rmUrl = imageProvider?.getUrl(this@OverlayService)
+                            if (rmUrl != null && desc != null && bitmap != null) {
+                                feed.initBitmapInfo(rmUrl, desc, bitmap)
+                            }
                         }
-                        refreshBitmap()
-                        imageProvider?.registerOnChangeListener(refreshBitmap)
+                        Unit
                     }
+                    refreshBitmap()
+                    imageProvider?.registerOnChangeListener(refreshBitmap)
                 }
+            }
+        }
+        ThemeManager.getInstance(this).changeCallbacks += {
+            FeedScope.launch(Dispatchers.Main) {
+                delay(400)
+                /*
+                 *  todo: this is an ugly hack, but it works for now
+                 *  will fix later.
+                 */
+                feed.reinitState(feed.background,
+                        reinit = true,
+                        blurBitmap = false)
+            }
         }
     }
 
-    override fun onDestroy() {
-        d("onDestroy: killing overlay process", Throwable())
-        super.onDestroy()
+    @SuppressLint("Registered")
+    class CompanionService : Service() {
+        override fun onBind(intent: Intent?): IBinder? = object : ILauncherOverlayCompanion.Stub() {
+            override fun onBackPressed() = feed.onBackPressed()
+
+            override fun attachInterface(interfaze: ILauncherInterface) {
+                d("attacheInterface: interface is $interfaze")
+                InterfaceHolder.interfaze = interfaze
+            }
+
+            override fun restartProcess() {
+                Process.killProcess(Process.myPid())
+            }
+
+            override fun shouldFadeWorkspaceDuringScroll(): Boolean {
+                return true
+            }
+
+            override fun shouldScrollWorkspace(): Boolean {
+                return if (feedInitialized) {
+                    feed.feedController.animationDelegate.shouldScroll
+                } else {
+                    true
+                }
+            }
+        }
+
+        object InterfaceHolder {
+            internal var interfaze: ILauncherInterface? = null
+                set(value) = {
+                    value?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
+                        putBinder("listener", object : INotificationsChangedListener.Stub() {
+                            val notifs = mutableListOf<StatusBarNotification>()
+
+                            override fun notificationRemoved(key: String) = synchronized(this) {
+                                notifs.removeIf { it.key == key }
+                                Unit
+                            }
+
+                            override fun notificationPosted(
+                                    notif: StatusBarNotification) = synchronized(this) {
+                                notifs += notif
+                            }
+
+                            override fun notificationsChanged(
+                                    notifsNew: MutableList<StatusBarNotification>) = synchronized(
+                                    this) {
+                                notifs.clear()
+                                notifs.addAll(notifsNew)
+                                notifChangedListener?.invoke(notifs)
+                                Unit
+                            }
+                        })
+                    })
+                    Unit
+                }()
+            var notifChangedListener: ((list: List<StatusBarNotification>) -> Unit)? = null
+                set(value) {
+                    field = value
+                    if (value != null) {
+                        interfaze?.call(CustomServiceClient.NOTIFICATIONS_CALL, Bundle().apply {
+                            putBinder("listener", object : INotificationsChangedListener.Stub() {
+                                val notifs = mutableListOf<StatusBarNotification>()
+
+                                override fun notificationRemoved(key: String) = synchronized(this) {
+                                    notifs.removeIf { it.key == key }
+                                    Unit
+                                }
+
+                                override fun notificationPosted(
+                                        notif: StatusBarNotification) = synchronized(this) {
+                                    notifs += notif
+                                }
+
+                                override fun notificationsChanged(
+                                        notifsNew: MutableList<StatusBarNotification>) = synchronized(
+                                        this) {
+                                    notifs.clear()
+                                    notifs.addAll(notifsNew)
+                                    notifChangedListener?.invoke(notifs)
+                                    Unit
+                                }
+                            })
+                        })
+                    }
+                }
+
+            fun getPredictions(
+                    amt: Int): List<ParcelableComponentKeyMapper> = if (interfaze?.supportedCalls?.contains(
+                            PREDICTIONS_CALL) == true) interfaze?.call(
+                    PREDICTIONS_CALL, Bundle().apply { putInt("amt", amt) })?.apply {
+                classLoader = ParcelableComponentKeyMapper::class.java.classLoader
+            }?.getParcelableArrayList(
+                    "retval") ?: emptyList() else emptyList()
+
+            fun getActions(
+                    amt: Int): List<ParcelablePair<Bitmap?, ShortcutInfo>> = if (interfaze?.supportedCalls?.contains(
+                            ACTIONS_CALL) == true) interfaze?.call(
+                    ACTIONS_CALL, Bundle().apply { putInt("amt", amt) })?.apply {
+                classLoader = ParcelablePair::class.java.classLoader
+            }?.getParcelableArrayList(
+                    "retval") ?: emptyList() else emptyList()
+        }
     }
 }

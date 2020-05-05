@@ -92,8 +92,8 @@ public class LauncherModel extends BroadcastReceiver
 
     @Thunk static final HandlerThread sWorkerThread = new HandlerThread("launcher-loader");
     @Thunk static final HandlerThread sUiWorkerThread = new HandlerThread("launcher-ui-loader");
-    @Thunk static final HandlerThread sIconPackThread = new HandlerThread("launcher-iconView-pack");
-    @Thunk static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-iconView-pack-ui");
+    @Thunk static final HandlerThread sIconPackThread = new HandlerThread("launcher-icon-pack");
+    @Thunk static final HandlerThread sIconPackUiThread = new HandlerThread("launcher-icon-pack-ui");
     static {
         sWorkerThread.start();
         sUiWorkerThread.start();
@@ -149,9 +149,10 @@ public class LauncherModel extends BroadcastReceiver
         public void bindItems(List<ItemInfo> shortcuts, boolean forceAnimateIcons);
         public void bindScreens(ArrayList<Long> orderedScreenIds);
         public void finishFirstPageBind(ViewOnDrawExecutor executor);
-        public void finishBindingItems();
+        public void finishBindingItems(int pageBoundFirst);
         public void bindAllApplications(ArrayList<AppInfo> apps);
         public void bindAppsAddedOrUpdated(ArrayList<AppInfo> apps);
+        public void preAddApps();
         public void bindAppsAdded(ArrayList<Long> newScreens,
                                   ArrayList<ItemInfo> addNotAnimated,
                                   ArrayList<ItemInfo> addAnimated);
@@ -201,6 +202,10 @@ public class LauncherModel extends BroadcastReceiver
      * Adds the provided items to the workspace.
      */
     public void addAndBindAddedWorkspaceItems(List<Pair<ItemInfo, Object>> itemList) {
+        Callbacks callbacks = getCallback();
+        if (callbacks != null) {
+            callbacks.preAddApps();
+        }
         enqueueModelUpdateTask(new AddWorkspaceItemsTask(itemList));
     }
 
@@ -430,16 +435,17 @@ public class LauncherModel extends BroadcastReceiver
         }
     }
 
-    /**
-     * Reloads the workspace items from the DB and re-binds the workspace. This should generally
-     * not be called as DB updates are automatically followed by UI update
-     */
     public void forceReload() {
         forceReload(-1);
     }
 
-    public void forceReload(int page) {
-        synchronized (this.mLock) {
+    /**
+     * Reloads the workspace items from the DB and re-binds the workspace. This should generally
+     * not be called as DB updates are automatically followed by UI update
+     * @param synchronousBindPage The page to bind first. Can pass -1 to use the current page.
+     */
+    public void forceReload(int synchronousBindPage) {
+        synchronized (mLock) {
             // Stop any existing loaders first, so they don't set mModelLoaded to true later
             stopLoader();
             mModelLoaded = false;
@@ -447,12 +453,14 @@ public class LauncherModel extends BroadcastReceiver
 
         // Start the loader if launcher is already running, otherwise the loader will run,
         // the next time launcher starts
-        Callbacks callback = getCallback();
-        if (callback != null) {
-            startLoader(page < 0 ? callback.getCurrentWorkspaceScreen() : page);
+        Callbacks callbacks = getCallback();
+        if (callbacks != null) {
+            if (synchronousBindPage < 0) {
+                synchronousBindPage = callbacks.getCurrentWorkspaceScreen();
+            }
+            startLoader(synchronousBindPage);
         }
     }
-
 
     public boolean isCurrentCallbacks(Callbacks callbacks) {
         return (mCallbacks != null && mCallbacks.get() == callbacks);
@@ -606,10 +614,10 @@ public class LauncherModel extends BroadcastReceiver
     }
 
     /**
-     * Called when the icons for packages have been updated in the iconView cache.
+     * Called when the icons for packages have been updated in the icon cache.
      */
     public void onPackageIconsUpdated(HashSet<String> updatedPackages, UserHandle user) {
-        // If any package iconView has changed (app was updated while launcher was dead),
+        // If any package icon has changed (app was updated while launcher was dead),
         // update the corresponding shortcuts.
         enqueueModelUpdateTask(new CacheDataUpdatedTask(
                 CacheDataUpdatedTask.OP_CACHE_UPDATE, user, updatedPackages));
@@ -717,14 +725,14 @@ public class LauncherModel extends BroadcastReceiver
     }
 
     /**
-     * @return the looper for the iconView pack thread which can be used to load iconView packs.
+     * @return the looper for the icon pack thread which can be used to load icon packs.
      */
     public static Looper getIconPackLooper() {
         return sIconPackThread.getLooper();
     }
 
     /**
-     * @return the looper for the iconView pack ui thread which can be used to load iconView pickers.
+     * @return the looper for the icon pack ui thread which can be used to load icon pickers.
      */
     public static Looper getIconPackUiLooper() {
         return sIconPackUiThread.getLooper();

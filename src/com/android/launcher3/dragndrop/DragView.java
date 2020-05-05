@@ -16,8 +16,6 @@
 
 package com.android.launcher3.dragndrop;
 
-import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.FloatArrayEvaluator;
@@ -40,21 +38,19 @@ import android.graphics.drawable.InsetDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
-import android.view.View;
-import ch.deletescape.lawnchair.LawnchairPreferences;
-import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
-import ch.deletescape.lawnchair.iconpack.IconPackManager;
-import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
+
 import com.android.launcher3.FastBitmapDrawable;
+import com.android.launcher3.FirstFrameAnimatorHelper;
 import com.android.launcher3.FolderInfo;
 import com.android.launcher3.IconProvider;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.Launcher;
-import com.android.launcher3.LauncherAnimUtils;
 import com.android.launcher3.LauncherAppState;
 import com.android.launcher3.LauncherModel;
 import com.android.launcher3.LauncherSettings;
@@ -64,7 +60,6 @@ import com.android.launcher3.Utilities;
 import com.android.launcher3.anim.Interpolators;
 import com.android.launcher3.compat.LauncherAppsCompat;
 import com.android.launcher3.compat.ShortcutConfigActivityInfo;
-import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.graphics.LauncherIcons;
 import com.android.launcher3.shortcuts.DeepShortcutManager;
 import com.android.launcher3.shortcuts.ShortcutInfoCompat;
@@ -72,8 +67,16 @@ import com.android.launcher3.shortcuts.ShortcutKey;
 import com.android.launcher3.util.Themes;
 import com.android.launcher3.util.Thunk;
 import com.android.launcher3.widget.PendingAddShortcutInfo;
+
 import java.util.Arrays;
 import java.util.List;
+
+import ch.deletescape.lawnchair.LawnchairPreferences;
+import ch.deletescape.lawnchair.iconpack.AdaptiveIconCompat;
+import ch.deletescape.lawnchair.iconpack.IconPackManager;
+import ch.deletescape.lawnchair.iconpack.LawnchairIconProvider;
+
+import static com.android.launcher3.ItemInfoWithIcon.FLAG_ICON_BADGED;
 
 public class DragView extends View {
     private static final ColorMatrix sTempMatrix1 = new ColorMatrix();
@@ -100,6 +103,7 @@ public class DragView extends View {
     private final Launcher mLauncher;
     private final DragLayer mDragLayer;
     @Thunk final DragController mDragController;
+    final FirstFrameAnimatorHelper mFirstFrameAnimatorHelper;
     private boolean mHasDrawn = false;
     @Thunk float mCrossFadeProgress = 0f;
     private boolean mAnimationCancelled = false;
@@ -143,6 +147,7 @@ public class DragView extends View {
         mLauncher = launcher;
         mDragLayer = launcher.getDragLayer();
         mDragController = launcher.getDragController();
+        mFirstFrameAnimatorHelper = new FirstFrameAnimatorHelper(this);
 
         iconProvider = IconProvider.newInstance(launcher);
 
@@ -153,7 +158,7 @@ public class DragView extends View {
         setScaleY(initialScale);
 
         // Animate the view into the correct position
-        mAnim = LauncherAnimUtils.ofFloat(0f, 1f);
+        mAnim = ValueAnimator.ofFloat(0f, 1f);
         mAnim.setDuration(VIEW_ZOOM_DURATION);
         mAnim.addUpdateListener(new AnimatorUpdateListener() {
             @Override
@@ -208,7 +213,7 @@ public class DragView extends View {
      */
     @TargetApi(Build.VERSION_CODES.O)
     public void setItemInfo(final ItemInfo info) {
-        if (!(FeatureFlags.LAUNCHER3_SPRING_ICONS && Utilities.ATLEAST_OREO)) {
+        if (!Utilities.ATLEAST_OREO) {
             return;
         }
         if (info.itemType != LauncherSettings.Favorites.ITEM_TYPE_APPLICATION &&
@@ -512,7 +517,7 @@ public class DragView extends View {
     }
 
     public void crossFade(int duration) {
-        ValueAnimator va = LauncherAnimUtils.ofFloat(0f, 1f);
+        ValueAnimator va = ValueAnimator.ofFloat(0f, 1f);
         va.setDuration(duration);
         va.setInterpolator(Interpolators.DEACCEL_1_5);
         va.addUpdateListener(new AnimatorUpdateListener() {

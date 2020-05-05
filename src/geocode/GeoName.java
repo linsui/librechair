@@ -26,19 +26,20 @@ THE SOFTWARE.
 
 package geocode;
 
+import java.util.Comparator;
+
+import geocode.kdtree.KDNodeComparator;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
-
-import geocode.kdtree.KDNodeComparator;
-import java.util.Comparator;
 
 /**
  * Created by Daniel Glasson on 18/05/2014. This class works with a placenames files from
  * http://download.geonames.org/export/dump/
  */
 
-public class GeoName extends KDNodeComparator<GeoName> {
+public class GeoName implements KDNodeComparator<GeoName> {
 
     public String name;
     public boolean majorPlace; // Major or minor place
@@ -76,7 +77,7 @@ public class GeoName extends KDNodeComparator<GeoName> {
     }
 
     @Override
-    protected double squaredDistance(GeoName other) {
+    public double squaredDistance(GeoName other) {
         double x = this.point[0] - other.point[0];
         double y = this.point[1] - other.point[1];
         double z = this.point[2] - other.point[2];
@@ -84,13 +85,13 @@ public class GeoName extends KDNodeComparator<GeoName> {
     }
 
     @Override
-    protected double axisSquaredDistance(GeoName other, int axis) {
+    public double axisSquaredDistance(GeoName other, int axis) {
         double distance = point[axis] - other.point[axis];
         return distance * distance;
     }
 
     @Override
-    protected Comparator<GeoName> getComparator(int axis) {
+    public Comparator<GeoName> getComparator(int axis) {
         return GeoNameComparator.values()[axis];
     }
 

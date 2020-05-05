@@ -21,10 +21,7 @@ package ch.deletescape.lawnchair.feed;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.provider.CalendarContract;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,105 +34,59 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.android.launcher3.R;
-import com.android.launcher3.util.Thunk;
 import com.google.android.apps.nexuslauncher.graphics.IcuDateTextView;
-import com.luckycatlabs.sunrisesunset.SunriseSunsetCalculator;
+import com.google.android.flexbox.AlignItems;
+import com.google.android.flexbox.FlexDirection;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 
 import ch.deletescape.lawnchair.LawnchairUtilsKt;
-import kotlin.Pair;
+import ch.deletescape.lawnchair.awareness.CalendarManager;
+import ch.deletescape.lawnchair.awareness.SunriseSunsetManager;
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
+import ch.deletescape.lawnchair.feed.util.Pairs;
+import ch.deletescape.lawnchair.font.CustomFontManager;
+import kotlin.Unit;
 
 public class DailySummaryFeedProvider extends FeedProvider {
-
-    @Thunk
-    Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private Pairs.Pair<ZonedDateTime, ZonedDateTime> sunriseSunset;
+    private int calEvCount = 0;
     private long sunriseSunsetExpiry;
 
     @SuppressLint("MissingPermission")
     public DailySummaryFeedProvider(Context c) {
         super(c);
-        Pair<Double, Double> location = LawnchairUtilsKt.getLawnchairLocationManager(c)
-                .getLocation();
-        if (location != null) {
-            Calendar sunrise = SunriseSunsetCalculator
-                    .getSunrise(location.getFirst(), location.getSecond(),
-                            Calendar.getInstance().getTimeZone(),
-                            new GregorianCalendar(), 6);
-            Calendar sunset = SunriseSunsetCalculator
-                    .getSunset(location.getFirst(), location.getSecond(),
-                            Calendar.getInstance().getTimeZone(),
-                            new GregorianCalendar(), 6);
-            Log.d(getClass().getName(),
-                    "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                            + sunset);
-            sunriseSunset = new Pair<>(ZonedDateTime
-                    .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                            ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
-                    ZonedDateTime.ofInstant(
-                            Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                            ZoneId
-                                    .of(Calendar.getInstance().getTimeZone().getID())));
-            sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
-        }
-    }
-
-    @Override
-    public void onFeedShown() {
-
-    }
-
-    @Override
-    public void onFeedHidden() {
-
-    }
-
-    @Override
-    public void onCreate() {
-
-    }
-
-    @Override
-    public void onDestroy() {
-
+        CalendarManager.INSTANCE.subscribe(lst -> {
+            calEvCount = (int) lst.stream().filter(
+                    it -> it.getStartTime().isAfter(LocalDateTime.now()
+                            .withHour(0)
+                            .withMinute(0)
+                            .withSecond(0)
+                            .withNano(0)) && it.getEndTime().isBefore(LocalDateTime.now()
+                            .plusDays(1)
+                            .withNano(0)
+                            .withMinute(0)
+                            .withHour(0)
+                            .withSecond(0))).count();
+            FeedUtil.runOnMainThread(this::markUnread);
+            return Unit.INSTANCE;
+        });
+        SunriseSunsetManager.subscribe(ss -> {
+            sunriseSunset = ss;
+            markUnread();
+        });
     }
 
     @Override
     public List<Card> getCards() {
-        if (sunriseSunsetExpiry < System.currentTimeMillis()) {
-            Pair<Double, Double> location = LawnchairUtilsKt
-                    .getLawnchairLocationManager(getContext()).getLocation();
-            if (location != null) {
-                Calendar sunrise = SunriseSunsetCalculator
-                        .getSunrise(location.getFirst(), location.getSecond(),
-                                Calendar.getInstance().getTimeZone(),
-                                new GregorianCalendar(), 6);
-                Calendar sunset = SunriseSunsetCalculator
-                        .getSunset(location.getFirst(), location.getSecond(),
-                                Calendar.getInstance().getTimeZone(),
-                                new GregorianCalendar(), 6);
-                Log.d(getClass().getName(),
-                        "init: sunrise and sunset times retrieved: " + sunrise + ", "
-                                + sunset);
-                sunriseSunset = new Pair<>(ZonedDateTime
-                        .ofInstant(Instant.ofEpochSecond(sunrise.getTimeInMillis() / 1000),
-                                ZoneId.of(Calendar.getInstance().getTimeZone().getID())),
-                        ZonedDateTime.ofInstant(
-                                Instant.ofEpochSecond(sunset.getTimeInMillis() / 1000),
-                                ZoneId
-                                        .of(Calendar.getInstance().getTimeZone().getID())));
-                sunriseSunsetExpiry = LawnchairUtilsKt.tomorrow(new Date()).getTime();
-            }
-        }
         return Collections.singletonList(new Card(null, null,
                 parent -> {
                     View v = LayoutInflater.from(parent.getContext())
@@ -147,13 +98,19 @@ public class DailySummaryFeedProvider extends FeedProvider {
                     RecyclerView recyclerView = v.findViewById(R.id.daily_summary_information);
                     Adapter adapter = new Adapter(parent.getContext(), this);
                     recyclerView.setAdapter(adapter);
+                    FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(
+                            parent.getContext());
+                    layoutManager.setFlexWrap(FlexWrap.WRAP);
+                    layoutManager.setFlexDirection(FlexDirection.COLUMN);
+                    layoutManager.setJustifyContent(JustifyContent.FLEX_START);
+                    layoutManager.setAlignItems(AlignItems.CENTER);
                     recyclerView.setLayoutManager(
                             new GridLayoutManager(parent.getContext(),
-                                    1)); /* TODO proper grid layout span sizes */
+                                    1));
                     adapter.refresh();
                     return v;
                 },
-                Card.Companion.getRAISE() | Card.Companion.getNO_HEADER(), "nosort,top",
+                Card.RAISE | Card.NO_HEADER, "nosort,top",
                 "dailySummary".hashCode()));
     }
 
@@ -175,47 +132,31 @@ public class DailySummaryFeedProvider extends FeedProvider {
 
         public void refresh() {
             items.clear();
-            Date currentTime = new Date();
-            String query =
-                    "(( " + CalendarContract.Events.DTSTART + " >= " + currentTime.getTime()
-                            + " ) AND ( " + CalendarContract.Events.DTSTART + " <= "
-                            + LawnchairUtilsKt
-                            .tomorrow(currentTime).getTime() + " ))";
-            Cursor calendarEvents = context.getContentResolver()
-                    .query(CalendarContract.Events.CONTENT_URI,
-                            new String[]{CalendarContract.Instances.TITLE,
-                                    CalendarContract.Instances.DTSTART,
-                                    CalendarContract.Instances.DTEND,
-                                    CalendarContract.Instances.DESCRIPTION,
-                                    CalendarContract.Events._ID,
-                                    CalendarContract.Instances.CUSTOM_APP_PACKAGE,
-                                    CalendarContract.Events.EVENT_LOCATION}, query, null,
-                            CalendarContract.Instances.DTSTART + " ASC");
-            if (calendarEvents.getCount() > 0) {
+            if (feedProvider.calEvCount > 0) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(
                                 Objects.requireNonNull(
                                         context.getDrawable(R.drawable.ic_event_black_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         context.getResources()
-                                .getQuantityString(R.plurals.title_daily_briefing_calendar_events,
-                                        calendarEvents.getCount(), calendarEvents.getCount())));
+                                .getQuantityString(
+                                        R.plurals.title_daily_briefing_calendar_events,
+                                        feedProvider.calEvCount, feedProvider.calEvCount)));
             }
-            Log.d(getClass().getName(),
-                    "refresh: sunrise and sunset are " + feedProvider.sunriseSunset);
+
             if (feedProvider.sunriseSunset != null) {
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
-                                        context.getDrawable(R.drawable.ic_sunrise_24dp)),
+                                context.getDrawable(R.drawable.ic_sunrise_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
-                                .formatTime(feedProvider.sunriseSunset.getFirst(), context)));
+                                .formatTime(feedProvider.sunriseSunset.car(), context)));
                 items.add(new DailySummaryItem(LawnchairUtilsKt
                         .tint(Objects.requireNonNull(
-                                        context.getDrawable(R.drawable.ic_sunset_24dp)),
+                                context.getDrawable(R.drawable.ic_sunset_24dp)),
                                 FeedAdapter.Companion.getOverrideColor(context)),
                         LawnchairUtilsKt
-                                .formatTime(feedProvider.sunriseSunset.getSecond(), context)));
+                                .formatTime(feedProvider.sunriseSunset.cdr(), context)));
             }
             notifyDataSetChanged();
         }
@@ -234,6 +175,13 @@ public class DailySummaryFeedProvider extends FeedProvider {
             ImageView imageView = holder.itemView.findViewById(R.id.daily_summary_icon);
             TextView title = holder.itemView.findViewById(R.id.daily_summary_information);
             imageView.setImageDrawable(item.icon);
+            CustomFontManager.Companion.getInstance(context).loadFont(
+                    CustomFontManager.FONT_FEED_CHIPS, title.getTypeface().getStyle(),
+                    tf -> {
+                        title.setTag("font_ignore");
+                        title.setTypeface(tf);
+                        return Unit.INSTANCE;
+                    });
             title.setText(item.text);
         }
 
@@ -250,7 +198,7 @@ class DailySummaryItem {
     public Drawable icon;
     public String text;
 
-    public DailySummaryItem(Drawable icon, String text) {
+    DailySummaryItem(Drawable icon, String text) {
         this.icon = icon;
         this.text = text;
     }

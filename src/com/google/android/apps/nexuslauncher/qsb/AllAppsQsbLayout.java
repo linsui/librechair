@@ -6,13 +6,14 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.launcher3.BaseRecyclerView;
 import com.android.launcher3.Launcher;
@@ -29,6 +30,7 @@ import ch.deletescape.lawnchair.LawnchairPreferences;
 import ch.deletescape.lawnchair.colors.ColorEngine;
 import ch.deletescape.lawnchair.colors.ColorEngine.ResolveInfo;
 import ch.deletescape.lawnchair.colors.ColorEngine.Resolvers;
+import ch.deletescape.lawnchair.feed.SearchOverlayManager;
 import ch.deletescape.lawnchair.globalsearch.SearchProvider;
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController;
 import ch.deletescape.lawnchair.globalsearch.providers.AppSearchSearchProvider;
@@ -223,10 +225,11 @@ public class AllAppsQsbLayout extends AbstractQsbLayout implements SearchUiManag
         SearchProvider provider = controller.getSearchProvider();
         if (shouldUseFallbackSearch(provider)) {
             searchFallback(str);
-        } else if (controller.isGoogle()) {
+        } else if (controller.isOverlay()) {
             final ConfigBuilder f = new ConfigBuilder(this, true);
             if (((LawnchairLauncher) mActivity).getOverlay() != null &&
-                    ((LawnchairLauncher) mActivity).getOverlay().getClient()
+                    SearchOverlayManager.Companion.getInstance(LawnchairLauncher.getLauncher(getContext()))
+                            .getSearchClient()
                             .startSearch(f.build(), f.getExtras())) {
                 searchFallback(str);
                 if (mFallback != null) {

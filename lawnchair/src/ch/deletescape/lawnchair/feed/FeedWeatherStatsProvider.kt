@@ -28,45 +28,51 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.StringRes
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
-import ch.deletescape.lawnchair.util.extensions.d
 import com.android.launcher3.R
-import net.aksingh.owmjapis.model.DailyWeatherForecast
 import java.util.*
-import java.util.concurrent.Executors
-import kotlin.collections.ArrayList
 
-class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
+class FeedWeatherStatsProvider(c: Context) : FeedProvider(c) {
 
-    private var weatherData: WeatherData? = null
+    private var weatherData: ForecastProvider.CurrentWeather? = null
     private var forecastHigh: Int? = null
     private var forecastLow: Int? = null
     private var hourlyWeatherForecast: ForecastProvider.Forecast? = null
-    private var dailyForecast: DailyWeatherForecast? = null
     @StringRes
     private var weatherTypeResource: Int? = null
 
-    private val refreshExecutor = Executors.newSingleThreadExecutor()
-
     init {
-        c.applicationContext.lawnchairApp.smartspace.addListener(this)
-    }
-
-    override fun onFeedShown() {
-        // TODO
-    }
-
-    override fun onFeedHidden() {
-        // TODO
-    }
-
-    override fun onCreate() {
-        // TODO
-    }
-
-    override fun onDestroy() {
-        // TODO
+        WeatherManager.subscribeWeather {
+            weatherData = it
+            runOnMainThread {
+                markUnread()
+            }
+        }
+        WeatherManager.subscribeHourly { forecast ->
+            hourlyWeatherForecast = forecast
+            val today: List<Int> = forecast.data.filter {
+                it.date.before(tomorrow())
+            }.map { it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit) }
+            if (today.isNotEmpty()) {
+                forecastLow = Collections.min(today)
+                forecastHigh = Collections.max(today)
+                val condCodes = run {
+                    val list = newList<Int>()
+                    hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }
+                            .forEach { list += it.condCode?.toList() ?: listOf(1) }
+                    list
+                }
+                val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
+                        condCodes.toTypedArray())
+                val type = WeatherTypes
+                        .getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
+                weatherTypeResource = WeatherTypes.getStringResource(type)
+            }
+            runOnMainThread {
+                markUnread()
+            }
+        }
     }
 
     override fun getCards(): List<Card> {
@@ -75,106 +81,31 @@ class FeedWeatherStatsProvider(c: Context) : FeedProvider(c), Listener {
                      object : Card.Companion.InflateHelper {
                          @SuppressLint("SetTextI18n")
                          override fun inflate(parent: ViewGroup): View {
-                             d("inflate: inflating view")
-                             val v = LayoutInflater.from(parent.getContext())
+                             val v = LayoutInflater.from(parent.context)
                                      .inflate(R.layout.weather_heads_up, parent, false)
-                             d("inflate: inflated view")
                              val highLow = v.findViewById(R.id.weather_hud_day_night) as TextView
                              val information =
                                      v.findViewById(R.id.weather_hud_information) as TextView
                              val currentInformation =
                                      v.findViewById(R.id.weather_hud_current_temp) as TextView
                              val currentIcon = v.findViewById(R.id.weather_hud_icon) as ImageView
-                             d("inflate: initialized views")
-
                              currentInformation.text =
-                                     weatherData?.getTitle(context.lawnchairPrefs.weatherUnit)
+                                     weatherData?.temperature?.toString(context.lawnchairPrefs.weatherUnit)
                              currentIcon.setImageBitmap(weatherData?.icon)
-
-                             d("inflate: set text for current data text view")
-
                              highLow.text =
                                      "${forecastHigh}${context.lawnchairPrefs.weatherUnit.suffix} / ${forecastLow}${context.lawnchairPrefs.weatherUnit.suffix}"
                              information.text = context.getString(weatherTypeResource!!)
-
-                             d("inflate: set thext for rest of views")
                              if (useWhiteText(backgroundColor, parent.context)) {
                                  highLow.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                                  information.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                                  currentInformation.setTextColor(
-                                         context.resources.getColor(R.color.textColorPrimary))
+                                         context.getColor(R.color.textColorPrimary))
                              }
-                             d("inflate: returning view")
                              return v
                          }
                      }, Card.NO_HEADER, "nosort,top"))
         else mutableListOf()
-    }
-
-    override fun onDataUpdated(weatherData: WeatherData?, card: CardData?) {
-        if (weatherData?.coordLat != null && weatherData.coordLon != null) {
-            d("onDataUpdated: updating forcast HUD", Throwable())
-            refreshExecutor.submit {
-                this.weatherData = weatherData;
-
-                try {
-                    d("onDataUpdated: fetching weather data")
-                    hourlyWeatherForecast = context.forecastProvider
-                            .getHourlyForecast(weatherData.coordLat, weatherData.coordLon)
-                    d("onDataUpdated: data retrieved")
-                    val tempList: List<Int?> = hourlyWeatherForecast!!.data.map {
-                        if (it.date.before(tomorrow())) {
-                            it.data.temperature.inUnit(context.lawnchairPrefs.weatherUnit)
-                        } else {
-                            null
-                        }
-                    }
-
-                    d("tomorrow is: ${tomorrow()}")
-                    d("today is: ${Date()}")
-
-                    d("onDataUpdated: temp list: $tempList")
-                    val today = ArrayList<Int>()
-                    tempList.forEach {
-                        if (it != null) {
-                            today.add(it)
-                        }
-                    }
-
-                    d("onDataUpdated: today's weather: $today")
-
-                    forecastLow = Collections.min(today)
-                    forecastHigh = Collections.max(today)
-
-                    d("onDataUpdated: hi: $forecastHigh lo: $forecastLow")
-                    val condCodes = run {
-                        val list = newList<Int>()
-                        hourlyWeatherForecast!!.data.filter { it.date.before(tomorrow()) }.forEach { list += it.condCode?.toList() ?: listOf(1) }
-                        list
-                    }
-
-                    d("onDataUpdated: classifying weather")
-
-                    val (clear, clouds, rain, snow, thunder) = WeatherTypes.getStatistics(
-                            condCodes.toTypedArray())
-
-
-                    d("onDataUpdated: sending classification statsitics to statistics function")
-                    val type = WeatherTypes.getWeatherTypeFromStatistics(clear, clouds, rain, snow, thunder)
-
-                    d("onDataUpdated: weather type is ${type.name}")
-
-                    weatherTypeResource = WeatherTypes.getStringResource(type)
-
-                    d("onDataUpdated: weather type is ${context.getString(weatherTypeResource!!)}")
-                } catch (e: ForecastProvider.ForecastException) {
-                    e.printStackTrace()
-                } catch (e: NullPointerException) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 }

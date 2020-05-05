@@ -296,7 +296,7 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
                 ? RECENTS_QUICKSCRUB_LAUNCH_DURATION
                 : RECENTS_LAUNCH_DURATION;
 
-        ClipAnimationHelper helper = new ClipAnimationHelper();
+        ClipAnimationHelper helper = new ClipAnimationHelper(taskView.getContext());
         target.play(getRecentsWindowAnimator(taskView, skipLauncherChanges, targets, helper)
                 .setDuration(duration));
 
@@ -468,13 +468,13 @@ public class LauncherAppTransitionManagerImpl extends LauncherAppTransitionManag
         mFloatingView = new View(mLauncher);
         if (isBubbleTextView && v.getTag() instanceof ItemInfoWithIcon ) {
             // Create a copy of the app iconView
-            mFloatingView.setBackground(
-                    DrawableFactory.get(mLauncher).newIcon((ItemInfoWithIcon) v.getTag()));
+            mFloatingView.setBackground(DrawableFactory.INSTANCE.get(mLauncher)
+                    .newIcon(v.getContext(), (ItemInfoWithIcon) v.getTag()));
         } else if (v.getTag() instanceof FolderInfo) {
             FolderInfo folderInfo = (FolderInfo) v.getTag();
             if (folderInfo.isCoverMode()) {
                 mFloatingView.setBackground(
-                        DrawableFactory.get(mLauncher).newIcon(folderInfo.getCoverInfo()));
+                        DrawableFactory.INSTANCE.get(mLauncher).newIcon(mLauncher, folderInfo.getCoverInfo()));
             }
         }
 

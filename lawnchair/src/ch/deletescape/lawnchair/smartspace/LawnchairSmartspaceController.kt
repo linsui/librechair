@@ -29,12 +29,11 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.provider.Settings
 import android.service.notification.StatusBarNotification
-import androidx.annotation.Keep
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import androidx.annotation.Keep
 import ch.deletescape.lawnchair.*
-import ch.deletescape.lawnchair.runOnUiWorkerThread
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.NOTIFICATION_BADGING
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity.SubSettingsFragment.CONTENT_RES_ID
@@ -51,6 +50,7 @@ import com.android.launcher3.R
 import com.android.launcher3.Utilities
 import com.android.launcher3.notification.NotificationListener
 import java.util.concurrent.TimeUnit
+import kotlin.collections.set
 
 class LawnchairSmartspaceController(val context: Context) {
 
@@ -170,42 +170,29 @@ class LawnchairSmartspaceController(val context: Context) {
                     .filterTo(eventDataProviders) { it !is BlankDataProvider }
                     .forEach { it.cardUpdateListener = ::updateCardData }
 
-        val allProviders = providerCache.values.toSet()
-        val newProviders = setOf(weatherDataProvider) + eventDataProviders
-        val needsDestroy = allProviders - newProviders
-        val needsUpdate = newProviders - activeProviders
+            val allProviders = providerCache.values.toSet()
+            val newProviders = setOf(weatherDataProvider) + eventDataProviders
+            val needsDestroy = allProviders - newProviders
+            val needsUpdate = newProviders - activeProviders
 
-        needsDestroy.forEach {
-            eventDataMap.remove(it)
-            if (it.listening) {
-                it.stopListening()
-            }
-        }
-
-        weatherProviderPref.set(weatherDataProvider::class.java.name)
-        eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
-
-            runOnMainThread {
-                if (eventProvidersPref.contains(
-                                BuiltInCalendarProvider::class.java.name) && context.checkSelfPermission(
-                                android.Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
-                    BlankActivity
-                            .requestPermission(context, android.Manifest.permission.READ_CALENDAR,
-                                               LawnchairLauncher.REQUEST_PERMISSION_CALENDAR_READ_ACCESS) {
-                                if (it) {
-                                    needsUpdate.forEach { it.forceUpdate() }
-                                    forceUpdate()
-                                } else {
-                                    /*
-                                     * Fail silently
-                                     */
-                                }
-                            }
-                } else {
-                    needsUpdate.forEach { it.forceUpdate() }
-                    forceUpdate()
+            needsDestroy.forEach {
+                eventDataMap.remove(it)
+                if (it.listening) {
+                    it.stopListening()
                 }
             }
+
+            weatherProviderPref.set(weatherDataProvider::class.java.name)
+            eventProvidersPref.setAll(eventDataProviders.map { it::class.java.name })
+
+            needsUpdate.forEach {
+                if (!it.requiresSetup()) {
+                    it.startListening()
+                    it.forceUpdate()
+                }
+            }
+            requiresSetup = newProviders.any { !it.listening && it.requiresSetup() }
+            runOnMainThread { forceUpdate() }
         }
     }
 

@@ -78,20 +78,29 @@ public final class AllAppsFromHome {
 
     private void scrollBackToBeginning() {
         final UiObject2 allAppsContainer = assertState();
+        final UiObject2 searchBox =
+                mLauncher.waitForObjectInContainer(allAppsContainer, "search_container_all_apps");
 
         int attempts = 0;
-        allAppsContainer.setGestureMargins(5, 500, 5, 5);
+        allAppsContainer.setGestureMargins(0, searchBox.getVisibleBounds().bottom + 1, 0, 5);
 
-        while (allAppsContainer.scroll(Direction.UP, 0.5f)) {
-            mLauncher.waitForIdle();
-            assertState();
+        for (int scroll = getScroll(allAppsContainer);
+                scroll != 0;
+                scroll = getScroll(allAppsContainer)) {
+            assertTrue("Negative scroll position", scroll > 0);
 
             mLauncher.assertTrue("Exceeded max scroll attempts: " + MAX_SCROLL_ATTEMPTS,
                     ++attempts <= MAX_SCROLL_ATTEMPTS);
+
+            allAppsContainer.scroll(Direction.UP, 1);
         }
 
-        mLauncher.waitForIdle();
-        assertState();
+        verifyActiveContainer();
+    }
+
+    private int getScroll(UiObject2 allAppsContainer) {
+        return mLauncher.getAnswerFromLauncher(allAppsContainer, "TAPL_GET_SCROLL").
+                getInt("scrollY", -1);
     }
 
     private void ensureIconVisible(UiObject2 appIcon, UiObject2 allAppsContainer) {

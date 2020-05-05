@@ -4,15 +4,15 @@ variables:
   ANDROID_COMPILE_SDK: "28"
   ANDROID_BUILD_TOOLS: "28.0.3"
   ANDROID_SDK_TOOLS:   "4333796"
-  VARIANT:             "quickstepLawnchairL3riDev"
-  VARIANT_CAP:         "QuickstepLawnchairL3riDev"
-  VARIANTGO:           "quickstepLawnchairL3goDev"
-  VARIANTGO_CAP:       "QuickstepLawnchairL3goDev"
+  VARIANT:             "quickstepLawnchairL3riDevWithWebView"
+  VARIANT_CAP:         "QuickstepLawnchairL3riDevWithWebView"
+  VARIANTGO:           "quickstepLawnchairL3goDevWithWebView"
+  VARIANTGO_CAP:       "QuickstepLawnchairL3goDevWithWebView"
   FLAVOUR:             "debug"
   FLAVOUR_CAP:         "Debug"
   CHAT_ID:             "librechair"
-  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-debug"
-  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-debug"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-debug"
   SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
 
 before_script:
@@ -100,7 +100,6 @@ sendReleaseTelegramGo:
   stage: deploy
   script:
     - apt-get install curl
-    - curl "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendMessage?chat_id=@${CHAT_ID}&text=These are Librechair Go builds intended for devices low on resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead"
     - curl -F document=@"outputs/librechair-ci-signed-go-aligned.apk" -F text="These are Lawnchair Go builds intended for devices low on resources, such as Android Go devices. If your device is not one of those, or you don't know what this is about, you might be looking for the unlabled builds instead" "https://api.telegram.org/bot${SECRET_BOT_TOKEN}/sendDocument?chat_id=@${CHAT_ID}"
   dependencies:
     - signReleaseGo

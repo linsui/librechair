@@ -205,11 +205,13 @@ class NewBackupActivity : SettingsBaseActivity(), ColorEngine.OnColorChangeListe
                     supportBackgroundTintList = tintList
                 }
                 try {
-                    val focusedTextColor = TextInputLayout::class.java.getDeclaredField("focusedTextColor")
+                    val focusedTextColor =
+                            TextInputLayout::class.java.getDeclaredField("focusedTextColor")
                     focusedTextColor.isAccessible = true
                     focusedTextColor.set(backupNameLayout, tintList)
                 } catch (e: Exception) {
-                    lawnchairApp.bugReporter.writeReport("Failed to set focusedTextColor on TextInputLayout", e)
+                    lawnchairApp.bugReporter.writeReport(
+                            "Failed to set focusedTextColor on TextInputLayout", e)
                 }
                 backupHomescreen.buttonTintList = tintList
                 backupSettings.buttonTintList = tintList

@@ -1,0 +1,65 @@
+image: debian/sid
+environment:
+  ANDROID_COMPILE_SDK: "28"
+  ANDROID_BUILD_TOOLS: "28.0.3"
+  ANDROID_SDK_TOOLS:   "4333796"
+  VARIANT:             "quickstepLawnchairL3riDevWithWebView"
+  VARIANT_CAP:         "QuickstepLawnchairL3riDevWithWebView"
+  VARIANTGO:           "quickstepLawnchairL3goDevWithWebView"
+  VARIANTGO_CAP:       "QuickstepLawnchairL3goDevWithWebView"
+  FLAVOUR:             "debug"
+  FLAVOUR_CAP:         "Debug"
+  CHAT_ID:             "librechair"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-withWebView-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-withWebView-debug"
+  SECRET_BOT_TOKEN_PLACEHOLDER: "PLA CE HO LDE R"
+
+secrets:
+  - b4c7491e-1025-47d8-9e0c-da0e6c89f166 # bot token, other secrets
+  - 97ec254d-ce28-40b5-a907-57b7fcc083b3 # signing keys [ TOP SECRET ]
+  - 685bfdb2-ca3a-4332-bbdb-d7d0d722c923 # keystore alias [ TOP SECRET ]
+  - bd60efd1-123b-43ca-a61f-4c0522ab9114 # keystore password [ TOP SECRET ]
+sources:
+  - https://git.sr.ht/~oldosfan/librechair
+packages:
+  - wget
+  - tar
+  - unzip
+  - lib32stdc++6
+  - lib32z1
+  - screenfetch
+  - curl
+  - openjdk-8-jdk
+tasks:
+  - setup: |
+      screenfetch
+      echo "
+      export ANDROID_HOME=$PWD/android-sdk-linux
+      export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
+      " >> ~/.buildenv
+      source ~/.buildenv
+      echo "sdk.dir=$ANDROID_HOME" > local.properties
+      echo "sdk-location=$ANDROID_HOME" >> local.properties
+      wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+      unzip -d android-sdk-linux android-sdk.zip
+      echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" > /dev/null
+      echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" > /dev/null
+      echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" > /dev/null
+      set +o pipefail
+      yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+      set -o pipefail
+      cd librechair
+      git checkout lbc_q_inc
+      chmod +x ./gradlew
+  - make: |
+      cd librechair
+      ./gradlew assemble${VARIANT_CAP}${FLAVOR_CAP}
+  - sign: |
+      cd librechair
+      mkdir outputs
+      jarsigner -keystore ~/librechair_keystore.jks build/outputs/apk/${VARIANT}/${FLAVOUR}/${APK_NAME}.apk -storepass `cat ~/ks_pw` -keypass `cat ~/ks_pw` `cat ~/ks_alisas` --signedjar librechair-ci-signed.apk
+      ${ANDROID_HOME}/build-tools/${ANDROID_BUILD_TOOLS}/zipalign -v 4 librechair-ci-signed.apk outputs/librechair-ci-signed-aligned.apk
+  - send: |
+      cd librechair
+      /bin/sh ~/send.sh
+

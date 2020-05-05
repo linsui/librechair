@@ -19,6 +19,7 @@
 
 <ch.deletescape.lawnchair.feed.impl.FeedController xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/overlay_feed"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,11 +29,51 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <ch.deletescape.lawnchair.views.SpringRecyclerView
-            android:clipToPadding="false"
-            android:id="@+id/feed_recycler"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/feed_refresh_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ch.deletescape.lawnchair.views.SpringRecyclerView
+                    android:clipToPadding="false"
+                    android:id="@+id/feed_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <ch.deletescape.lawnchair.views.SpringRecyclerView
+                android:clipToPadding="false"
+                android:id="@+id/feed_recycler_preview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <FrameLayout
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/empty_view">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+                        android:text="@string/feed_empty"
+                        android:layout_gravity="center"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                        android:text="@string/subtitle_feed_empty"
+                        android:layout_gravity="center"/>
+                </LinearLayout>
+            </FrameLayout>
+        </FrameLayout>
         <FrameLayout
             android:fitsSystemWindows="false"
             android:id="@+id/feed_main_frame"
@@ -50,25 +91,59 @@
             android:tint="@color/colorAccent"
             android:src="@drawable/ic_keyboard_arrow_up_black_24dp"
             android:layout_gravity="bottom|end"/>
-        <Toolbar
+        <LinearLayout
+            android:orientation="vertical"
             android:fitsSystemWindows="false"
-            android:id="@+id/feed_title_bar"
+            android:id="@+id/feed_title_parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent">
+            android:layout_height="wrap_content">
+            <Toolbar
+                android:fitsSystemWindows="false"
+                android:id="@+id/feed_title_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent">
+                <LinearLayout
+                    android:id="@+id/feed_widget_layout"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/feed_tabs"
+                        style="@style/Widget.Feed.Tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/SettingsTheme.Base" />
+                </LinearLayout>
+            </Toolbar>
+            <ch.deletescape.lawnchair.views.SpringRecyclerView
+                android:id="@+id/chip_container"
+                android:layout_marginTop="8dp"
+                android:paddingStart="32dp"
+                android:paddingEnd="32dp"
+                android:layout_marginStart="-16dp"
+                android:layout_marginEnd="-16dp"
+                android:layout_marginBottom="16dp"
+                android:clipToPadding="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
             <LinearLayout
-                android:id="@+id/feed_widget_layout"
-                android:layout_marginEnd="16dp"
-                android:orientation="vertical"
+                android:id="@+id/info_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/feed_tabs"
-                    style="@style/Widget.Feed.Tabs"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="8dp"
+                    android:layout_marginVertical="4dp"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+                    tools:text="sample infobox text"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:theme="@style/SettingsTheme.Base" />
+                    android:layout_weight="1"
+                    android:id="@+id/info_box_text"/>
             </LinearLayout>
-        </Toolbar>
+        </LinearLayout>
+
     </FrameLayout>
 </ch.deletescape.lawnchair.feed.impl.FeedController>

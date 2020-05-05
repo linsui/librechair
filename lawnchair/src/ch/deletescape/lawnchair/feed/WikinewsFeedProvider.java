@@ -21,15 +21,21 @@ package ch.deletescape.lawnchair.feed;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CharSequenceInputStream;
 import org.xml.sax.InputSource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
+import ch.deletescape.lawnchair.feed.util.FeedUtil;
 
 public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
 
@@ -38,20 +44,30 @@ public class WikinewsFeedProvider extends AbstractRSSFeedProvider {
     }
 
     @Override
-    public void bindFeed(BindCallback callback) {
+    protected void onInit(Consumer<String> tokenCallback) {
+        tokenCallback.accept(getId());
+    }
+
+    @Override
+    protected void bindFeed(BindCallback callback, String token) {
         Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
         Executors.newSingleThreadExecutor().submit(() -> {
             Log.d(getClass().getCanonicalName(), "bindFeed: updating feed");
             Executors.newSingleThreadExecutor().submit(() -> {
                 String feed;
                 try {
-                    feed = IOUtils.toString(
-                            new URL("https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only")
-                                    .openConnection()
-                                    .getInputStream(), Charset
+                    InputStream is = FeedUtil.downloadDirect(
+                            "https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=rss&categories=Published&notcategories=No%20publish%7CArchived%7cAutoArchived%7cdisputed&namespace=0&count=35&ordermethod=categoryadd&stablepages=only",
+                            getContext(),
+                            null);
+                    if (is == null) {
+                        throw new IOException("failed to retrieve feed");
+                    }
+                    feed = IOUtils.toString(is, Charset
                                     .defaultCharset());
                     callback.onBind(new SyndFeedInput().build(new InputSource(
                             new CharSequenceInputStream(feed, Charset.defaultCharset()))));
+                    is.close();
                 } catch (FeedException | IOException e) {
                     e.printStackTrace();
                 }

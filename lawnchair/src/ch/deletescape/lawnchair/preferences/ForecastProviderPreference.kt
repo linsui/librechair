@@ -40,6 +40,7 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.ListPreference
 import ch.deletescape.lawnchair.LawnchairPreferences
+import ch.deletescape.lawnchair.persistence.SimplePersistence
 import ch.deletescape.lawnchair.smartspace.BlankDataProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.ForecastProvider
 import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
@@ -47,9 +48,7 @@ import ch.deletescape.lawnchair.util.buildEntries
 import com.android.launcher3.Utilities
 
 class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
-        ListPreference(context, attrs), LawnchairPreferences.OnPreferenceChangeListener {
-
-    private val prefs = Utilities.getLawnchairPrefs(context)
+        ListPreference(context, attrs) {
 
     init {
         setDefaultValue(OWMForecastProvider::class.java.name)
@@ -60,41 +59,16 @@ class ForecastProviderPreference(context: Context, attrs: AttributeSet?) :
         }
     }
 
-    override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
-        super.onSetInitialValue(true, defaultValue)
-    }
-
     override fun shouldDisableDependents(): Boolean {
         return super.shouldDisableDependents() || value == BlankDataProvider::class.java.name
     }
 
-    override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
-        if (value != getPersistedValue()) {
-            value = getPersistedValue()
-        }
-        notifyDependencyChange(shouldDisableDependents())
-    }
-
-    override fun onAttached() {
-        super.onAttached()
-
-        prefs.addOnPreferenceChangeListener(key, this)
-    }
-
-    override fun onDetached() {
-        super.onDetached()
-
-        prefs.removeOnPreferenceChangeListener(key, this)
-    }
-
     override fun getPersistedString(defaultReturnValue: String?): String {
-        return getPersistedValue()
+        return SimplePersistence.InstanceHolder.getInstance(context).get(key, defaultReturnValue)
     }
 
-    private fun getPersistedValue() = prefs.sharedPrefs.getString(key, OWMForecastProvider::class.java.name)
-
-    override fun persistString(value: String?): Boolean {
-        prefs.sharedPrefs.edit().putString(key, value ?: BlankDataProvider::class.java.name).apply()
+    override fun persistString(value: String): Boolean {
+        SimplePersistence.InstanceHolder.getInstance(context).put(key, value)
         return true
     }
 }

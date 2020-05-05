@@ -34,7 +34,7 @@ import com.android.systemui.shared.recents.model.IconLoader;
 import com.android.systemui.shared.recents.model.TaskKeyLruCache;
 
 /**
- * Extension of {@link IconLoader} with iconView normalization support
+ * Extension of {@link IconLoader} with icon normalization support
  */
 @TargetApi(Build.VERSION_CODES.O)
 public class NormalizedIconLoader extends IconLoader {
@@ -46,7 +46,7 @@ public class NormalizedIconLoader extends IconLoader {
     public NormalizedIconLoader(Context context, TaskKeyLruCache<Drawable> iconCache,
             LruCache<ComponentName, ActivityInfo> activityInfoCache) {
         super(context, iconCache, activityInfoCache);
-        mDrawableFactory = DrawableFactory.get(context);
+        mDrawableFactory = DrawableFactory.INSTANCE.get(context);
     }
 
     @Override
@@ -89,6 +89,6 @@ public class NormalizedIconLoader extends IconLoader {
                 userId,
                 desc.getPrimaryColor(),
                 activityInfo.applicationInfo.isInstantApp());
-        return mDrawableFactory.newIcon(bitmapInfo, activityInfo);
+        return mDrawableFactory.newIcon(mContext, bitmapInfo, activityInfo);
     }
 }

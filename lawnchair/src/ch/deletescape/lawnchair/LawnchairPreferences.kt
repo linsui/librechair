@@ -35,11 +35,12 @@ import ch.deletescape.lawnchair.feed.*
 import ch.deletescape.lawnchair.feed.AlarmEventProvider
 import ch.deletescape.lawnchair.feed.anim.DefaultFeedTransitionDelegate
 import ch.deletescape.lawnchair.feed.images.providers.ImageProvider
-import ch.deletescape.lawnchair.feed.images.providers.NationalGeographicImageProvider
+import ch.deletescape.lawnchair.feed.images.providers.ImageProviderContainer
 import ch.deletescape.lawnchair.feed.tabs.CustomTab
 import ch.deletescape.lawnchair.feed.tabs.TabController
+import ch.deletescape.lawnchair.feed.tabs.colors.ColorProvider
+import ch.deletescape.lawnchair.feed.tabs.indicator.TabIndicatorProvider
 import ch.deletescape.lawnchair.feed.widgets.FeedWidgetsProvider
-import ch.deletescape.lawnchair.feed.widgets.WidgetMetadata
 import ch.deletescape.lawnchair.gestures.BlankGestureHandler
 import ch.deletescape.lawnchair.gestures.handlers.*
 import ch.deletescape.lawnchair.globalsearch.SearchProviderController
@@ -47,11 +48,11 @@ import ch.deletescape.lawnchair.groups.AppGroupsManager
 import ch.deletescape.lawnchair.groups.DrawerTabs
 import ch.deletescape.lawnchair.iconpack.IconPackManager
 import ch.deletescape.lawnchair.preferences.DockStyle
+import ch.deletescape.lawnchair.preferences.TitleAlignmentPreference
 import ch.deletescape.lawnchair.settings.GridSize
 import ch.deletescape.lawnchair.settings.GridSize2D
 import ch.deletescape.lawnchair.settings.ui.SettingsActivity
 import ch.deletescape.lawnchair.smartspace.*
-import ch.deletescape.lawnchair.smartspace.weather.forecast.OWMForecastProvider
 import ch.deletescape.lawnchair.theme.ThemeManager
 import ch.deletescape.lawnchair.util.Temperature
 import ch.deletescape.lawnchair.util.extensions.d
@@ -61,6 +62,7 @@ import com.android.launcher3.util.ComponentKey
 import com.android.quickstep.OverviewInteractionState
 import com.google.android.apps.nexuslauncher.allapps.PredictionsFloatingHeader
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -94,7 +96,7 @@ class LawnchairPreferences(val context: Context) :
             oldFile.delete()
         }
         return context.applicationContext.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY,
-                                                               Context.MODE_MULTI_PROCESS)
+                Context.MODE_MULTI_PROCESS)
                 .apply {
                     migrateConfig(this)
                 }
@@ -103,14 +105,14 @@ class LawnchairPreferences(val context: Context) :
     fun lbcMigratePrefs() {
         if (sharedPrefs.all["pref_oled_feed_cards"] == true) {
             sharedPrefs.edit().putString(ColorEngine.Resolvers.FEED_CARD,
-                                         OLEDBlackColorResolver::class.qualifiedName)
+                    OLEDBlackColorResolver::class.qualifiedName)
                     .putBoolean("pref_oled_feed_cards", false).commit();
         }
         if (sharedPrefs.all["pref_feed_decoration_margin"] is Float) {
             sharedPrefs.edit().putFloat("pref_feed_decoration_margin_vertical",
-                                        sharedPrefs.all["pref_feed_decoration_margin"] as Float)
+                    sharedPrefs.all["pref_feed_decoration_margin"] as Float)
                     .putFloat("pref_feed_decoration_margin_horizontal",
-                              sharedPrefs.all["pref_feed_decoration_margin"] as Float)
+                            sharedPrefs.all["pref_feed_decoration_margin"] as Float)
                     .remove("pref_feed_decoration_margin").commit()
         }
     }
@@ -151,8 +153,8 @@ class LawnchairPreferences(val context: Context) :
     // Theme
     private var iconPack by StringPref("pref_icon_pack", "", reloadIconPacks)
     val iconPacks = object : MutableListPref<String>("pref_iconPacks", reloadIconPacks,
-                                                     if (!TextUtils.isEmpty(iconPack)) listOf(
-                                                         iconPack) else lawnchairConfig.defaultIconPacks.asList()) {
+            if (!TextUtils.isEmpty(iconPack)) listOf(
+                    iconPack) else lawnchairConfig.defaultIconPacks.asList()) {
 
         override fun unflattenValue(value: String) = value
     }
@@ -163,14 +165,14 @@ class LawnchairPreferences(val context: Context) :
     var leakCanary by BooleanPref("pref_initLeakCanary", BuildConfig.HAS_LEAKCANARY, restart);
 
     val enableLegacyTreatment by BooleanPref("pref_enableLegacyTreatment",
-                                             lawnchairConfig.enableLegacyTreatment, reloadIcons)
+            lawnchairConfig.enableLegacyTreatment, reloadIcons)
     val colorizedLegacyTreatment by BooleanPref("pref_colorizeGeneratedBackgrounds",
-                                                lawnchairConfig.enableColorizedLegacyTreatment,
-                                                reloadIcons)
+            lawnchairConfig.enableColorizedLegacyTreatment,
+            reloadIcons)
     var chromiumPackageName by StringPref("pref_chromiumPackageName", "org.chromium.chrome")
     val enableWhiteOnlyTreatment by BooleanPref("pref_enableWhiteOnlyTreatment",
-                                                lawnchairConfig.enableWhiteOnlyTreatment,
-                                                reloadIcons)
+            lawnchairConfig.enableWhiteOnlyTreatment,
+            reloadIcons)
     val hideStatusBar by BooleanPref("pref_hideStatusBar", lawnchairConfig.hideStatusBar, doNothing)
     val iconPackMasking by BooleanPref("pref_iconPackMasking", true, reloadIcons)
     val adaptifyIconPacks by BooleanPref("pref_generateAdaptiveForIconPack", false, reloadIcons)
@@ -185,7 +187,7 @@ class LawnchairPreferences(val context: Context) :
     val gridSize by gridSizeDelegate
     val hideAppLabels by BooleanPref("pref_hideAppLabels", false, recreate)
     val showTopShadow by BooleanPref("pref_showTopShadow", true,
-                                     recreate) // TODO: update the scrim instead of doing this
+            recreate) // TODO: update the scrim instead of doing this
     var autoAddInstalled by BooleanPref("pref_add_icon_to_home", true, doNothing)
     private val homeMultilineLabel by BooleanPref("pref_homeIconLabelsInTwoLines", false, recreate)
     val homeLabelRows get() = if (homeMultilineLabel) 2 else 1
@@ -203,32 +205,25 @@ class LawnchairPreferences(val context: Context) :
     val smartspaceDate by BooleanPref("pref_smartspace_date", true, refreshGrid)
     var smartspaceWidgetId by IntPref("smartspace_widget_id", -1, doNothing)
     var weatherProvider by StringPref("pref_smartspace_widget_provider",
-                                      UnifiedWeatherDataProvider::class.java.name,
-                                      ::updateSmartspaceProvider)
+            UnifiedWeatherDataProvider::class.java.name,
+            ::updateSmartspaceProvider)
     var eventProvider by StringPref("pref_smartspace_event_provider",
-                                    BuiltInCalendarProvider::class.java.name,
-                                    ::updateSmartspaceProvider)
+            BuiltInCalendarProvider::class.java.name,
+            ::updateSmartspaceProvider)
     var eventProviders =
             StringListPref("pref_smartspace_event_providers", ::updateSmartspaceProvider,
-                           listOf(eventProvider, NotificationUnreadProvider::class.java.name,
-                                  NowPlayingProvider::class.java.name,
-                                  BatteryStatusProvider::class.java.name,
-                                  PersonalityProvider::class.java.name))
+                    listOf(eventProvider, NotificationUnreadProvider::class.java.name,
+                            NowPlayingProvider::class.java.name,
+                            BatteryStatusProvider::class.java.name,
+                            PersonalityProvider::class.java.name))
     var feedProvidersLegacy = StringListPref("pref_feed_providers", ::restartOverlay, emptyList())
     var feedBlur by BooleanPref("pref_feed_blur", true, ::restartOverlay)
-    var feedProviders = object :
+    var feedProvidersLegacy2 = object :
             MutableListPref<FeedProviderContainer>(sharedPrefs, "pref_feed_provider_containers",
-                                                   ::restartOverlay,
-                                                   listOf(FeedWeatherStatsProvider::class.java.name,
-                                                          FeedForecastProvider::class.java.name,
-                                                          DeviceStateProvider::class.java.name,
-                                                          CalendarEventProvider::class.java.name,
-                                                          WikipediaNewsProvider::class.java.name,
-                                                          WikinewsFeedProvider::class.java.name).map {
-                                                       FeedProviderContainer(it, null)
-                                                   }) {
+                    ::restartOverlay,
+                    listOf()) {
         override fun unflattenValue(value: String) = Gson().fromJson(value,
-                                                                     FeedProviderContainer::class.java).apply {
+                FeedProviderContainer::class.java).apply {
             if (arguments == null) {
                 arguments = Collections.emptyMap();
             }
@@ -237,79 +232,55 @@ class LawnchairPreferences(val context: Context) :
         override fun flattenValue(value: FeedProviderContainer) = Gson().toJson(value)
     }
 
-    var feedDisabledCards = object : MutableListPref<Int>("pref_feed_hidden_cards", ::restart, emptyList()) {
-        override fun unflattenValue(value: String): Int {
-            return Integer.valueOf(value)
-        }
-    }
+    var feedDisabledCards =
+            object : MutableListPref<Int>("pref_feed_hidden_cards", ::restart, emptyList()) {
+                override fun unflattenValue(value: String): Int {
+                    return Integer.valueOf(value)
+                }
+            }
     val feedCategorizeWidgetsAsSeparateTab by BooleanPref("pref_feed_widgets_tab", true,
-                                                          ::restartOverlay)
+            ::restartOverlay)
     val feedOLEDCards by BooleanPref("pref_oled_feed_cards", false, ::restartOverlay)
-    var feedCornerRounding by FloatPref("pref_feed_corner_rounding", 0f, ::restartOverlay);
     var feedRSSSources = StringListPref("pref_rss_sources", ::restartOverlay, emptyList())
     var feedBackgroundOpacity by FloatPref("pref_feed_opacity", 0f, ::restartOverlay)
     var feedCardOpacity by FloatPref("pref_feed_card_opacity", 255f, ::restartOverlay)
     var feedCardElevation by FloatPref("pref_feed_card_elevation", 16f, ::restartOverlay)
 
     var feedPresenterAlgorithm by StringPref("pref_feed_sorting_algorithm",
-                                             MixerSortingAlgorithm::class.java.name,
-                                             ::restartOverlay)
-    var feedWidgetList = object :
-            MutableListPref<Int>(sharedPrefs, "pref_feed_widgets", ::restartOverlay, listOf()) {
-        override fun customAdder(value: Int) {
-            setAll(getAll().filter { it != value } + value)
-        }
+            MixerSortingAlgorithm::class.java.name,
+            ::restartOverlay)
 
-                override fun unflattenValue(value: String): Int {
-                    return Integer.valueOf(value)
-                }
-            }
-    var feedWidgetMetadata = object :
-            MutableListPref<Pair<Int, WidgetMetadata>>(sharedPrefs, "pref_feed_widget_metadata_2",
-                                                       ::restartOverlay, listOf()) {
-        override fun flattenValue(
-                value: Pair<Int, WidgetMetadata>) = "${value.first}@" + Gson().toJson(value.second)
-
-        override fun unflattenValue(value: String): Pair<Int, WidgetMetadata> {
-            return value.split("@")[0].toInt() to Gson().fromJson(value.split("@", limit = 2)[1],
-                                                                  WidgetMetadata::class.java)
-        }
-
-        override fun customAdder(value: Pair<Int, WidgetMetadata>) {
-            setAll(getAll().filter { it.first != value.first } + value)
-        }
-    }
-    var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null, ::restartOverlay)
+    var feedCustomBackground by NullableStringPref("pref_feed_custom_background", null,
+            ::restartOverlay)
     var remoteFeedProviders by StringSetPref("pref_remote_feed_providers", setOf(),
-                                             ::restartOverlay);
+            ::restartOverlay)
 
+    var feedShowInfobox by BooleanPref("pref_feed_infobox", true, ::restartOverlay)
     var feedCardBlur by BooleanPref("pref_blur_feed_cards", false, ::restartOverlay);
     var swipeForFeed by BooleanPref("pref_swipe_feed", false, ::restart);
 
     var weatherApiKey by StringPref("pref_weatherApiKey",
-                                    context.getString(R.string.default_owm_key))
+            context.getString(R.string.default_owm_key))
     var weatherCity by StringPref("pref_weather_city", context.getString(R.string.default_city))
     val weatherUnit by StringBasedPref("pref_weather_units", Temperature.Unit.Celsius,
-                                       ::updateSmartspaceProvider,
-                                       Temperature.Companion::unitFromString,
-                                       Temperature.Companion::unitToString) { }
-    val weatherForecastProvider by StringPref("pref_forecast_provider", OWMForecastProvider::class.java.name, updateSmartspace)
+            ::updateSmartspaceProvider,
+            Temperature.Companion::unitFromString,
+            Temperature.Companion::unitToString) { }
     var usePillQsb by BooleanPref("pref_use_pill_qsb", false, recreate)
     var weatherIconPack by StringPref("pref_weatherIcons", "", updateWeatherData)
-    var feedOnboardingShown by BooleanPref("pref_feed_onboarding_shown", false)
 
     // Dock
     val dockStyles = DockStyle.StyleManager(this, reloadDockStyle, resetAllApps)
     val dockColoredGoogle by BooleanPref("pref_dockColoredGoogle", false, doNothing)
     var dockSearchBarPref by BooleanPref("pref_dockSearchBar", Utilities.ATLEAST_MARSHMALLOW,
-                                         recreate)
+            recreate)
     inline val dockSearchBar get() = !dockHide && dockSearchBarPref
     val dockRadius get() = dockStyles.currentStyle.radius
     val dockShadow get() = dockStyles.currentStyle.enableShadow
     val dockShowArrow get() = dockStyles.currentStyle.enableArrow
     val dockOpacity get() = dockStyles.currentStyle.opacity
     val dockShowPageIndicator by BooleanPref("pref_hotseatShowPageIndicator", true,
-                                             { onChangeCallback?.updatePageIndicator() })
+            { onChangeCallback?.updatePageIndicator() })
     val dockGradientStyle get() = dockStyles.currentStyle.enableGradient
     val dockHide get() = dockStyles.currentStyle.hide
     private val dockGridSizeDelegate = ResettableLazy {
@@ -322,7 +293,7 @@ class LawnchairPreferences(val context: Context) :
     val hideDockLabels by BooleanPref("pref_hideDockLabels", true, restart)
     val dockTextScale by FloatPref("pref_dockTextScale", -1f, restart)
     private val dockMultilineLabel by BooleanPref("pref_dockIconLabelsInTwoLines", false, recreate)
-    val dockLabelRows get() = if(dockMultilineLabel) 2 else 1
+    val dockLabelRows get() = if (dockMultilineLabel) 2 else 1
 
     // Drawer
     val hideAllAppsAppLabels by BooleanPref("pref_hideAllAppsAppLabels", false, recreate)
@@ -378,7 +349,7 @@ class LawnchairPreferences(val context: Context) :
     val alwaysClearIconCache by BooleanPref("pref_alwaysClearIconCache", false, restart)
     val debugLegacyTreatment by BooleanPref("pref_debugLegacyTreatment", false, restart)
     val lowPerformanceMode by BooleanPref("pref_lowPerformanceMode",
-                                          BuildConfig.FLAVOR_go == "l3go", restart)
+            BuildConfig.FLAVOR_go == "l3go", restart)
     val enablePhysics get() = !lowPerformanceMode
     val backupScreenshot by BooleanPref("pref_backupScreenshot", false, doNothing)
     var useScaleAnim by BooleanPref("pref_useScaleAnim", false, doNothing)
@@ -401,10 +372,11 @@ class LawnchairPreferences(val context: Context) :
     val overrideLocale by StringPref("pref_override_locale", "", ::restartOverlay)
     val forceFakePieAnims by BooleanPref("pref_forceFakePieAnims", false)
     val displayDebugOverlay by BooleanPref("pref_debugDisplayState", false)
+    val swipeHome by BooleanPref("pref_swipeHome", false, recreate)
 
     // Search
     var searchProvider by StringPref("pref_globalSearchProvider",
-                                     lawnchairConfig.defaultSearchProvider) {
+            lawnchairConfig.defaultSearchProvider) {
         SearchProviderController.getInstance(context).onSearchProviderChanged()
     }
     val dualBubbleSearch by BooleanPref("pref_bubbleSearchStyle", false, doNothing)
@@ -414,7 +386,7 @@ class LawnchairPreferences(val context: Context) :
     var quickstep by StringPref("pref_quickstep", BuildConfig.APPLICATION_ID, doNothing)
     var swipeUpToSwitchApps by BooleanPref("pref_swipe_up_to_switch_apps_enabled", true, doNothing)
     val recentsRadius by DimensionPref("pref_recents_radius", context.resources.getInteger(
-        R.integer.task_corner_radius).toFloat(), doNothing)
+            R.integer.task_corner_radius).toFloat(), doNothing)
     val swipeLeftToGoBack by BooleanPref("pref_swipe_left_to_go_back", false) {
         OverviewInteractionState.getInstance(context).setBackButtonAlpha(1f, true)
     }
@@ -434,22 +406,32 @@ class LawnchairPreferences(val context: Context) :
     var iconContrast by FloatPref("pref_icon_contrast", 1f, reloadIcons)
     val iconBrightness by FloatPref("pref_icon_brightness", 1f, reloadIcons)
     var feedForecastItemCount by FloatPref("pref_forecast_item_count", 6f, ::restartOverlay)
-    var feedDailyForecastItemCount by FloatPref("pref_daily_forecast_item_count", 4f, ::restartOverlay)
+    var feedDailyForecastItemCount by FloatPref("pref_daily_forecast_item_count", 4f,
+            ::restartOverlay)
     var feedProviderPackage by StringPref("pref_feed_provider_package", BuildConfig.APPLICATION_ID,
-                                          restart)
-    val feedAnimationDelegate by StringPref("pref_feed_animation", DefaultFeedTransitionDelegate::class.qualifiedName!!
+            restart)
+    val feedAnimationDelegate by StringPref("pref_feed_animation",
+            DefaultFeedTransitionDelegate::class.qualifiedName!!
             , ::restartOverlay)
     var feedTabController by StringPref("pref_feed_tab_controller", TabController::class.java.name,
-                                        ::restartOverlay)
+            ::restartOverlay)
     var feedCalendarEventThreshold by IntPref("pref_feed_calendar_days", 30, ::restartOverlay)
     var feedWebApplications by WebApplicationListPref("pref_feed_web_applications",
-                                                      ::restartOverlay, listOf(), sharedPrefs)
-    val feedHighContrastToolbar by BooleanPref("pref_high_contrast_toolbar", false, ::restartOverlay)
+            ::restartOverlay, listOf(), sharedPrefs)
+    val feedHighContrastToolbar by BooleanPref("pref_high_contrast_toolbar", false,
+            ::restartOverlay)
     val feedBackToTop by BooleanPref("pref_feed_display_back_to_top_button", true, ::restartOverlay)
-    val feedBackground by ImageProviderPref("pref_feed_background", ImageProvider::class, ::restartOverlay)
-    val feedSearchUrl by StringPref("pref_feed_search_url_template", "https://example.com/search?q=%s", ::restartOverlay)
+    var feedBackground by ImageProviderPref("pref_feed_background_2",
+            ImageProviderContainer(ImageProvider::class, Collections.emptyMap()), ::restartOverlay)
+    val feedSearchUrl by StringPref("pref_feed_search_url_template",
+            "https://example.com/search?q=%s", ::restartOverlay)
     val feedShowOtherTab by BooleanPref("pref_show_other_tab", true, ::restartOverlay)
     val feedBlurStrength by FloatPref("pref_feed_blur_strength", 255f, ::restartOverlay)
+    val feedIndicatorProvider by StringPref("pref_feed_indicator_provider",
+            TabIndicatorProvider::class.qualifiedName!!, ::restartOverlay)
+    val feedColorProvider by StringPref("pref_feed_color_provider",
+            ColorProvider::class.qualifiedName!!,
+            ::restartOverlay)
     var feedCustomTabs = object :
             MutableListPref<CustomTab>(sharedPrefs, "pref_feed_custom_tabs", ::restartOverlay, run {
                 val providerList = MainFeedController.getFeedProviders(context, true)
@@ -459,15 +441,15 @@ class LawnchairPreferences(val context: Context) :
                     providers = providerList.filter {
                         it.clazz.let {
                             it == FeedWeatherStatsProvider::class.qualifiedName
-                            || it == FeedForecastProvider::class.qualifiedName
-                            || it == FeedDailyForecastProvider::class.qualifiedName
-                            || it == DailySummaryFeedProvider::class.qualifiedName
-                            || it == WikipediaFunFactsProvider::class.qualifiedName
-                            || it == NoteListProvider::class.qualifiedName
-                            || it == WebApplicationsProvider::class.qualifiedName
-                            || it == FeedJoinedWeatherProvider::class.qualifiedName
-                            || it == WeatherBarFeedProvider::class.qualifiedName
-                            || ImageProvider::class.isSuperclassOf(Class.forName(it).kotlin)
+                                    || it == FeedForecastProvider::class.qualifiedName
+                                    || it == FeedDailyForecastProvider::class.qualifiedName
+                                    || it == DailySummaryFeedProvider::class.qualifiedName
+                                    || it == WikipediaFunFactsProvider::class.qualifiedName
+                                    || it == NoteListProvider::class.qualifiedName
+                                    || it == WebApplicationsProvider::class.qualifiedName
+                                    || it == FeedJoinedWeatherProvider::class.qualifiedName
+                                    || it == WeatherBarFeedProvider::class.qualifiedName
+                                    || ImageProvider::class.isSuperclassOf(Class.forName(it).kotlin)
                         } || it.arguments.get(RemoteFeedProvider.COMPONENT_CATEGORY) == "tools"
                     }.toTypedArray()
                 }, CustomTab().apply {
@@ -506,21 +488,30 @@ class LawnchairPreferences(val context: Context) :
     val feedShowCalendarColour by BooleanPref("pref_feed_show_event_color", true, ::restartOverlay)
     var cardDecorationMargin by FloatPref("pref_feed_decoration_margin", -1f, ::restartOverlay)
     var cardDecorationMarginVertical by FloatPref("pref_feed_decoration_margin_vertical", 16f,
-                                                  ::restartOverlay)
+            ::restartOverlay)
     var cardDecorationMarginHorizontal by FloatPref("pref_feed_decoration_margin_horizontal", 16f,
-                                                    ::restartOverlay)
+            ::restartOverlay)
 
-    var showVerticalDailyForecast by BooleanPref("pref_show_vertical_daily_forecast", false, ::restartOverlay)
-    var showVerticalHourlyForecast by BooleanPref("pref_show_vertical_hourly_forecast", false, ::restartOverlay)
+    var showVerticalDailyForecast by BooleanPref("pref_show_vertical_daily_forecast", false,
+            ::restartOverlay)
+    var showVerticalHourlyForecast by BooleanPref("pref_show_vertical_hourly_forecast", false,
+            ::restartOverlay)
     var elevateWeatherCard by BooleanPref("pref_elevate_weather_card", false, ::restartOverlay)
-    var feedHorizontalTabs by BooleanPref("pref_display_feed_tabs_as_single_line", false, ::restartOverlay)
+    var feedHorizontalTabs by BooleanPref("pref_display_feed_tabs_as_single_line", false,
+            ::restartOverlay)
     var feedHideTabText by BooleanPref("pref_feed_hide_tab_text", false, ::restartOverlay)
     val feedTabsOnBottom by BooleanPref("pref_feed_tabs_on_bottom", false, ::restartOverlay)
     var feedToolbarWidget by IntPref("pref_feed_toolbar_custom_widget", -1)
     var feedToolbarWidgetForceStyle by BooleanPref("pref_feed_toolbar_widget_force_style",
             false, ::restartOverlay)
+    val feedRaisedCardTitleAlignment by StringPref("pref_feed_card_title_alignment",
+            TitleAlignmentPreference.ALIGNMENT_CENTER, ::restartOverlay)
+    val feedRaisedHeaderOnlyCardTitleAlignment by StringPref(
+            "pref_feed_header_only_card_title_alignment",
+            TitleAlignmentPreference.ALIGNMENT_END, ::restartOverlay)
     var lastKnownLocation by StringPref("pref_last_known_location", "")
     val feedAutoHideToolbar by BooleanPref("pref_feed_hide_toolbar", true, ::restartOverlay)
+    val feedHideUnusedTabs by BooleanPref("pref_feed_hide_unused_tabs", true, ::restartOverlay)
     private val was1stApril = is1stApril()
 
     fun checkFools() {
@@ -538,9 +529,9 @@ class LawnchairPreferences(val context: Context) :
 
     var hiddenAppSet by StringSetPref("hidden-app-set", Collections.emptySet(), reloadApps)
     var hiddenPredictionAppSet by StringSetPref("pref_hidden_prediction_set",
-                                                Collections.emptySet(), doNothing)
+            Collections.emptySet(), doNothing)
     var hiddenPredictionActionSet by StringSetPref("pref_hidden_prediction_set",
-                                                Collections.emptySet(), doNothing)
+            Collections.emptySet(), doNothing)
     val customAppName =
             object : MutableMapPref<ComponentKey, String>("pref_appNameMap", reloadAll) {
                 override fun flattenKey(key: ComponentKey) = key.toString()
@@ -550,12 +541,12 @@ class LawnchairPreferences(val context: Context) :
             }
     val customAppIcon = object :
             MutableMapPref<ComponentKey, IconPackManager.CustomIconEntry>("pref_appIconMap",
-                                                                          reloadAll) {
+                    reloadAll) {
         override fun flattenKey(key: ComponentKey) = key.toString()
         override fun unflattenKey(key: String) = ComponentKey(context, key)
         override fun flattenValue(value: IconPackManager.CustomIconEntry) = value.toString()
         override fun unflattenValue(value: String) = IconPackManager.CustomIconEntry.fromString(
-            value)
+                value)
     }
     val recentBackups =
             object : MutableListPref<Uri>(Utilities.getDevicePrefs(context), "pref_recentBackups") {
@@ -563,7 +554,7 @@ class LawnchairPreferences(val context: Context) :
             }
 
     inline fun withChangeCallback(
-        crossinline callback: (LawnchairPreferencesChangeCallback) -> Unit): () -> Unit {
+            crossinline callback: (LawnchairPreferencesChangeCallback) -> Unit): () -> Unit {
         return { getOnChangeCallback()?.let { callback(it) } }
     }
 
@@ -587,15 +578,7 @@ class LawnchairPreferences(val context: Context) :
 
     fun restartOverlay() {
         if (getCurrentProcessName(context) != ":overlay") {
-            try {
-                LawnchairLauncher.getLauncher(context).overlay?.client?.disconnect();
-            } catch (e: NullPointerException) {
-                e.printStackTrace();
-            } catch (e: IllegalArgumentException) {
-                e.printStackTrace();
-            } catch (e: RuntimeException) {
-                e.printStackTrace();
-            }
+            LawnchairLauncher.getLauncher(context).overlay?.client?.restartProcess()
         }
 
         sharedPrefs.edit().putString("pref_feed_preview", UUID.randomUUID().toString()).apply()
@@ -870,7 +853,7 @@ class LawnchairPreferences(val context: Context) :
                                               private val dispose: (T) -> Unit) :
             PrefDelegate<T>(key, defaultValue, onChange) {
         override fun onGetValue(): T = sharedPrefs.getString(getKey(), null)?.run(fromString)
-                                       ?: defaultValue
+                ?: defaultValue
 
         override fun onSetValue(value: T) {
             edit { putString(getKey(), toString(value)) }
@@ -913,7 +896,7 @@ class LawnchairPreferences(val context: Context) :
             PrefDelegate<Set<T>>(key, defaultValue, onChange) {
         override fun onGetValue(): Set<T> {
             return sharedPrefs.getStringSet(key, emptySet())?.map { unserialize(it) }?.toSet()
-                   ?: emptySet()
+                    ?: emptySet()
         }
 
         override fun onSetValue(value: Set<T>) {
@@ -972,7 +955,7 @@ class LawnchairPreferences(val context: Context) :
                                onChange: () -> Unit = doNothing) :
             PrefDelegate<Int>(key, defaultValue, onChange) {
         override fun onGetValue(): Int = (sharedPrefs.getFloat(getKey(),
-                                                               defaultValue.toFloat() / 255) * 255).roundToInt()
+                defaultValue.toFloat() / 255) * 255).roundToInt()
 
         override fun onSetValue(value: Int) {
             edit { putFloat(getKey(), value.toFloat() / 255) }
@@ -1010,15 +993,21 @@ class LawnchairPreferences(val context: Context) :
         }
     }
 
-    open inner class ImageProviderPref(key: String, defaultValue: KClass<out ImageProvider>,
+    open inner class ImageProviderPref(key: String, defaultValue: ImageProviderContainer,
                                        onChange: () -> Unit = doNothing) :
-            PrefDelegate<KClass<out ImageProvider>>(key, defaultValue, onChange) {
-        val subst = mapOf("ch.deletescape.lawnchair.feed.images.ng.NationalGeographicImageProvider" to
-                NationalGeographicImageProvider::class.qualifiedName)
-        override fun onGetValue(): KClass<out ImageProvider> =
-                Class.forName(subst[sharedPrefs.getString(key, defaultValue.qualifiedName)]
-                        ?: sharedPrefs.getString(key, defaultValue.qualifiedName)!!).kotlin as KClass<out ImageProvider>
-        override fun onSetValue(value: KClass<out ImageProvider>) = edit { putString(key, value.qualifiedName) }
+            PrefDelegate<ImageProviderContainer>(key, defaultValue, onChange) {
+        override fun onGetValue(): ImageProviderContainer =
+                if (sharedPrefs.getString(key + "clazs",
+                                null) == null) defaultValue else
+                    ImageProviderContainer(Class.forName(sharedPrefs.getString(key + "clazs",
+                            null)!!).kotlin as KClass<out ImageProvider>,
+                            Gson().fromJson(sharedPrefs.getString(key + "mta", null), object :
+                                    TypeToken<Map<String, String>>() {}.type) as Map<String, String>)
+
+        override fun onSetValue(value: ImageProviderContainer) = edit {
+            putString(key + "clazs", value.clazz.qualifiedName)
+            putString(key + "mta", Gson().toJson(value.meta))
+        }
     }
 
     // ----------------
@@ -1048,7 +1037,8 @@ class LawnchairPreferences(val context: Context) :
         blockingEditing = false
     }
 
-    @SuppressLint("CommitPrefEdits") fun beginBulkEdit() {
+    @SuppressLint("CommitPrefEdits")
+    fun beginBulkEdit() {
         synchronized(bulkEditCount) {
             if (bulkEditCount.getAndIncrement() == 0) {
                 bulkEditing = true
@@ -1187,7 +1177,7 @@ class LawnchairPreferences(val context: Context) :
     }
 
     private fun migrateFromV1(editor: SharedPreferences.Editor, prefs: SharedPreferences) = with(
-        editor) {
+            editor) {
         // Set flags
         putBoolean("pref_legacyUpgrade", true)
         putBoolean("pref_restoreSuccess", false)
@@ -1200,7 +1190,7 @@ class LawnchairPreferences(val context: Context) :
         putString("pref_gesture_double_tap", when (prefs.getString("pref_dt2sHandler", "")) {
             "" -> BlankGestureHandler(context, null)
             "ch.deletescape.lawnchair.gestures.dt2s.DoubleTapGesture\$SleepGestureHandlerTimeout" -> SleepGestureHandlerTimeout(
-                context, null)
+                    context, null)
             else -> SleepGestureHandler(context, null)
         }.toString())
 
@@ -1217,8 +1207,8 @@ class LawnchairPreferences(val context: Context) :
 
         // Home widget
         val pillQsb = prefs.getBoolean("pref_showPixelBar", true)
-                      // The new dock qsb should be close enough I guess
-                      && !prefs.getBoolean("pref_fullWidthSearchbar", false);
+                // The new dock qsb should be close enough I guess
+                && !prefs.getBoolean("pref_fullWidthSearchbar", false);
         putBoolean("pref_use_pill_qsb", pillQsb)
         if (pillQsb) {
             putBoolean("pref_dockSearchBar", false)
@@ -1228,12 +1218,10 @@ class LawnchairPreferences(val context: Context) :
         }
 
         // Colors
-        ColorEngine.setColor(this, ColorEngine.Resolvers.WORKSPACE_ICON_LABEL,
-                             prefs.getInt("pref_workspaceLabelColor", Color.WHITE));
-        if (prefs.getBoolean("pref_allAppsCustomLabelColor", false)) {
-            ColorEngine.setColor(this, ColorEngine.Resolvers.ALLAPPS_ICON_LABEL,
-                                 prefs.getInt("pref_allAppsCustomLabelColor",
-                                              0x666666 or 0xff shl 24));
+        if (prefs.contains("pref_workspaceLabelColor")) {
+            val color = prefs.getInt("pref_workspaceLabelColor", Color.WHITE)
+            ColorEngine.setColor(this, ColorEngine.Resolvers.WORKSPACE_ICON_LABEL, color)
+            ColorEngine.setColor(this, ColorEngine.Resolvers.ALLAPPS_ICON_LABEL, color)
         }
 
         // Theme
@@ -1245,12 +1233,13 @@ class LawnchairPreferences(val context: Context) :
         putString("pref_icon_pack", prefs.getString("pref_iconPackPackage", ""))
 
         // Gestures
-        putString("pref_gesture_swipe_down", when (prefs.getInt("pref_pulldownAction", 1)) {
-            1 -> NotificationsOpenGestureHandler(context, null)
-            2 -> StartGlobalSearchGestureHandler(context, null)
-            3 -> StartAppSearchGestureHandler(context, null)
-            else -> BlankGestureHandler(context, null)
-        }.toString())
+        putString("pref_gesture_swipe_down",
+                when (Integer.parseInt(prefs.getString("pref_pulldownAction", "1"))) {
+                    1 -> NotificationsOpenGestureHandler(context, null)
+                    2 -> StartGlobalSearchGestureHandler(context, null)
+                    3 -> StartAppSearchGestureHandler(context, null)
+                    else -> BlankGestureHandler(context, null)
+                }.toString())
         if (prefs.getBoolean("pref_homeOpensDrawer", false)) {
             putString("pref_gesture_press_home", OpenDrawerGestureHandler(context, null).toString())
         }
@@ -1269,7 +1258,8 @@ class LawnchairPreferences(val context: Context) :
 
     companion object {
 
-        @SuppressLint("StaticFieldLeak") private var INSTANCE: LawnchairPreferences? = null
+        @SuppressLint("StaticFieldLeak")
+        private var INSTANCE: LawnchairPreferences? = null
 
         const val CURRENT_VERSION = 200
         const val VERSION_KEY = "config_version"

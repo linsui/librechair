@@ -36,7 +36,6 @@ class FeedPreview(context: Context, attrs: AttributeSet?)
     override fun onValueChanged(key: String, prefs: LawnchairPreferences, force: Boolean) {
         (adapter as FeedPreviewAdapter).apply {
             backgroundColor = context.colorEngine.feedBackground.value.resolveColor()
-            refresh()
             notifyDataSetChanged()
             background = ColorDrawable(context.colorEngine.feedBackground.value.resolveColor())
         }

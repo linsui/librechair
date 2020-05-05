@@ -26,37 +26,29 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import ch.deletescape.lawnchair.feed.Card
 import ch.deletescape.lawnchair.feed.FeedProvider
+import ch.deletescape.lawnchair.persistence.feedPrefs
 import ch.deletescape.lawnchair.util.extensions.d
 
 abstract class AbstractImageProvider<Id>(c: Context) : FeedProvider(c) {
     abstract val images: MutableMap<Bitmap, Id>
-    abstract val headerCard: Card?
+    abstract val headerCard: List<Card>?
     abstract val onRemoveListener: (id: Id) -> Unit
 
-    override fun onFeedShown() {
-    }
-
-    override fun onFeedHidden() {
-    }
-
-    override fun onCreate() {
-    }
-
-    override fun onDestroy() {
-    }
+    override fun isVolatile() = true
 
     override fun getCards(): List<Card> {
-        return listOfNotNull(headerCard) + images.keys.map {
+        return (if (!context.feedPrefs.hideImageOperatorCards) (headerCard
+                ?: emptyList()) else emptyList()) + images.keys.map {
             Card(null, "", { parent, _ ->
                 ImageView(parent.context).apply {
                     layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                                             ViewGroup.LayoutParams.MATCH_PARENT)
+                            ViewGroup.LayoutParams.MATCH_PARENT)
                     setImageBitmap(it)
                     scaleType = ImageView.ScaleType.CENTER_CROP
                 }
             }, Card.RAISE or Card.NO_HEADER, "", it.hashCode()).apply {
                 canHide = true
-                onRemoveListener = {
+                onRemoveListener = {_ ->
                     d("onRemoveListener: removing image ${images[it]}")
                     onRemoveListener(images[it]!!)
                     images.remove(it)

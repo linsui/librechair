@@ -105,7 +105,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                         null, null, lat, lon,
                                         iconRes), date, conds)
                     }
-                    return ForecastProvider.Forecast(data)
+                    return ForecastProvider.Forecast(data, responseResult.body()!![0].mobileLink)
                 }
             } catch (e: NullPointerException) {
                 throw ForecastProvider.ForecastException(e)
@@ -134,7 +134,7 @@ class AccuWeatherForecastProvider(val c: Context) : ForecastProvider {
                                     AccuWeatherDataProvider.getIcon(c,
                                             weatherResponse.body()!!.currentConditions.weatherIcon,
                                             weatherResponse.body()!!.currentConditions.isDayTime),
-                                    weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble()))
+                                    weatherResponse.body()!!.currentConditions.precip1hr.value.toDouble(), weatherResponse.body()!!.currentConditions.mobileLink))
                     return cachedCurrent!!.value
                 } catch (e: Throwable) {
                     throw ForecastProvider.ForecastException(e)

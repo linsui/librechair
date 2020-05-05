@@ -15,4 +15,4 @@
  *     along with Lawnchair Launcher.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-include ':systemui-shared', ':boilerplate', ':launcherclient'
+include ':systemui-shared', ':boilerplate', ':launcherclient', ':libscm'

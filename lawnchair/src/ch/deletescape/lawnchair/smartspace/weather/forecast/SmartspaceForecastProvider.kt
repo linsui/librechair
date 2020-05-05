@@ -20,47 +20,40 @@
 package ch.deletescape.lawnchair.smartspace.weather.forecast
 
 import android.text.TextUtils
-import ch.deletescape.lawnchair.forecastProvider
+import ch.deletescape.lawnchair.awareness.WeatherManager
 import ch.deletescape.lawnchair.runOnMainThread
 import ch.deletescape.lawnchair.runOnNewThread
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController
 import ch.deletescape.lawnchair.smartspace.LawnchairSmartspaceController.*
 import ch.deletescape.lawnchair.smartspace.weather.icons.WeatherIconManager
 import com.android.launcher3.R
-import java.util.concurrent.TimeUnit
 
 class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
-        PeriodicDataProvider(controller), Listener {
-    override fun onDataUpdated(weather: WeatherData?, card: CardData?) {
-        if (weather?.coordLat != null && weather.coordLon != null) {
-            lat = weather.coordLat
-            lon = weather.coordLon
+        DataProvider(controller) {
+
+    private lateinit var forecast: ForecastProvider.Forecast
+    private lateinit var current: ForecastProvider.CurrentWeather
+
+    init {
+        WeatherManager.subscribeWeather {
+            current = it
+            updateData()
+        }
+        WeatherManager.subscribeHourly {
+            forecast = it
             updateData()
         }
     }
 
-    private var lat: Double? = null
-    private var lon: Double? = null
-    override val timeout: Long
-        get() = TimeUnit.MINUTES.toMillis(5)
-
-    init {
-        controller.addListener(this)
-    }
-
-    override fun updateData() {
+    fun updateData() {
         runOnNewThread {
-            if (lat != null && lon != null) {
-                val lat = lat!!
-                val lon = lon!!
+            if (::forecast.isInitialized && ::current.isInitialized) {
                 try {
-                    val forecast = context.forecastProvider.getHourlyForecast(lat, lon)
                     if (forecast.data.firstOrNull()?.condCode?.filter { it in 600..699 }?.size ?: 0 > 0) {
                         val data = CardData(WeatherIconManager.getInstance(context).getIcon(
                                 WeatherIconManager.Icon.SNOW, false), listOf(Line(
                                 context.getString(R.string.title_card_incoming_snow),
                                 TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 600..699 }) {
                             runOnMainThread {
                                 updateData(null, data)
@@ -71,7 +64,6 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                                 WeatherIconManager.Icon.THUNDERSTORMS, false), listOf(Line(
                                 context.getString(R.string.title_card_incoming_thunder),
                                 TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 200..299 }) {
                             runOnMainThread {
                                 updateData(null, data)
@@ -82,7 +74,6 @@ class SmartspaceForecastProvider(controller: LawnchairSmartspaceController) :
                                 WeatherIconManager.Icon.RAIN, false), listOf(Line(
                                 context.getString(R.string.title_card_upcoming_rain),
                                 TextUtils.TruncateAt.END)), true)
-                        val current = context.forecastProvider.getCurrentWeather(lat, lon)
                         if (current.condCodes.any { it in 300..599 }) {
                             runOnMainThread {
                                 updateData(null, data)

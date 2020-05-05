@@ -22,11 +22,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import ch.deletescape.lawnchair.iconpack.IconPackManager;
+
 import com.android.launcher3.FolderInfo;
 import com.android.launcher3.ItemInfo;
 import com.android.launcher3.LauncherAppState;
@@ -40,13 +39,17 @@ import com.android.launcher3.LauncherSettings.Favorites;
 import com.android.launcher3.LauncherSettings.Settings;
 import com.android.launcher3.ShortcutInfo;
 import com.android.launcher3.Utilities;
+import com.android.launcher3.config.FeatureFlags;
 import com.android.launcher3.util.ContentWriter;
 import com.android.launcher3.util.ItemInfoMatcher;
 import com.android.launcher3.util.LooperExecutor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
+
+import ch.deletescape.lawnchair.iconpack.IconPackManager;
 
 /**
  * Class for handling model updates.
@@ -64,8 +67,9 @@ public class ModelWriter {
     private final boolean mHasVerticalHotseat;
     private final boolean mVerifyChanges;
 
+    // Keep track of delete operations that occur when an Undo option is present; we may not commit.
+    private final List<Runnable> mDeleteRunnables = new ArrayList<>();
     private boolean mPreparingToUndo;
-    private List<Runnable> mDeleteRunnables = new ArrayList<>();
 
     public ModelWriter(Context context, LauncherModel model, BgDataModel dataModel,
             boolean hasVerticalHotseat, boolean verifyChanges) {
@@ -290,42 +294,16 @@ public class ModelWriter {
      * Removes the specified items from the database
      */
     public void deleteItemsFromDatabase(final Iterable<? extends ItemInfo> items) {
+        ModelVerifier verifier = new ModelVerifier();
+
         enqueueDeleteRunnable(() -> {
-            ModelVerifier verifier = new ModelVerifier();
+            for (ItemInfo item : items) {
+                final Uri uri = Favorites.getContentUri(item.id);
+                mContext.getContentResolver().delete(uri, null, null);
 
-            mWorkerExecutor.execute(() -> {
-                for (ItemInfo item : items) {
-                    final Uri uri = Favorites.getContentUri(item.id);
-                    mContext.getContentResolver().delete(uri, null, null);
-
-                    mBgDataModel.removeItem(mContext, item);
-                    verifier.verifyModel();
-                }
-            });
-        });
-    }
-
-    private void enqueueDeleteRunnable(Runnable runnable) {
-        if (mPreparingToUndo) {
-            mDeleteRunnables.add(runnable);
-        } else {
-            mWorkerExecutor.execute(runnable);
-        }
-    }
-
-    public void deleteWidgetInfo(LauncherAppWidgetInfo widgetInfo, LauncherAppWidgetHost appWidgetHost) {
-        enqueueDeleteRunnable(() -> {
-            if (appWidgetHost != null && !widgetInfo.isCustomWidget() && widgetInfo.isWidgetIdAllocated()) {
-                // Deleting an app widget ID is a void call but writes to disk before returning
-                // to the caller...
-                new AsyncTask<Void, Void, Void>() {
-                    public Void doInBackground(Void ... args) {
-                        appWidgetHost.deleteAppWidgetId(widgetInfo.appWidgetId);
-                        return null;
-                    }
-                }.executeOnExecutor(Utilities.THREAD_POOL_EXECUTOR);
+                mBgDataModel.removeItem(mContext, item);
+                verifier.verifyModel();
             }
-            deleteItemFromDatabase(widgetInfo);
         });
     }
 
@@ -334,14 +312,6 @@ public class ModelWriter {
             mDeleteRunnables.clear();
             mPreparingToUndo = true;
         }
-    }
-
-    public void commitDelete() {
-        mPreparingToUndo = false;
-        for (Runnable execute : this.mDeleteRunnables) {
-            mWorkerExecutor.execute(execute);
-        }
-        mDeleteRunnables.clear();
     }
 
     public void undoDelete(int reloadPage) {
@@ -357,7 +327,7 @@ public class ModelWriter {
         enqueueDeleteRunnable(() -> {
             ModelVerifier verifier = new ModelVerifier();
 
-            mWorkerExecutor.execute(() -> {
+            enqueueDeleteRunnable(() -> {
                 info.clearCustomIcon(mContext);
                 ContentResolver cr = mContext.getContentResolver();
                 cr.delete(LauncherSettings.Favorites.CONTENT_URI,
@@ -370,6 +340,63 @@ public class ModelWriter {
                 verifier.verifyModel();
             });
         });
+    }
+
+    /**
+     * Deletes the widget info and the widget id.
+     */
+    public void deleteWidgetInfo(final LauncherAppWidgetInfo info, LauncherAppWidgetHost host) {
+        if (host != null && !info.isCustomWidget() && info.isWidgetIdAllocated()) {
+            // Deleting an app widget ID is a void call but writes to disk before returning
+            // to the caller...
+            enqueueDeleteRunnable(() -> host.deleteAppWidgetId(info.appWidgetId));
+        }
+        deleteItemFromDatabase(info);
+    }
+
+    /**
+     * Delete operations tracked using {@link #enqueueDeleteRunnable} will only be called
+     * if {@link #commitDelete} is called. Note that one of {@link #commitDelete()} or
+     * {@link #abortDelete()} MUST be called after this method, or else all delete
+     * operations will remain uncommitted indefinitely.
+     */
+    public void prepareToUndoDelete() {
+        if (!mPreparingToUndo) {
+            if (!mDeleteRunnables.isEmpty() && FeatureFlags.IS_DOGFOOD_BUILD) {
+                throw new IllegalStateException("There are still uncommitted delete operations!");
+            }
+            mDeleteRunnables.clear();
+            mPreparingToUndo = true;
+        }
+    }
+
+    /**
+     * If {@link #prepareToUndoDelete} has been called, we store the Runnable to be run when
+     * {@link #commitDelete()} is called (or abandoned if {@link #abortDelete()} is called).
+     * Otherwise, we run the Runnable immediately.
+     */
+    public void enqueueDeleteRunnable(Runnable r) {
+        if (mPreparingToUndo) {
+            mDeleteRunnables.add(r);
+        } else {
+            mWorkerExecutor.execute(r);
+        }
+    }
+
+    public void commitDelete() {
+        mPreparingToUndo = false;
+        for (Runnable runnable : mDeleteRunnables) {
+            mWorkerExecutor.execute(runnable);
+        }
+        mDeleteRunnables.clear();
+    }
+
+    public void abortDelete() {
+        mPreparingToUndo = false;
+        mDeleteRunnables.clear();
+        // We do a full reload here instead of just a rebind because Folders change their internal
+        // state when dragging an item out, which clobbers the rebind unless we load from the DB.
+        mModel.forceReload();
     }
 
     private class UpdateItemRunnable extends UpdateItemBaseRunnable {

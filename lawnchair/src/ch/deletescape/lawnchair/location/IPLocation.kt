@@ -20,10 +20,11 @@ package ch.deletescape.lawnchair.location
 import android.content.Context
 import android.os.NetworkOnMainThreadException
 import android.os.SystemClock
-import ch.deletescape.lawnchair.perms.CustomPermissionManager
-import ch.deletescape.lawnchair.perms.checkCustomPermission
-import ch.deletescape.lawnchair.runOnNewThread
+import ch.deletescape.lawnchair.feed.LocationScope
+import ch.deletescape.lawnchair.util.extensions.d
 import ch.deletescape.lawnchair.util.okhttp.OkHttpClientBuilder
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import okhttp3.Request
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
@@ -31,17 +32,26 @@ import java.util.concurrent.TimeUnit
 class IPLocation(context: Context,
                  private val cacheValidityMs: Long = TimeUnit.MINUTES.toMillis(30)) :
         LocationManager.LocationProvider(context) {
-    override val location: Pair<Double, Double>?
-        get() = if (cache?.success == true) cache!!.lat to cache!!.lon else ch.deletescape.lawnchair.also(
-                null) {
-            runOnNewThread {
-                get()
+    init {
+        LocationScope.launch {
+            get()
+        }
+    }
+
+    override fun refresh() {
+        if (get().success) {
+            updateLocation(get().lat, get().lon)
+        } else {
+            LocationScope.launch {
+                delay(1000)
+                refresh()
             }
         }
-    private val permissionManager = CustomPermissionManager.getInstance(context)
+    }
+
     private val client = OkHttpClientBuilder().build(context)
 
-    private val cacheValid get() = cache != null && timeLast + cacheValidityMs > SystemClock.uptimeMillis()
+    private val cacheValid get() = cache != null && cache!!.success && timeLast + cacheValidityMs > SystemClock.uptimeMillis()
     private var timeLast = 0L
     private var cache: Result? = null
         set(value) {
@@ -51,12 +61,8 @@ class IPLocation(context: Context,
 
     fun get(): Result {
         var success = false
-        var lat = .0
-        var lon = .0
-
-        if (!context.checkCustomPermission(CustomPermissionManager.PERMISSION_IPLOCATE)) {
-            return Result(success, lat, lon)
-        }
+        var lat = Double.NaN
+        var lon = Double.NaN
 
         if (!cacheValid) {
             for (url in URLS) {
@@ -64,6 +70,7 @@ class IPLocation(context: Context,
                     val response = client.newCall(getRequest(url)).execute()
                     if (response.isSuccessful && response.body != null) {
                         val json = JSONObject(response.body?.string())
+                        d("get: IP location server responded with $json")
                         lat = json.getDouble("latitude")
                         lon = json.getDouble("longitude")
                         success = true
