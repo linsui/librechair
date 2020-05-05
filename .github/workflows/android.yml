@@ -3,8 +3,19 @@ name: Android CI
 on:
   push:
     branches: [ build ]
-  pull_request:
-    branches: [ build ]
+
+env:
+  ANDROID_COMPILE_SDK: "28"
+  ANDROID_BUILD_TOOLS: "28.0.3"
+  ANDROID_SDK_TOOLS:   "4333796"
+  VARIANT:             "quickstepLawnchairL3riDev"
+  VARIANT_CAP:         "QuickstepLawnchairL3riDev"
+  VARIANTGO:           "quickstepLawnchairL3goDev"
+  VARIANTGO_CAP:       "QuickstepLawnchairL3goDev"
+  FLAVOUR:             "debug"
+  FLAVOUR_CAP:         "Debug"
+  APK_NAME:            "librechair-quickstep-lawnchair-l3ri-dev-debug"
+  APK_NAMEGO:          "librechair-quickstep-lawnchair-l3go-dev-debug"
 
 jobs:
   build:
@@ -23,5 +34,17 @@ jobs:
     - name: Build with Gradle
       run: |
         sudo apt-get --quiet update --yes
-        sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 screenfetch curl
-        ./gradlew build
+        sudo apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
+        export ANDROID_HOME=$PWD/android-sdk-linux
+        export PATH=$PATH:$PWD/android-sdk-linux/platform-tools/
+        echo "sdk.dir=$ANDROID_HOME" > local.properties
+        echo "sdk-location=$ANDROID_HOME" >> local.properties
+        wget --quiet --output-document=android-sdk.zip https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_TOOLS}.zip
+        unzip -d android-sdk-linux android-sdk.zip
+        echo y | android-sdk-linux/tools/bin/sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" > /dev/null
+        echo y | android-sdk-linux/tools/bin/sdkmanager "platform-tools" > /dev/null
+        echo y | android-sdk-linux/tools/bin/sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}" > /dev/null
+        set +o pipefail
+        yes | android-sdk-linux/tools/bin/sdkmanager --licenses
+        set -o pipefail
+        ./gradlew assemble${VARIANT_CAP}${FLAVOUR_CAP}
