@@ -52,6 +52,7 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew assemble${VARIANT_CAP}${FLAVOUR_CAP}
+        ./gradlew assemble${VARIANTGO_CAP}${FLAVOUR_CAP}
     - name: release
       uses: meeDamian/github-release@2.0
       with:
@@ -59,4 +60,6 @@ jobs:
         tag: nightly
         allow_override: true
         gzip: false
-        files: ./build/outputs/apk/${{ env.VARIANT }}/${{ env.FLAVOUR }}/${{ env.APK_NAME }}.apk
+        files: >
+          Librechair-debug.apk:./build/outputs/apk/${{ env.VARIANT }}/${{ env.FLAVOUR }}/${{ env.APK_NAME }}.apk
+          Librechair-go-debug.apk:./build/outputs/apk/${{ env.VARIANTGO }}/${{ env.FLAVOUR }}/${{ env.APK_NAMEGO }}.apk
