@@ -1,3 +1,13 @@
+# What?
+
+This is an unofficial nightly build and mirror for Librechair. GitHub Actions sync and build apks at UTC 00:00. Please download them from [here](https://github.com/linsui/librechair/releases/tag/nightly).
+
+# Why?
+
+The CI/CD on gitlab is broken and new binaries are only available on Telegram which need tel number to access. 
+
+# Librechair
+
 # Downloads
 
 You can download directly from CI / CD or [join the Telegram releases channel](https://t.me/librechair)
