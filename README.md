@@ -1,3 +1,5 @@
+![Android CI](https://github.com/linsui/librechair/workflows/Android%20CI/badge.svg)
+
 # What?
 
 This is an unofficial nightly build and mirror for Librechair. GitHub Actions sync and build apks at UTC 00:00. Please download them from [here](https://github.com/linsui/librechair/releases/tag/nightly).
