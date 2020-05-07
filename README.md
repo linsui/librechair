@@ -1,4 +1,5 @@
 ![Android CI](https://github.com/linsui/librechair/workflows/Android%20CI/badge.svg)
+![Sync Upstream](https://github.com/linsui/librechair/workflows/Sync%20Upstream/badge.svg)
 
 # What?
 
